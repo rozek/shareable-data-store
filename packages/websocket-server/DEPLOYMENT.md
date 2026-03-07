@@ -43,16 +43,31 @@ cd /opt/sns-server
 cp .env.example .env
 $EDITOR .env          # set SNS_JWT_SECRET, SNS_DOMAIN, ACME_EMAIL
 
-# 4. build the image
+# 4. build the package and pack it as a tarball for the Docker image
+#    pnpm install compiles better-sqlite3 (native addon) — build tools must be present:
+#
+#    RHEL / Rocky / AlmaLinux:  dnf install -y make gcc gcc-c++ python3
+#    Debian / Ubuntu:           apt-get install -y make g++ python3
+#
+#    (corepack is included in Node.js 22 and activates pnpm automatically)
+cd /opt/sns-source
+corepack enable
+pnpm install
+pnpm --filter @rozek/sns-websocket-server build
+pnpm --filter @rozek/sns-websocket-server pack --pack-destination /tmp/sns-pack/
+mv /tmp/sns-pack/rozek-sns-websocket-server-*.tgz /opt/sns-server/server/sns-websocket-server.tgz
+
+# 5. build the Docker image
+cd /opt/sns-server
 docker compose build
 
-# 5. (optional) restore a backup before the first start — see Backup & Restore below
+# 6. (optional) restore a backup before the first start — see Backup & Restore below
 
-# 6. start both containers
+# 7. start both containers
 # (Docker creates the named volumes caddy_data and sns_stores automatically if they don't exist yet)
 docker compose up -d
 
-# 7. follow the logs
+# 8. follow the logs
 docker compose logs -f
 ```
 
@@ -72,7 +87,8 @@ On the first start Caddy automatically requests a TLS certificate for every doma
 └── server/
     ├── Dockerfile
     ├── package.json
-    └── server.mjs         ← entry point
+    ├── server.mjs              ← entry point
+    └── sns-websocket-server.tgz  ← built locally (see Quick Start step 4)
 
 Docker named volumes (managed by Docker, independent of /opt/sns-server/):
   caddy_data    ← TLS certificates
@@ -184,9 +200,20 @@ await SyncEngine()
 ### Updating
 
 ```bash
+# pull latest source
 cd /opt/sns-source
 git pull
+
+# copy updated deployment files (keeps .env and data volumes untouched)
 cp -r packages/websocket-server/deployment/server /opt/sns-server/server
+
+# rebuild the package tarball (build tools must be installed — see Quick Start step 4)
+pnpm install
+pnpm --filter @rozek/sns-websocket-server build
+pnpm --filter @rozek/sns-websocket-server pack --pack-destination /tmp/sns-pack/
+mv /tmp/sns-pack/rozek-sns-websocket-server-*.tgz /opt/sns-server/server/sns-websocket-server.tgz
+
+# rebuild the Docker image and restart
 cd /opt/sns-server
 docker compose up -d --build
 ```

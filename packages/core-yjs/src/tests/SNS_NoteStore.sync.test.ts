@@ -107,20 +107,20 @@ describe('SNS_NoteStore — Sync', () => {
     // StoreA creates a new note (not yet known to StoreB).
     const RemoteNote = StoreA.newNoteAt(StoreA.RootNote)
 
-    let ReceivedChangeSet:SNS_ChangeSet | null = null
+    let ReceivedChangeSet:SNS_ChangeSet | undefined
     StoreB.onChangeInvoke((_Origin, ChangeSet) => { ReceivedChangeSet = ChangeSet })
     StoreB.applyRemotePatch(StoreA.exportPatch())
 
     // The newly arrived note must appear in the ChangeSet with outerNote.
-    expect((ReceivedChangeSet as SNS_ChangeSet | undefined)?.[RemoteNote.Id]
+    expect(ReceivedChangeSet?.[RemoteNote.Id]
       ?.has('outerNote')).toBe(true)
 
     // RootNote gained an inner entry, so its innerEntryList must be in the ChangeSet.
-    expect((ReceivedChangeSet as SNS_ChangeSet | undefined)?.[StoreB.RootNote.Id]
+    expect(ReceivedChangeSet?.[StoreB.RootNote.Id]
       ?.has('innerEntryList')).toBe(true)
 
     // The bystander's placement did not change — no outerNote in its ChangeSet entry.
-    expect((ReceivedChangeSet as SNS_ChangeSet | undefined)?.[Bystander.Id]
+    expect(ReceivedChangeSet?.[Bystander.Id]
       ?.has('outerNote')).toBeFalsy()
   })
 

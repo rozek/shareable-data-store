@@ -6,7 +6,7 @@
     "start": "node server.mjs"
   },
   "dependencies": {
-    "@rozek/sns-websocket-server": "^0.0.1",
+    "@rozek/sns-websocket-server": "file:sns-websocket-server.tgz",
     "@hono/node-server": "^1.0.0",
     "@hono/node-ws": "^1.0.0",
     "hono": "^4.0.0",

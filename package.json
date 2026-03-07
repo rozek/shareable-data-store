@@ -7,7 +7,7 @@
     "collaborative",
     "offline-first",
     "sync",
-    "json-joy",
+    "json-joy", "Y.js", "Loro CRDT",
     "websocket",
     "webrtc",
     "indexeddb"

@@ -587,7 +587,7 @@ export class SNS_NoteStore {
     if (sinceCursor == null || sinceCursor.byteLength === 0) {
       return this.#doc.export({ mode: 'snapshot' })
     }
-    return this.#doc.exportFrom(VersionVector.decode(sinceCursor))
+    return this.#doc.export({ mode: 'update', from: VersionVector.decode(sinceCursor) })
   }
 
 /**** recoverOrphans — move entries with missing parents to lost-and-found ****/
