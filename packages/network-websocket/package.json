@@ -9,24 +9,28 @@
     "url": "git+https://github.com/rozek/shareable-notes-store.git",
     "directory": "packages/network-websocket"
   },
-  "bugs": { "url": "https://github.com/rozek/shareable-notes-store/issues" },
+  "bugs": {
+    "url": "https://github.com/rozek/shareable-notes-store/issues"
+  },
   "license": "MIT",
   "type": "module",
-  "main":   "./dist/sns-network-websocket.js",
+  "main": "./dist/sns-network-websocket.js",
   "module": "./dist/sns-network-websocket.js",
-  "types":  "./dist/sns-network-websocket.d.ts",
+  "types": "./dist/sns-network-websocket.d.ts",
   "exports": {
     ".": {
       "import": "./dist/sns-network-websocket.js",
-      "types":  "./dist/sns-network-websocket.d.ts"
+      "types": "./dist/sns-network-websocket.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dev":       "vite build --watch",
-    "build":     "vite build",
-    "test":      "vitest",
-    "test:run":  "vitest run",
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "test": "vitest",
+    "test:run": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
@@ -34,9 +38,12 @@
   },
   "devDependencies": {
     "@rozek/sns-core": "workspace:*",
-    "typescript":      "^5.7.2",
-    "vite":            "^6.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0",
-    "vitest":          "^2.0.0"
+    "vitest": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

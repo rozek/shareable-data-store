@@ -1,6 +1,6 @@
 {
   "name": "@rozek/sns-browser-bundle-jj-jj",
-  "description": "Self-contained browser bundle for shareable-notes-store — json-joy CRDT backend, single-file ESM",
+  "description": "Self-contained browser bundle for shareable-notes-store \u2014 json-joy CRDT backend, single-file ESM",
   "version": "0.0.1",
   "keywords": [
     "crdt",
@@ -29,31 +29,36 @@
   },
   "license": "MIT",
   "type": "module",
-  "main":   "./dist/sns-browser-bundle-jj.js",
+  "main": "./dist/sns-browser-bundle-jj.js",
   "module": "./dist/sns-browser-bundle-jj.js",
-  "types":  "./dist/sns-browser-bundle-jj.d.ts",
+  "types": "./dist/sns-browser-bundle-jj.d.ts",
   "exports": {
     ".": {
       "import": "./dist/sns-browser-bundle-jj.js",
-      "types":  "./dist/sns-browser-bundle-jj.d.ts"
+      "types": "./dist/sns-browser-bundle-jj.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build":     "vite build",
+    "build": "vite build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@rozek/sns-core":    "workspace:*",
+    "@rozek/sns-core": "workspace:*",
     "@rozek/sns-core-jj": "workspace:*",
-    "fflate":              "^0.8.0",
+    "fflate": "^0.8.0",
     "fractional-indexing": "^3.2.0",
-    "json-joy":            "^17.65.0",
-    "zod":                 "^3.22.0"
+    "json-joy": "^17.65.0",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
-    "typescript":      "^5.7.2",
-    "vite":            "^6.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

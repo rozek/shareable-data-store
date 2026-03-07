@@ -1,6 +1,6 @@
 {
   "name": "@rozek/sns-browser-bundle-yjs",
-  "description": "Self-contained browser bundle for shareable-notes-store — Y.js CRDT backend, single-file ESM",
+  "description": "Self-contained browser bundle for shareable-notes-store \u2014 Y.js CRDT backend, single-file ESM",
   "version": "0.0.1",
   "keywords": [
     "crdt",
@@ -29,31 +29,36 @@
   },
   "license": "MIT",
   "type": "module",
-  "main":   "./dist/sns-browser-bundle-yjs.js",
+  "main": "./dist/sns-browser-bundle-yjs.js",
   "module": "./dist/sns-browser-bundle-yjs.js",
-  "types":  "./dist/sns-browser-bundle-yjs.d.ts",
+  "types": "./dist/sns-browser-bundle-yjs.d.ts",
   "exports": {
     ".": {
       "import": "./dist/sns-browser-bundle-yjs.js",
-      "types":  "./dist/sns-browser-bundle-yjs.d.ts"
+      "types": "./dist/sns-browser-bundle-yjs.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build":     "vite build",
+    "build": "vite build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@rozek/sns-core":     "workspace:*",
+    "@rozek/sns-core": "workspace:*",
     "@rozek/sns-core-yjs": "workspace:*",
-    "fflate":               "^0.8.0",
-    "fractional-indexing":  "^3.2.0",
-    "yjs":                  "^13.6.0",
-    "zod":                  "^3.22.0"
+    "fflate": "^0.8.0",
+    "fractional-indexing": "^3.2.0",
+    "yjs": "^13.6.0",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
-    "typescript":      "^5.7.2",
-    "vite":            "^6.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

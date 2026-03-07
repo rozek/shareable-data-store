@@ -4,29 +4,47 @@
   "version": "0.0.1",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-notes-store#readme",
-  "repository": { "type": "git", "url": "git+https://github.com/rozek/shareable-notes-store.git", "directory": "packages/persistence-browser" },
-  "bugs": { "url": "https://github.com/rozek/shareable-notes-store/issues" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "directory": "packages/persistence-browser"
+  },
+  "bugs": {
+    "url": "https://github.com/rozek/shareable-notes-store/issues"
+  },
   "license": "MIT",
   "type": "module",
-  "main":   "./dist/sns-persistence-browser.js",
+  "main": "./dist/sns-persistence-browser.js",
   "module": "./dist/sns-persistence-browser.js",
-  "types":  "./dist/sns-persistence-browser.d.ts",
-  "exports": { ".": { "import": "./dist/sns-persistence-browser.js", "types": "./dist/sns-persistence-browser.d.ts" } },
-  "files": ["dist"],
+  "types": "./dist/sns-persistence-browser.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/sns-persistence-browser.js",
+      "types": "./dist/sns-persistence-browser.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dev":       "vite build --watch",
-    "build":     "vite build",
-    "test":      "vitest",
-    "test:run":  "vitest run",
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "test": "vitest",
+    "test:run": "vitest run",
     "typecheck": "tsc --noEmit"
   },
-  "peerDependencies": { "@rozek/sns-core": "workspace:*" },
+  "peerDependencies": {
+    "@rozek/sns-core": "workspace:*"
+  },
   "devDependencies": {
     "@rozek/sns-core": "workspace:*",
-    "fake-indexeddb":  "^4.0.0",
-    "typescript":      "^5.7.2",
-    "vite":            "^6.0.0",
+    "fake-indexeddb": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0",
-    "vitest":          "^2.0.0"
+    "vitest": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@rozek/sns-browser-bundle-loro",
-  "description": "Self-contained browser bundle for shareable-notes-store — Loro CRDT backend, single-file ESM (loro-crdt external)",
+  "description": "Self-contained browser bundle for shareable-notes-store \u2014 Loro CRDT backend, single-file ESM (loro-crdt external)",
   "version": "0.0.1",
   "keywords": [
     "crdt",
@@ -29,34 +29,39 @@
   },
   "license": "MIT",
   "type": "module",
-  "main":   "./dist/sns-browser-bundle-loro.js",
+  "main": "./dist/sns-browser-bundle-loro.js",
   "module": "./dist/sns-browser-bundle-loro.js",
-  "types":  "./dist/sns-browser-bundle-loro.d.ts",
+  "types": "./dist/sns-browser-bundle-loro.d.ts",
   "exports": {
     ".": {
       "import": "./dist/sns-browser-bundle-loro.js",
-      "types":  "./dist/sns-browser-bundle-loro.d.ts"
+      "types": "./dist/sns-browser-bundle-loro.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build":     "vite build",
+    "build": "vite build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@rozek/sns-core":      "workspace:*",
+    "@rozek/sns-core": "workspace:*",
     "@rozek/sns-core-loro": "workspace:*",
-    "fflate":                "^0.8.0",
-    "fractional-indexing":   "^3.2.0",
-    "zod":                   "^3.22.0"
+    "fflate": "^0.8.0",
+    "fractional-indexing": "^3.2.0",
+    "zod": "^3.22.0"
   },
   "peerDependencies": {
     "loro-crdt": "^1.0.0"
   },
   "devDependencies": {
-    "loro-crdt":       "^1.0.0",
-    "typescript":      "^5.7.2",
-    "vite":            "^6.0.0",
+    "loro-crdt": "^1.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
