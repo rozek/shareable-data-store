@@ -122,8 +122,8 @@ export class SNS_NoteStore {
         },
         CheckInterval
       )
-      if (typeof this.#TrashCheckTimer.unref === 'function') {
-        this.#TrashCheckTimer.unref()
+      if (typeof (this.#TrashCheckTimer as any).unref === 'function') {
+        (this.#TrashCheckTimer as any).unref()
       }
     }
   }
@@ -145,7 +145,10 @@ export class SNS_NoteStore {
 /**** fromJSON — deserialize store from base64-encoded JSON snapshot ****/
 
   static fromJSON (JSON_:string, Options?:SNS_NoteStoreOptions):SNS_NoteStore {
-    const Binary = new Uint8Array(Buffer.from(String(JSON_), 'base64'))
+    const NodeBuffer = (globalThis as any).Buffer
+    const Binary = NodeBuffer != null
+      ? new Uint8Array(NodeBuffer.from(String(JSON_), 'base64'))
+      : Uint8Array.from(atob(String(JSON_)), (c) => c.charCodeAt(0))
     return this.fromBinary(Binary, Options)
   }
 
@@ -696,7 +699,12 @@ export class SNS_NoteStore {
 /**** asJSON — serialize store to base64-encoded binary ****/
 
   asJSON ():string {
-    return Buffer.from(this.asBinary()).toString('base64')
+    const Bytes = this.asBinary()
+    const NodeBuffer = (globalThis as any).Buffer
+    if (NodeBuffer != null) { return NodeBuffer.from(Bytes).toString('base64') }
+    let Binary = ''
+    for (let i = 0; i < Bytes.byteLength; i++) { Binary += String.fromCharCode(Bytes[i]) }
+    return btoa(Binary)
   }
 
 //----------------------------------------------------------------------------//
