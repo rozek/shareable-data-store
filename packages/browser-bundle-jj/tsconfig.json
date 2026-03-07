@@ -1,0 +1,31 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "paths": {
+      "@rozek/sns-core-jj":             ["../core-jj/src/sns-core-jj.ts"],
+      "@rozek/sns-core":                ["../core/src/sns-core.ts"],
+      "@rozek/sns-network-websocket":   ["../network-websocket/src/sns-network-websocket.ts"],
+      "@rozek/sns-network-webrtc":      ["../network-webrtc/src/sns-network-webrtc.ts"],
+      "@rozek/sns-persistence-browser": ["../persistence-browser/src/sns-persistence-browser.ts"],
+      "@rozek/sns-sync-engine":         ["../sync-engine/src/sns-sync-engine.ts"]
+    }
+  },
+  "include": [
+    "src",
+    "../core/src",
+    "../core-jj/src",
+    "../network-websocket/src",
+    "../network-webrtc/src",
+    "../persistence-browser/src",
+    "../sync-engine/src"
+  ],
+  "exclude": [
+    "../core/src/tests",
+    "../core-jj/src/tests",
+    "../network-websocket/src/tests",
+    "../network-webrtc/src/tests",
+    "../persistence-browser/src/tests",
+    "../sync-engine/src/tests"
+  ]
+}

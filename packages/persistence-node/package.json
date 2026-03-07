@@ -1,0 +1,45 @@
+{
+  "name": "@rozek/sns-persistence-node",
+  "description": "SQLite persistence provider for shareable-notes-store (Node.js)",
+  "version": "0.0.1",
+  "author": "Andreas Rozek",
+  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "directory": "packages/persistence-node"
+  },
+  "bugs": { "url": "https://github.com/rozek/shareable-notes-store/issues" },
+  "license": "MIT",
+  "type": "module",
+  "main":   "./dist/sns-persistence-node.js",
+  "module": "./dist/sns-persistence-node.js",
+  "types":  "./dist/sns-persistence-node.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/sns-persistence-node.js",
+      "types":  "./dist/sns-persistence-node.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "dev":       "vite build --watch",
+    "build":     "vite build",
+    "test":      "vitest",
+    "test:run":  "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@rozek/sns-core": "workspace:*",
+    "better-sqlite3":  ">=9"
+  },
+  "devDependencies": {
+    "@rozek/sns-core":       "workspace:*",
+    "@types/better-sqlite3": "^7.6.0",
+    "better-sqlite3":        "^9.0.0",
+    "typescript":            "^5.7.2",
+    "vite":                  "^6.0.0",
+    "vite-plugin-dts":       "^4.0.0",
+    "vitest":                "^2.0.0"
+  }
+}

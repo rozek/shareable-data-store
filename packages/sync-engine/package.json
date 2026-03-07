@@ -1,0 +1,43 @@
+{
+  "name": "@rozek/sns-sync-engine",
+  "description": "Coordinates persistence, network and presence for shareable-notes-store",
+  "version": "0.0.1",
+  "author": "Andreas Rozek",
+  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "directory": "packages/sync-engine"
+  },
+  "bugs": { "url": "https://github.com/rozek/shareable-notes-store/issues" },
+  "license": "MIT",
+  "type": "module",
+  "main":   "./dist/sns-sync-engine.js",
+  "module": "./dist/sns-sync-engine.js",
+  "types":  "./dist/sns-sync-engine.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/sns-sync-engine.js",
+      "types":  "./dist/sns-sync-engine.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "dev":       "vite build --watch",
+    "build":     "vite build",
+    "test":      "vitest",
+    "test:run":  "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@rozek/sns-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@rozek/sns-core":    "workspace:*",
+    "@rozek/sns-core-jj": "workspace:*",
+    "typescript":         "^5.7.2",
+    "vite":               "^6.0.0",
+    "vite-plugin-dts":    "^4.0.0",
+    "vitest":             "^2.0.0"
+  }
+}

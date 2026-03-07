@@ -1,0 +1,57 @@
+# Caddyfile — example configuration for SNS_WebSocketServer behind Caddy
+#
+# Caddy handles:
+#   - Automatic TLS via Let's Encrypt (HTTPS + WSS)
+#   - Reverse proxy to Hono on localhost:3000
+#   - WebSocket upgrade header forwarding
+#
+# Hono handles:
+#   - JWT authentication (?token=... query parameter)
+#   - CRDT patch routing per store
+#   - WebRTC signaling relay
+#
+# Usage:
+#   caddy run --config Caddyfile
+
+{
+    email admin@example.com
+}
+
+sns.example.com {
+
+    @websocket {
+        header Connection *Upgrade*
+        header Upgrade    websocket
+    }
+
+    handle @websocket {
+        reverse_proxy localhost:3000 {
+            header_up Connection      {http.request.header.Connection}
+            header_up Upgrade         {http.request.header.Upgrade}
+            header_up X-Real-IP       {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto https
+
+            # Keep WebSocket connections alive
+            transport http {
+                read_timeout  0
+                write_timeout 0
+            }
+        }
+    }
+
+    handle /api/* {
+        reverse_proxy localhost:3000 {
+            header_up X-Real-IP       {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto https
+        }
+    }
+
+    handle /health {
+        reverse_proxy localhost:3000
+    }
+
+    # Deny everything else
+    respond 404
+}

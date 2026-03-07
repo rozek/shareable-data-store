@@ -1,0 +1,64 @@
+# /opt/sns-server/docker-compose.yml
+#
+# All services that Caddy should proxy must be joined to the "internal"
+# network so Caddy can reach them by container name.
+services:
+
+  sns-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - SNS_HOST=0.0.0.0
+      - SNS_PORT=3000
+      # SNS_PERSIST_DIR is read from .env; the volume below must match
+    expose:
+      - "3000"
+    volumes:
+      - sns_stores:/data/stores   # SQLite persistence (omit if relay-only)
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "node", "-e",
+             "fetch('http://localhost:3000/api/token',{method:'POST'}).catch(()=>process.exit(0))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Additional services — uncomment and adapt as needed.
+  # Each service must be joined to the "internal" network.
+  #
+  # other-service:
+  #   image: your-image:latest
+  #   restart: unless-stopped
+  #   expose:
+  #     - "8080"
+  #   networks:
+  #     - internal
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    env_file: .env
+    networks:
+      - internal
+    depends_on:
+      - sns-server
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  caddy_data:   # TLS certificates — managed by Docker, survives reinstalls
+  sns_stores:   # SQLite databases — managed by Docker, survives reinstalls

@@ -1,0 +1,89 @@
+# /opt/sns-server/Caddyfile
+#
+# Each subdomain gets its own site block. Caddy requests a TLS certificate
+# for every listed domain automatically.
+# All backend services must be in the same Docker network ("internal").
+
+{
+    # Let's Encrypt (production)
+    email {$ACME_EMAIL}
+
+    # for testing, use the staging CA to avoid rate limits:
+    # acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+# ------------------------------------------------------------------------------
+# --                           SNS WebSocket Server                           --
+# ------------------------------------------------------------------------------
+
+{$SNS_DOMAIN} {
+    # WebSocket sync endpoint — long-lived connections, no response timeout
+    handle /ws/* {
+        reverse_proxy sns-server:3000 {
+            transport http {
+                dial_timeout          5s
+                response_header_timeout 0
+                keepalive             30s
+                keepalive_idle_conns  10
+            }
+            header_up Host              {host}
+            header_up X-Real-IP         {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # WebRTC signalling endpoint
+    handle /signal/* {
+        reverse_proxy sns-server:3000 {
+            transport http {
+                response_header_timeout 0
+                keepalive               30s
+            }
+            header_up Host              {host}
+            header_up X-Real-IP         {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # REST API (token issuance)
+    handle /api/* {
+        reverse_proxy sns-server:3000 {
+            header_up Host              {host}
+            header_up X-Real-IP         {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # reject everything else
+    handle {
+        respond 404
+    }
+
+    # access log with rotation
+    log {
+        output file /data/logs/sns-access.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+}
+
+# ------------------------------------------------------------------------------
+# Additional services — uncomment and adapt as needed.
+# Each service must be defined in docker-compose.yml and joined to the
+# "internal" network so Caddy can reach it by container name.
+# ------------------------------------------------------------------------------
+
+# other-service.example.com {
+#     reverse_proxy other-service:8080 {
+#         header_up Host              {host}
+#         header_up X-Real-IP         {remote_host}
+#         header_up X-Forwarded-Proto {scheme}
+#     }
+#     log {
+#         output file /data/logs/other-access.log {
+#             roll_size 10mb
+#             roll_keep 5
+#         }
+#     }
+# }
