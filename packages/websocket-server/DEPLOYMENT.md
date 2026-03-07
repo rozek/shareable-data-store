@@ -300,6 +300,64 @@ echo | openssl s_client \
 
 ---
 
+## Low-Memory Servers (≤ 1 GB RAM)
+
+Building Node.js native addons (in particular `better-sqlite3`) with `node-gyp` is memory-intensive and can exhaust RAM on small VPS instances. There are three strategies, in order of preference:
+
+### Strategy 1 — Relay-only mode (no build required)
+
+If you do not need SQLite persistence (i.e. you leave `SNS_PERSIST_DIR` unset), `better-sqlite3` is never loaded. You can install the server package directly from npm **without any compilation step**:
+
+```bash
+mkdir /opt/sns-server && cd /opt/sns-server
+npm install --no-optional @rozek/sns-websocket-server @hono/node-server @hono/node-ws hono jose
+```
+
+Then create a minimal entry point:
+
+```js
+// server.mjs
+import { createSNSServer } from '@rozek/sns-websocket-server'
+
+const { start } = createSNSServer()
+start()
+```
+
+```bash
+SNS_JWT_SECRET=your-secret node server.mjs
+```
+
+No compiler, no build tools, no RAM spike.
+
+### Strategy 2 — Persistence with pre-built binaries
+
+`better-sqlite3` ships pre-built binaries for common platforms (Linux x64/arm64, Node.js 18–22). `npm install` fetches the matching binary automatically via `prebuild-install` — no compilation needed. To explicitly forbid a fallback to source compilation (which would exhaust RAM):
+
+```bash
+npm_config_build_from_source=false npm install @rozek/sns-websocket-server better-sqlite3
+```
+
+If no pre-built binary matches your platform, this fails with a clear error instead of silently running `node-gyp` and consuming all available RAM.
+
+### Strategy 3 — Build elsewhere, deploy the tarball
+
+Build on a development machine or in CI (where RAM is plentiful), pack the result as a tarball, and ship only that to the server:
+
+```bash
+# on your dev machine / in CI:
+pnpm --filter @rozek/sns-websocket-server build
+pnpm --filter @rozek/sns-websocket-server pack --pack-destination /tmp/sns-pack/
+scp /tmp/sns-pack/rozek-sns-websocket-server-*.tgz user@server:/opt/sns-server/
+
+# on the server — no build step, just unpack:
+cd /opt/sns-server
+npm install --no-optional ./rozek-sns-websocket-server-*.tgz
+```
+
+The server only unpacks a tarball and installs the pre-built JS — no compilation whatsoever.
+
+---
+
 ## Security Notes
 
 - `SNS_JWT_SECRET` must have at least 256 bits of entropy (≥ 32 random bytes, base64url-encoded).

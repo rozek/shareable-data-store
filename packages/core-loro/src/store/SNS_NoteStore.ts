@@ -180,8 +180,9 @@ export class SNS_NoteStore {
 
   static fromJSON (Data:unknown, Options?:SNS_NoteStoreOptions):SNS_NoteStore {
     let Binary:Uint8Array
-    if (typeof Buffer !== 'undefined') {
-      Binary = new Uint8Array(Buffer.from(String(Data), 'base64'))
+    const NodeBuffer = (globalThis as any).Buffer
+    if (NodeBuffer != null) {
+      Binary = new Uint8Array(NodeBuffer.from(String(Data), 'base64'))
     } else {
       Binary = Uint8Array.from(atob(String(Data)), (c) => c.charCodeAt(0))
     }
@@ -649,8 +650,9 @@ export class SNS_NoteStore {
 
   asJSON ():string {
     const Bytes = this.asBinary()
-    if (typeof Buffer !== 'undefined') {
-      return Buffer.from(Bytes).toString('base64')
+    const NodeBuffer = (globalThis as any).Buffer
+    if (NodeBuffer != null) {
+      return NodeBuffer.from(Bytes).toString('base64')
     }
     let Binary = ''
     for (let i = 0; i < Bytes.byteLength; i++) { Binary += String.fromCharCode(Bytes[i]) }
