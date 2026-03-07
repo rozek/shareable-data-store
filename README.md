@@ -99,7 +99,7 @@ Note.writeValue('Hello, world!')
 
 // serialise to binary and restore later
 const StoreSnapshot = Store.asBinary()
-const restoredStore = SNS_NoteStore.fromBinary(Snapshot)
+const restoredStore = SNS_NoteStore.fromBinary(StoreSnapshot)
 ```
 
 ### Browser PWA — offline-first with WebSocket sync
