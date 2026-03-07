@@ -6,7 +6,7 @@ export declare class SNS_BrowserPersistenceProvider implements SNS_PersistencePr
     /**** constructor ****/
     constructor(StoreId: string);
     /**** loadSnapshot ****/
-    loadSnapshot(): Promise<Uint8Array | null>;
+    loadSnapshot(): Promise<Uint8Array | undefined>;
     /**** saveSnapshot ****/
     saveSnapshot(Data: Uint8Array): Promise<void>;
     /**** loadPatchesSince ****/
@@ -16,7 +16,7 @@ export declare class SNS_BrowserPersistenceProvider implements SNS_PersistencePr
     /**** prunePatches ****/
     prunePatches(beforeSeqNumber: SNS_PatchSeqNumber): Promise<void>;
     /**** loadValue ****/
-    loadValue(ValueHash: string): Promise<Uint8Array | null>;
+    loadValue(ValueHash: string): Promise<Uint8Array | undefined>;
     /**** saveValue ****/
     saveValue(ValueHash: string, Data: Uint8Array): Promise<void>;
     /**** releaseValue ****/

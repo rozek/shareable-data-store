@@ -9,7 +9,7 @@ import { SNS_WebSocketProvider } from '@rozek/sns-network-websocket';
 export declare class SNS_WebRTCProvider implements SNS_NetworkProvider, SNS_PresenceProvider {
     #private;
     readonly StoreID: string;
-    /**** constructor ****/
+    /**** Constructor ****/
     constructor(StoreId: string, Options?: SNS_WebRTCProviderOptions);
     /**** ConnectionState ****/
     get ConnectionState(): SNS_ConnectionState;
@@ -32,7 +32,7 @@ export declare class SNS_WebRTCProvider implements SNS_NetworkProvider, SNS_Pres
     /**** sendLocalState ****/
     sendLocalState(State: SNS_LocalPresenceState): void;
     /**** onRemoteState ****/
-    onRemoteState(Callback: (PeerId: string, State: SNS_RemotePresenceState | null) => void): () => void;
+    onRemoteState(Callback: (PeerId: string, State: SNS_RemotePresenceState | undefined) => void): () => void;
     /**** PeerSet ****/
     get PeerSet(): ReadonlyMap<string, SNS_RemotePresenceState>;
 }

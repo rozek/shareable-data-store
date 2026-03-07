@@ -31,7 +31,7 @@ export declare class SNS_WebSocketProvider implements SNS_NetworkProvider, SNS_P
     /**** sendLocalState ****/
     sendLocalState(State: SNS_LocalPresenceState): void;
     /**** onRemoteState ****/
-    onRemoteState(Callback: (PeerId: string, State: SNS_RemotePresenceState | null) => void): () => void;
+    onRemoteState(Callback: (PeerId: string, State: SNS_RemotePresenceState | undefined) => void): () => void;
     /**** PeerSet ****/
     get PeerSet(): ReadonlyMap<string, SNS_RemotePresenceState>;
 }

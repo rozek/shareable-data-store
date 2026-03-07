@@ -44,10 +44,14 @@ cp .env.example .env
 $EDITOR .env          # set SNS_JWT_SECRET, SNS_DOMAIN, ACME_EMAIL
 
 # 4. build the package and pack it as a tarball for the Docker image
-#    pnpm install compiles better-sqlite3 (native addon) — build tools must be present:
+#    pnpm install fetches a pre-built binary for better-sqlite3 where available.
+#    If no pre-built binary matches your platform/Node.js version it falls back
+#    to compiling from source — in that case build tools must be present:
 #
 #    RHEL / Rocky / AlmaLinux:  dnf install -y make gcc gcc-c++ python3
 #    Debian / Ubuntu:           apt-get install -y make g++ python3
+#
+#    Build tools are NOT needed in relay-only mode (no SNS_PERSIST_DIR).
 #
 #    (corepack is included in Node.js 22 and activates pnpm automatically)
 cd /opt/sns-source
@@ -207,7 +211,8 @@ git pull
 # copy updated deployment files (keeps .env and data volumes untouched)
 cp -r packages/websocket-server/deployment/server /opt/sns-server/server
 
-# rebuild the package tarball (build tools must be installed — see Quick Start step 4)
+# rebuild the package tarball
+# (build tools only needed if better-sqlite3 has no pre-built binary for your platform — see Quick Start step 4)
 pnpm install
 pnpm --filter @rozek/sns-websocket-server build
 pnpm --filter @rozek/sns-websocket-server pack --pack-destination /tmp/sns-pack/

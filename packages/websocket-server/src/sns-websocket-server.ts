@@ -25,7 +25,7 @@ import { serve }                           from '@hono/node-server'
 import { createNodeWebSocket }             from '@hono/node-ws'
 import { SignJWT, jwtVerify }              from 'jose'
 import type { WSContext }                  from 'hono/ws'
-import { SNS_DesktopPersistenceProvider }  from '@rozek/sns-persistence-node'
+import type { SNS_DesktopPersistenceProvider } from '@rozek/sns-persistence-node'
 import path                                from 'node:path'
 
 //----------------------------------------------------------------------------//
@@ -185,14 +185,15 @@ export class LiveStore {
 
 /**** StoreWithId — returns the LiveStore for StoreId, creating one if it does not exist ****/
 
-  function StoreWithId (StoreId:string, PersistDir?:string):LiveStore {
+  async function StoreWithId (StoreId:string, PersistDir?:string):Promise<LiveStore> {
     let Store = StoreRegistry.get(StoreId)
     if (Store == null) {
       let Persistence: SNS_DesktopPersistenceProvider | undefined
       if (PersistDir != null) {
+        const { SNS_DesktopPersistenceProvider:Provider } = await import('@rozek/sns-persistence-node')
         const SafeId = StoreId.replace(/[^a-zA-Z0-9_-]/g, '_')
         const DbPath = path.join(PersistDir, `${SafeId}.db`)
-        Persistence  = new SNS_DesktopPersistenceProvider(DbPath, StoreId)
+        Persistence  = new Provider(DbPath, StoreId)
       }
       Store = new LiveStore(StoreId, Persistence)
       StoreRegistry.set(StoreId, Store)
@@ -322,7 +323,7 @@ export function createSNSServer (Options?:Partial<SNS_ServerOptions>) {
       }
     }
 
-    const Store:LiveStore = StoreWithId(StoreId, PersistDir)
+    const Store:LiveStore = await StoreWithId(StoreId, PersistDir)
     let WebSocketContext!:WSContext
     const Client:LiveClient = {
       send:  (Data) => { WebSocketContext.send(Data as Uint8Array<ArrayBuffer>) },
@@ -390,7 +391,7 @@ export function createSNSServer (Options?:Partial<SNS_ServerOptions>) {
     }
 
     // signalling: relay all messages to other peers in the same store (no persistence)
-    const SignalStore:LiveStore = StoreWithId(`signal:${StoreId}`)
+    const SignalStore:LiveStore = await StoreWithId(`signal:${StoreId}`)
     let WebSocketContext!:WSContext
     const Client:LiveClient = {
       send:  (Data) => { WebSocketContext.send(Data as Uint8Array<ArrayBuffer>) },

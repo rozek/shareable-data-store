@@ -1,139 +1,139 @@
 var X = Object.defineProperty;
-var A = (i) => {
-  throw TypeError(i);
+var E = (n) => {
+  throw TypeError(n);
 };
-var Y = (i, e, s) => e in i ? X(i, e, { enumerable: !0, configurable: !0, writable: !0, value: s }) : i[e] = s;
-var Q = (i, e, s) => Y(i, typeof e != "symbol" ? e + "" : e, s), E = (i, e, s) => e.has(i) || A("Cannot " + s);
-var t = (i, e, s) => (E(i, e, "read from private field"), s ? s.call(i) : e.get(i)), o = (i, e, s) => e.has(i) ? A("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(i) : e.set(i, s), r = (i, e, s, n) => (E(i, e, "write to private field"), n ? n.call(i, s) : e.set(i, s), s), u = (i, e, s) => (E(i, e, "access private method"), s);
-var q = (i, e, s, n) => ({
+var Y = (n, e, s) => e in n ? X(n, e, { enumerable: !0, configurable: !0, writable: !0, value: s }) : n[e] = s;
+var Q = (n, e, s) => Y(n, typeof e != "symbol" ? e + "" : e, s), V = (n, e, s) => e.has(n) || E("Cannot " + s);
+var t = (n, e, s) => (V(n, e, "read from private field"), s ? s.call(n) : e.get(n)), h = (n, e, s) => e.has(n) ? E("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(n) : e.set(n, s), r = (n, e, s, i) => (V(n, e, "write to private field"), i ? i.call(n, s) : e.set(n, s), s), l = (n, e, s) => (V(n, e, "access private method"), s);
+var q = (n, e, s, i) => ({
   set _(c) {
-    r(i, e, c, s);
+    r(n, e, c, s);
   },
   get _() {
-    return t(i, e, n);
+    return t(n, e, i);
   }
 });
-import { SNS_Error as R } from "@rozek/sns-core";
+import { SNS_Error as U } from "@rozek/sns-core";
 const Z = 512 * 1024;
-var d, l, a, P, k, B, N, H, m, L, g, U, C, v, T, y, S, p, _, b, w, h, I, j, F, $, z, V, G, J, K, W, x;
+var u, d, a, w, k, B, H, _, S, L, P, b, m, C, T, p, g, v, R, M, y, o, I, j, $, z, F, x, G, J, K, W, D;
 class et {
   //----------------------------------------------------------------------------//
-  //                               Construction                                  //
+  //                                Constructor                                 //
   //----------------------------------------------------------------------------//
   constructor(e, s = {}) {
-    o(this, h);
-    o(this, d);
-    o(this, l);
-    o(this, a);
-    o(this, P);
-    o(this, k);
+    h(this, o);
+    h(this, u);
+    h(this, d);
+    h(this, a);
+    h(this, w);
+    h(this, k);
     Q(this, "PeerId", crypto.randomUUID());
-    o(this, B, null);
-    o(this, N, null);
+    h(this, B);
+    h(this, H);
+    h(this, _, []);
     // outgoing patch queue (patches created while disconnected)
-    o(this, H, []);
+    h(this, S, 0);
     // accumulated patch bytes since last checkpoint
-    o(this, m, 0);
+    h(this, L, 0);
     // sequence number of the last saved snapshot
-    o(this, L, 0);
-    // current patch sequence number (append-monotonic counter, managed by SyncEngine)
-    o(this, g, 0);
+    h(this, P, 0);
+    // current patch sequence # (append-monotonic counter, managed by SyncEngine)
     // CRDT cursor captured after the last processed local change;
     // passed to Store.exportPatch() to retrieve exactly that one change.
     // Initialised to an empty cursor; updated in #loadAndRestore and after
     // each local mutation.  Backend-agnostic: the NoteStore owns the format.
-    o(this, U, new Uint8Array(0));
+    h(this, b, new Uint8Array(0));
     // heartbeat timer
-    o(this, C, null);
-    o(this, v, null);
+    h(this, m);
+    h(this, C);
     // presence peer tracking
-    o(this, T, /* @__PURE__ */ new Map());
-    o(this, y, /* @__PURE__ */ new Map());
-    o(this, S, /* @__PURE__ */ new Set());
+    h(this, T, /* @__PURE__ */ new Map());
+    h(this, p, /* @__PURE__ */ new Map());
+    h(this, g, /* @__PURE__ */ new Set());
     // BroadcastChannel (optional, browser/tauri only)
-    o(this, p, null);
+    h(this, v);
     // connection state mirror
-    o(this, _, "disconnected");
-    o(this, b, /* @__PURE__ */ new Set());
+    h(this, R, "disconnected");
+    h(this, M, /* @__PURE__ */ new Set());
     // unsubscribe functions for registered handlers
-    o(this, w, []);
-    r(this, d, e), r(this, l, s.PersistenceProvider ?? null), r(this, a, s.NetworkProvider ?? null), r(this, P, s.PresenceProvider ?? s.NetworkProvider ?? null), r(this, k, s.PresenceTimeoutMs ?? 12e4), (s.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && t(this, a) != null && r(this, p, new BroadcastChannel(`sns:${t(this, a).StoreID}`));
+    h(this, y, []);
+    r(this, u, e), r(this, d, s.PersistenceProvider ?? void 0), r(this, a, s.NetworkProvider ?? void 0), r(this, w, s.PresenceProvider ?? s.NetworkProvider ?? void 0), r(this, k, s.PresenceTimeoutMs ?? 12e4), (s.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && t(this, a) != null && r(this, v, new BroadcastChannel(`sns:${t(this, a).StoreID}`));
   }
   //----------------------------------------------------------------------------//
-  //                               Lifecycle                                     //
+  //                                 Lifecycle                                  //
   //----------------------------------------------------------------------------//
   /**** start ****/
   async start() {
-    await u(this, h, I).call(this), u(this, h, j).call(this), u(this, h, F).call(this), u(this, h, $).call(this), u(this, h, z).call(this), t(this, a) != null && t(this, a).onConnectionChange((e) => {
-      r(this, _, e);
-      for (const s of t(this, b))
+    await l(this, o, I).call(this), l(this, o, j).call(this), l(this, o, $).call(this), l(this, o, z).call(this), l(this, o, F).call(this), t(this, a) != null && t(this, a).onConnectionChange((e) => {
+      r(this, R, e);
+      for (const s of t(this, M))
         try {
           s(e);
         } catch {
         }
-      e === "connected" && u(this, h, G).call(this);
+      e === "connected" && l(this, o, G).call(this);
     });
   }
   /**** stop ****/
   async stop() {
-    var e, s, n;
-    t(this, C) != null && (clearInterval(t(this, C)), r(this, C, null));
-    for (const c of t(this, y).values())
+    var e, s, i;
+    t(this, m) != null && (clearInterval(t(this, m)), r(this, m, void 0));
+    for (const c of t(this, p).values())
       clearTimeout(c);
-    t(this, y).clear();
-    for (const c of t(this, w))
+    t(this, p).clear();
+    for (const c of t(this, y))
       try {
         c();
       } catch {
       }
-    r(this, w, []), (e = t(this, p)) == null || e.close(), r(this, p, null), (s = t(this, a)) == null || s.disconnect(), t(this, l) != null && t(this, m) > 0 && await u(this, h, V).call(this), await ((n = t(this, l)) == null ? void 0 : n.close());
+    r(this, y, []), (e = t(this, v)) == null || e.close(), r(this, v, void 0), (s = t(this, a)) == null || s.disconnect(), t(this, d) != null && t(this, S) > 0 && await l(this, o, x).call(this), await ((i = t(this, d)) == null ? void 0 : i.close());
   }
   //----------------------------------------------------------------------------//
-  //                            Network connection                               //
+  //                             Network Connection                             //
   //----------------------------------------------------------------------------//
   /**** connectTo ****/
   async connectTo(e, s) {
     if (t(this, a) == null)
-      throw new R("no-network-provider", "no NetworkProvider configured");
-    r(this, B, e), r(this, N, s), await t(this, a).connect(e, s);
+      throw new U("no-network-provider", "no NetworkProvider configured");
+    r(this, B, e), r(this, H, s), await t(this, a).connect(e, s);
   }
   /**** disconnect ****/
   disconnect() {
     if (t(this, a) == null)
-      throw new R("no-network-provider", "no NetworkProvider configured");
+      throw new U("no-network-provider", "no NetworkProvider configured");
     t(this, a).disconnect();
   }
   /**** reconnect ****/
   async reconnect() {
     if (t(this, a) == null)
-      throw new R("no-network-provider", "no NetworkProvider configured");
+      throw new U("no-network-provider", "no NetworkProvider configured");
     if (t(this, B) == null)
-      throw new R(
+      throw new U(
         "not-yet-connected",
         "connectTo() has not been called yet; cannot reconnect"
       );
-    await t(this, a).connect(t(this, B), t(this, N));
+    await t(this, a).connect(t(this, B), t(this, H));
   }
   /**** ConnectionState ****/
   get ConnectionState() {
-    return t(this, _);
+    return t(this, R);
   }
   /**** onConnectionChange ****/
   onConnectionChange(e) {
-    return t(this, b).add(e), () => {
-      t(this, b).delete(e);
+    return t(this, M).add(e), () => {
+      t(this, M).delete(e);
     };
   }
   //----------------------------------------------------------------------------//
-  //                                Presence                                     //
+  //                                  Presence                                  //
   //----------------------------------------------------------------------------//
   /**** setPresenceTo ****/
   setPresenceTo(e) {
-    var n, c;
-    r(this, v, e);
+    var i, c;
+    r(this, C, e);
     const s = { ...e, PeerId: this.PeerId };
-    (n = t(this, P)) == null || n.sendLocalState(e), (c = t(this, p)) == null || c.postMessage({ type: "presence", payload: e });
-    for (const f of t(this, S))
+    (i = t(this, w)) == null || i.sendLocalState(e), (c = t(this, v)) == null || c.postMessage({ type: "presence", payload: e });
+    for (const f of t(this, g))
       try {
         f(this.PeerId, s, "local");
       } catch {
@@ -145,133 +145,141 @@ class et {
   }
   /**** onPresenceChange ****/
   onPresenceChange(e) {
-    return t(this, S).add(e), () => {
-      t(this, S).delete(e);
+    return t(this, g).add(e), () => {
+      t(this, g).delete(e);
     };
   }
 }
-d = new WeakMap(), l = new WeakMap(), a = new WeakMap(), P = new WeakMap(), k = new WeakMap(), B = new WeakMap(), N = new WeakMap(), H = new WeakMap(), m = new WeakMap(), L = new WeakMap(), g = new WeakMap(), U = new WeakMap(), C = new WeakMap(), v = new WeakMap(), T = new WeakMap(), y = new WeakMap(), S = new WeakMap(), p = new WeakMap(), _ = new WeakMap(), b = new WeakMap(), w = new WeakMap(), h = new WeakSet(), I = async function() {
-  if (t(this, l) == null)
+u = new WeakMap(), d = new WeakMap(), a = new WeakMap(), w = new WeakMap(), k = new WeakMap(), B = new WeakMap(), H = new WeakMap(), _ = new WeakMap(), S = new WeakMap(), L = new WeakMap(), P = new WeakMap(), b = new WeakMap(), m = new WeakMap(), C = new WeakMap(), T = new WeakMap(), p = new WeakMap(), g = new WeakMap(), v = new WeakMap(), R = new WeakMap(), M = new WeakMap(), y = new WeakMap(), o = new WeakSet(), I = async function() {
+  if (t(this, d) == null)
     return;
-  const e = await t(this, l).loadSnapshot();
+  const e = await t(this, d).loadSnapshot();
   if (e != null)
     try {
-      const n = t(this, d).constructor.fromBinary(e);
+      const i = t(this, u).constructor.fromBinary(e);
     } catch {
     }
-  const s = await t(this, l).loadPatchesSince(t(this, L));
-  for (const n of s)
+  const s = await t(this, d).loadPatchesSince(t(this, L));
+  for (const i of s)
     try {
-      t(this, d).applyRemotePatch(n);
+      t(this, u).applyRemotePatch(i);
     } catch {
     }
-  s.length > 0 && r(this, g, t(this, L) + s.length), r(this, U, t(this, d).currentCursor);
+  s.length > 0 && r(this, P, t(this, L) + s.length), r(this, b, t(this, u).currentCursor);
 }, //----------------------------------------------------------------------------//
-//                           Private — Wiring                                  //
+//                                   Wiring                                   //
 //----------------------------------------------------------------------------//
+/**** #wireStoreToProviders — subscribes to local store changes and routes them to persistence and network ****/
 j = function() {
-  const e = t(this, d).onChangeInvoke((s, n) => {
-    var M, D;
+  const e = t(this, u).onChangeInvoke((s, i) => {
+    var N, A;
     if (s !== "internal")
       return;
-    const c = t(this, U);
-    q(this, g)._++;
-    const f = t(this, d).exportPatch(c);
-    r(this, U, t(this, d).currentCursor), f.byteLength !== 0 && (t(this, l) != null && (t(this, l).appendPatch(f, t(this, g)).catch(() => {
-    }), r(this, m, t(this, m) + f.byteLength), t(this, m) >= Z && u(this, h, V).call(this).catch(() => {
-    })), ((M = t(this, a)) == null ? void 0 : M.ConnectionState) === "connected" ? (t(this, a).sendPatch(f), (D = t(this, p)) == null || D.postMessage({ type: "patch", payload: f })) : t(this, H).push(f), u(this, h, J).call(this, n).catch(() => {
+    const c = t(this, b);
+    q(this, P)._++;
+    const f = t(this, u).exportPatch(c);
+    r(this, b, t(this, u).currentCursor), f.byteLength !== 0 && (t(this, d) != null && (t(this, d).appendPatch(f, t(this, P)).catch(() => {
+    }), r(this, S, t(this, S) + f.byteLength), t(this, S) >= Z && l(this, o, x).call(this).catch(() => {
+    })), ((N = t(this, a)) == null ? void 0 : N.ConnectionState) === "connected" ? (t(this, a).sendPatch(f), (A = t(this, v)) == null || A.postMessage({ type: "patch", payload: f })) : t(this, _).push(f), l(this, o, J).call(this, i).catch(() => {
     }));
   });
-  t(this, w).push(e);
-}, F = function() {
+  t(this, y).push(e);
+}, /**** #wireNetworkToStore — subscribes to incoming network patches and presence events ****/
+$ = function() {
   if (t(this, a) != null) {
     const s = t(this, a).onPatch((c) => {
       try {
-        t(this, d).applyRemotePatch(c);
+        t(this, u).applyRemotePatch(c);
       } catch {
       }
     });
-    t(this, w).push(s);
-    const n = t(this, a).onValue(async (c, f) => {
-      var M;
-      await ((M = t(this, l)) == null ? void 0 : M.saveValue(c, f));
+    t(this, y).push(s);
+    const i = t(this, a).onValue(async (c, f) => {
+      var N;
+      await ((N = t(this, d)) == null ? void 0 : N.saveValue(c, f));
     });
-    t(this, w).push(n);
+    t(this, y).push(i);
   }
-  const e = t(this, P);
+  const e = t(this, w);
   if (e != null) {
-    const s = e.onRemoteState((n, c) => {
-      u(this, h, K).call(this, n, c);
+    const s = e.onRemoteState((i, c) => {
+      l(this, o, K).call(this, i, c);
     });
-    t(this, w).push(s);
+    t(this, y).push(s);
   }
-}, $ = function() {
+}, /**** #wirePresenceHeartbeat — starts a periodic timer to re-broadcast local presence state ****/
+z = function() {
   const e = t(this, k) / 4;
-  r(this, C, setInterval(() => {
-    var s, n;
-    t(this, v) != null && ((s = t(this, P)) == null || s.sendLocalState(t(this, v)), (n = t(this, p)) == null || n.postMessage({ type: "presence", payload: t(this, v) }));
+  r(this, m, setInterval(() => {
+    var s, i;
+    t(this, C) != null && ((s = t(this, w)) == null || s.sendLocalState(t(this, C)), (i = t(this, v)) == null || i.postMessage({ type: "presence", payload: t(this, C) }));
   }, e));
-}, z = function() {
-  t(this, p) != null && (t(this, p).onmessage = (e) => {
-    var n;
+}, /**** #wireBroadcastChannel — wires the BroadcastChannel for cross-tab patch and presence relay ****/
+F = function() {
+  t(this, v) != null && (t(this, v).onmessage = (e) => {
+    var i;
     const s = e.data;
     if (s.type === "patch")
       try {
-        t(this, d).applyRemotePatch(s.payload);
+        t(this, u).applyRemotePatch(s.payload);
       } catch {
       }
-    else s.type === "presence" && ((n = t(this, P)) == null || n.sendLocalState(s.payload));
+    else s.type === "presence" && ((i = t(this, w)) == null || i.sendLocalState(s.payload));
   });
-}, V = async function() {
-  t(this, l) != null && (await t(this, l).saveSnapshot(t(this, d).asBinary()), await t(this, l).prunePatches(t(this, g)), r(this, L, t(this, g)), r(this, m, 0));
+}, x = async function() {
+  t(this, d) != null && (await t(this, d).saveSnapshot(t(this, u).asBinary()), await t(this, d).prunePatches(t(this, P)), r(this, L, t(this, P)), r(this, S, 0));
 }, //----------------------------------------------------------------------------//
-//                       Private — Offline queue flush                         //
+//                            Offline Queue Flush                             //
 //----------------------------------------------------------------------------//
+/**** #flushOfflineQueue — sends all queued offline patches to the network ****/
 G = function() {
   var s;
-  const e = t(this, H).splice(0);
-  for (const n of e)
+  const e = t(this, _).splice(0);
+  for (const i of e)
     try {
-      (s = t(this, a)) == null || s.sendPatch(n);
+      (s = t(this, a)) == null || s.sendPatch(i);
     } catch {
     }
 }, J = async function(e) {
-  for (const [s, n] of Object.entries(e))
-    n.has("Value") && t(this, a) != null;
+  for (const [s, i] of Object.entries(e))
+    i.has("Value") && t(this, a) != null;
 }, //----------------------------------------------------------------------------//
-//                        Private — Remote presence                            //
+//                              Remote Presence                               //
 //----------------------------------------------------------------------------//
+/**** #handleRemotePresence — updates the peer set and notifies handlers when a presence update arrives ****/
 K = function(e, s) {
   if (s == null) {
-    u(this, h, x).call(this, e);
+    l(this, o, D).call(this, e);
     return;
   }
-  const n = { ...s, _lastSeen: Date.now() };
-  t(this, T).set(e, n), u(this, h, W).call(this, e);
-  for (const c of t(this, S))
+  const i = { ...s, _lastSeen: Date.now() };
+  t(this, T).set(e, i), l(this, o, W).call(this, e);
+  for (const c of t(this, g))
     try {
       c(e, s, "remote");
     } catch {
     }
-}, W = function(e) {
-  const s = t(this, y).get(e);
+}, /**** #resetPeerTimeout — arms a timeout to remove a peer if no heartbeat arrives within PresenceTimeoutMs ****/
+W = function(e) {
+  const s = t(this, p).get(e);
   s != null && clearTimeout(s);
-  const n = setTimeout(
+  const i = setTimeout(
     () => {
-      u(this, h, x).call(this, e);
+      l(this, o, D).call(this, e);
     },
     t(this, k)
   );
-  t(this, y).set(e, n);
-}, x = function(e) {
+  t(this, p).set(e, i);
+}, /**** #removePeer — removes a peer from the peer set and notifies presence change handlers ****/
+D = function(e) {
   if (!t(this, T).has(e))
     return;
   t(this, T).delete(e);
-  const s = t(this, y).get(e);
-  s != null && (clearTimeout(s), t(this, y).delete(e));
-  for (const n of t(this, S))
+  const s = t(this, p).get(e);
+  s != null && (clearTimeout(s), t(this, p).delete(e));
+  for (const i of t(this, g))
     try {
-      n(e, void 0, "remote");
+      i(e, void 0, "remote");
     } catch {
     }
 };

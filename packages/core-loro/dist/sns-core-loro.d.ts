@@ -1,7 +1,13 @@
+import { SNS_ChangeSet } from '@rozek/sns-core';
 import { SNS_ConnectionOptions } from '@rozek/sns-core';
 import { SNS_ConnectionState } from '@rozek/sns-core';
+import { SNS_Entry } from '@rozek/sns-core';
+import { SNS_EntryChangeSet } from '@rozek/sns-core';
+import { SNS_Error } from '@rozek/sns-core';
+import { SNS_Link } from '@rozek/sns-core';
 import { SNS_LocalPresenceState } from '@rozek/sns-core';
 import { SNS_NetworkProvider } from '@rozek/sns-core';
+import { SNS_Note } from '@rozek/sns-core';
 import { SNS_PatchSeqNumber } from '@rozek/sns-core';
 import { SNS_PersistenceProvider } from '@rozek/sns-core';
 import { SNS_PresenceProvider } from '@rozek/sns-core';
@@ -12,127 +18,120 @@ export declare type ChangeHandler = (Origin: ChangeOrigin, ChangeSet: SNS_Change
 
 export declare type ChangeOrigin = 'internal' | 'external';
 
-export declare type SNS_ChangeSet = Record<string, SNS_EntryChangeSet>;
+export { SNS_ChangeSet }
 
 export { SNS_ConnectionOptions }
 
 export { SNS_ConnectionState }
 
-export declare class SNS_Entry {
-    protected readonly _Store: SNS_NoteStore;
-    readonly Id: string;
-    constructor(_Store: SNS_NoteStore, Id: string);
-    get isRootNote(): boolean;
-    get isTrashNote(): boolean;
-    get isLostAndFoundNote(): boolean;
-    get isNote(): boolean;
-    get isLink(): boolean;
-    get outerNote(): SNS_Note | undefined;
-    get outerNoteId(): string | undefined;
-    get outerNotes(): SNS_Note[];
-    get outerNoteIds(): string[];
-    get Label(): string;
-    set Label(Value: string);
-    get Info(): Record<string, unknown>;
-    mayBeMovedTo(OuterNote: SNS_Note, InsertionIndex?: number): boolean;
-    moveTo(OuterNote: SNS_Note, InsertionIndex?: number): void;
-    get mayBeDeleted(): boolean;
-    delete(): void;
-    purge(): void;
-    asJSON(): unknown;
-}
+export { SNS_Entry }
 
-/*******************************************************************************
- *                                                                              *
- * SNS_EntryChangeSet - the set of prop. names that changed for a single entry  *
- *                                                                              *
- *******************************************************************************/
-export declare type SNS_EntryChangeSet = Set<string>;
+export { SNS_EntryChangeSet }
 
-/*******************************************************************************
- *                                                                              *
- *                                  SNS_Error                                   *
- *                                                                              *
- *******************************************************************************/
-export declare class SNS_Error extends Error {
-    readonly Code: string;
-    constructor(Code: string, Message: string);
-}
+export { SNS_Error }
 
-export declare class SNS_Link extends SNS_Entry {
-    constructor(Store: SNS_NoteStore, Id: string);
-    get Target(): SNS_Note;
-}
+export { SNS_Link }
 
 export { SNS_LocalPresenceState }
 
 export { SNS_NetworkProvider }
 
-export declare class SNS_Note extends SNS_Entry {
-    constructor(Store: SNS_NoteStore, Id: string);
-    get Type(): string;
-    set Type(Type: string);
-    get ValueKind(): 'none' | 'literal' | 'literal-reference' | 'binary' | 'binary-reference' | 'pending';
-    get isLiteral(): boolean;
-    get isBinary(): boolean;
-    /**** readValue — resolves inline values immediately, fetches blobs async ****/
-    readValue(): Promise<string | Uint8Array | undefined>;
-    /**** writeValue — chooses ValueKind automatically based on type/size ****/
-    writeValue(Value: string | Uint8Array | undefined): void;
-    /**** changeValue — collaborative character-level edit (literal only) ****/
-    changeValue(fromIndex: number, toIndex: number, Replacement: string): void;
-    get innerEntryList(): SNS_Entry[];
-}
+export { SNS_Note }
 
 export declare class SNS_NoteStore {
     #private;
     private constructor();
+    /**** fromScratch — create a new store with root, trash, and lost-and-found notes ****/
     static fromScratch(Options?: SNS_NoteStoreOptions): SNS_NoteStore;
+    /**** fromBinary — restore store from gzip-compressed binary data ****/
     static fromBinary(Data: Uint8Array, Options?: SNS_NoteStoreOptions): SNS_NoteStore;
+    /**** fromJSON — restore store from base64-encoded JSON representation ****/
     static fromJSON(Data: unknown, Options?: SNS_NoteStoreOptions): SNS_NoteStore;
+    /**** RootNote / TrashNote / LostAndFoundNote — well-known note accessors ****/
     get RootNote(): SNS_Note;
     get TrashNote(): SNS_Note;
     get LostAndFoundNote(): SNS_Note;
+    /**** EntryWithId — retrieve an entry by ID ****/
     EntryWithId(EntryId: string): SNS_Entry | undefined;
+    /**** newNoteAt — create a new note within an outer note ****/
     newNoteAt(OuterNote: SNS_Note, Type?: string, InsertionIndex?: number): SNS_Note;
+    /**** newLinkAt — create a new link within an outer note ****/
     newLinkAt(Target: SNS_Note, OuterNote: SNS_Note, InsertionIndex?: number): SNS_Link;
+    /**** deserializeNoteInto — restore a note from serialized representation ****/
     deserializeNoteInto(Serialization: unknown, OuterNote: SNS_Note, InsertionIndex?: number): SNS_Note;
+    /**** deserializeLinkInto — restore a link from serialized representation ****/
     deserializeLinkInto(Serialization: unknown, OuterNote: SNS_Note, InsertionIndex?: number): SNS_Link;
+    /**** EntryMayBeMovedTo — check if an entry can be moved to an outer note ****/
     EntryMayBeMovedTo(Entry: SNS_Entry, OuterNote: SNS_Note, InsertionIndex?: number): boolean;
+    /**** moveEntryTo — move an entry to a different outer note ****/
     moveEntryTo(Entry: SNS_Entry, OuterNote: SNS_Note, InsertionIndex?: number): void;
+    /**** EntryMayBeDeleted — check if an entry can be deleted ****/
     EntryMayBeDeleted(Entry: SNS_Entry): boolean;
+    /**** deleteEntry — move an entry to trash ****/
     deleteEntry(Entry: SNS_Entry): void;
+    /**** purgeEntry — permanently delete a trash entry ****/
     purgeEntry(Entry: SNS_Entry): void;
+    /**** purgeExpiredTrashEntries — auto-purge trash entries older than TTL ****/
     purgeExpiredTrashEntries(TTLms?: number): number;
+    /**** dispose — cleanup and stop background timers ****/
     dispose(): void;
+    /**** transact — execute operations within a batch transaction ****/
     transact(Callback: () => void): void;
+    /**** onChangeInvoke — register a change listener and return unsubscribe function ****/
     onChangeInvoke(Handler: ChangeHandler): () => void;
+    /**** applyRemotePatch — merge remote changes and rebuild indices ****/
     applyRemotePatch(encodedPatch: Uint8Array): void;
+    /**** currentCursor — get current version vector as sync cursor ****/
     get currentCursor(): SNS_SyncCursor;
+    /**** exportPatch — generate a change patch since a given cursor ****/
     exportPatch(sinceCursor?: SNS_SyncCursor): Uint8Array;
+    /**** recoverOrphans — move entries with missing parents to lost-and-found ****/
     recoverOrphans(): void;
+    /**** asBinary — export store as gzip-compressed Loro snapshot ****/
     asBinary(): Uint8Array;
+    /**** asJSON — export store as base64-encoded binary ****/
     asJSON(): string;
+    /**** _KindOf — get entry kind (note or link) ****/
     _KindOf(Id: string): 'note' | 'link';
+    /**** _LabelOf — get entry label text ****/
     _LabelOf(Id: string): string;
+    /**** _setLabelOf — set entry label text ****/
     _setLabelOf(Id: string, Value: string): void;
+    /**** _TypeOf — get entry MIME type ****/
     _TypeOf(Id: string): string;
+    /**** _setTypeOf — set entry MIME type ****/
     _setTypeOf(Id: string, Value: string): void;
+    /**** _ValueKindOf — get value kind (none, literal, binary, reference types) ****/
     _ValueKindOf(Id: string): 'none' | 'literal' | 'binary' | 'binary-reference' | 'literal-reference' | 'pending';
+    /**** _isLiteralOf — check if value is a literal string ****/
     _isLiteralOf(Id: string): boolean;
+    /**** _isBinaryOf — check if value is binary data ****/
     _isBinaryOf(Id: string): boolean;
+    /**** _readValueOf — read entry value (literal or binary) ****/
     _readValueOf(Id: string): Promise<string | Uint8Array | undefined>;
+    /**** _writeValueOf — write entry value with automatic storage strategy ****/
     _writeValueOf(Id: string, Value: string | Uint8Array | undefined): void;
+    /**** _spliceValueOf — modify literal value text at a range ****/
     _spliceValueOf(Id: string, fromIndex: number, toIndex: number, Replacement: string): void;
+    /**** _InfoProxyOf — get proxy for arbitrary metadata object ****/
     _InfoProxyOf(Id: string): Record<string, unknown>;
+    /**** _outerNoteOf — get the outer note ****/
     _outerNoteOf(Id: string): SNS_Note | undefined;
+    /**** _outerNoteIdOf — get outer note ID or undefined ****/
     _outerNoteIdOf(Id: string): string | undefined;
+    /**** _outerNotesOf — get ancestor chain from entry to root ****/
     _outerNotesOf(Id: string): SNS_Note[];
+    /**** _outerNoteIdsOf — get ancestor IDs from entry to root ****/
     _outerNoteIdsOf(Id: string): string[];
+    /**** _innerEntriesOf — get inner entries as proxy-wrapped array ****/
     _innerEntriesOf(NoteId: string): SNS_Entry[];
-    _mayMoveEntryTo(Id: string, OuterNoteId: string, _InsertionIndex?: number): boolean;
+    /**** _mayMoveEntryTo — check if entry can be moved without cycles ****/
+    _mayMoveEntryTo(Id: string, outerNoteId: string, _InsertionIndex?: number): boolean;
+    /**** _mayDeleteEntry — check if entry is deletable ****/
     _mayDeleteEntry(Id: string): boolean;
+    /**** _TargetOf — get the target note for a link ****/
     _TargetOf(Id: string): SNS_Note;
+    /**** _EntryAsJSON — serialize entry and subtree to JSON ****/
     _EntryAsJSON(Id: string): unknown;
 }
 

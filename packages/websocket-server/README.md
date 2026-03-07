@@ -15,11 +15,19 @@ Runs on Node.js 18+ using `@hono/node-server`.
 
 ## Installation
 
+**Relay-only mode** (no persistence — default):
+
 ```bash
-pnpm add @rozek/sns-websocket-server better-sqlite3
+pnpm add @rozek/sns-websocket-server
 ```
 
-SQLite persistence depends on `better-sqlite3`, which must be installed alongside the server package.
+**With SQLite persistence** (requires `better-sqlite3`, a native addon that is compiled on install or fetched as a pre-built binary):
+
+```bash
+pnpm add @rozek/sns-websocket-server @rozek/sns-persistence-node better-sqlite3
+```
+
+`better-sqlite3` and `@rozek/sns-persistence-node` are optional dependencies: the server loads them lazily only when `PersistDir` / `SNS_PERSIST_DIR` is set. In relay-only mode neither package needs to be installed.
 
 ---
 

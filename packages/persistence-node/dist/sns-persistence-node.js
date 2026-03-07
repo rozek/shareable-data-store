@@ -33,7 +33,7 @@ class E {
   /**** loadSnapshot ****/
   async loadSnapshot() {
     const a = this.#a.prepare("SELECT data FROM snapshots WHERE store_id = ?").get(this.#s);
-    return a != null ? new Uint8Array(a.data) : null;
+    return a != null ? new Uint8Array(a.data) : void 0;
   }
   /**** saveSnapshot ****/
   async saveSnapshot(a) {
@@ -58,7 +58,7 @@ class E {
   /**** loadValue ****/
   async loadValue(a) {
     const s = this.#a.prepare("SELECT data FROM blobs WHERE hash = ?").get(a);
-    return s != null ? new Uint8Array(s.data) : null;
+    return s != null ? new Uint8Array(s.data) : void 0;
   }
   /**** saveValue ****/
   async saveValue(a, s) {
