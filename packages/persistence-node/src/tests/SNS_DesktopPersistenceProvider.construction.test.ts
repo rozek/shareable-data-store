@@ -10,14 +10,6 @@ import { tmpdir }                          from 'node:os'
 import { join }                            from 'node:path'
 import { SNS_DesktopPersistenceProvider }  from '../sns-persistence-node.js'
 
-/**** cursor — encodes an integer sequence number as a 4-byte big-endian cursor ****/
-
-function cursor (Seq:number):Uint8Array {
-  const Buf = new Uint8Array(4)
-  new DataView(Buf.buffer).setUint32(0, Seq >>> 0, false)
-  return Buf
-}
-
 /**** makeTmpDb — creates a temporary SQLite database path for test use ****/
 
 function makeTmpDb ():{ DbPath:string; cleanup:() => void } {
@@ -48,7 +40,7 @@ describe('SNS_DesktopPersistenceProvider — Construction', () => {
       const P = new SNS_DesktopPersistenceProvider(DbPath, 'store-1')
       // If schema creation failed, the following calls would throw
       expect(await P.loadSnapshot()).toBeUndefined()
-      expect(await P.loadPatchesSince(cursor(0))).toEqual([])
+      expect(await P.loadPatchesSince(0)).toEqual([])
       expect(await P.loadValue('any')).toBeUndefined()
       await P.close()
     } finally { cleanup() }
