@@ -2,7 +2,7 @@
 
 A CRDT-based, offline-capable, real-time-syncable **tree-of-notes** library for Browser and Node.js.
 
-# this is currently work-in-progress - please ignore for the moment, will be released in a few days
+# work-in-progress - please ignore for the moment, will be released in a few days
 
 Notes are organised in a hierarchy (with optional links between them), can carry arbitrary typed values (text, binary, large blobs), and synchronise across devices and users without conflicts — even when peers are offline for extended periods. The library is split into small, composable packages so you can use only what you need.
 
