@@ -1,0 +1,93 @@
+name: Publish Docker Image
+
+# Builds the sns-websocket-server Docker image and pushes it to the GitHub
+# Container Registry (ghcr.io) whenever websocket-server sources change on the
+# main branch.  The resulting image can be pulled on any server with
+# "docker compose pull" — no local build, no node-gyp, no RAM spike.
+#
+# The image is public by default. To change visibility:
+#   GitHub → repository → Packages → sns-websocket-server → Package settings → Change visibility
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/websocket-server/**'
+      - '.github/workflows/docker-publish.yml'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  # GHCR image name: ghcr.io/<owner>/sns-websocket-server
+  IMAGE_NAME: ${{ github.repository_owner }}/sns-websocket-server
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write   # required to push to ghcr.io
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        # build all packages that websocket-server depends on, then itself
+        run: pnpm --filter @rozek/sns-websocket-server... build
+
+      - name: Pack @rozek/sns-websocket-server
+        # creates rozek-sns-websocket-server-<version>.tgz in the Docker build context
+        run: |
+          pnpm --filter @rozek/sns-websocket-server pack \
+            --pack-destination packages/websocket-server/deployment/server/
+          mv packages/websocket-server/deployment/server/rozek-sns-websocket-server-*.tgz \
+             packages/websocket-server/deployment/server/sns-websocket-server.tgz
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        # required for multi-platform builds
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: packages/websocket-server/deployment/server
+          push: true
+          # amd64: most VPS providers; arm64: Raspberry Pi, Oracle Ampere, AWS Graviton
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # cache between runs so repeated builds are fast
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
