@@ -1,6 +1,6 @@
 {
   "name": "shareable-notes-store",
-  "description": "A CRDT-based, offline-capable, syncable tree of notes for Browser and Node.js",
+  "description": "a CRDT-based, offline-capable, syncable tree of notes for Browser and Node.js with JSON JOY, Y.js or Loro underneath",
   "keywords": [
     "crdt",
     "notes",
