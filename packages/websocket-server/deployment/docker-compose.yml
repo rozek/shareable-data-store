@@ -5,16 +5,12 @@
 services:
 
   sns-server:
-    # image: is used both as the tag when building locally and as the pull source on the server.
-    # On the server (no local build): run "docker compose pull" to fetch the pre-built image,
-    # then "docker compose up -d" — no "docker compose build" needed.
-    # The image is built automatically by CI and pushed to GHCR on every change to
-    # packages/websocket-server. To build and push manually from your dev machine:
-    #   docker compose build && docker compose push
+    # The image is built automatically by CI and pushed to GHCR.
+    # On the server: "docker compose pull" fetches it, then "docker compose up -d" runs it.
+    # To build and push manually from your dev machine, use docker-compose.build.yml:
+    #   docker compose -f docker-compose.yml -f docker-compose.build.yml build
+    #   docker compose -f docker-compose.yml -f docker-compose.build.yml push
     image: ghcr.io/rozek/sns-websocket-server:latest
-    build:
-      context: ./server
-      dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
     environment:

@@ -1,0 +1,15 @@
+# docker-compose.build.yml — local build override
+#
+# Use this file together with docker-compose.yml when you want to build the
+# sns-websocket-server image locally instead of pulling it from GHCR.
+#
+# Build and push to GHCR:
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml build
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml push
+#
+# This file is NOT needed on the server — the server only uses docker-compose.yml.
+services:
+  sns-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile

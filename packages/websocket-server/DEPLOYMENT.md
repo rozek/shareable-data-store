@@ -130,9 +130,9 @@ pnpm --filter @rozek/sns-websocket-server build
 pnpm --filter @rozek/sns-websocket-server pack --pack-destination /tmp/sns-pack/
 mv /tmp/sns-pack/rozek-sns-websocket-server-*.tgz /opt/sns-websocket-server/server/sns-websocket-server.tgz
 
-# 5. build the Docker image
+# 5. build the Docker image (uses docker-compose.build.yml to add the build: section)
 cd /opt/sns-websocket-server
-docker compose build
+docker compose -f docker-compose.yml -f docker-compose.build.yml build
 
 # 6. (optional) restore a backup before the first start — see Backup & Restore below
 
@@ -152,11 +152,14 @@ cp -r packages/websocket-server/deployment/server /opt/sns-websocket-server/serv
 
 pnpm install
 pnpm --filter @rozek/sns-websocket-server build
-pnpm --filter @rozek/sns-websocket-server pack --pack-destination /tmp/sns-pack/
+cd packages/websocket-server
+pnpm pack --pack-destination /tmp/sns-pack/
+cd -
 mv /tmp/sns-pack/rozek-sns-websocket-server-*.tgz /opt/sns-websocket-server/server/sns-websocket-server.tgz
 
 cd /opt/sns-websocket-server
-docker compose up -d --build
+docker compose -f docker-compose.yml -f docker-compose.build.yml build
+docker compose up -d
 ```
 
 ---
@@ -251,7 +254,9 @@ Build on a development machine or in CI (where RAM is plentiful), ship only the 
 
 ```bash
 pnpm --filter @rozek/sns-websocket-server build
-pnpm --filter @rozek/sns-websocket-server pack --pack-destination /tmp/sns-pack/
+cd packages/websocket-server
+pnpm pack --pack-destination /tmp/sns-pack/
+cd -
 scp /tmp/sns-pack/rozek-sns-websocket-server-*.tgz user@server:/opt/sns-websocket-server/
 ```
 
