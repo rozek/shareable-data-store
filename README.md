@@ -6,7 +6,7 @@ A CRDT-based, offline-capable, real-time-syncable **tree-of-notes** library for 
 
 Notes are organised in a hierarchy (with optional links between them), can carry arbitrary typed values (text, binary, large blobs), and synchronise across devices and users without conflicts — even when peers are offline for extended periods. The library is split into small, composable packages so you can use only what you need.
 
-The CRDT engine is **pluggable**: choose from three ready-made backends or write your own: \[Y.js\](<https://yjs.dev/>), \[Loro CRDT\](<https://loro.dev/>) or \[JSON JOY\](<https://jsonjoy.com/>).
+The CRDT engine is **pluggable**: choose from three ready-made backends or write your own: [Y.js](https://yjs.dev/), [Loro CRDT](https://loro.dev/) or [JSON JOY](https://jsonjoy.com/).
 
 ---
 

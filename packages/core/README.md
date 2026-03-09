@@ -29,7 +29,7 @@ Application code typically depends on a backend package directly and does not ne
 ```typescript
 class SNS_Error extends Error {
   readonly Code:string
-  constructor(Code:string, Message:string)
+  constructor (Code:string, Message:string)
 }
 ```
 
@@ -121,7 +121,7 @@ interface SNS_LocalPresenceState {
   UserName?:string
   UserColor?:string
   UserFocus?: {
-    entryId:string
+    EntryId:string
     Property:'Value' | 'Label' | 'Info'
     Cursor?:{ from:number; to:number }
   }
@@ -134,8 +134,8 @@ interface SNS_RemotePresenceState extends SNS_LocalPresenceState {
 }
 
 interface SNS_PresenceProvider {
-  sendLocalState(State:SNS_LocalPresenceState):void
-  onRemoteState(
+  sendLocalState (State:SNS_LocalPresenceState):void
+  onRemoteState (
     Callback:(PeerId:string, State:SNS_RemotePresenceState | null) => void
   ):() => void
   readonly PeerSet:ReadonlyMap<string,SNS_RemotePresenceState>

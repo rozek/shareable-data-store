@@ -23,7 +23,7 @@ pnpm add @rozek/sns-network-websocket
 All messages are binary frames with a one-byte type prefix:
 
 | Byte | Name | Direction | Payload |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `0x01` | PATCH | bidirectional | CRDT patch bytes |
 | `0x02` | VALUE | bidirectional | 32-byte SHA-256 hash + value bytes (≤ 1 MB) |
 | `0x03` | REQ_VALUE | client → server | 32-byte SHA-256 hash |
@@ -46,28 +46,28 @@ When the WebSocket closes unexpectedly the provider transitions to `'reconnectin
 import { SNS_WebSocketProvider } from '@rozek/sns-network-websocket'
 
 class SNS_WebSocketProvider implements SNS_NetworkProvider, SNS_PresenceProvider {
-  constructor(StoreId:string)
+  constructor (StoreId:string)
 
   // ── SNS_NetworkProvider ──────────────────────────────────────
 
   readonly StoreID:string
-  get ConnectionState():SNS_ConnectionState  // 'disconnected' | 'connecting' | 'connected' | 'reconnecting'
+  get ConnectionState ():SNS_ConnectionState  // 'disconnected' | 'connecting' | 'connected' | 'reconnecting'
 
-  connect(URL:string, Options:SNS_ConnectionOptions):Promise<void>
-  disconnect():void
+  connect (URL:string, Options:SNS_ConnectionOptions):Promise<void>
+  disconnect ():void
 
-  sendPatch(Patch:Uint8Array):void
-  sendValue(ValueHash:string, Data:Uint8Array):void
-  requestValue(ValueHash:string):void
+  sendPatch (Patch:Uint8Array):void
+  sendValue (ValueHash:string, Data:Uint8Array):void
+  requestValue (ValueHash:string):void
 
-  onPatch(Callback:(Patch:Uint8Array) => void):() => void
-  onValue(Callback:(ValueHash:string, Value:Uint8Array) => void):() => void
-  onConnectionChange(Callback:(State:SNS_ConnectionState) => void):() => void
+  onPatch (Callback:(Patch:Uint8Array) => void):() => void
+  onValue (Callback:(ValueHash:string, Value:Uint8Array) => void):() => void
+  onConnectionChange (Callback:(State:SNS_ConnectionState) => void):() => void
 
   // ── SNS_PresenceProvider ─────────────────────────────────────
 
-  sendLocalState(State:SNS_LocalPresenceState):void
-  onRemoteState(
+  sendLocalState (State:SNS_LocalPresenceState):void
+  onRemoteState (
     Callback:(PeerId:string, State:SNS_RemotePresenceState | null) => void
   ):() => void
   readonly PeerSet:ReadonlyMap<string, SNS_RemotePresenceState>
@@ -97,22 +97,22 @@ import { SNS_BrowserPersistenceProvider } from '@rozek/sns-persistence-browser'
 import { SNS_WebSocketProvider }          from '@rozek/sns-network-websocket'
 import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_BrowserPersistenceProvider('my-notes')
-const network = new SNS_WebSocketProvider('my-notes')
+const NoteStore   = SNS_NoteStore.fromScratch()
+const Persistence = new SNS_BrowserPersistenceProvider('my-notes')
+const Network     = new SNS_WebSocketProvider('my-notes')
 
-const engine = new SNS_SyncEngine(store, {
-  PersistenceProvider:persistence,
-  NetworkProvider: network,
-  PresenceProvider: network,
+const SyncEngine = new SNS_SyncEngine(NoteStore, {
+  PersistenceProvider:Persistence,
+  NetworkProvider: Network,
+  PresenceProvider:Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
+await SyncEngine.start()
+await SyncEngine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 
 // react to connection state changes
-engine.onConnectionChange((state) => {
-  console.log('Connection:', state)  // 'connected', 'reconnecting', …
+SyncEngine.onConnectionChange((State) => {
+  console.log('Connection:',State)  // 'connected', 'reconnecting', …
 })
 ```
 
@@ -121,44 +121,44 @@ engine.onConnectionChange((state) => {
 ```typescript
 import { SNS_WebSocketProvider } from '@rozek/sns-network-websocket'
 
-const provider = new SNS_WebSocketProvider('my-store')
+const Network = new SNS_WebSocketProvider('my-store')
 
-const unsubPatch = provider.onPatch((patch) => {
+const unsubPatch = Network.onPatch((patch) => {
   console.log('Received patch:', patch.byteLength, 'bytes')
 })
 
-const unsubConn = provider.onConnectionChange((state) => {
+const unsubConn = Network.onConnectionChange((state) => {
   console.log('State:', state)
 })
 
-await provider.connect('wss://my-server.example.com', { Token:'<jwt>' })
+await Network.connect('wss://my-server.example.com', { Token:'<jwt>' })
 
 // send a raw patch
-provider.sendPatch(new Uint8Array([/* ... */]))
+Network.sendPatch(new Uint8Array([/* ... */]))
 
 // send presence info
-provider.sendLocalState({ UserName:'Alice', UserColor:'#3498db' })
+Network.sendLocalState({ UserName:'Alice', UserColor:'#3498db' })
 
 // later: clean up
 unsubPatch()
 unsubConn()
-provider.disconnect()
+Network.disconnect()
 ```
 
 ### Tracking peer presence
 
 ```typescript
 // snapshot of currently active peers
-for (const [peerId, state] of provider.PeerSet) {
-  console.log(peerId, state.UserName, state.lastSeen)
+for (const [PeerId,PeerState] of Network.PeerSet) {
+  console.log(PeerId, PeerState.UserName, PeerState.lastSeen)
 }
 
 // react whenever a peer's state changes
-provider.onRemoteState((peerId, state) => {
-  if (state === null) {
-    console.log(peerId, 'left')
+Network.onRemoteState((PeerId,PeerState) => {
+  if (PeerState === null) {
+    console.log(PeerId, 'left')
   } else {
-    console.log(peerId, 'is at', state.UserFocus?.entryId)
+    console.log(PeerId, 'is at', PeerState.UserFocus?.EntryId)
   }
 })
 ```

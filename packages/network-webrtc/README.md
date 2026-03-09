@@ -29,7 +29,7 @@ Pass an `SNS_WebSocketProvider` instance as `Fallback`. If the signalling WebSoc
 The same binary frame format as `SNS_WebSocketProvider` is used over the data channel:
 
 | Byte | Name | Payload |
-|---|---|---|
+| --- | --- | --- |
 | `0x01` | PATCH | CRDT patch bytes |
 | `0x02` | VALUE | 32-byte hash + value bytes |
 | `0x03` | REQ_VALUE | 32-byte hash |
@@ -46,28 +46,28 @@ The same binary frame format as `SNS_WebSocketProvider` is used over the data ch
 import { SNS_WebRTCProvider } from '@rozek/sns-network-webrtc'
 
 class SNS_WebRTCProvider implements SNS_NetworkProvider, SNS_PresenceProvider {
-  constructor(StoreId:string, Options?: SNS_WebRTCProviderOptions)
+  constructor (StoreId:string, Options?:SNS_WebRTCProviderOptions)
 
   // ── SNS_NetworkProvider ──────────────────────────────────────
 
-  readonly StoreID:string
-  get ConnectionState():SNS_ConnectionState
+  readonly StoreId:string
+  get ConnectionState ():SNS_ConnectionState
 
-  connect(URL:string, Options:SNS_ConnectionOptions):Promise<void>
-  disconnect():void
+  connect (URL:string, Options:SNS_ConnectionOptions):Promise<void>
+  disconnect ():void
 
-  sendPatch(Patch:Uint8Array):void
-  sendValue(ValueHash:string, Data:Uint8Array):void
-  requestValue(ValueHash:string):void
+  sendPatch (Patch:Uint8Array):void
+  sendValue (ValueHash:string, Data:Uint8Array):void
+  requestValue (ValueHash:string):void
 
-  onPatch(Callback:(Patch:Uint8Array) => void):() => void
-  onValue(Callback:(ValueHash:string, Value:Uint8Array) => void):() => void
-  onConnectionChange(Callback:(State:SNS_ConnectionState) => void):() => void
+  onPatch (Callback:(Patch:Uint8Array) => void):() => void
+  onValue (Callback:(ValueHash:string, Value:Uint8Array) => void):() => void
+  onConnectionChange (Callback:(State:SNS_ConnectionState) => void):() => void
 
   // ── SNS_PresenceProvider ─────────────────────────────────────
 
-  sendLocalState(State:SNS_LocalPresenceState):void
-  onRemoteState(
+  sendLocalState (State:SNS_LocalPresenceState):void
+  onRemoteState (
     Callback:(PeerId:string, State:SNS_RemotePresenceState | null) => void
   ):() => void
   readonly PeerSet:ReadonlyMap<string, SNS_RemotePresenceState>
@@ -78,8 +78,8 @@ class SNS_WebRTCProvider implements SNS_NetworkProvider, SNS_PresenceProvider {
 
 ```typescript
 interface SNS_WebRTCProviderOptions {
-  ICEServers?: RTCIceServer[]         // STUN/TURN servers (default: Google STUN)
-  Fallback?:   SNS_WebSocketProvider  // activated if WebRTC fails
+  ICEServers?:RTCIceServer[]         // STUN/TURN servers (default: Google STUN)
+  Fallback?:  SNS_WebSocketProvider  // activated if WebRTC fails
 }
 ```
 
@@ -104,16 +104,16 @@ import { SNS_NoteStore }       from '@rozek/sns-core'
 import { SNS_WebRTCProvider }  from '@rozek/sns-network-webrtc'
 import { SNS_SyncEngine }      from '@rozek/sns-sync-engine'
 
-const store = SNS_NoteStore.fromScratch()
-const network = new SNS_WebRTCProvider('my-notes')
+const NoteStore = SNS_NoteStore.fromScratch()
+const Network   = new SNS_WebRTCProvider('my-notes')
 
-const engine = new SNS_SyncEngine(store, {
-  NetworkProvider: network,
-  PresenceProvider:network,
+const SyncEngine = new SNS_SyncEngine(NoteStore, {
+  NetworkProvider: Network,
+  PresenceProvider:Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
+await SyncEngine.start()
+await SyncEngine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 ```
 
 ### With automatic WebSocket fallback
@@ -125,19 +125,19 @@ import { SNS_WebSocketProvider }          from '@rozek/sns-network-websocket'
 import { SNS_WebRTCProvider }             from '@rozek/sns-network-webrtc'
 import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_BrowserPersistenceProvider('my-notes')
-const fallback = new SNS_WebSocketProvider('my-notes')
-const network = new SNS_WebRTCProvider('my-notes', { Fallback:fallback })
+const NoteStore   = SNS_NoteStore.fromScratch()
+const Persistence = new SNS_BrowserPersistenceProvider('my-notes')
+const WSFallback  = new SNS_WebSocketProvider('my-notes')
+const Network     = new SNS_WebRTCProvider('my-notes', { Fallback:WSFallback })
 
-const engine = new SNS_SyncEngine(store, {
-  PersistenceProvider:persistence,
-  NetworkProvider: network,
-  PresenceProvider: network,
+const SyncEngine = new SNS_SyncEngine(NoteStore, {
+  PersistenceProvider:Persistence,
+  NetworkProvider: Network,
+  PresenceProvider:Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
+await SyncEngine.start()
+await SyncEngine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 // if WebRTC signalling fails, the engine automatically switches to WebSocket relay
 ```
 
@@ -153,7 +153,7 @@ const network = new SNS_WebRTCProvider('my-notes', {
       credential:'pass',
     },
   ],
-  Fallback:fallbackWsProvider,
+  Fallback:WSFallback,
 })
 ```
 

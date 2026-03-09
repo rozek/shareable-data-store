@@ -10,7 +10,7 @@ A **single ESM file** that bundles the **shareable-notes-store** (SNS) stack for
 
 > **Note:** This bundle uses [**Loro CRDT**](https://loro.dev) as its CRDT backend (`@rozek/sns-core-loro`). If you need a different backend, use `@rozek/sns-browser-bundle-jj` (json-joy) or `@rozek/sns-browser-bundle-yjs` (Y.js) instead.
 
-> ⚠️ **`loro-crdt` is NOT bundled.** Loro ships WebAssembly (`.wasm`) which cannot be inlined by Rollup/Vite. You must provide `loro-crdt` separately — see [Setup](#setup-loro-crdt-external-dependency) below.
+> ⚠️ `loro-crdt` **is NOT bundled.** Loro ships WebAssembly (`.wasm`) which cannot be inlined by Rollup/Vite. You must provide `loro-crdt` separately — see [Setup](#setup-loro-crdt-external-dependency) below.
 
 All other npm dependencies (`fflate`, `fractional-indexing`, `zod`) are inlined — only `loro-crdt` must be provided externally.
 
@@ -42,8 +42,8 @@ Extract and place the ESM file at `/js/loro-crdt.js` (and the `.wasm` file along
 <script type="importmap">
 {
   "imports": {
-    "loro-crdt":                        "/js/loro-crdt.js",
-    "@rozek/sns-browser-bundle-loro":   "/js/sns-browser-bundle-loro.js"
+    "loro-crdt":                      "/js/loro-crdt.js",
+    "@rozek/sns-browser-bundle-loro": "/js/sns-browser-bundle-loro.js"
   }
 }
 </script>
@@ -55,8 +55,8 @@ Extract and place the ESM file at `/js/loro-crdt.js` (and the `.wasm` file along
 <script type="importmap">
 {
   "imports": {
-    "loro-crdt":                        "https://esm.sh/loro-crdt@latest",
-    "@rozek/sns-browser-bundle-loro":   "/js/sns-browser-bundle-loro.js"
+    "loro-crdt":                      "https://esm.sh/loro-crdt@latest",
+    "@rozek/sns-browser-bundle-loro": "/js/sns-browser-bundle-loro.js"
   }
 }
 </script>
@@ -81,28 +81,28 @@ After setting up the import map as shown above:
 
   // ── build the stack ────────────────────────────────────────────
 
-  const store = SNS_NoteStore.fromScratch()
-  const persistence = new SNS_BrowserPersistenceProvider('my-store-id')
-  const network = new SNS_WebSocketProvider('my-store-id')
-  const engine = new SNS_SyncEngine(store, {
-    PersistenceProvider:persistence,
-    NetworkProvider: network,
-    PresenceProvider: network,   // WebSocketProvider implements both
+  const NoteStore   = SNS_NoteStore.fromScratch()
+  const Persistence = new SNS_BrowserPersistenceProvider('my-store-id')
+  const Network     = new SNS_WebSocketProvider('my-store-id')
+  const SyncEngine  = new SNS_SyncEngine(NoteStore, {
+    PersistenceProvider:Persistence,
+    NetworkProvider: Network,
+    PresenceProvider:Network,   // WebSocketProvider implements both
   })
 
-  await engine.start()
-  await engine.connectTo('wss://my-relay.example.com/sync', { Token:'<jwt>' })
+  await SyncEngine.start()
+  await SyncEngine.connectTo('wss://my-relay.example.com/sync', { Token:'<jwt>' })
 
   // ── work with notes ────────────────────────────────────────────
 
-  const note = store.newNoteAt(store.RootNote)
-  note.Label = 'Hello from the Loro bundle!'
+  const Note = NoteStore.newNoteAt(NoteStore.RootNote)
+  Note.Label = 'Hello from the Loro bundle!'
 
-  store.onChangeInvoke((Origin, ChangeSet) => {
+  NoteStore.onChangeInvoke((Origin,ChangeSet) => {
     console.log('changed:', ChangeSet)
   })
 
-  window.addEventListener('beforeunload', () => engine.stop())
+  window.addEventListener('beforeunload', () => SyncEngine.stop())
 </script>
 ```
 
@@ -171,14 +171,14 @@ import {
   SNS_SyncEngine,
 } from '@rozek/sns-browser-bundle-loro'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_BrowserPersistenceProvider('personal-notes')
-const engine = new SNS_SyncEngine(store, { PersistenceProvider:persistence })
+const NoteStore   = SNS_NoteStore.fromScratch()
+const Persistence = new SNS_BrowserPersistenceProvider('personal-notes')
+const SyncEngine  = new SNS_SyncEngine(NoteStore, { PersistenceProvider:Persistence })
 
-await engine.start()
+await SyncEngine.start()
 
-const note = store.newNoteAt(store.RootNote)
-note.Label = 'Survives page reloads via IndexedDB'
+const Note = NoteStore.newNoteAt(NoteStore.RootNote)
+Note.Label = 'Survives page reloads via IndexedDB'
 ```
 
 ### Real-time collaboration over WebSocket
@@ -191,18 +191,18 @@ import {
   SNS_SyncEngine,
 } from '@rozek/sns-browser-bundle-loro'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_BrowserPersistenceProvider('collab-store')
-const network = new SNS_WebSocketProvider('collab-store')
+const NoteStore   = SNS_NoteStore.fromScratch()
+const Persistence = new SNS_BrowserPersistenceProvider('collab-store')
+const Network     = new SNS_WebSocketProvider('collab-store')
 
-const engine = new SNS_SyncEngine(store, {
-  PersistenceProvider:persistence,
-  NetworkProvider: network,
-  PresenceProvider: network,
+const SyncEngine = new SNS_SyncEngine(NoteStore, {
+  PersistenceProvider:Persistence,
+  NetworkProvider: Network,
+  PresenceProvider:Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
+await SyncEngine.start()
+await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 ```
 
 ### Peer-to-peer collaboration over WebRTC (with WebSocket fallback)
@@ -216,19 +216,19 @@ import {
   SNS_SyncEngine,
 } from '@rozek/sns-browser-bundle-loro'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_BrowserPersistenceProvider('p2p-store')
-const wsFallback = new SNS_WebSocketProvider('p2p-store')
-const network = new SNS_WebRTCProvider('p2p-store', { Fallback:wsFallback })
+const NoteStore   = SNS_NoteStore.fromScratch()
+const Persistence = new SNS_BrowserPersistenceProvider('p2p-store')
+const wsFallback  = new SNS_WebSocketProvider('p2p-store')
+const Network     = new SNS_WebRTCProvider('p2p-store', { Fallback:wsFallback })
 
-const engine = new SNS_SyncEngine(store, {
-  PersistenceProvider:persistence,
-  NetworkProvider: network,
-  PresenceProvider: network,
+const SyncEngine = new SNS_SyncEngine(NoteStore, {
+  PersistenceProvider:Persistence,
+  NetworkProvider: Network,
+  PresenceProvider:Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
+await SyncEngine.start()
+await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 ```
 
 ### Automatic trash expiry
@@ -236,11 +236,11 @@ await engine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 ```typescript
 import { SNS_NoteStore } from '@rozek/sns-browser-bundle-loro'
 
-const store = SNS_NoteStore.fromScratch({
+const NoteStore = SNS_NoteStore.fromScratch({
   TrashTTLms:7 * 24 * 60 * 60 * 1000,  // purge after 7 days
 })
 
-window.addEventListener('beforeunload', () => store.dispose())
+window.addEventListener('beforeunload', () => NoteStore.dispose())
 ```
 
 ---

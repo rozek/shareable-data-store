@@ -1,18 +1,26 @@
 # @rozek/sns-core-loro
 
-> Loro CRDT backend for [shareable-notes-store](https://github.com/rozek/shareable-notes-store)
+The **Loro CRDT backend** for [shareable-notes-store](../../README.md). Provides `SNS_NoteStore`, `SNS_Note`, `SNS_Link`, `SNS_Entry`, and `SNS_Error` backed by [Loro](https://loro.dev/) — a high-performance Rust-based CRDT library with native WebAssembly support. Drop-in replacement for `@rozek/sns-core-jj` and `@rozek/sns-core-yjs`: only the import path changes.
 
-This package provides a full implementation of the SNS_NoteStore public API
-backed by [Loro](https://loro.dev/) — a high-performance Rust-based CRDT library
-with native WebAssembly support.  It is a drop-in replacement for
-`@rozek/sns-core` (the json-joy backend) and `@rozek/sns-core-yjs` (the Y.js
-backend): application code needs only to change a single import path.
+---
+
+## When to use this package
+
+Choose `@rozek/sns-core-loro` when:
+
+- You want a high-performance, memory-efficient CRDT backend powered by Rust and WebAssembly.
+- You need character-level collaborative text editing via Loro's native `LoroText` containers.
+- You do not require the canonical-snapshot guarantee of the json-joy backend (see [Loro-specific details](#loro-specific-details)).
+- You do not need cross-backend patch compatibility with the json-joy or Y.js binary formats.
+
+Choose one of the alternative backend packages when you need a different CRDT library or want to migrate an existing store.
+
+---
 
 ## Installation
 
 ```bash
 pnpm add @rozek/sns-core-loro
-# or: npm install @rozek/sns-core-loro
 ```
 
 Peer dependency:
@@ -21,130 +29,167 @@ Peer dependency:
 pnpm add @rozek/sns-core
 ```
 
-## Quick Start
-
-```typescript
-import { SNS_NoteStore } from '@rozek/sns-core-loro'
-
-const store = SNS_NoteStore.fromScratch()
-const note = store.newNoteAt(store.RootNote)
-note.Label = 'My first note'
-console.log(note.Label)  // 'My first note'
-```
+---
 
 ## API
 
-The public API is identical to `@rozek/sns-core`.  Please refer to the
-[core package documentation](../core/README.md) for the complete reference.
+The public API is identical across all backends. Refer to the `@rozek/sns-core-jj`[ README](../core-jj/README.md) for the complete reference — `SNS_NoteStore`, `SNS_Note`, `SNS_Link`, `SNS_Entry`, and `SNS_Error` all export the same interface.
 
-The key difference for application code is the `currentCursor` type and the
-persistence / sync encoding — see the backend-specific notes below.
+The only backend-specific aspects are the binary encoding, cursor format, and patch encoding — see [Loro-specific details](#loro-specific-details) below.
 
-## Loro-specific Behaviour
+---
 
-### No Canonical Empty Snapshot
+## Examples
 
-Unlike the json-joy backend (`@rozek/sns-core`), the Loro backend does **not**
-rely on a shared canonical empty snapshot to bootstrap CRDT node IDs.
+### Building a tree and subscribing to changes
 
-`fromScratch()` creates the three well-known entries (Root, Trash,
-LostAndFound) directly in the Loro document using fixed UUIDs and deterministic
-`LoroMap` containers.  Two peers that each call `fromScratch()` independently
-will converge to the same state after a single full-patch exchange, because
-Loro's conflict-resolution algorithm is deterministic.
+```typescript
+import { SNS_NoteStore } from '@rozek/sns-core-loro'
 
-### Binary Encoding
+const NoteStore = SNS_NoteStore.fromScratch()
 
-`asBinary()` returns a gzip-compressed Loro snapshot
-(`doc.export({ mode: 'snapshot' })`).  `fromBinary()` decompresses and imports
-it via `doc.import()`.  This format is **not** compatible with the json-joy or
-Y.js binary formats.
+const unsubscribe = NoteStore.onChangeInvoke((Origin, ChangeSet) => {
+  for (const [EntryId, changedKeys] of Object.entries(ChangeSet)) {
+    console.log(`[${Origin}] ${EntryId}: ${[...changedKeys].join(', ')}`)
+  }
+})
 
-### Sync Cursor
+NoteStore.transact(() => {
+  const Journal = NoteStore.newNoteAt(NoteStore.RootNote)
+  Journal.Label = 'Journal'
 
-`currentCursor` is a Loro version vector encoded as a `Uint8Array`
-(`doc.version().encode()`).  It is **not** a 4-byte uint32 as used by the
-json-joy backend.
+  const Note = NoteStore.newNoteAt(Journal)
+  Note.Label = '2025-01-01'
+  Note.Info['mood'] = 'hopeful'
+})
 
-`exportPatch(cursor?)` calls `doc.exportFrom(VersionVector.decode(cursor))`
-when a cursor is supplied, or `doc.export({ mode: 'snapshot' })` for a full
-export.
+unsubscribe()
+```
 
-`applyRemotePatch(bytes)` calls `doc.import(bytes)` then rebuilds in-memory
-indices.
+### Syncing two stores via CRDT patches
 
-### Collaborative Text Editing
+```typescript
+import { SNS_NoteStore } from '@rozek/sns-core-loro'
 
-`literalValue` and `Label` are stored as `LoroText` containers, enabling
-character-level CRDT merging across peers.
+// two peers start from the same snapshot
+const NoteStoreA = SNS_NoteStore.fromScratch()
+const NoteStoreB = SNS_NoteStore.fromBinary(NoteStoreA.asBinary())
 
-### Binary Values
+// peer A makes a change
+const NoteA = NoteStoreA.newNoteAt(NoteStoreA.RootNote)
+NoteA.Label = 'shared note'
 
-Binary note values (`writeValue(Uint8Array)`) are stored as plain `Uint8Array`
-fields inside `LoroMap`, which Loro supports natively.
+// peer A exports a patch and peer B applies it
+const Patch = NoteStoreA.exportPatch()
+NoteStoreB.applyRemotePatch(Patch)
 
-### Purge / Tombstoning
+// both peers now agree
+const NoteB = NoteStoreB.EntryWithId(Note.Id)
+console.log(NoteB?.Label)  // 'shared note'
+```
 
-Because CRDT consistency requires that deleted data can always be re-merged
-from remote peers, `purgeEntry()` uses **tombstoning** rather than map-key
-deletion: the entry's `outerNoteId` is set to `''`, making it invisible to all
-traversal, and the entry is removed from in-memory indices.  If the Loro
-version in use supports `LoroMap.delete(key)`, that can be used instead
-(commented in the source).
+### Collaborative character editing
 
-### Transaction Model
+```typescript
+import { SNS_NoteStore } from '@rozek/sns-core-loro'
 
-The Loro backend uses a `#TransactDepth` counter for nested transaction
-support.  `doc.commit()` is called exactly once at the end of the outermost
-transaction, batching all CRDT operations into a single changeset for both
-local change-notification and CRDT history.
+const NoteStore = SNS_NoteStore.fromScratch()
+const Note = NoteStore.newNoteAt(NoteStore.RootNote)
+
+Note.writeValue('Hello, World!')
+
+// replace characters 7–12 with 'SNS'
+Note.changeValue(7, 12, 'SNS')
+
+console.log(await Note.readValue())  // 'Hello, SNS!'
+```
+
+---
+
+## Loro-specific details
+
+### No canonical empty snapshot
+
+Unlike the json-joy backend (`@rozek/sns-core-jj`), the Loro backend does **not** rely on a shared canonical empty snapshot to bootstrap CRDT node IDs.
+
+`fromScratch()` creates the three well-known entries (Root, Trash, LostAndFound) directly in the Loro document using fixed UUIDs and deterministic `LoroMap` containers. Two peers that each call `fromScratch()` independently will converge to the same state after a single full-patch exchange, because Loro's conflict-resolution algorithm is deterministic.
+
+### Binary encoding
+
+`asBinary()` returns a gzip-compressed Loro snapshot (`doc.export({ mode: 'snapshot' })`). `fromBinary()` decompresses and imports it via `doc.import()`. This format is **not** compatible with the json-joy or Y.js binary formats.
+
+### Cursor format
+
+`currentCursor` is a Loro version vector encoded as a `Uint8Array` (`doc.version().encode()`). It is **not** a 4-byte `uint32` as used by the json-joy backend.
+
+`exportPatch(cursor?)` calls `doc.exportFrom(VersionVector.decode(cursor))` when a cursor is supplied, or `doc.export({ mode: 'snapshot' })` for a full export.
+
+`applyRemotePatch(bytes)` calls `doc.import(bytes)` then rebuilds in-memory indices.
+
+### Collaborative text editing
+
+`literalValue` and `Label` are stored as `LoroText` containers, enabling character-level CRDT merging across peers.
+
+### Binary values
+
+Binary note values (`writeValue(Uint8Array)`) are stored as plain `Uint8Array` fields inside `LoroMap`, which Loro supports natively.
+
+### Purge / tombstoning
+
+Because CRDT consistency requires that deleted data can always be re-merged from remote peers, `purgeEntry()` uses **tombstoning** rather than map-key deletion: the entry's `outerNoteId` is set to `''`, making it invisible to all traversal, and the entry is removed from in-memory indices.
+
+### Transaction model
+
+The Loro backend uses a `#TransactDepth` counter for nested transaction support. `doc.commit()` is called exactly once at the end of the outermost transaction, batching all CRDT operations into a single changeset for both local change-notification and CRDT history.
+
+---
 
 ## Data Model
 
-Inside the single `Loro` document, the complete note store lives in
-`doc.getMap('Entries')` — a `LoroMap<string, LoroMap<any>>` mapping entry UUIDs
-to their data.  Each entry map contains the following fields:
+Inside the single `Loro` document, the complete note store lives in `doc.getMap('Entries')` — a `LoroMap<string, LoroMap<any>>` mapping entry UUIDs to their data:
 
 | Field | Type | Notes |
-|-------|------|-------|
+| --- | --- | --- |
 | `Kind` | `string` | `'note'` or `'link'` |
 | `outerNoteId` | `string` | UUID of outer note; `''` for the root note |
-| `OrderKey` | `string` | Fractional-indexing key |
-| `Label` | `LoroText` | Collaborative string |
-| `Info` | `LoroMap` | Arbitrary metadata |
-| `MIMEType` | `string` | Notes only; `''` = `'text/plain'` |
+| `OrderKey` | `string` | fractional-indexing key |
+| `Label` | `LoroText` | collaborative string |
+| `Info` | `LoroMap` | arbitrary metadata |
+| `MIMEType` | `string` | notes only; `''` = `'text/plain'` |
 | `ValueKind` | `string` | `'none'` / `'literal'` / `'binary'` / `*-reference` |
-| `literalValue` | `LoroText` | Notes with `ValueKind='literal'` |
-| `binaryValue` | `Uint8Array` | Notes with `ValueKind='binary'` |
-| `ValueRef` | `string` (JSON) | Notes with `*-reference` ValueKinds |
-| `TargetId` | `string` | Links only |
+| `literalValue` | `LoroText` | notes with `ValueKind='literal'` |
+| `binaryValue` | `Uint8Array` | notes with `ValueKind='binary'` |
+| `ValueRef` | `string` (JSON) | notes with `*-reference` ValueKinds |
+| `TargetId` | `string` | links only |
 
-## Switching Backends
+---
 
-To switch from `@rozek/sns-core` (json-joy) to this package, change:
+## Switching backends
+
+To switch from `@rozek/sns-core-jj` (json-joy) to this package, change only the import path:
 
 ```typescript
-// Before
-import { SNS_NoteStore } from '@rozek/sns-core'
+// before
+import { SNS_NoteStore } from '@rozek/sns-core-jj'
 
-// After
+// after
 import { SNS_NoteStore } from '@rozek/sns-core-loro'
 ```
 
-Persisted binary data (`asBinary()` snapshots and `exportPatch()` patches) is
-**not** cross-compatible between backends.  See the outer
-[README.md](../../README.md) for a data migration guide.
+Persisted binary data (`asBinary()` snapshots and `exportPatch()` patches) is **not** cross-compatible between backends. See the [root README](../../README.md) for a data migration guide.
+
+---
 
 ## Building
 
 ```bash
-pnpm build       # compile to dist/
-pnpm dev         # watch mode
-pnpm typecheck   # TypeScript check without emit
-pnpm test:run    # run tests once
-pnpm test        # run tests in watch mode
+pnpm --filter @rozek/sns-core-loro build
 ```
+
+Output is written to `packages/core-loro/dist/`.
+
+---
 
 ## License
 
-MIT — see [LICENSE](../../LICENSE)
+MIT © Andreas Rozek

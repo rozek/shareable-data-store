@@ -47,31 +47,31 @@ Copy `dist/sns-browser-bundle-jj.js` to your web server, then declare an import 
 
   // ── build the stack ────────────────────────────────────────────
 
-  const store = SNS_NoteStore.fromScratch()
-  const persistence = new SNS_BrowserPersistenceProvider('my-store-id')
-  const network = new SNS_WebSocketProvider('my-store-id')
-  const engine = new SNS_SyncEngine(store, {
-    PersistenceProvider:persistence,
-    NetworkProvider: network,
-    PresenceProvider: network,   // WebSocketProvider implements both
+  const NoteStore   = SNS_NoteStore.fromScratch()
+  const Persistence = new SNS_BrowserPersistenceProvider('my-store-id')
+  const Network     = new SNS_WebSocketProvider('my-store-id')
+  const SyncEngine  = new SNS_SyncEngine(NoteStore, {
+    PersistenceProvider:Persistence,
+    NetworkProvider: Network,
+    PresenceProvider:Network,   // WebSocketProvider implements both
   })
 
-  await engine.start()
-  await engine.connectTo('wss://my-relay.example.com/sync', { Token:'<jwt>' })
+  await SyncEngine.start()
+  await SyncEngine.connectTo('wss://my-relay.example.com/sync', { Token:'<jwt>' })
 
   // ── work with notes ────────────────────────────────────────────
 
-  const note = store.newNoteAt(store.RootNote)
-  note.Label = 'Hello from the browser bundle!'
-  note.Value = 'No CDN, no third-party dependencies!'
+  const Note = NoteStore.newNoteAt(NoteStore.RootNote)
+  Note.Label = 'Hello from the browser bundle!'
+  Note.Value = 'No CDN, no third-party dependencies!'
 
-  store.onChangeInvoke((Origin, ChangeSet) => {
-    console.log('changed:', ChangeSet)
+  NoteStore.onChangeInvoke((Origin,ChangeSet) => {
+    console.log('changed:',ChangeSet)
   })
 
   // ── clean up on page unload ────────────────────────────────────
 
-  window.addEventListener('beforeunload', () => engine.stop())
+  window.addEventListener('beforeunload', () => SyncEngine.stop())
 </script>
 ```
 
@@ -138,7 +138,7 @@ import {
   SNS_SyncEngine,
 } from '@rozek/sns-browser-bundle-jj'
 
-const store = SNS_NoteStore.fromScratch()
+const NoteStore = SNS_NoteStore.fromScratch()
 const persistence = new SNS_BrowserPersistenceProvider('personal-notes')
 const engine = new SNS_SyncEngine(store, { PersistenceProvider:persistence })
 
@@ -158,25 +158,25 @@ import {
   SNS_SyncEngine,
 } from '@rozek/sns-browser-bundle-jj'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_BrowserPersistenceProvider('collab-store')
-const network = new SNS_WebSocketProvider('collab-store')
+const NoteStore   = SNS_NoteStore.fromScratch()
+const Persistence = new SNS_BrowserPersistenceProvider('collab-store')
+const Network     = new SNS_WebSocketProvider('collab-store')
 
-const engine = new SNS_SyncEngine(store, {
-  PersistenceProvider:persistence,
-  NetworkProvider: network,
-  PresenceProvider: network,
+const SyncEngine = new SNS_SyncEngine(NoteStore, {
+  PersistenceProvider:Persistence,
+  NetworkProvider: Network,
+  PresenceProvider:Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
+await SyncEngine.start()
+await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 
 // track remote peers
-engine.onPresenceChange((peerId, state) => {
-  if (state != null) {
-    console.log(`peer ${peerId} joined:`, state)
+engine.onPresenceChange((PeerId,PeerState) => {
+  if (PeerState != null) {
+    console.log(`peer ${PeerId} joined:`,PeerState)
   } else {
-    console.log(`peer ${peerId} left`)
+    console.log(`peer ${PeerId} left`)
   }
 })
 ```
@@ -192,19 +192,19 @@ import {
   SNS_SyncEngine,
 } from '@rozek/sns-browser-bundle-jj'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_BrowserPersistenceProvider('p2p-store')
-const wsFallback = new SNS_WebSocketProvider('p2p-store')
-const network = new SNS_WebRTCProvider('p2p-store', { Fallback:wsFallback })
+const NoteStore   = SNS_NoteStore.fromScratch()
+const Persistence = new SNS_BrowserPersistenceProvider('p2p-store')
+const wsFallback  = new SNS_WebSocketProvider('p2p-store')
+const Network     = new SNS_WebRTCProvider('p2p-store', { Fallback:wsFallback })
 
-const engine = new SNS_SyncEngine(store, {
-  PersistenceProvider:persistence,
-  NetworkProvider: network,
-  PresenceProvider: network,
+const SyncEngine = new SNS_SyncEngine(NoteStore, {
+  PersistenceProvider:Persistence,
+  NetworkProvider: Network,
+  PresenceProvider:Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
+await SyncEngine.start()
+await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 ```
 
 ### Automatic trash expiry
@@ -212,12 +212,12 @@ await engine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 ```typescript
 import { SNS_NoteStore } from '@rozek/sns-browser-bundle-jj'
 
-const store = SNS_NoteStore.fromScratch({
+const NoteStore = SNS_NoteStore.fromScratch({
   TrashTTLms:7 * 24 * 60 * 60 * 1000,  // purge after 7 days
 })
 
 // remember to stop the internal timer when the store is no longer needed
-window.addEventListener('beforeunload', () => store.dispose())
+window.addEventListener('beforeunload', () => NoteStore.dispose())
 ```
 
 ---
