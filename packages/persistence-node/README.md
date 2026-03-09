@@ -1,13 +1,13 @@
-# @rozek/sns-persistence-node
+# @rozek/sds-persistence-node
 
-SQLite persistence provider for the **shareable-notes-store** (SNS) family. Stores CRDT snapshots, incremental patches, and large value blobs in a local SQLite database — suitable for Node.js servers, Electron desktop apps, and Tauri (with a Node.js backend).
+SQLite persistence provider for the **shareable-data-store** (SNS) family. Stores CRDT snapshots, incremental patches, and large value blobs in a local SQLite database — suitable for Node.js servers, Electron desktop apps, and Tauri (with a Node.js backend).
 
 ---
 
 ## Installation
 
 ```bash
-pnpm add @rozek/sns-persistence-node
+pnpm add @rozek/sds-persistence-node
 ```
 
 Requires Node.js 18+ and a native build toolchain for `better-sqlite3`.
@@ -24,18 +24,18 @@ The provider uses three SQLite tables:
 | `patches` | Incremental CRDT patches keyed by `(store_id, clock)` |
 | `blobs` | Large value blobs keyed by SHA-256 hash, with reference counting |
 
-On startup `SNS_SyncEngine` calls `loadSnapshot()` to restore the last checkpoint, then `loadPatchesSince(clock)` to replay any patches recorded after that checkpoint. During operation every local mutation is appended via `appendPatch()`. When the accumulated patch size crosses 512 KB (managed by the sync engine), a new snapshot is written and old patches are pruned.
+On startup `SDS_SyncEngine` calls `loadSnapshot()` to restore the last checkpoint, then `loadPatchesSince(clock)` to replay any patches recorded after that checkpoint. During operation every local mutation is appended via `appendPatch()`. When the accumulated patch size crosses 512 KB (managed by the sync engine), a new snapshot is written and old patches are pruned.
 
 ---
 
 ## API Reference
 
-### `SNS_DesktopPersistenceProvider`
+### `SDS_DesktopPersistenceProvider`
 
 ```typescript
-import { SNS_DesktopPersistenceProvider } from '@rozek/sns-persistence-node'
+import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
 
-class SNS_DesktopPersistenceProvider implements SNS_PersistenceProvider {
+class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
   constructor(DbPath:string, StoreId:string)
 
   loadSnapshot():Promise<Uint8Array | null>
@@ -67,14 +67,14 @@ The SQLite file is named `<DbPath>/sns.db`. WAL mode is enabled automatically fo
 ### Standalone — persistence only
 
 ```typescript
-import { SNS_NoteStore }                  from '@rozek/sns-core'
-import { SNS_DesktopPersistenceProvider } from '@rozek/sns-persistence-node'
-import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
+import { SDS_NoteStore }                  from '@rozek/sds-core'
+import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_DesktopPersistenceProvider('./data', 'my-notes')
+const store = SDS_NoteStore.fromScratch()
+const persistence = new SDS_DesktopPersistenceProvider('./data', 'my-notes')
 
-const engine = new SNS_SyncEngine(store, { PersistenceProvider:persistence })
+const engine = new SDS_SyncEngine(store, { PersistenceProvider:persistence })
 await engine.start()   // restores snapshot + patches from SQLite
 
 // work with the store normally …
@@ -87,16 +87,16 @@ await engine.stop()    // flushes final checkpoint and closes the DB
 ### With network sync
 
 ```typescript
-import { SNS_NoteStore }                  from '@rozek/sns-core'
-import { SNS_DesktopPersistenceProvider } from '@rozek/sns-persistence-node'
-import { SNS_WebSocketProvider }          from '@rozek/sns-network-websocket'
-import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
+import { SDS_NoteStore }                  from '@rozek/sds-core'
+import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
+import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_DesktopPersistenceProvider('./data', 'my-notes')
-const network = new SNS_WebSocketProvider('my-notes')
+const store = SDS_NoteStore.fromScratch()
+const persistence = new SDS_DesktopPersistenceProvider('./data', 'my-notes')
+const network = new SDS_WebSocketProvider('my-notes')
 
-const engine = new SNS_SyncEngine(store, {
+const engine = new SDS_SyncEngine(store, {
   PersistenceProvider:persistence,
   NetworkProvider: network,
   PresenceProvider: network,
@@ -109,8 +109,8 @@ await engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 ### Multiple stores in one database
 
 ```typescript
-const persistenceA = new SNS_DesktopPersistenceProvider('./data', 'store-a')
-const persistenceB = new SNS_DesktopPersistenceProvider('./data', 'store-b')
+const persistenceA = new SDS_DesktopPersistenceProvider('./data', 'store-a')
+const persistenceB = new SDS_DesktopPersistenceProvider('./data', 'store-b')
 // both use ./data/sns.db but different store_id values
 ```
 

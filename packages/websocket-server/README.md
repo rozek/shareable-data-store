@@ -1,6 +1,6 @@
-# @rozek/sns-websocket-server
+# @rozek/sds-websocket-server
 
-The relay server for the **shareable-notes-store** (SNS) family. A [Hono](https://hono.dev)-based WebSocket server that:
+The relay server for the **shareable-data-store** (SNS) family. A [Hono](https://hono.dev)-based WebSocket server that:
 
 - authenticates clients with JWT (HS256)
 - relays CRDT patches between connected peers
@@ -18,16 +18,16 @@ Runs on Node.js 18+ using `@hono/node-server`.
 **Relay-only mode** (no persistence — default):
 
 ```bash
-pnpm add @rozek/sns-websocket-server
+pnpm add @rozek/sds-websocket-server
 ```
 
 **With SQLite persistence** (requires `better-sqlite3`, a native addon that is compiled on install or fetched as a pre-built binary):
 
 ```bash
-pnpm add @rozek/sns-websocket-server @rozek/sns-persistence-node better-sqlite3
+pnpm add @rozek/sds-websocket-server @rozek/sds-persistence-node better-sqlite3
 ```
 
-`@rozek/sns-persistence-node` is an optional peer dependency: the server loads it lazily only when `PersistDir` / `SNS_PERSIST_DIR` is set. In relay-only mode neither package needs to be installed.
+`@rozek/sds-persistence-node` is an optional peer dependency: the server loads it lazily only when `PersistDir` / `SDS_PERSIST_DIR` is set. In relay-only mode neither package needs to be installed.
 
 ---
 
@@ -36,10 +36,10 @@ pnpm add @rozek/sns-websocket-server @rozek/sns-persistence-node better-sqlite3
 ### Minimal server
 
 ```typescript
-import { createSNSServer } from '@rozek/sns-websocket-server'
+import { createSDSServer } from '@rozek/sds-websocket-server'
 import { serve }           from '@hono/node-server'
 
-const { app:app } = createSNSServer({ JWTSecret:'your-secret-at-least-32-chars' })
+const { app:app } = createSDSServer({ JWTSecret:'your-secret-at-least-32-chars' })
 
 serve({ fetch:app.fetch, port:3000 }, () => {
   console.log('SNS server listening on http://localhost:3000')
@@ -49,9 +49,9 @@ serve({ fetch:app.fetch, port:3000 }, () => {
 ### With environment variables
 
 ```bash
-SNS_JWT_SECRET=your-secret-at-least-32-chars \
-SNS_PORT=3000 \
-SNS_HOST=0.0.0.0 \
+SDS_JWT_SECRET=your-secret-at-least-32-chars \
+SDS_PORT=3000 \
+SDS_HOST=0.0.0.0 \
 node server.js
 ```
 
@@ -59,27 +59,27 @@ node server.js
 
 ## API Reference
 
-### `createSNSServer`
+### `createSDSServer`
 
 ```typescript
-function createSNSServer(Options?: Partial<SNS_ServerOptions>):{ app:Hono }
+function createSDSServer(Options?: Partial<SDS_ServerOptions>):{ app:Hono }
 ```
 
 Returns the configured Hono application. Pass `app.fetch` to `@hono/node-server`'s `serve()`.
 
-#### `SNS_ServerOptions`
+#### `SDS_ServerOptions`
 
 ```typescript
-interface SNS_ServerOptions {
+interface SDS_ServerOptions {
   JWTSecret:   string  // HMAC-SHA256 signing secret (required, min 32 chars recommended)
   Issuer?:     string  // JWT iss claim to validate (optional)
-  Port?:       number  // TCP port (default: 3000; also read from SNS_PORT)
-  Host?:       string  // Bind address (default: 127.0.0.1; also read from SNS_HOST)
+  Port?:       number  // TCP port (default: 3000; also read from SDS_PORT)
+  Host?:       string  // Bind address (default: 127.0.0.1; also read from SDS_HOST)
   PersistDir?: string  // Directory for per-store SQLite databases; omit for relay-only mode
 }
 ```
 
-Options take priority over environment variables. When `PersistDir` (or the `SNS_PERSIST_DIR` environment variable) is set, the server opens one SQLite database per store in that directory and:
+Options take priority over environment variables. When `PersistDir` (or the `SDS_PERSIST_DIR` environment variable) is set, the server opens one SQLite database per store in that directory and:
 
 - replays the stored snapshot and all subsequent patches to every newly connecting client
 - persists every incoming PATCH frame
@@ -126,7 +126,7 @@ Frames sent by `read` clients with types `0x01` (PATCH), `0x02` (VALUE), or `0x0
 
 #### `GET /signal/:StoreId` — WebRTC signalling WebSocket
 
-Relays JSON signalling messages (SDP offers/answers, ICE candidates) between peers for WebRTC connection setup. Used by `@rozek/sns-network-webrtc`.
+Relays JSON signalling messages (SDP offers/answers, ICE candidates) between peers for WebRTC connection setup. Used by `@rozek/sds-network-webrtc`.
 
 **Authentication:** same JWT `?token=` parameter as the sync endpoint.
 
@@ -203,12 +203,12 @@ interface LiveClient {
 ### Self-contained server with token issuance
 
 ```typescript
-import { createSNSServer } from '@rozek/sns-websocket-server'
+import { createSDSServer } from '@rozek/sds-websocket-server'
 import { serve }           from '@hono/node-server'
 
 const secret = 'super-secret-key-at-least-32-chars!!'
 
-const { app:app } = createSNSServer({ JWTSecret:secret, Port:3000 })
+const { app:app } = createSDSServer({ JWTSecret:secret, Port:3000 })
 
 serve({ fetch:app.fetch, port:3000 })
 
@@ -250,7 +250,7 @@ my-server.example.com {
 
 ## Wire protocol
 
-The server is protocol-agnostic: it forwards raw binary frames without inspecting the payload (except for the one-byte type prefix used for scope enforcement). The frame format is defined by `@rozek/sns-network-websocket`:
+The server is protocol-agnostic: it forwards raw binary frames without inspecting the payload (except for the one-byte type prefix used for scope enforcement). The frame format is defined by `@rozek/sds-network-websocket`:
 
 | Byte | Name | Notes |
 | --- | --- | --- |

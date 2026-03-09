@@ -1,14 +1,14 @@
-# @rozek/sns-browser-bundle-loro
+# @rozek/sds-browser-bundle-loro
 
-A **single ESM file** that bundles the **shareable-notes-store** (SNS) stack for browser use with the **Loro CRDT** backend:
+A **single ESM file** that bundles the **shareable-data-store** (SNS) stack for browser use with the **Loro CRDT** backend:
 
-- `@rozek/sns-core-loro` — store, notes, links, **Loro CRDT engine** (concrete implementation)
-- `@rozek/sns-network-websocket` — WebSocket sync & presence
-- `@rozek/sns-network-webrtc` — WebRTC peer-to-peer sync & presence
-- `@rozek/sns-persistence-browser` — IndexedDB persistence
-- `@rozek/sns-sync-engine` — coordination & lifecycle
+- `@rozek/sds-core-loro` — store, notes, links, **Loro CRDT engine** (concrete implementation)
+- `@rozek/sds-network-websocket` — WebSocket sync & presence
+- `@rozek/sds-network-webrtc` — WebRTC peer-to-peer sync & presence
+- `@rozek/sds-persistence-browser` — IndexedDB persistence
+- `@rozek/sds-sync-engine` — coordination & lifecycle
 
-> **Note:** This bundle uses [**Loro CRDT**](https://loro.dev) as its CRDT backend (`@rozek/sns-core-loro`). If you need a different backend, use `@rozek/sns-browser-bundle-jj` (json-joy) or `@rozek/sns-browser-bundle-yjs` (Y.js) instead.
+> **Note:** This bundle uses [**Loro CRDT**](https://loro.dev) as its CRDT backend (`@rozek/sds-core-loro`). If you need a different backend, use `@rozek/sds-browser-bundle-jj` (json-joy) or `@rozek/sds-browser-bundle-yjs` (Y.js) instead.
 
 > ⚠️ `loro-crdt` **is NOT bundled.** Loro ships WebAssembly (`.wasm`) which cannot be inlined by Rollup/Vite. You must provide `loro-crdt` separately — see [Setup](#setup-loro-crdt-external-dependency) below.
 
@@ -18,7 +18,7 @@ All other npm dependencies (`fflate`, `fractional-indexing`, `zod`) are inlined 
 
 ## Why a bundle?
 
-Every `import` statement in a browser application potentially loads code from a third-party server. `@rozek/sns-browser-bundle-loro` bundles the entire SNS infrastructure layer into a single auditable file that you serve from your own server. Only `loro-crdt` remains external due to its WebAssembly payload.
+Every `import` statement in a browser application potentially loads code from a third-party server. `@rozek/sds-browser-bundle-loro` bundles the entire SNS infrastructure layer into a single auditable file that you serve from your own server. Only `loro-crdt` remains external due to its WebAssembly payload.
 
 Bundle size: ≈ 163 KB raw / ≈ 36 KB gzip (excluding `loro-crdt`).
 
@@ -43,7 +43,7 @@ Extract and place the ESM file at `/js/loro-crdt.js` (and the `.wasm` file along
 {
   "imports": {
     "loro-crdt":                      "/js/loro-crdt.js",
-    "@rozek/sns-browser-bundle-loro": "/js/sns-browser-bundle-loro.js"
+    "@rozek/sds-browser-bundle-loro": "/js/sds-browser-bundle-loro.js"
   }
 }
 </script>
@@ -56,7 +56,7 @@ Extract and place the ESM file at `/js/loro-crdt.js` (and the `.wasm` file along
 {
   "imports": {
     "loro-crdt":                      "https://esm.sh/loro-crdt@latest",
-    "@rozek/sns-browser-bundle-loro": "/js/sns-browser-bundle-loro.js"
+    "@rozek/sds-browser-bundle-loro": "/js/sds-browser-bundle-loro.js"
   }
 }
 </script>
@@ -73,18 +73,18 @@ After setting up the import map as shown above:
 ```html
 <script type="module">
   import {
-    SNS_NoteStore,
-    SNS_BrowserPersistenceProvider,
-    SNS_WebSocketProvider,
-    SNS_SyncEngine,
-  } from '@rozek/sns-browser-bundle-loro'
+    SDS_NoteStore,
+    SDS_BrowserPersistenceProvider,
+    SDS_WebSocketProvider,
+    SDS_SyncEngine,
+  } from '@rozek/sds-browser-bundle-loro'
 
   // ── build the stack ────────────────────────────────────────────
 
-  const NoteStore   = SNS_NoteStore.fromScratch()
-  const Persistence = new SNS_BrowserPersistenceProvider('my-store-id')
-  const Network     = new SNS_WebSocketProvider('my-store-id')
-  const SyncEngine  = new SNS_SyncEngine(NoteStore, {
+  const NoteStore   = SDS_NoteStore.fromScratch()
+  const Persistence = new SDS_BrowserPersistenceProvider('my-store-id')
+  const Network     = new SDS_WebSocketProvider('my-store-id')
+  const SyncEngine  = new SDS_SyncEngine(NoteStore, {
     PersistenceProvider:Persistence,
     NetworkProvider: Network,
     PresenceProvider:Network,   // WebSocketProvider implements both
@@ -116,14 +116,14 @@ export default defineConfig({
   resolve: {
     alias: {
       // redirect all SNS packages to the single bundle file
-      // Note: @rozek/sns-core-loro must come before @rozek/sns-core so the
+      // Note: @rozek/sds-core-loro must come before @rozek/sds-core so the
       // longer prefix wins the alias match.
-      '@rozek/sns-core-loro': '/public/js/sns-browser-bundle-loro.js',
-      '@rozek/sns-core': '/public/js/sns-browser-bundle-loro.js',
-      '@rozek/sns-network-websocket': '/public/js/sns-browser-bundle-loro.js',
-      '@rozek/sns-network-webrtc': '/public/js/sns-browser-bundle-loro.js',
-      '@rozek/sns-persistence-browser': '/public/js/sns-browser-bundle-loro.js',
-      '@rozek/sns-sync-engine': '/public/js/sns-browser-bundle-loro.js',
+      '@rozek/sds-core-loro': '/public/js/sds-browser-bundle-loro.js',
+      '@rozek/sds-core': '/public/js/sds-browser-bundle-loro.js',
+      '@rozek/sds-network-websocket': '/public/js/sds-browser-bundle-loro.js',
+      '@rozek/sds-network-webrtc': '/public/js/sds-browser-bundle-loro.js',
+      '@rozek/sds-persistence-browser': '/public/js/sds-browser-bundle-loro.js',
+      '@rozek/sds-sync-engine': '/public/js/sds-browser-bundle-loro.js',
       // loro-crdt must remain external and be resolved at runtime
       'loro-crdt': 'loro-crdt',
     },
@@ -134,10 +134,10 @@ export default defineConfig({
 Then import as normal — `loro-crdt` will be resolved from your import map at runtime:
 
 ```typescript
-import { SNS_NoteStore }                  from '@rozek/sns-core-loro'
-import { SNS_BrowserPersistenceProvider } from '@rozek/sns-persistence-browser'
-import { SNS_WebSocketProvider }          from '@rozek/sns-network-websocket'
-import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
+import { SDS_NoteStore }                  from '@rozek/sds-core-loro'
+import { SDS_BrowserPersistenceProvider } from '@rozek/sds-persistence-browser'
+import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 ```
 
 ---
@@ -148,15 +148,15 @@ The bundle re-exports the complete public API of all constituent packages. Refer
 
 | Export | Source package |
 | --- | --- |
-| `SNS_NoteStore`, `SNS_Entry`, `SNS_Note`, `SNS_Link`, `SNS_Error` | `@rozek/sns-core-loro` (Loro CRDT backend) |
-| `SNS_ChangeSet`, `SNS_SyncCursor`, `SNS_PatchSeqNumber` | `@rozek/sns-core` (re-exported via `@rozek/sns-core-loro`) |
-| `SNS_PersistenceProvider`, `SNS_NetworkProvider`, `SNS_PresenceProvider` | `@rozek/sns-core` (re-exported via `@rozek/sns-core-loro`) |
-| `SNS_WebSocketProvider` | `@rozek/sns-network-websocket` |
-| `SNS_WebRTCProvider`, `SNS_WebRTCProviderOptions` | `@rozek/sns-network-webrtc` |
-| `SNS_BrowserPersistenceProvider` | `@rozek/sns-persistence-browser` |
-| `SNS_SyncEngine`, `SNS_SyncEngineOptions` | `@rozek/sns-sync-engine` |
+| `SDS_NoteStore`, `SDS_Entry`, `SDS_Note`, `SDS_Link`, `SDS_Error` | `@rozek/sds-core-loro` (Loro CRDT backend) |
+| `SDS_ChangeSet`, `SDS_SyncCursor`, `SDS_PatchSeqNumber` | `@rozek/sds-core` (re-exported via `@rozek/sds-core-loro`) |
+| `SDS_PersistenceProvider`, `SDS_NetworkProvider`, `SDS_PresenceProvider` | `@rozek/sds-core` (re-exported via `@rozek/sds-core-loro`) |
+| `SDS_WebSocketProvider` | `@rozek/sds-network-websocket` |
+| `SDS_WebRTCProvider`, `SDS_WebRTCProviderOptions` | `@rozek/sds-network-webrtc` |
+| `SDS_BrowserPersistenceProvider` | `@rozek/sds-persistence-browser` |
+| `SDS_SyncEngine`, `SDS_SyncEngineOptions` | `@rozek/sds-sync-engine` |
 
-**Note:** `loro-crdt` itself is not re-exported; it is loaded as a side-effect by `@rozek/sns-core-loro` at import time.
+**Note:** `loro-crdt` itself is not re-exported; it is loaded as a side-effect by `@rozek/sds-core-loro` at import time.
 
 ---
 
@@ -166,14 +166,14 @@ The bundle re-exports the complete public API of all constituent packages. Refer
 
 ```typescript
 import {
-  SNS_NoteStore,
-  SNS_BrowserPersistenceProvider,
-  SNS_SyncEngine,
-} from '@rozek/sns-browser-bundle-loro'
+  SDS_NoteStore,
+  SDS_BrowserPersistenceProvider,
+  SDS_SyncEngine,
+} from '@rozek/sds-browser-bundle-loro'
 
-const NoteStore   = SNS_NoteStore.fromScratch()
-const Persistence = new SNS_BrowserPersistenceProvider('personal-notes')
-const SyncEngine  = new SNS_SyncEngine(NoteStore, { PersistenceProvider:Persistence })
+const NoteStore   = SDS_NoteStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('personal-notes')
+const SyncEngine  = new SDS_SyncEngine(NoteStore, { PersistenceProvider:Persistence })
 
 await SyncEngine.start()
 
@@ -185,17 +185,17 @@ Note.Label = 'Survives page reloads via IndexedDB'
 
 ```typescript
 import {
-  SNS_NoteStore,
-  SNS_BrowserPersistenceProvider,
-  SNS_WebSocketProvider,
-  SNS_SyncEngine,
-} from '@rozek/sns-browser-bundle-loro'
+  SDS_NoteStore,
+  SDS_BrowserPersistenceProvider,
+  SDS_WebSocketProvider,
+  SDS_SyncEngine,
+} from '@rozek/sds-browser-bundle-loro'
 
-const NoteStore   = SNS_NoteStore.fromScratch()
-const Persistence = new SNS_BrowserPersistenceProvider('collab-store')
-const Network     = new SNS_WebSocketProvider('collab-store')
+const NoteStore   = SDS_NoteStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('collab-store')
+const Network     = new SDS_WebSocketProvider('collab-store')
 
-const SyncEngine = new SNS_SyncEngine(NoteStore, {
+const SyncEngine = new SDS_SyncEngine(NoteStore, {
   PersistenceProvider:Persistence,
   NetworkProvider: Network,
   PresenceProvider:Network,
@@ -209,19 +209,19 @@ await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 
 ```typescript
 import {
-  SNS_NoteStore,
-  SNS_BrowserPersistenceProvider,
-  SNS_WebSocketProvider,
-  SNS_WebRTCProvider,
-  SNS_SyncEngine,
-} from '@rozek/sns-browser-bundle-loro'
+  SDS_NoteStore,
+  SDS_BrowserPersistenceProvider,
+  SDS_WebSocketProvider,
+  SDS_WebRTCProvider,
+  SDS_SyncEngine,
+} from '@rozek/sds-browser-bundle-loro'
 
-const NoteStore   = SNS_NoteStore.fromScratch()
-const Persistence = new SNS_BrowserPersistenceProvider('p2p-store')
-const wsFallback  = new SNS_WebSocketProvider('p2p-store')
-const Network     = new SNS_WebRTCProvider('p2p-store', { Fallback:wsFallback })
+const NoteStore   = SDS_NoteStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('p2p-store')
+const wsFallback  = new SDS_WebSocketProvider('p2p-store')
+const Network     = new SDS_WebRTCProvider('p2p-store', { Fallback:wsFallback })
 
-const SyncEngine = new SNS_SyncEngine(NoteStore, {
+const SyncEngine = new SDS_SyncEngine(NoteStore, {
   PersistenceProvider:Persistence,
   NetworkProvider: Network,
   PresenceProvider:Network,
@@ -234,9 +234,9 @@ await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 ### Automatic trash expiry
 
 ```typescript
-import { SNS_NoteStore } from '@rozek/sns-browser-bundle-loro'
+import { SDS_NoteStore } from '@rozek/sds-browser-bundle-loro'
 
-const NoteStore = SNS_NoteStore.fromScratch({
+const NoteStore = SDS_NoteStore.fromScratch({
   TrashTTLms:7 * 24 * 60 * 60 * 1000,  // purge after 7 days
 })
 
@@ -250,15 +250,15 @@ window.addEventListener('beforeunload', () => NoteStore.dispose())
 From the monorepo root:
 
 ```bash
-pnpm --filter @rozek/sns-browser-bundle-loro build
+pnpm --filter @rozek/sds-browser-bundle-loro build
 ```
 
 The output is written to `packages/browser-bundle-loro/dist/`:
 
 | File | Description |
 | --- | --- |
-| `sns-browser-bundle-loro.js` | ESM file (≈ 163 KB raw, ≈ 36 KB gzip); `loro-crdt` external |
-| `sns-browser-bundle-loro.d.ts` | Rolled-up TypeScript declarations |
+| `sds-browser-bundle-loro.js` | ESM file (≈ 163 KB raw, ≈ 36 KB gzip); `loro-crdt` external |
+| `sds-browser-bundle-loro.d.ts` | Rolled-up TypeScript declarations |
 
 ---
 

@@ -1,4 +1,4 @@
-# /opt/sns-server/server/Dockerfile
+# /opt/sds-server/server/Dockerfile
 FROM node:22-alpine
 
 WORKDIR /app
@@ -7,9 +7,9 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 # install dependencies first so Docker can cache this layer
-# sns-websocket-server.tgz is built locally and copied here before docker compose build
+# sds-websocket-server.tgz is built locally and copied here before docker compose build
 # (see DEPLOYMENT.md — Quick Start)
-COPY package.json sns-websocket-server.tgz ./
+COPY package.json sds-websocket-server.tgz ./
 RUN npm install --omit=dev
 
 # entry point

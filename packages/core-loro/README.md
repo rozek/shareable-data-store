@@ -1,12 +1,12 @@
-# @rozek/sns-core-loro
+# @rozek/sds-core-loro
 
-The **Loro CRDT backend** for [shareable-notes-store](../../README.md). Provides `SNS_NoteStore`, `SNS_Note`, `SNS_Link`, `SNS_Entry`, and `SNS_Error` backed by [Loro](https://loro.dev/) — a high-performance Rust-based CRDT library with native WebAssembly support. Drop-in replacement for `@rozek/sns-core-jj` and `@rozek/sns-core-yjs`: only the import path changes.
+The **Loro CRDT backend** for [shareable-data-store](../../README.md). Provides `SDS_NoteStore`, `SDS_Note`, `SDS_Link`, `SDS_Entry`, and `SDS_Error` backed by [Loro](https://loro.dev/) — a high-performance Rust-based CRDT library with native WebAssembly support. Drop-in replacement for `@rozek/sds-core-jj` and `@rozek/sds-core-yjs`: only the import path changes.
 
 ---
 
 ## When to use this package
 
-Choose `@rozek/sns-core-loro` when:
+Choose `@rozek/sds-core-loro` when:
 
 - You want a high-performance, memory-efficient CRDT backend powered by Rust and WebAssembly.
 - You need character-level collaborative text editing via Loro's native `LoroText` containers.
@@ -20,20 +20,20 @@ Choose one of the alternative backend packages when you need a different CRDT li
 ## Installation
 
 ```bash
-pnpm add @rozek/sns-core-loro
+pnpm add @rozek/sds-core-loro
 ```
 
 Peer dependency:
 
 ```bash
-pnpm add @rozek/sns-core
+pnpm add @rozek/sds-core
 ```
 
 ---
 
 ## API
 
-The public API is identical across all backends. Refer to the `@rozek/sns-core-jj`[ README](../core-jj/README.md) for the complete reference — `SNS_NoteStore`, `SNS_Note`, `SNS_Link`, `SNS_Entry`, and `SNS_Error` all export the same interface.
+The public API is identical across all backends. Refer to the `@rozek/sds-core-jj`[ README](../core-jj/README.md) for the complete reference — `SDS_NoteStore`, `SDS_Note`, `SDS_Link`, `SDS_Entry`, and `SDS_Error` all export the same interface.
 
 The only backend-specific aspects are the binary encoding, cursor format, and patch encoding — see [Loro-specific details](#loro-specific-details) below.
 
@@ -44,9 +44,9 @@ The only backend-specific aspects are the binary encoding, cursor format, and pa
 ### Building a tree and subscribing to changes
 
 ```typescript
-import { SNS_NoteStore } from '@rozek/sns-core-loro'
+import { SDS_NoteStore } from '@rozek/sds-core-loro'
 
-const NoteStore = SNS_NoteStore.fromScratch()
+const NoteStore = SDS_NoteStore.fromScratch()
 
 const unsubscribe = NoteStore.onChangeInvoke((Origin, ChangeSet) => {
   for (const [EntryId, changedKeys] of Object.entries(ChangeSet)) {
@@ -69,11 +69,11 @@ unsubscribe()
 ### Syncing two stores via CRDT patches
 
 ```typescript
-import { SNS_NoteStore } from '@rozek/sns-core-loro'
+import { SDS_NoteStore } from '@rozek/sds-core-loro'
 
 // two peers start from the same snapshot
-const NoteStoreA = SNS_NoteStore.fromScratch()
-const NoteStoreB = SNS_NoteStore.fromBinary(NoteStoreA.asBinary())
+const NoteStoreA = SDS_NoteStore.fromScratch()
+const NoteStoreB = SDS_NoteStore.fromBinary(NoteStoreA.asBinary())
 
 // peer A makes a change
 const NoteA = NoteStoreA.newNoteAt(NoteStoreA.RootNote)
@@ -91,9 +91,9 @@ console.log(NoteB?.Label)  // 'shared note'
 ### Collaborative character editing
 
 ```typescript
-import { SNS_NoteStore } from '@rozek/sns-core-loro'
+import { SDS_NoteStore } from '@rozek/sds-core-loro'
 
-const NoteStore = SNS_NoteStore.fromScratch()
+const NoteStore = SDS_NoteStore.fromScratch()
 const Note = NoteStore.newNoteAt(NoteStore.RootNote)
 
 Note.writeValue('Hello, World!')
@@ -110,7 +110,7 @@ console.log(await Note.readValue())  // 'Hello, SNS!'
 
 ### No canonical empty snapshot
 
-Unlike the json-joy backend (`@rozek/sns-core-jj`), the Loro backend does **not** rely on a shared canonical empty snapshot to bootstrap CRDT node IDs.
+Unlike the json-joy backend (`@rozek/sds-core-jj`), the Loro backend does **not** rely on a shared canonical empty snapshot to bootstrap CRDT node IDs.
 
 `fromScratch()` creates the three well-known entries (Root, Trash, LostAndFound) directly in the Loro document using fixed UUIDs and deterministic `LoroMap` containers. Two peers that each call `fromScratch()` independently will converge to the same state after a single full-patch exchange, because Loro's conflict-resolution algorithm is deterministic.
 
@@ -166,14 +166,14 @@ Inside the single `Loro` document, the complete note store lives in `doc.getMap(
 
 ## Switching backends
 
-To switch from `@rozek/sns-core-jj` (json-joy) to this package, change only the import path:
+To switch from `@rozek/sds-core-jj` (json-joy) to this package, change only the import path:
 
 ```typescript
 // before
-import { SNS_NoteStore } from '@rozek/sns-core-jj'
+import { SDS_NoteStore } from '@rozek/sds-core-jj'
 
 // after
-import { SNS_NoteStore } from '@rozek/sns-core-loro'
+import { SDS_NoteStore } from '@rozek/sds-core-loro'
 ```
 
 Persisted binary data (`asBinary()` snapshots and `exportPatch()` patches) is **not** cross-compatible between backends. See the [root README](../../README.md) for a data migration guide.
@@ -183,7 +183,7 @@ Persisted binary data (`asBinary()` snapshots and `exportPatch()` patches) is **
 ## Building
 
 ```bash
-pnpm --filter @rozek/sns-core-loro build
+pnpm --filter @rozek/sds-core-loro build
 ```
 
 Output is written to `packages/core-loro/dist/`.

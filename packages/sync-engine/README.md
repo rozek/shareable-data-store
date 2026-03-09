@@ -1,13 +1,13 @@
-# @rozek/sns-sync-engine
+# @rozek/sds-sync-engine
 
-The orchestration layer of the **shareable-notes-store** (SNS) family. `SNS_SyncEngine` wires an `SNS_NoteStore` to a persistence provider, a network provider, and a presence provider, and manages the full lifecycle: startup restore, offline patch queuing, automatic checkpointing, large-value transfer, and presence heartbeats.
+The orchestration layer of the **shareable-data-store** (SNS) family. `SDS_SyncEngine` wires an `SDS_NoteStore` to a persistence provider, a network provider, and a presence provider, and manages the full lifecycle: startup restore, offline patch queuing, automatic checkpointing, large-value transfer, and presence heartbeats.
 
 ---
 
 ## Installation
 
 ```bash
-pnpm add @rozek/sns-sync-engine
+pnpm add @rozek/sds-sync-engine
 ```
 
 ---
@@ -42,13 +42,13 @@ When running in a browser or Tauri context, the engine optionally uses a `Broadc
 
 ## API Reference
 
-### `SNS_SyncEngine`
+### `SDS_SyncEngine`
 
 ```typescript
-import { SNS_SyncEngine } from '@rozek/sns-sync-engine'
+import { SDS_SyncEngine } from '@rozek/sds-sync-engine'
 
-class SNS_SyncEngine {
-  constructor(Store:SNS_NoteStore, Options?: SNS_SyncEngineOptions)
+class SDS_SyncEngine {
+  constructor(Store:SDS_NoteStore, Options?: SDS_SyncEngineOptions)
 
   // ── Lifecycle ────────────────────────────────────────────────
 
@@ -57,36 +57,36 @@ class SNS_SyncEngine {
 
   // ── Network ──────────────────────────────────────────────────
 
-  connectTo(URL:string, Options:SNS_ConnectionOptions):Promise<void>
+  connectTo(URL:string, Options:SDS_ConnectionOptions):Promise<void>
   disconnect():void
   reconnect():Promise<void>
 
-  get ConnectionState():SNS_ConnectionState
-  onConnectionChange(Callback:(State:SNS_ConnectionState) => void):() => void
+  get ConnectionState():SDS_ConnectionState
+  onConnectionChange(Callback:(State:SDS_ConnectionState) => void):() => void
 
   // ── Presence ─────────────────────────────────────────────────
 
   readonly PeerId:string   // unique identifier for this engine instance (UUID)
 
-  setPresenceTo(State:SNS_LocalPresenceState):void
-  readonly PeerSet:ReadonlyMap<string, SNS_RemotePresenceState>
+  setPresenceTo(State:SDS_LocalPresenceState):void
+  readonly PeerSet:ReadonlyMap<string, SDS_RemotePresenceState>
   onPresenceChange(
     Callback:(
       PeerId:  string,
-      State:   SNS_RemotePresenceState | undefined,
+      State:   SDS_RemotePresenceState | undefined,
       Origin:'local' | 'remote'
     ) => void
   ):() => void
 }
 ```
 
-### `SNS_SyncEngineOptions`
+### `SDS_SyncEngineOptions`
 
 ```typescript
-interface SNS_SyncEngineOptions {
-  PersistenceProvider?: SNS_PersistenceProvider  // SQLite or IndexedDB
-  NetworkProvider?:     SNS_NetworkProvider       // WebSocket or WebRTC
-  PresenceProvider?:    SNS_PresenceProvider      // often the same as NetworkProvider
+interface SDS_SyncEngineOptions {
+  PersistenceProvider?: SDS_PersistenceProvider  // SQLite or IndexedDB
+  NetworkProvider?:     SDS_NetworkProvider       // WebSocket or WebRTC
+  PresenceProvider?:    SDS_PresenceProvider      // often the same as NetworkProvider
   BroadcastChannel?:    boolean                   // cross-tab relay (default: true in browser)
   PresenceTimeoutMs?:   number                    // peer inactivity timeout (default: 120 000 ms)
 }
@@ -108,14 +108,14 @@ All providers are optional. You can use any combination — for example persiste
 ### Persistence only — offline-capable local store
 
 ```typescript
-import { SNS_NoteStore }                  from '@rozek/sns-core'
-import { SNS_DesktopPersistenceProvider } from '@rozek/sns-persistence-node'
-import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
+import { SDS_NoteStore }                  from '@rozek/sds-core'
+import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_DesktopPersistenceProvider('./data', 'my-notes')
+const store = SDS_NoteStore.fromScratch()
+const persistence = new SDS_DesktopPersistenceProvider('./data', 'my-notes')
 
-const engine = new SNS_SyncEngine(store, { PersistenceProvider:persistence })
+const engine = new SDS_SyncEngine(store, { PersistenceProvider:persistence })
 await engine.start()
 
 const note = store.newNoteAt('text/plain', store.RootNote)
@@ -127,16 +127,16 @@ await engine.stop()  // writes checkpoint, closes DB
 ### Full stack — persistence + WebSocket + presence
 
 ```typescript
-import { SNS_NoteStore }                  from '@rozek/sns-core'
-import { SNS_BrowserPersistenceProvider } from '@rozek/sns-persistence-browser'
-import { SNS_WebSocketProvider }          from '@rozek/sns-network-websocket'
-import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
+import { SDS_NoteStore }                  from '@rozek/sds-core'
+import { SDS_BrowserPersistenceProvider } from '@rozek/sds-persistence-browser'
+import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SNS_NoteStore.fromScratch()
-const persistence = new SNS_BrowserPersistenceProvider('my-notes')
-const network = new SNS_WebSocketProvider('my-notes')
+const store = SDS_NoteStore.fromScratch()
+const persistence = new SDS_BrowserPersistenceProvider('my-notes')
+const network = new SDS_WebSocketProvider('my-notes')
 
-const engine = new SNS_SyncEngine(store, {
+const engine = new SDS_SyncEngine(store, {
   PersistenceProvider:persistence,
   NetworkProvider: network,
   PresenceProvider: network,

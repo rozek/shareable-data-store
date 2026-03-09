@@ -1,4 +1,4 @@
-# Test Plan — `@rozek/sns-websocket-server`
+# Test Plan — `@rozek/sds-websocket-server`
 
 ---
 
@@ -103,7 +103,7 @@ Verify that the SNS WebSocket server correctly authenticates clients, relays CRD
 
 ## Part IV — Persistence
 
-Persistence is tested via `LiveStore` directly with a real `SNS_DesktopPersistenceProvider`
+Persistence is tested via `LiveStore` directly with a real `SDS_DesktopPersistenceProvider`
 backed by a temporary SQLite file. Each test gets a fresh `mkdtemp` directory that is
 removed in `afterEach`.
 

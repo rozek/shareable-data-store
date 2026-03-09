@@ -1,4 +1,4 @@
-# Caddyfile — example configuration for SNS_WebSocketServer behind Caddy
+# Caddyfile — example configuration for SDS_WebSocketServer behind Caddy
 #
 # Caddy handles:
 #   - Automatic TLS via Let's Encrypt (HTTPS + WSS)

@@ -3,12 +3,12 @@
   "compilerOptions": {
     "outDir": "./dist",
     "paths": {
-      "@rozek/sns-core-jj":             ["../core-jj/src/sns-core-jj.ts"],
-      "@rozek/sns-core":                ["../core/src/sns-core.ts"],
-      "@rozek/sns-network-websocket":   ["../network-websocket/src/sns-network-websocket.ts"],
-      "@rozek/sns-network-webrtc":      ["../network-webrtc/src/sns-network-webrtc.ts"],
-      "@rozek/sns-persistence-browser": ["../persistence-browser/src/sns-persistence-browser.ts"],
-      "@rozek/sns-sync-engine":         ["../sync-engine/src/sns-sync-engine.ts"]
+      "@rozek/sds-core-jj":             ["../core-jj/src/sds-core-jj.ts"],
+      "@rozek/sds-core":                ["../core/src/sds-core.ts"],
+      "@rozek/sds-network-websocket":   ["../network-websocket/src/sds-network-websocket.ts"],
+      "@rozek/sds-network-webrtc":      ["../network-webrtc/src/sds-network-webrtc.ts"],
+      "@rozek/sds-persistence-browser": ["../persistence-browser/src/sds-persistence-browser.ts"],
+      "@rozek/sds-sync-engine":         ["../sync-engine/src/sds-sync-engine.ts"]
     }
   },
   "include": [

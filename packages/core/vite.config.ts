@@ -17,9 +17,9 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry:    resolve(__dirname, 'src/sns-core.ts'),
+      entry:    resolve(__dirname, 'src/sds-core.ts'),
       formats:  ['es'],
-      fileName: 'sns-core',
+      fileName: 'sds-core',
     },
     outDir: 'dist',
     rollupOptions: {

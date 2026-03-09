@@ -1,4 +1,4 @@
-# Test Cases — @rozek/sns-websocket-server
+# Test Cases — @rozek/sds-websocket-server
 
 ## SA — Auth
 

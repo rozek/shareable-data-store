@@ -11,14 +11,14 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   build: {
     lib: {
-      entry:    resolve(__dirname, 'src/sns-persistence-node.ts'),
+      entry:    resolve(__dirname, 'src/sds-persistence-node.ts'),
       formats:  ['es'],
-      fileName: 'sns-persistence-node',
+      fileName: 'sds-persistence-node',
     },
     outDir: 'dist',
     target: 'node22',
     rollupOptions: {
-      external: [/^node:/, '@rozek/sns-core', 'better-sqlite3'],
+      external: [/^node:/, '@rozek/sds-core', 'better-sqlite3'],
     },
   },
   plugins: [ dts({ rollupTypes:true }) ],

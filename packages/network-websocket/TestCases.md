@@ -1,4 +1,4 @@
-# Test Cases — @rozek/sns-network-websocket
+# Test Cases — @rozek/sds-network-websocket
 
 ## WC — Construction
 

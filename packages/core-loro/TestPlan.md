@@ -1,7 +1,7 @@
-# Test Plan — `@rozek/sns-core-loro`
+# Test Plan — `@rozek/sds-core-loro`
 
-This package implements the full SNS_NoteStore contract defined in
-[`@rozek/sns-core` TestPlan.md](../core/TestPlan.md).
+This package implements the full SDS_NoteStore contract defined in
+[`@rozek/sds-core` TestPlan.md](../core/TestPlan.md).
 
 All Parts I–XIII of the shared contract apply.  The sections below document
 how this backend satisfies the contract and where its behaviour differs from
@@ -67,7 +67,7 @@ No additional backend-specific test suites are defined for this package.
 
 ```bash
 # from the monorepo root:
-pnpm --filter @rozek/sns-core-loro test:run
+pnpm --filter @rozek/sds-core-loro test:run
 
 # from the package directory:
 cd packages/core-loro

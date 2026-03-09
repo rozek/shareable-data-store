@@ -1,6 +1,6 @@
 {
-  "name": "@rozek/sns-core-jj",
-  "description": "json-joy CRDT backend for shareable-notes-store",
+  "name": "@rozek/sds-core-jj",
+  "description": "json-joy CRDT backend for shareable-data-store",
   "version": "0.0.1",
   "keywords": [
     "crdt",
@@ -10,24 +10,24 @@
     "json-joy"
   ],
   "author": "Andreas Rozek",
-  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
     "directory": "packages/core-jj"
   },
   "bugs": {
-    "url": "https://github.com/rozek/shareable-notes-store/issues"
+    "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
   "type": "module",
-  "main": "./dist/sns-core-jj.js",
-  "module": "./dist/sns-core-jj.js",
-  "types": "./dist/sns-core-jj.d.ts",
+  "main": "./dist/sds-core-jj.js",
+  "module": "./dist/sds-core-jj.js",
+  "types": "./dist/sds-core-jj.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/sns-core-jj.js",
-      "types": "./dist/sns-core-jj.d.ts"
+      "import": "./dist/sds-core-jj.js",
+      "types": "./dist/sds-core-jj.d.ts"
     }
   },
   "files": [
@@ -41,11 +41,11 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@rozek/sns-core": "workspace:*",
+    "@rozek/sds-core": "workspace:*",
     "json-joy": ">=17"
   },
   "devDependencies": {
-    "@rozek/sns-core": "workspace:*",
+    "@rozek/sds-core": "workspace:*",
     "json-joy": "^17.65.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",
@@ -56,7 +56,7 @@
     "zod": "^3.22.0"
   },
   "dependencies": {
-    "@rozek/sns-core": "workspace:*",
+    "@rozek/sds-core": "workspace:*",
     "fflate": "^0.8.0",
     "fractional-indexing": "^3.2.0",
     "zod": "^3.22.0"

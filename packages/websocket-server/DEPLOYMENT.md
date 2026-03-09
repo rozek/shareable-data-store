@@ -1,6 +1,6 @@
-# SNS WebSocket Server — Deployment Guide
+# SDS WebSocket Server — Deployment Guide
 
-This document describes how to deploy `@rozek/sns-websocket-server` in production. There are two fundamentally different setups — choose one based on your requirements.
+This document describes how to deploy `@rozek/sds-websocket-server` in production. There are two fundamentally different setups — choose one based on your requirements.
 
 ---
 
@@ -17,13 +17,13 @@ Internet
             │  HTTP / WS (internal, port 3000)
             ▼
 ┌─────────────────────────┐
-│  sns-websocket-server   │  – JWT auth, patch relay, WebRTC signalling
+│  sds-websocket-server   │  – JWT auth, patch relay, WebRTC signalling
 │  port 3000 (internal)   │  – POST /api/token
-│                         │  – optional SQLite persistence (SNS_PERSIST_DIR)
+│                         │  – optional SQLite persistence (SDS_PERSIST_DIR)
 └─────────────────────────┘
 ```
 
-The SNS server acts as a **relay server** by default: clients synchronise their CRDT state with each other through it. When `SNS_PERSIST_DIR` is set the server additionally persists patches and snapshots to a per-store SQLite database, so late-joining clients can catch up without needing another peer to be online. TLS is handled entirely by Caddy.
+The SDS server acts as a **relay server** by default: clients synchronise their CRDT state with each other through it. When `SDS_PERSIST_DIR` is set the server additionally persists patches and snapshots to a per-store SQLite database, so late-joining clients can catch up without needing another peer to be online. TLS is handled entirely by Caddy.
 
 ---
 
@@ -58,15 +58,15 @@ The Docker image is built automatically by CI and pushed to the GitHub Container
 
 ```bash
 # 1. clone the repository (shallow clone is sufficient)
-git clone --depth=1 https://github.com/rozek/shareable-notes-store /opt/shareable-notes-store
+git clone --depth=1 https://github.com/rozek/shareable-data-store /opt/shareable-data-store
 
 # 2. copy the deployment scaffold to its target location
-cp -r /opt/shareable-notes-store/packages/websocket-server/deployment /opt/sns-websocket-server
-cd /opt/sns-websocket-server
+cp -r /opt/shareable-data-store/packages/websocket-server/deployment /opt/sds-websocket-server
+cd /opt/sds-websocket-server
 
 # 3. create the secrets file
 cp .env.example .env
-$EDITOR .env          # set SNS_JWT_SECRET, SNS_DOMAIN, ACME_EMAIL
+$EDITOR .env          # set SDS_JWT_SECRET, SDS_DOMAIN, ACME_EMAIL
 
 # 4. pull the pre-built image from GitHub Container Registry
 docker compose pull
@@ -74,7 +74,7 @@ docker compose pull
 # 5. (optional) restore a backup before the first start — see Backup & Restore below
 
 # 6. start both containers
-# (Docker creates the named volumes caddy_data and sns_stores automatically)
+# (Docker creates the named volumes caddy_data and sds_stores automatically)
 docker compose up -d
 
 # 7. follow the logs
@@ -85,11 +85,11 @@ docker compose logs -f
 
 ```bash
 # pull latest deployment files (keeps .env and data volumes untouched)
-git -C /opt/shareable-notes-store pull
-cp -r /opt/shareable-notes-store/packages/websocket-server/deployment/server /opt/sns-websocket-server/server
+git -C /opt/shareable-data-store pull
+cp -r /opt/shareable-data-store/packages/websocket-server/deployment/server /opt/sds-websocket-server/server
 
 # pull the new image and restart
-cd /opt/sns-websocket-server
+cd /opt/sds-websocket-server
 docker compose pull
 docker compose up -d
 ```
@@ -107,31 +107,31 @@ Use this only if your server has more than 1 GB RAM and you prefer to build the 
 
 ```bash
 # 1. clone the repository
-git clone --depth=1 https://github.com/rozek/shareable-notes-store /opt/shareable-notes-store
+git clone --depth=1 https://github.com/rozek/shareable-data-store /opt/shareable-data-store
 
 # 2. copy the deployment scaffold
-cp -r /opt/shareable-notes-store/packages/websocket-server/deployment /opt/sns-websocket-server
-cd /opt/sns-websocket-server
+cp -r /opt/shareable-data-store/packages/websocket-server/deployment /opt/sds-websocket-server
+cd /opt/sds-websocket-server
 
 # 3. create the secrets file
 cp .env.example .env
-$EDITOR .env          # set SNS_JWT_SECRET, SNS_DOMAIN, ACME_EMAIL
+$EDITOR .env          # set SDS_JWT_SECRET, SDS_DOMAIN, ACME_EMAIL
 
 # 4. build the package tarball
 #    pnpm install fetches a pre-built binary for better-sqlite3 where available.
 #    If no pre-built binary matches your platform/Node.js version, it falls back
 #    to compiling from source (build tools above must be installed in that case).
-#    Build tools are NOT needed in relay-only mode (no SNS_PERSIST_DIR).
+#    Build tools are NOT needed in relay-only mode (no SDS_PERSIST_DIR).
 #    (corepack is included in Node.js 22 and activates pnpm automatically)
-cd /opt/shareable-notes-store
+cd /opt/shareable-data-store
 corepack enable
 pnpm install
-pnpm --filter @rozek/sns-websocket-server build
-pnpm --filter @rozek/sns-websocket-server pack --pack-destination /tmp/sns-pack/
-mv /tmp/sns-pack/rozek-sns-websocket-server-*.tgz /opt/sns-websocket-server/server/sns-websocket-server.tgz
+pnpm --filter @rozek/sds-websocket-server build
+pnpm --filter @rozek/sds-websocket-server pack --pack-destination /tmp/sns-pack/
+mv /tmp/sns-pack/rozek-sds-websocket-server-*.tgz /opt/sds-websocket-server/server/sds-websocket-server.tgz
 
 # 5. build the Docker image (uses docker-compose.build.yml to add the build: section)
-cd /opt/sns-websocket-server
+cd /opt/sds-websocket-server
 docker compose -f docker-compose.yml -f docker-compose.build.yml build
 
 # 6. (optional) restore a backup before the first start — see Backup & Restore below
@@ -146,18 +146,18 @@ docker compose logs -f
 **Updating:**
 
 ```bash
-cd /opt/shareable-notes-store
+cd /opt/shareable-data-store
 git pull
-cp -r packages/websocket-server/deployment/server /opt/sns-websocket-server/server
+cp -r packages/websocket-server/deployment/server /opt/sds-websocket-server/server
 
 pnpm install
-pnpm --filter @rozek/sns-websocket-server build
+pnpm --filter @rozek/sds-websocket-server build
 cd packages/websocket-server
 pnpm pack --pack-destination /tmp/sns-pack/
 cd -
-mv /tmp/sns-pack/rozek-sns-websocket-server-*.tgz /opt/sns-websocket-server/server/sns-websocket-server.tgz
+mv /tmp/sns-pack/rozek-sds-websocket-server-*.tgz /opt/sds-websocket-server/server/sds-websocket-server.tgz
 
-cd /opt/sns-websocket-server
+cd /opt/sds-websocket-server
 docker compose -f docker-compose.yml -f docker-compose.build.yml build
 docker compose up -d
 ```
@@ -176,16 +176,16 @@ No persistence, no `better-sqlite3`, no compilation. Works on any server regardl
 
 ```bash
 # 1. create the working directory
-mkdir -p /opt/sns-websocket-server && cd /opt/sns-websocket-server
+mkdir -p /opt/sds-websocket-server && cd /opt/sds-websocket-server
 
 # 2. install server and dependencies — skip optional native addons
-npm install --no-optional @rozek/sns-websocket-server @hono/node-server @hono/node-ws hono jose
+npm install --no-optional @rozek/sds-websocket-server @hono/node-server @hono/node-ws hono jose
 
 # 3. create the entry point
 cat > server.mjs << 'EOF'
-import { createSNSServer } from '@rozek/sns-websocket-server'
+import { createSDSServer } from '@rozek/sds-websocket-server'
 
-const { start } = createSNSServer()
+const { start } = createSDSServer()
 start()
 EOF
 
@@ -193,16 +193,16 @@ EOF
 node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 # 5. start the server
-export SNS_JWT_SECRET=<paste-generated-secret-here>   # required
-export SNS_PORT=3000                                  # default: 3000
-export SNS_HOST=127.0.0.1                             # listen on loopback only
-export SNS_ISSUER=https://my-server.example.com       # optional
-# SNS_PERSIST_DIR is intentionally omitted — relay-only mode
+export SDS_JWT_SECRET=<paste-generated-secret-here>   # required
+export SDS_PORT=3000                                  # default: 3000
+export SDS_HOST=127.0.0.1                             # listen on loopback only
+export SDS_ISSUER=https://my-server.example.com       # optional
+# SDS_PERSIST_DIR is intentionally omitted — relay-only mode
 
 node server.mjs
 ```
 
-For a permanent setup, write the variables to `/etc/sns-websocket-server.env` and use a systemd unit with `EnvironmentFile=` instead of hardcoding secrets.
+For a permanent setup, write the variables to `/etc/sds-websocket-server.env` and use a systemd unit with `EnvironmentFile=` instead of hardcoding secrets.
 
 ---
 
@@ -212,18 +212,18 @@ For a permanent setup, write the variables to `/etc/sns-websocket-server.env` an
 
 ```bash
 # 1. create the working directory
-mkdir -p /opt/sns-websocket-server && cd /opt/sns-websocket-server
+mkdir -p /opt/sds-websocket-server && cd /opt/sds-websocket-server
 
 # 2. install server, persistence, and SQLite — pre-built binary only, no compilation fallback
 npm_config_build_from_source=false npm install \
-  @rozek/sns-websocket-server @rozek/sns-persistence-node better-sqlite3 \
+  @rozek/sds-websocket-server @rozek/sds-persistence-node better-sqlite3 \
   @hono/node-server @hono/node-ws hono jose
 
 # 3. create the entry point
 cat > server.mjs << 'EOF'
-import { createSNSServer } from '@rozek/sns-websocket-server'
+import { createSDSServer } from '@rozek/sds-websocket-server'
 
-const { start } = createSNSServer()
+const { start } = createSDSServer()
 start()
 EOF
 
@@ -231,13 +231,13 @@ EOF
 node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 # 5. create the persistence directory and start the server
-mkdir -p /var/lib/sns-websocket-server/stores
+mkdir -p /var/lib/sds-websocket-server/stores
 
-export SNS_JWT_SECRET=<paste-generated-secret-here>
-export SNS_PORT=3000
-export SNS_HOST=127.0.0.1
-export SNS_ISSUER=https://my-server.example.com                   # optional
-export SNS_PERSIST_DIR=/var/lib/sns-websocket-server/stores       # enables SQLite persistence
+export SDS_JWT_SECRET=<paste-generated-secret-here>
+export SDS_PORT=3000
+export SDS_HOST=127.0.0.1
+export SDS_ISSUER=https://my-server.example.com                   # optional
+export SDS_PERSIST_DIR=/var/lib/sds-websocket-server/stores       # enables SQLite persistence
 
 node server.mjs
 ```
@@ -253,28 +253,28 @@ Build on a development machine or in CI (where RAM is plentiful), ship only the 
 **On your dev machine / in CI:**
 
 ```bash
-pnpm --filter @rozek/sns-websocket-server build
+pnpm --filter @rozek/sds-websocket-server build
 cd packages/websocket-server
 pnpm pack --pack-destination /tmp/sns-pack/
 cd -
-scp /tmp/sns-pack/rozek-sns-websocket-server-*.tgz user@server:/opt/sns-websocket-server/
+scp /tmp/sns-pack/rozek-sds-websocket-server-*.tgz user@server:/opt/sds-websocket-server/
 ```
 
 **On the server:**
 
 ```bash
 # 1. create the working directory
-mkdir -p /opt/sns-websocket-server && cd /opt/sns-websocket-server
+mkdir -p /opt/sds-websocket-server && cd /opt/sds-websocket-server
 
 # 2. install from the tarball — no compilation whatsoever
-npm install --no-optional ./rozek-sns-websocket-server-*.tgz \
+npm install --no-optional ./rozek-sds-websocket-server-*.tgz \
   @hono/node-server @hono/node-ws hono jose
 
 # 3. create the entry point
 cat > server.mjs << 'EOF'
-import { createSNSServer } from '@rozek/sns-websocket-server'
+import { createSDSServer } from '@rozek/sds-websocket-server'
 
-const { start } = createSNSServer()
+const { start } = createSDSServer()
 start()
 EOF
 
@@ -282,12 +282,12 @@ EOF
 node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 # 5. start the server
-export SNS_JWT_SECRET=<paste-generated-secret-here>
-export SNS_PORT=3000
-export SNS_HOST=127.0.0.1
-export SNS_ISSUER=https://my-server.example.com   # optional
-# add SNS_PERSIST_DIR if you want SQLite persistence:
-# export SNS_PERSIST_DIR=/var/lib/sns-websocket-server/stores
+export SDS_JWT_SECRET=<paste-generated-secret-here>
+export SDS_PORT=3000
+export SDS_HOST=127.0.0.1
+export SDS_ISSUER=https://my-server.example.com   # optional
+# add SDS_PERSIST_DIR if you want SQLite persistence:
+# export SDS_PERSIST_DIR=/var/lib/sds-websocket-server/stores
 
 node server.mjs
 ```
@@ -297,7 +297,7 @@ node server.mjs
 ## Directory Structure After Setup (Docker variants)
 
 ```
-/opt/sns-websocket-server/
+/opt/sds-websocket-server/
 ├── docker-compose.yml
 ├── .env                   ← secrets (never commit this file!)
 ├── .env.example           ← template (safe to commit)
@@ -307,11 +307,11 @@ node server.mjs
     ├── Dockerfile
     ├── package.json
     ├── server.mjs              ← entry point
-    └── sns-websocket-server.tgz  ← only for Setup A2 (built locally)
+    └── sds-websocket-server.tgz  ← only for Setup A2 (built locally)
 
-Docker named volumes (managed by Docker, independent of /opt/sns-websocket-server/):
+Docker named volumes (managed by Docker, independent of /opt/sds-websocket-server/):
   caddy_data    ← TLS certificates
-  sns_stores    ← SQLite databases, one per store
+  sds_stores    ← SQLite databases, one per store
 ```
 
 ---
@@ -330,16 +330,16 @@ Key variables:
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `SNS_JWT_SECRET` | **yes** | HS256 signing secret — at least 32 random bytes, base64url-encoded |
-| `SNS_ISSUER` | no | Validated as the `iss` claim in JWTs |
-| `SNS_HOST` | no | Bind address inside the container (default: `0.0.0.0`) |
-| `SNS_PORT` | no | Port inside the container (default: `3000`) |
-| `SNS_PERSIST_DIR` | no | Enable SQLite persistence. Must match the container-side mount path from `docker-compose.yml` — with the default configuration use `/data/stores`. Without Docker any writable directory path on the host works. |
+| `SDS_JWT_SECRET` | **yes** | HS256 signing secret — at least 32 random bytes, base64url-encoded |
+| `SDS_ISSUER` | no | Validated as the `iss` claim in JWTs |
+| `SDS_HOST` | no | Bind address inside the container (default: `0.0.0.0`) |
+| `SDS_PORT` | no | Port inside the container (default: `3000`) |
+| `SDS_PERSIST_DIR` | no | Enable SQLite persistence. Must match the container-side mount path from `docker-compose.yml` — with the default configuration use `/data/stores`. Without Docker any writable directory path on the host works. |
 | *(custom)* | no | Add one variable per additional service subdomain (e.g. `WIKI_DOMAIN=wiki.example.com`) and reference it in the Caddyfile. |
-| `SNS_DOMAIN` | **yes** (Docker) | Subdomain for the SNS server — Caddy requests a TLS certificate for it automatically |
+| `SDS_DOMAIN` | **yes** (Docker) | Subdomain for the SDS server — Caddy requests a TLS certificate for it automatically |
 | `ACME_EMAIL` | **yes** (Docker) | E-mail address for Let's Encrypt notifications (shared across all subdomains) |
 
-Generate a strong `SNS_JWT_SECRET`:
+Generate a strong `SDS_JWT_SECRET`:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
@@ -352,13 +352,13 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 An admin token is required to issue further tokens via `POST /api/token`. Create one **locally** using `generate-admin-token.mjs` — no running server needed:
 
 ```bash
-SNS_JWT_SECRET=$(grep SNS_JWT_SECRET /opt/sns-websocket-server/.env | cut -d= -f2) \
+SDS_JWT_SECRET=$(grep SDS_JWT_SECRET /opt/sds-websocket-server/.env | cut -d= -f2) \
   STORE_ID=my-store-42 \
   SUBJECT=admin@example.com \
-  node /opt/sns-websocket-server/generate-admin-token.mjs
+  node /opt/sds-websocket-server/generate-admin-token.mjs
 ```
 
-The script reads `SNS_JWT_SECRET`, `STORE_ID`, `SUBJECT`, and optionally `EXPIRES_IN` (default: `90d`) from the environment and prints the signed JWT to stdout.
+The script reads `SDS_JWT_SECRET`, `STORE_ID`, `SUBJECT`, and optionally `EXPIRES_IN` (default: `90d`) from the environment and prints the signed JWT to stdout.
 
 ---
 
@@ -368,10 +368,10 @@ With the admin token you can issue further tokens at runtime, e.g. for individua
 
 ```bash
 ADMIN_TOKEN="<admin-token-from-above>"
-SNS_DOMAIN="notes.example.com"
+SDS_DOMAIN="notes.example.com"
 STORE_ID="my-store-42"
 
-curl -s -X POST "https://${SNS_DOMAIN}/api/token" \
+curl -s -X POST "https://${SDS_DOMAIN}/api/token" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -393,22 +393,22 @@ Available `scope` values:
 
 ## Connect a Client
 
-Clients connect to the server via `SNS_SyncEngine`:
+Clients connect to the server via `SDS_SyncEngine`:
 
 ```ts
-import { SNS_SyncEngine }        from '@rozek/sns-sync-engine'
-import { SNS_WebSocketProvider } from '@rozek/sns-network-websocket'
-import { SNS_NoteStore }         from '@rozek/sns-core-jj'  // or -yjs / -loro
+import { SDS_SyncEngine }        from '@rozek/sds-sync-engine'
+import { SDS_WebSocketProvider } from '@rozek/sds-network-websocket'
+import { SDS_NoteStore }         from '@rozek/sds-core-jj'  // or -yjs / -loro
 
-const Store   = SNS_NoteStore.fromScratch()
+const Store   = SDS_NoteStore.fromScratch()
 const Token   = '<jwt-token-with-write-scope>'
 const StoreId = 'my-store-42'
 
-const NetworkProvider = new SNS_WebSocketProvider({
-  url:`wss://${SNS_DOMAIN}/ws/${StoreId}?token=${Token}`,
+const NetworkProvider = new SDS_WebSocketProvider({
+  url:`wss://${SDS_DOMAIN}/ws/${StoreId}?token=${Token}`,
 })
 
-const SyncEngine = new SNS_SyncEngine(Store, { NetworkProvider })
+const SyncEngine = new SDS_SyncEngine(Store, { NetworkProvider })
 await SyncEngine()
 ```
 
@@ -419,7 +419,7 @@ await SyncEngine()
 ### Logs
 
 ```bash
-docker compose logs -f sns-websocket-server   # application logs
+docker compose logs -f sds-websocket-server   # application logs
 docker compose logs -f caddy                  # TLS / proxy logs
 ```
 
@@ -427,12 +427,12 @@ docker compose logs -f caddy                  # TLS / proxy logs
 
 ```bash
 docker compose ps
-docker inspect sns-websocket-server | grep -A5 Health
+docker inspect sds-websocket-server | grep -A5 Health
 ```
 
 ### Backup & Restore
 
-The persistent data lives in two named Docker volumes that are independent of `/opt/sns-websocket-server/`. Access them via a temporary Alpine container. The backup archives are written to the **current working directory** on the host (`$(pwd)`).
+The persistent data lives in two named Docker volumes that are independent of `/opt/sds-websocket-server/`. Access them via a temporary Alpine container. The backup archives are written to the **current working directory** on the host (`$(pwd)`).
 
 **Backup:**
 
@@ -443,11 +443,11 @@ docker run --rm \
   -v $(pwd):/backup \
   alpine tar czf /backup/caddy_data.tar.gz /data
 
-# SQLite stores (only needed when SNS_PERSIST_DIR is set)
+# SQLite stores (only needed when SDS_PERSIST_DIR is set)
 docker run --rm \
-  -v sns_stores:/data \
+  -v sds_stores:/data \
   -v $(pwd):/backup \
-  alpine tar czf /backup/sns_stores.tar.gz /data
+  alpine tar czf /backup/sds_stores.tar.gz /data
 ```
 
 **Restore:**
@@ -461,9 +461,9 @@ docker run --rm \
 
 # SQLite stores
 docker run --rm \
-  -v sns_stores:/data \
+  -v sds_stores:/data \
   -v $(pwd):/backup \
-  alpine tar xzf /backup/sns_stores.tar.gz -C /
+  alpine tar xzf /backup/sds_stores.tar.gz -C /
 
 # then start the containers as usual
 docker compose up -d
@@ -492,11 +492,11 @@ echo | openssl s_client \
 
 ## Security Notes
 
-- `SNS_JWT_SECRET` must have at least 256 bits of entropy (≥ 32 random bytes, base64url-encoded).
-- Protect the `.env` file: `chmod 600 /opt/sns-websocket-server/.env`
+- `SDS_JWT_SECRET` must have at least 256 bits of entropy (≥ 32 random bytes, base64url-encoded).
+- Protect the `.env` file: `chmod 600 /opt/sds-websocket-server/.env`
 - Admin tokens should have a short lifetime and be rotated after use.
-- The SNS server is **not** intended for direct internet exposure — `SNS_HOST=0.0.0.0` applies only within the Docker network; Caddy is the sole publicly reachable service.
+- The SDS server is **not** intended for direct internet exposure — `SDS_HOST=0.0.0.0` applies only within the Docker network; Caddy is the sole publicly reachable service.
 - In multi-tenant setups each store should have its own `aud` claim and separate admin tokens.
 - TLS certificates are stored in the named Docker volume `caddy_data` — back it up regularly (see Backup & Restore above).
-- When `SNS_PERSIST_DIR` is set, back up the named Docker volume `sns_stores` regularly — it contains the authoritative CRDT state for all stores (see Backup & Restore above).
-- In relay-only mode (no `SNS_PERSIST_DIR`) the server holds no persistent state; a restart is safe at any time.
+- When `SDS_PERSIST_DIR` is set, back up the named Docker volume `sds_stores` regularly — it contains the authoritative CRDT state for all stores (see Backup & Restore above).
+- In relay-only mode (no `SDS_PERSIST_DIR`) the server holds no persistent state; a restart is safe at any time.

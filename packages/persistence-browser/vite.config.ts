@@ -11,13 +11,13 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   build: {
     lib: {
-      entry:    resolve(__dirname, 'src/sns-persistence-browser.ts'),
+      entry:    resolve(__dirname, 'src/sds-persistence-browser.ts'),
       formats:  ['es'],
-      fileName: 'sns-persistence-browser',
+      fileName: 'sds-persistence-browser',
     },
     outDir: 'dist',
     rollupOptions: {
-      external: ['@rozek/sns-core'],
+      external: ['@rozek/sds-core'],
     },
   },
   plugins: [ dts({ rollupTypes:true }) ],

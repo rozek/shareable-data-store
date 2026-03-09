@@ -1,10 +1,10 @@
-# Test Plan — `@rozek/sns-persistence-browser`
+# Test Plan — `@rozek/sds-persistence-browser`
 
 ---
 
 ## Goal
 
-Verify that `SNS_BrowserPersistenceProvider` correctly persists and restores snapshots, patches, and large value blobs via IndexedDB.
+Verify that `SDS_BrowserPersistenceProvider` correctly persists and restores snapshots, patches, and large value blobs via IndexedDB.
 
 ---
 
@@ -17,7 +17,7 @@ Verify that `SNS_BrowserPersistenceProvider` correctly persists and restores sna
 - Value blob save / load / ref-counted release
 
 **Out of scope:**
-- Integration with `SNS_NoteStore` (covered by sync-engine tests)
+- Integration with `SDS_NoteStore` (covered by sync-engine tests)
 - Cross-origin or cross-tab isolation (browser policy)
 
 ---

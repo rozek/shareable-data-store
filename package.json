@@ -1,5 +1,5 @@
 {
-  "name": "shareable-notes-store",
+  "name": "shareable-data-store",
   "description": "a CRDT-based, offline-capable, syncable tree of notes for Browser and Node.js with JSON JOY, Y.js or Loro underneath",
   "keywords": [
     "crdt",
@@ -13,13 +13,13 @@
     "indexeddb"
   ],
   "author": "Andreas Rozek",
-  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rozek/shareable-notes-store.git"
+    "url": "git+https://github.com/rozek/shareable-data-store.git"
   },
   "bugs": {
-    "url": "https://github.com/rozek/shareable-notes-store/issues"
+    "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
   "private": true,

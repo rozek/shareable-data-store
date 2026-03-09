@@ -2,7 +2,7 @@
 // Generates a signed admin JWT using only Node.js built-ins (no npm install needed).
 //
 // Required environment variables:
-//   SNS_JWT_SECRET  — the same base64url-encoded secret the server uses
+//   SDS_JWT_SECRET  — the same base64url-encoded secret the server uses
 //   STORE_ID        — e.g. 'my-store-42'
 //   SUBJECT         — e.g. 'admin@example.com'
 //
@@ -10,7 +10,7 @@
 //   EXPIRES_IN      — e.g. '90d', '24h', '30m' (default: '90d')
 //
 // Example:
-//   SNS_JWT_SECRET=$(grep SNS_JWT_SECRET /opt/sns-websocket-server/.env | cut -d= -f2) \
+//   SDS_JWT_SECRET=$(grep SDS_JWT_SECRET /opt/sds-websocket-server/.env | cut -d= -f2) \
 //     STORE_ID=my-store-42 \
 //     SUBJECT=admin@example.com \
 //     node generate-admin-token.mjs
@@ -31,13 +31,13 @@ function parseExpiry (str) {
   return parseInt(match[1]) * multipliers[match[2]]
 }
 
-const Secret    = process.env.SNS_JWT_SECRET
+const Secret    = process.env.SDS_JWT_SECRET
 const StoreId   = process.env.STORE_ID
 const Subject   = process.env.SUBJECT
 const ExpiresIn = process.env.EXPIRES_IN ?? '90d'
 
 if (!Secret || !StoreId || !Subject) {
-  console.error('Error: please set SNS_JWT_SECRET, STORE_ID and SUBJECT')
+  console.error('Error: please set SDS_JWT_SECRET, STORE_ID and SUBJECT')
   process.exit(1)
 }
 

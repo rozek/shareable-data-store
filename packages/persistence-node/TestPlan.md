@@ -1,10 +1,10 @@
-# Test Plan — `@rozek/sns-persistence-node`
+# Test Plan — `@rozek/sds-persistence-node`
 
 ---
 
 ## Goal
 
-Verify that `SNS_DesktopPersistenceProvider` reliably persists and restores snapshots, patches, and large value blobs via SQLite (`better-sqlite3`).
+Verify that `SDS_DesktopPersistenceProvider` reliably persists and restores snapshots, patches, and large value blobs via SQLite (`better-sqlite3`).
 
 ---
 
@@ -17,7 +17,7 @@ Verify that `SNS_DesktopPersistenceProvider` reliably persists and restores snap
 - Value blob save / load / ref-counted release
 
 **Out of scope:**
-- Integration with `SNS_NoteStore` (covered by `@rozek/sns-sync-engine` tests)
+- Integration with `SDS_NoteStore` (covered by `@rozek/sds-sync-engine` tests)
 - Concurrent access from multiple processes
 
 ---

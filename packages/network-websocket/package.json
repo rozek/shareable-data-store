@@ -1,26 +1,26 @@
 {
-  "name": "@rozek/sns-network-websocket",
-  "description": "WebSocket sync + presence provider for shareable-notes-store",
+  "name": "@rozek/sds-network-websocket",
+  "description": "WebSocket sync + presence provider for shareable-data-store",
   "version": "0.0.1",
   "author": "Andreas Rozek",
-  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
     "directory": "packages/network-websocket"
   },
   "bugs": {
-    "url": "https://github.com/rozek/shareable-notes-store/issues"
+    "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
   "type": "module",
-  "main": "./dist/sns-network-websocket.js",
-  "module": "./dist/sns-network-websocket.js",
-  "types": "./dist/sns-network-websocket.d.ts",
+  "main": "./dist/sds-network-websocket.js",
+  "module": "./dist/sds-network-websocket.js",
+  "types": "./dist/sds-network-websocket.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/sns-network-websocket.js",
-      "types": "./dist/sns-network-websocket.d.ts"
+      "import": "./dist/sds-network-websocket.js",
+      "types": "./dist/sds-network-websocket.d.ts"
     }
   },
   "files": [
@@ -34,10 +34,10 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@rozek/sns-core": "workspace:*"
+    "@rozek/sds-core": "workspace:*"
   },
   "devDependencies": {
-    "@rozek/sns-core": "workspace:*",
+    "@rozek/sds-core": "workspace:*",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0",

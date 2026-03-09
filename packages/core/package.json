@@ -1,6 +1,6 @@
 {
-  "name": "@rozek/sns-core",
-  "description": "Backend-agnostic shared types and interfaces for shareable-notes-store",
+  "name": "@rozek/sds-core",
+  "description": "Backend-agnostic shared types and interfaces for shareable-data-store",
   "version": "0.0.1",
   "keywords": [
     "crdt",
@@ -9,24 +9,24 @@
     "offline-first"
   ],
   "author": "Andreas Rozek",
-  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
     "directory": "packages/core"
   },
   "bugs": {
-    "url": "https://github.com/rozek/shareable-notes-store/issues"
+    "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
   "type": "module",
-  "main": "./dist/sns-core.js",
-  "module": "./dist/sns-core.js",
-  "types": "./dist/sns-core.d.ts",
+  "main": "./dist/sds-core.js",
+  "module": "./dist/sds-core.js",
+  "types": "./dist/sds-core.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/sns-core.js",
-      "types": "./dist/sns-core.d.ts"
+      "import": "./dist/sds-core.js",
+      "types": "./dist/sds-core.d.ts"
     }
   },
   "files": [

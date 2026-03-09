@@ -1,7 +1,7 @@
-# Test Plan — `@rozek/sns-core-jj`
+# Test Plan — `@rozek/sds-core-jj`
 
-This package implements the full SNS_NoteStore contract defined in
-[`@rozek/sns-core` TestPlan.md](../core/TestPlan.md).
+This package implements the full SDS_NoteStore contract defined in
+[`@rozek/sds-core` TestPlan.md](../core/TestPlan.md).
 
 All Parts I–XIII of the shared contract apply without modification, with the
 following addition: as the json-joy backend uses a **canonical empty snapshot**,
@@ -12,7 +12,7 @@ two extra construction tests (JJ-C-01 and JJ-C-02) verify its integrity.
 ## Goal
 
 Verify that the json-joy CRDT backend exposes the correct observable API and
-that all public symbols are correctly exported from the `@rozek/sns-core-jj`
+that all public symbols are correctly exported from the `@rozek/sds-core-jj`
 entry point.
 
 ---
@@ -28,13 +28,13 @@ entry point.
 ## Additional tests — Export Smoke Tests
 
 These tests verify that every public symbol can be imported from
-`@rozek/sns-core-jj` and that the json-joy backend is wired up correctly.
+`@rozek/sds-core-jj` and that the json-joy backend is wired up correctly.
 
-- **JJ-01** — `SNS_Error` is exported and constructible
-- **JJ-02** — `SNS_NoteStore` factory methods are exported
-- **JJ-03** — `SNS_Entry`, `SNS_Note`, `SNS_Link` classes are exported
+- **JJ-01** — `SDS_Error` is exported and constructible
+- **JJ-02** — `SDS_NoteStore` factory methods are exported
+- **JJ-03** — `SDS_Entry`, `SDS_Note`, `SDS_Link` classes are exported
 - **JJ-04** — `fromScratch()` produces a working store with well-known notes
-- **JJ-05** — Instances are `SNS_Note` / `SNS_Link` (correct prototypes)
+- **JJ-05** — Instances are `SDS_Note` / `SDS_Link` (correct prototypes)
 - **JJ-06** — Two independent stores can exchange patches
 
 ---
@@ -65,7 +65,7 @@ are specific to the canonical snapshot mechanism:
 
 ```bash
 # from the monorepo root:
-pnpm --filter @rozek/sns-core-jj test:run
+pnpm --filter @rozek/sds-core-jj test:run
 
 # from the package directory:
 cd packages/core-jj

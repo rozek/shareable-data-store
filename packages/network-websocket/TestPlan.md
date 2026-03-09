@@ -1,10 +1,10 @@
-# Test Plan — `@rozek/sns-network-websocket`
+# Test Plan — `@rozek/sds-network-websocket`
 
 ---
 
 ## Goal
 
-Verify that `SNS_WebSocketProvider` correctly implements the binary wire protocol, manages connection state, handles automatic reconnect, and provides the presence API.
+Verify that `SDS_WebSocketProvider` correctly implements the binary wire protocol, manages connection state, handles automatic reconnect, and provides the presence API.
 
 ---
 
@@ -20,7 +20,7 @@ Verify that `SNS_WebSocketProvider` correctly implements the binary wire protoco
 - Presence tracking — `PeerSet` maintained from incoming `PRESENCE` frames
 
 **Out of scope:**
-- Real WebSocket server (integration with `@rozek/sns-websocket-server`)
+- Real WebSocket server (integration with `@rozek/sds-websocket-server`)
 - JWT validation (done server-side)
 
 ---

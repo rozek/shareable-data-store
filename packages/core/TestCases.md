@@ -1,26 +1,26 @@
-# Test Cases — SNS_NoteStore Contract
+# Test Cases — SDS_NoteStore Contract
 
-Shared test cases for all `@rozek/sns-core-*` backend packages.
+Shared test cases for all `@rozek/sds-core-*` backend packages.
 Every backend must implement and pass every test case listed here.
 Backend-specific additions are documented in each backend's own `TestCases.md`.
 
 ---
 
-## SNS_Error.test.ts
+## SDS_Error.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
-| E-01 | `new SNS_Error('foo', 'bar message')` | `err.Code === 'foo'`, `err.message === 'bar message'`, `err instanceof Error` |
-| E-02 | `err.name` | `'SNS_Error'` |
-| E-03 | `err instanceof SNS_Error` | `true` |
+| E-01 | `new SDS_Error('foo', 'bar message')` | `err.Code === 'foo'`, `err.message === 'bar message'`, `err instanceof Error` |
+| E-02 | `err.name` | `'SDS_Error'` |
+| E-03 | `err instanceof SDS_Error` | `true` |
 
 ---
 
-## SNS_NoteStore.construction.test.ts
+## SDS_NoteStore.construction.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
-| C-01 | `fromScratch()` returns a store | instance of `SNS_NoteStore` |
+| C-01 | `fromScratch()` returns a store | instance of `SDS_NoteStore` |
 | C-02 | fresh store has `RootNote` | `RootNote.Id === '00000000-0000-4000-8000-000000000000'` |
 | C-03 | fresh store has `TrashNote` | `TrashNote.Id === '00000000-0000-4000-8000-000000000001'` |
 | C-04 | fresh store has `LostAndFoundNote` | `LostAndFoundNote.Id === '00000000-0000-4000-8000-000000000002'` |
@@ -34,7 +34,7 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 
 ---
 
-## SNS_NoteStore.wellKnown.test.ts
+## SDS_NoteStore.wellKnown.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
@@ -55,26 +55,26 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 
 ---
 
-## SNS_NoteStore.creation.test.ts
+## SDS_NoteStore.creation.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
-| N-01 | `newNoteAt('text/plain', RootNote)` returns `SNS_Note` | `entry.isNote === true` |
+| N-01 | `newNoteAt('text/plain', RootNote)` returns `SDS_Note` | `entry.isNote === true` |
 | N-02 | note has correct MIME type | `note.Type === 'text/plain'` |
 | N-03 | note appears in `RootNote.innerEntryList` | inner list contains note.Id |
 | N-04 | note has `outerNote === RootNote` | `note.outerNote?.Id === RootNote.Id` |
-| N-05 | `newLinkAt(target, RootNote)` returns `SNS_Link` | `entry.isLink === true` |
+| N-05 | `newLinkAt(target, RootNote)` returns `SDS_Link` | `entry.isLink === true` |
 | N-06 | link has correct Target | `link.Target.Id === target.Id` |
 | N-07 | link appears in `RootNote.innerEntryList` | inner list contains link.Id |
 | N-08 | `EntryWithId(note.Id)` returns the note | `result?.Id === note.Id` |
 | N-09 | `EntryWithId('nonexistent-id')` | `undefined` |
-| N-10 | `newNoteAt` with invalid MIMEType (empty string) throws `SNS_Error('invalid-argument')` | throws with `Code === 'invalid-argument'` |
-| N-11 | `newLinkAt` with non-existent target throws | throws `SNS_Error` |
-| N-12 | `newNoteAt` with non-note container throws | throws `SNS_Error` |
+| N-10 | `newNoteAt` with invalid MIMEType (empty string) throws `SDS_Error('invalid-argument')` | throws with `Code === 'invalid-argument'` |
+| N-11 | `newLinkAt` with non-existent target throws | throws `SDS_Error` |
+| N-12 | `newNoteAt` with non-note container throws | throws `SDS_Error` |
 
 ---
 
-## SNS_NoteStore.labelInfo.test.ts
+## SDS_NoteStore.labelInfo.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
@@ -86,11 +86,11 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 | L-06 | Info set fires ChangeSet with `'Info.tag'` | ChangeSet includes `note.Id → {'Info.tag'}` |
 | L-07 | `delete note.Info['tag']` removes key | `note.Info['tag'] === undefined` |
 | L-08 | Info delete fires ChangeSet with `'Info.tag'` | ChangeSet includes `note.Id → {'Info.tag'}` |
-| L-09 | Label setter with non-string throws `SNS_Error('invalid-argument')` | throws |
+| L-09 | Label setter with non-string throws `SDS_Error('invalid-argument')` | throws |
 
 ---
 
-## SNS_NoteStore.value.test.ts
+## SDS_NoteStore.value.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
@@ -106,13 +106,13 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 | V-10 | large string (> LiteralSizeLimit) → `ValueKind === 'literal-reference'` | `true` |
 | V-11 | large binary (> 2KB) → `ValueKind === 'binary-reference'` | `true` |
 | V-12 | `changeValue(0, 5, 'Bye')` on literal replaces range | `readValue()` reflects splice |
-| V-13 | `changeValue()` on non-literal throws `SNS_Error('change-value-not-literal')` | throws |
+| V-13 | `changeValue()` on non-literal throws `SDS_Error('change-value-not-literal')` | throws |
 | V-14 | value change fires ChangeSet with `'Value'` | ChangeSet includes `note.Id → {'Value'}` |
 | V-15 | `writeValue(undefined)` on existing value → `ValueKind === 'none'` | `true` |
 
 ---
 
-## SNS_NoteStore.ordering.test.ts
+## SDS_NoteStore.ordering.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
@@ -126,7 +126,7 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 
 ---
 
-## SNS_NoteStore.move.test.ts
+## SDS_NoteStore.move.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
@@ -136,7 +136,7 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 | M-04 | `moveEntryTo` fires ChangeSet with `'outerNote'` for entry, `'innerEntryList'` for old and new containers | all three entries in ChangeSet |
 | M-05 | `mayBeMovedTo` returns `true` for a valid move | `true` |
 | M-06 | `mayBeMovedTo` returns `false` when Container is a descendant (cycle) | `false` |
-| M-07 | `moveEntryTo` into descendant throws `SNS_Error('move-would-cycle')` | throws |
+| M-07 | `moveEntryTo` into descendant throws `SDS_Error('move-would-cycle')` | throws |
 | M-08 | TrashNote `mayBeMovedTo(RootNote)` → `true` | `true` |
 | M-09 | TrashNote `mayBeMovedTo(innerNote)` → `false` | `false` |
 | M-10 | RootNote cannot be moved | `mayBeMovedTo(…)` returns `false` |
@@ -145,21 +145,21 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 
 ---
 
-## SNS_NoteStore.delete.test.ts
+## SDS_NoteStore.delete.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
 | D-01 | `deleteEntry(note)` moves note to TrashNote | `note.outerNote?.Id === TrashNote.Id` |
 | D-02 | deleted note's children are also in TrashNote | all descendants have outerNote chain leading to Trash |
 | D-03 | `deleteEntry` fires ChangeSet with `'outerNote'` and `'innerEntryList'` | both present |
-| D-04 | `deleteEntry(RootNote)` throws `SNS_Error('delete-not-permitted')` | throws |
+| D-04 | `deleteEntry(RootNote)` throws `SDS_Error('delete-not-permitted')` | throws |
 | D-05 | `deleteEntry(TrashNote)` throws | throws |
 | D-06 | `deleteEntry(LostAndFoundNote)` throws | throws |
-| D-07 | `purgeEntry(note)` on note not in TrashNote throws `SNS_Error('purge-not-in-trash')` | throws |
+| D-07 | `purgeEntry(note)` on note not in TrashNote throws `SDS_Error('purge-not-in-trash')` | throws |
 | D-08 | `purgeEntry(note)` on note in TrashNote removes it | `EntryWithId(note.Id) === undefined` |
-| D-09 | `purgeEntry(note)` when note has incoming link from RootNote tree → throws `purge-protected` | `SNS_Error({ Code:'purge-protected' })`; entry still exists |
+| D-09 | `purgeEntry(note)` when note has incoming link from RootNote tree → throws `purge-protected` | `SDS_Error({ Code:'purge-protected' })`; entry still exists |
 | D-12 | `note.delete()` equivalent to `store.deleteEntry(note)` | note in Trash |
-| D-13 | `note.purge()` throws if note not in Trash | `SNS_Error('purge-not-in-trash')` |
+| D-13 | `note.purge()` throws if note not in Trash | `SDS_Error('purge-not-in-trash')` |
 | D-14 | `deleteEntry` records `_trashedAt` in `Info` as a number ≥ time before the call | `typeof note.Info['_trashedAt'] === 'number'`; value ≥ `Before` |
 | D-15 | `purgeExpiredTrashEntries(60_000)` purges entry trashed 90 s ago | returns 1; `EntryWithId(Note.Id) === undefined` |
 | D-16 | `purgeExpiredTrashEntries(86_400_000)` skips entry trashed just now | returns 0; entry still present |
@@ -171,7 +171,7 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 
 ---
 
-## SNS_NoteStore.serialization.test.ts
+## SDS_NoteStore.serialization.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
@@ -186,7 +186,7 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 
 ---
 
-## SNS_NoteStore.events.test.ts
+## SDS_NoteStore.events.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
@@ -203,7 +203,7 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 
 ---
 
-## SNS_NoteStore.sync.test.ts
+## SDS_NoteStore.sync.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
@@ -218,7 +218,7 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 
 ---
 
-## SNS_NoteStore.import.test.ts
+## SDS_NoteStore.import.test.ts
 
 | # | Test case | Expected result |
 |---|---|---|
@@ -228,4 +228,4 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 | I-04 | imported note has same MIME type | Types equal |
 | I-05 | nested notes are imported with their structure | inner-entry count matches |
 | I-06 | `deserializeLinkInto(link.asJSON(), RootNote)` imports the link | new link in RootNote's inner list |
-| I-07 | invalid serialisation throws `SNS_Error('invalid-argument')` | throws |
+| I-07 | invalid serialisation throws `SDS_Error('invalid-argument')` | throws |

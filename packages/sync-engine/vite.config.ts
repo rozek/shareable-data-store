@@ -11,13 +11,13 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   build: {
     lib: {
-      entry:    resolve(__dirname, 'src/sns-sync-engine.ts'),
+      entry:    resolve(__dirname, 'src/sds-sync-engine.ts'),
       formats:  ['es'],
-      fileName: 'sns-sync-engine',
+      fileName: 'sds-sync-engine',
     },
     outDir: 'dist',
     rollupOptions: {
-      external: ['@rozek/sns-core'],
+      external: ['@rozek/sds-core'],
     },
   },
   plugins: [ dts({ rollupTypes:true }) ],

@@ -1,4 +1,4 @@
-# Test Cases — @rozek/sns-persistence-browser
+# Test Cases — @rozek/sds-persistence-browser
 
 ## BC — Construction
 

@@ -14,14 +14,14 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry:    resolve(__dirname, 'src/sns-core-yjs.ts'),
+      entry:    resolve(__dirname, 'src/sds-core-yjs.ts'),
       formats:  ['es'],
-      fileName: 'sns-core-yjs',
+      fileName: 'sds-core-yjs',
     },
     outDir: 'dist',
     rollupOptions: {
       // yjs, fflate, fractional-indexing, zod are bundled (not peer deps)
-      external: [/^@rozek\/sns-core/],
+      external: [/^@rozek\/sds-core/],
     },
   },
   plugins: [

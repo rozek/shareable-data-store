@@ -1,38 +1,38 @@
 {
-  "name": "@rozek/sns-websocket-server",
-  "description": "WebSocket server for shareable-notes-store (Hono, JWT auth, multi-store)",
+  "name": "@rozek/sds-websocket-server",
+  "description": "WebSocket server for shareable-data-store (Hono, JWT auth, multi-store)",
   "version": "0.0.1",
   "author": "Andreas Rozek",
-  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
     "directory": "packages/websocket-server"
   },
   "bugs": {
-    "url": "https://github.com/rozek/shareable-notes-store/issues"
+    "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
   "type": "module",
-  "main": "./dist/sns-websocket-server.js",
-  "module": "./dist/sns-websocket-server.js",
-  "types": "./dist/sns-websocket-server.d.ts",
+  "main": "./dist/sds-websocket-server.js",
+  "module": "./dist/sds-websocket-server.js",
+  "types": "./dist/sds-websocket-server.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/sns-websocket-server.js",
-      "types": "./dist/sns-websocket-server.d.ts"
+      "import": "./dist/sds-websocket-server.js",
+      "types": "./dist/sds-websocket-server.d.ts"
     }
   },
   "files": [
     "dist"
   ],
   "bin": {
-    "sns-server": "./dist/sns-websocket-server.js"
+    "sds-server": "./dist/sds-websocket-server.js"
   },
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "start": "node dist/sns-websocket-server.js",
+    "start": "node dist/sds-websocket-server.js",
     "test": "vitest",
     "test:run": "vitest run",
     "typecheck": "tsc --noEmit"
@@ -44,10 +44,10 @@
     "jose": "^5.0.0"
   },
   "peerDependencies": {
-    "@rozek/sns-persistence-node": "workspace:*"
+    "@rozek/sds-persistence-node": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@rozek/sns-persistence-node": {
+    "@rozek/sds-persistence-node": {
       "optional": true
     }
   },
@@ -55,7 +55,7 @@
     "better-sqlite3": "^9.0.0"
   },
   "devDependencies": {
-    "@rozek/sns-persistence-node": "workspace:*",
+    "@rozek/sds-persistence-node": "workspace:*",
     "@types/better-sqlite3": "^7.6.0",
     "@types/node": "^25.3.3",
     "typescript": "^5.7.2",

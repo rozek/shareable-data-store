@@ -11,9 +11,9 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   build: {
     lib: {
-      entry:    resolve(__dirname, 'src/sns-websocket-server.ts'),
+      entry:    resolve(__dirname, 'src/sds-websocket-server.ts'),
       formats:  ['es'],
-      fileName: 'sns-websocket-server',
+      fileName: 'sds-websocket-server',
     },
     outDir: 'dist',
     target: 'node22',
@@ -25,7 +25,7 @@ export default defineConfig({
         '@hono/node-server',
         '@hono/node-ws',
         'jose',
-        '@rozek/sns-persistence-node',
+        '@rozek/sds-persistence-node',
         'better-sqlite3',
       ],
     },

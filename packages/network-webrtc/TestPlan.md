@@ -1,10 +1,10 @@
-# Test Plan — `@rozek/sns-network-webrtc`
+# Test Plan — `@rozek/sds-network-webrtc`
 
 ---
 
 ## Goal
 
-Verify that `SNS_WebRTCProvider` correctly handles construction, exposes its initial state, and falls back to `SNS_WebSocketProvider` when WebRTC signalling fails or is unavailable.
+Verify that `SDS_WebRTCProvider` correctly handles construction, exposes its initial state, and falls back to `SDS_WebSocketProvider` when WebRTC signalling fails or is unavailable.
 
 ---
 

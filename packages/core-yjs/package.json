@@ -1,6 +1,6 @@
 {
-  "name": "@rozek/sns-core-yjs",
-  "description": "Y.js CRDT backend for shareable-notes-store",
+  "name": "@rozek/sds-core-yjs",
+  "description": "Y.js CRDT backend for shareable-data-store",
   "version": "0.0.1",
   "keywords": [
     "crdt",
@@ -11,24 +11,24 @@
     "y.js"
   ],
   "author": "Andreas Rozek",
-  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
     "directory": "packages/core-yjs"
   },
   "bugs": {
-    "url": "https://github.com/rozek/shareable-notes-store/issues"
+    "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
   "type": "module",
-  "main": "./dist/sns-core-yjs.js",
-  "module": "./dist/sns-core-yjs.js",
-  "types": "./dist/sns-core-yjs.d.ts",
+  "main": "./dist/sds-core-yjs.js",
+  "module": "./dist/sds-core-yjs.js",
+  "types": "./dist/sds-core-yjs.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/sns-core-yjs.js",
-      "types": "./dist/sns-core-yjs.d.ts"
+      "import": "./dist/sds-core-yjs.js",
+      "types": "./dist/sds-core-yjs.d.ts"
     }
   },
   "files": [
@@ -48,10 +48,10 @@
     "zod": "^3.22.0"
   },
   "peerDependencies": {
-    "@rozek/sns-core": "workspace:*"
+    "@rozek/sds-core": "workspace:*"
   },
   "devDependencies": {
-    "@rozek/sns-core": "workspace:*",
+    "@rozek/sds-core": "workspace:*",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0",

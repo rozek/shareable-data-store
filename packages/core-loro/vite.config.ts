@@ -14,15 +14,15 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry:    resolve(__dirname, 'src/sns-core-loro.ts'),
+      entry:    resolve(__dirname, 'src/sds-core-loro.ts'),
       formats:  ['es'],
-      fileName: 'sns-core-loro',
+      fileName: 'sds-core-loro',
     },
     outDir: 'dist',
     rollupOptions: {
       // loro-crdt ships WebAssembly; externalize it so consumers handle WASM loading.
       // fflate, fractional-indexing, and zod are pure JS and get bundled.
-      external: [/^@rozek\/sns-core/, /^loro-crdt/],
+      external: [/^@rozek\/sds-core/, /^loro-crdt/],
     },
   },
   plugins: [

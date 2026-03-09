@@ -1,4 +1,4 @@
-# Test Cases — @rozek/sns-network-webrtc
+# Test Cases — @rozek/sds-network-webrtc
 
 ## RC — Construction
 

@@ -1,4 +1,4 @@
-# /opt/sns-server/Caddyfile
+# /opt/sds-server/Caddyfile
 #
 # Each subdomain gets its own site block. Caddy requests a TLS certificate
 # for every listed domain automatically.
@@ -16,10 +16,10 @@
 # --                           SNS WebSocket Server                           --
 # ------------------------------------------------------------------------------
 
-{$SNS_DOMAIN} {
+{$SDS_DOMAIN} {
     # WebSocket sync endpoint — long-lived connections, no response timeout
     handle /ws/* {
-        reverse_proxy sns-server:3000 {
+        reverse_proxy sds-server:3000 {
             transport http {
                 dial_timeout          5s
                 response_header_timeout 0
@@ -34,7 +34,7 @@
 
     # WebRTC signalling endpoint
     handle /signal/* {
-        reverse_proxy sns-server:3000 {
+        reverse_proxy sds-server:3000 {
             transport http {
                 response_header_timeout 0
                 keepalive               30s
@@ -47,7 +47,7 @@
 
     # REST API (token issuance)
     handle /api/* {
-        reverse_proxy sns-server:3000 {
+        reverse_proxy sds-server:3000 {
             header_up Host              {host}
             header_up X-Real-IP         {remote_host}
             header_up X-Forwarded-Proto {scheme}

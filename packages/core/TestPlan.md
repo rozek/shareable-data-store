@@ -1,7 +1,7 @@
-# Test Plan — SNS_NoteStore Contract
+# Test Plan — SDS_NoteStore Contract
 
-Shared test plan for all `@rozek/sns-core-*` backend packages.
-Every backend (`@rozek/sns-core-jj`, `@rozek/sns-core-yjs`, `@rozek/sns-core-loro`)
+Shared test plan for all `@rozek/sds-core-*` backend packages.
+Every backend (`@rozek/sds-core-jj`, `@rozek/sds-core-yjs`, `@rozek/sds-core-loro`)
 must pass every test case defined here.  Backend-specific additions and
 behavioural differences are documented in each backend's own `TestPlan.md`.
 
@@ -9,8 +9,8 @@ behavioural differences are documented in each backend's own `TestPlan.md`.
 
 ## Goal
 
-Verify that `SNS_NoteStore`, `SNS_Entry`, `SNS_Note`, `SNS_Link`, and
-`SNS_Error` behave correctly in isolation from any network, persistence, or UI
+Verify that `SDS_NoteStore`, `SDS_Entry`, `SDS_Note`, `SDS_Link`, and
+`SDS_Error` behave correctly in isolation from any network, persistence, or UI
 layer, and that every backend exposes an identical observable API.
 
 ---
@@ -45,19 +45,19 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 - **Runner:** Vitest 2 with `globals: true`
 - **Language:** TypeScript 5.7, ESM modules
 - **Platform:** Node.js 22+ (no browser APIs needed)
-- **No mocks** — every test creates a fresh store via `SNS_NoteStore.fromScratch()`; time-sensitive tests (D-14 – D-21) use Vitest fake timers (`vi.useFakeTimers` / `vi.setSystemTime` / `vi.advanceTimersByTime`) instead of mocking the store itself
+- **No mocks** — every test creates a fresh store via `SDS_NoteStore.fromScratch()`; time-sensitive tests (D-14 – D-21) use Vitest fake timers (`vi.useFakeTimers` / `vi.setSystemTime` / `vi.advanceTimersByTime`) instead of mocking the store itself
 
 ---
 
-## Part I — SNS_Error
+## Part I — SDS_Error
 
 ### 1. Construction and properties
 
 #### 1.1 Basic construction
 
 - **TC-1.1.1** — `Code` and `message` match the arguments passed to the constructor
-- **TC-1.1.2** — `name` equals `'SNS_Error'`
-- **TC-1.1.3** — A thrown `SNS_Error` is an instance of both `SNS_Error` and `Error`
+- **TC-1.1.2** — `name` equals `'SDS_Error'`
+- **TC-1.1.3** — A thrown `SDS_Error` is an instance of both `SDS_Error` and `Error`
 
 ---
 
@@ -67,7 +67,7 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 
 #### 1.1 fromScratch — return value and well-known entries
 
-- **TC-2.1.1** — `fromScratch()` returns an object that is an instance of `SNS_NoteStore`
+- **TC-2.1.1** — `fromScratch()` returns an object that is an instance of `SDS_NoteStore`
 - **TC-2.1.2** — A freshly created store exposes a `RootNote` with the correct well-known `Id`
 - **TC-2.1.3** — A freshly created store exposes a `TrashNote` with the correct well-known `Id`
 - **TC-2.1.4** — A freshly created store exposes a `LostAndFoundNote` with the correct well-known `Id`
@@ -131,7 +131,7 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 
 #### 1.1 Return value and initial properties
 
-- **TC-4.1.1** — `newNoteAt()` returns an object that is an instance of `SNS_Note`
+- **TC-4.1.1** — `newNoteAt()` returns an object that is an instance of `SDS_Note`
 - **TC-4.1.2** — The created note has the MIME type that was passed to `newNoteAt()`
 - **TC-4.1.3** — The created note appears in the container's `innerEntryList`
 - **TC-4.1.4** — `note.outerNote` equals the container that was passed to `newNoteAt()`
@@ -140,7 +140,7 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 
 #### 2.1 Return value and initial properties
 
-- **TC-4.2.1** — `newLinkAt()` returns an object that is an instance of `SNS_Link`
+- **TC-4.2.1** — `newLinkAt()` returns an object that is an instance of `SDS_Link`
 - **TC-4.2.2** — The created link's `Target` equals the entry passed as target to `newLinkAt()`
 - **TC-4.2.3** — The created link appears in the container's `innerEntryList`
 
@@ -155,7 +155,7 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 
 #### 4.1 Guard conditions
 
-- **TC-4.4.1** — `newNoteAt()` with an empty MIME type throws an `SNS_Error` with `Code` `'invalid-argument'`
+- **TC-4.4.1** — `newNoteAt()` with an empty MIME type throws an `SDS_Error` with `Code` `'invalid-argument'`
 - **TC-4.4.2** — `newLinkAt()` with a non-existent target entry throws
 
 ---
@@ -211,7 +211,7 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 #### 3.1 changeValue — splice semantics and guard
 
 - **TC-6.3.1** — `changeValue(index, deleteCount, insertion)` splices the literal string value correctly
-- **TC-6.3.2** — `changeValue()` on a non-literal value throws an `SNS_Error` with `Code` `'change-value-not-literal'`
+- **TC-6.3.2** — `changeValue()` on a non-literal value throws an `SDS_Error` with `Code` `'change-value-not-literal'`
 
 ### 4. Change events
 
@@ -259,7 +259,7 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 
 - **TC-8.2.1** — `mayBeMovedTo()` returns `true` for a valid target that is not a descendant
 - **TC-8.2.2** — `mayBeMovedTo()` returns `false` when the target is a descendant of the entry
-- **TC-8.2.3** — `moveEntryTo()` into a descendant throws an `SNS_Error` with `Code` `'move-would-cycle'`
+- **TC-8.2.3** — `moveEntryTo()` into a descendant throws an `SDS_Error` with `Code` `'move-would-cycle'`
 
 ### 3. Special cases
 
@@ -285,7 +285,7 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 
 #### 1.2 Well-known note guards
 
-- **TC-9.1.4** — `deleteEntry(RootNote)` throws an `SNS_Error` with `Code` `'delete-not-permitted'`
+- **TC-9.1.4** — `deleteEntry(RootNote)` throws an `SDS_Error` with `Code` `'delete-not-permitted'`
 - **TC-9.1.5** — `deleteEntry(TrashNote)` throws
 - **TC-9.1.6** — `deleteEntry(LostAndFoundNote)` throws
 
@@ -293,9 +293,9 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 
 #### 2.1 Permanent removal and protection rules
 
-- **TC-9.2.1** — `purgeEntry()` on a note not in `TrashNote` throws an `SNS_Error` with `Code` `'purge-not-in-trash'`
+- **TC-9.2.1** — `purgeEntry()` on a note not in `TrashNote` throws an `SDS_Error` with `Code` `'purge-not-in-trash'`
 - **TC-9.2.2** — `purgeEntry()` permanently removes a note that is in `TrashNote`
-- **TC-9.2.3** — `purgeEntry()` throws an `SNS_Error` with `Code` `'purge-protected'` when the note has an incoming link from the root-reachable tree; the entry remains in the store
+- **TC-9.2.3** — `purgeEntry()` throws an `SDS_Error` with `Code` `'purge-protected'` when the note has an incoming link from the root-reachable tree; the entry remains in the store
 
 ### 3. Entry-level shortcuts
 
@@ -442,14 +442,14 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 
 #### 3.1 Guard on malformed data
 
-- **TC-13.3.1** — Passing `null` or a non-object to `deserializeNoteInto()` throws an `SNS_Error` with `Code` `'invalid-argument'`
+- **TC-13.3.1** — Passing `null` or a non-object to `deserializeNoteInto()` throws an `SDS_Error` with `Code` `'invalid-argument'`
 
 ---
 
 ## Implementing the contract
 
-Each backend package runs the shared test suite against its own `SNS_NoteStore`
-implementation.  The test files (`SNS_NoteStore.construction.test.ts`, …) are
+Each backend package runs the shared test suite against its own `SDS_NoteStore`
+implementation.  The test files (`SDS_NoteStore.construction.test.ts`, …) are
 identical across backends; only the import path and any backend-specific
 adaptations differ.
 

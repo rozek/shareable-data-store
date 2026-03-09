@@ -1,4 +1,4 @@
-# shareable-notes-store
+# shareable-data-store
 
 A CRDT-based, offline-capable, real-time-syncable **tree-of-notes** library for Browser and Node.js.
 
@@ -16,15 +16,15 @@ The CRDT engine is **pluggable**: choose from three ready-made backends or write
 
 | Package | Description |
 | --- | --- |
-| `@rozek/sns-core` | Backend-agnostic shared types: `SNS_Error`, `SNS_ChangeSet`, `SNS_Entry`/`Note`/`Link` base classes, the `SNS_NoteStore` contract interface, and all provider interfaces. No CRDT engine — the interface must be implemented by a backend. |
+| `@rozek/sds-core` | Backend-agnostic shared types: `SDS_Error`, `SDS_ChangeSet`, `SDS_Entry`/`Note`/`Link` base classes, the `SDS_NoteStore` contract interface, and all provider interfaces. No CRDT engine — the interface must be implemented by a backend. |
 
 ### CRDT backends (choose one)
 
 | Package | CRDT engine | Notes |
 | --- | --- | --- |
-| `@rozek/sns-core-jj` | [json-joy](https://github.com/streamich/json-joy) 17.x | Reference backend; ships with a canonical empty snapshot |
-| `@rozek/sns-core-yjs` | [Y.js](https://github.com/yjs/yjs) | No canonical snapshot; Y.js state-vector cursor |
-| `@rozek/sns-core-loro` | [Loro](https://loro.dev/) | No canonical snapshot; Loro version-vector cursor; Rust/WASM |
+| `@rozek/sds-core-jj` | [json-joy](https://github.com/streamich/json-joy) 17.x | Reference backend; ships with a canonical empty snapshot |
+| `@rozek/sds-core-yjs` | [Y.js](https://github.com/yjs/yjs) | No canonical snapshot; Y.js state-vector cursor |
+| `@rozek/sds-core-loro` | [Loro](https://loro.dev/) | No canonical snapshot; Loro version-vector cursor; Rust/WASM |
 
 All three backend packages expose an **identical public API**. Import from whichever backend suits your project; application code never calls any CRDT library directly.
 
@@ -32,12 +32,12 @@ All three backend packages expose an **identical public API**. Import from which
 
 | Package | Description |
 | --- | --- |
-| `@rozek/sns-persistence-node` | SQLite persistence for Node.js and Electron |
-| `@rozek/sns-persistence-browser` | IndexedDB persistence for browsers |
-| `@rozek/sns-network-websocket` | WebSocket sync + presence provider |
-| `@rozek/sns-network-webrtc` | WebRTC peer-to-peer sync + presence provider (browser) |
-| `@rozek/sns-sync-engine` | orchestrates persistence, network, and presence |
-| `@rozek/sns-websocket-server` | Hono-based relay server: JWT auth, signalling, token issuance |
+| `@rozek/sds-persistence-node` | SQLite persistence for Node.js and Electron |
+| `@rozek/sds-persistence-browser` | IndexedDB persistence for browsers |
+| `@rozek/sds-network-websocket` | WebSocket sync + presence provider |
+| `@rozek/sds-network-webrtc` | WebRTC peer-to-peer sync + presence provider (browser) |
+| `@rozek/sds-sync-engine` | orchestrates persistence, network, and presence |
+| `@rozek/sds-websocket-server` | Hono-based relay server: JWT auth, signalling, token issuance |
 
 ---
 
@@ -47,7 +47,7 @@ All three backend packages expose an **identical public API**. Import from which
 ┌─────────────────────────────────────────────────────────────┐
 │                      Your Application                       │
 │                                                             │
-│   SNS_NoteStore  ←── read/write ──►  SNS_SyncEngine         │
+│   SDS_NoteStore  ←── read/write ──►  SDS_SyncEngine         │
 │   (any backend)                      │      │       │       │
 │                               Persistence Network Presence  │
 │                                 Provider Provider Provider  │
@@ -57,7 +57,7 @@ All three backend packages expose an **identical public API**. Import from which
          └──────────────────── SNS WebSocket Server ◄── other peers
 ```
 
-`SNS_NoteStore` is the source of truth. It holds a tree of notes and links stored as a conflict-free replicated data type (CRDT). `SNS_SyncEngine` wires it to any combination of:
+`SDS_NoteStore` is the source of truth. It holds a tree of notes and links stored as a conflict-free replicated data type (CRDT). `SDS_SyncEngine` wires it to any combination of:
 
 - a **persistence provider** — saves snapshots and patches so the store survives restarts and works offline
 - a **network provider** — exchanges CRDT patches with a relay server or other peers in real time
@@ -75,23 +75,23 @@ All backends offer the same API. Pick one and import from it:
 
 ```typescript
 // Option A — json-joy (reference implementation)
-import { SNS_NoteStore } from '@rozek/sns-core-jj'
+import { SDS_NoteStore } from '@rozek/sds-core-jj'
 
 // Option B — Y.js
-import { SNS_NoteStore } from '@rozek/sns-core-yjs'
+import { SDS_NoteStore } from '@rozek/sds-core-yjs'
 
 // Option C — Loro CRDT
-import { SNS_NoteStore } from '@rozek/sns-core-loro'
+import { SDS_NoteStore } from '@rozek/sds-core-loro'
 ```
 
-The examples below use `@rozek/sns-core-jj` but work identically with any backend.
+The examples below use `@rozek/sds-core-jj` but work identically with any backend.
 
 ### Local-only — no network, no server
 
 ```typescript
-import { SNS_NoteStore } from '@rozek/sns-core-jj'
+import { SDS_NoteStore } from '@rozek/sds-core-jj'
 
-const Store = SNS_NoteStore.fromScratch()
+const Store = SDS_NoteStore.fromScratch()
 
 const Note  = Store.newNoteAt(Store.RootNote)
 Note.Label  = 'My first note'
@@ -99,22 +99,22 @@ Note.writeValue('Hello, world!')
 
 // serialise to binary and restore later
 const StoreSnapshot = Store.asBinary()
-const restoredStore = SNS_NoteStore.fromBinary(Snapshot)
+const restoredStore = SDS_NoteStore.fromBinary(Snapshot)
 ```
 
 ### Browser PWA — offline-first with WebSocket sync
 
 ```typescript
-import { SNS_NoteStore }                  from '@rozek/sns-core-jj'
-import { SNS_BrowserPersistenceProvider } from '@rozek/sns-persistence-browser'
-import { SNS_WebSocketProvider }          from '@rozek/sns-network-websocket'
-import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
+import { SDS_NoteStore }                  from '@rozek/sds-core-jj'
+import { SDS_BrowserPersistenceProvider } from '@rozek/sds-persistence-browser'
+import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const Store       = SNS_NoteStore.fromScratch()
-const Persistence = new SNS_BrowserPersistenceProvider('my-notes')
-const Network     = new SNS_WebSocketProvider('my-notes')
+const Store       = SDS_NoteStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('my-notes')
+const Network     = new SDS_WebSocketProvider('my-notes')
 
-const Engine = new SNS_SyncEngine(Store, {
+const Engine = new SDS_SyncEngine(Store, {
   PersistenceProvider: Persistence,
   NetworkProvider:     Network,
   PresenceProvider:    Network,  // WebSocket provider doubles as presence provider
@@ -134,16 +134,16 @@ Note.Label = 'Hello from the browser!'
 ### Node.js / Electron — SQLite persistence
 
 ```typescript
-import { SNS_NoteStore }                  from '@rozek/sns-core-jj'
-import { SNS_DesktopPersistenceProvider } from '@rozek/sns-persistence-node'
-import { SNS_WebSocketProvider }          from '@rozek/sns-network-websocket'
-import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
+import { SDS_NoteStore }                  from '@rozek/sds-core-jj'
+import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
+import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const Store       = SNS_NoteStore.fromScratch()
-const Persistence = new SNS_DesktopPersistenceProvider('./data', 'my-notes')
-const Network     = new SNS_WebSocketProvider('my-notes')
+const Store       = SDS_NoteStore.fromScratch()
+const Persistence = new SDS_DesktopPersistenceProvider('./data', 'my-notes')
+const Network     = new SDS_WebSocketProvider('my-notes')
 
-const Engine = new SNS_SyncEngine(Store, {
+const Engine = new SDS_SyncEngine(Store, {
   PersistenceProvider: Persistence,
   NetworkProvider:     Network,
   PresenceProvider:    Network,
@@ -178,10 +178,10 @@ Engine.onPresenceChange((PeerId, State, Origin) => {
 ### Running the relay server
 
 ```typescript
-import { createSNSServer } from '@rozek/sns-websocket-server'
+import { createSDSServer } from '@rozek/sds-websocket-server'
 import { serve }           from '@hono/node-server'
 
-const { app: App } = createSNSServer({ JWTSecret:'your-secret-at-least-32-chars' })
+const { app: App } = createSDSServer({ JWTSecret:'your-secret-at-least-32-chars' })
 
 serve({ fetch:App.fetch, port:3000 }, () => {
   console.log('SNS relay server listening on port 3000')
@@ -221,7 +221,7 @@ Links are pointer entries: they live inside a container note and point to a targ
 - a link is a named pointer to another note. It lives inside a container note but does not own its target.
 - the tree always contains three non-deletable, non-movable well-known notes: `RootNote`, `TrashNote`, and `LostAndFoundNote`.
 - entries can be created, labelled, moved, and soft-deleted (moved to `TrashNote`). Soft-deleted entries can be permanently purged.
-- an entry that is still referenced by a link from the live tree (reachable from `RootNote`) is protected: a purge attempt throws `SNS_Error('purge-protected')`.
+- an entry that is still referenced by a link from the live tree (reachable from `RootNote`) is protected: a purge attempt throws `SDS_Error('purge-protected')`.
 - notes in `TrashNote` are eligible for automatic permanent deletion after a configurable time-to-live (`TrashTTLms`). The timestamp is recorded in the entry's `Info._trashedAt` field (synced via CRDT) when the entry is moved to Trash via `deleteEntry`.
 - after applying a remote patch, any entry whose declared outer note no longer exists is automatically rescued to `LostAndFoundNote`. Dangling links whose target no longer exists are recreated in `LostAndFoundNote` so the link remains valid.
 - ordering of inner entries within a container is collaborative and stable: any peer can insert an entry at any position without conflicting with concurrent inserts on other peers.
@@ -292,11 +292,11 @@ The three well-known notes are always present and have fixed UUIDs:
 
 The following invariants are maintained at all times:
 
-1. **Acyclicity** — the outer-note chain of any entry must not form a cycle. `moveEntryTo` throws `SNS_Error('move-would-cycle')` if the target container is a descendant of the entry being moved.
+1. **Acyclicity** — the outer-note chain of any entry must not form a cycle. `moveEntryTo` throws `SDS_Error('move-would-cycle')` if the target container is a descendant of the entry being moved.
 2. **Root immobility** — `RootNote`, `TrashNote`, and `LostAndFoundNote` can never be moved or deleted.
 3. **Trash-only purge** — `purgeEntry` only accepts direct inner entries of `TrashNote`. Deeper descendants must be moved to the trash root first.
-4. **Link protection** — an entry (and its subtree) is *protected* if any entry within it is the target of a link that is reachable from `RootNote`. `purgeEntry` throws `SNS_Error('purge-protected')` for protected entries; `purgeExpiredTrashEntries` skips them silently.
-5. **Trash TTL** — `deleteEntry` records a `_trashedAt` timestamp (ms since epoch) in the entry's `Info` object. `purgeExpiredTrashEntries(TTLms)` permanently removes all direct inner entries of `TrashNote` whose `_trashedAt` is older than `TTLms`. When `TrashTTLms` is passed to `SNS_NoteStore.fromScratch`, an internal timer fires at `TrashCheckIntervalMs` intervals automatically.
+4. **Link protection** — an entry (and its subtree) is *protected* if any entry within it is the target of a link that is reachable from `RootNote`. `purgeEntry` throws `SDS_Error('purge-protected')` for protected entries; `purgeExpiredTrashEntries` skips them silently.
+5. **Trash TTL** — `deleteEntry` records a `_trashedAt` timestamp (ms since epoch) in the entry's `Info` object. `purgeExpiredTrashEntries(TTLms)` permanently removes all direct inner entries of `TrashNote` whose `_trashedAt` is older than `TTLms`. When `TrashTTLms` is passed to `SDS_NoteStore.fromScratch`, an internal timer fires at `TrashCheckIntervalMs` intervals automatically.
 6. **Orphan rescue** — after applying a remote patch, any entry whose `outerNoteId` points to a non-existent entry is immediately moved to `LostAndFoundNote` by `recoverOrphans()`.
 7. **Dangling-link rescue** — after applying a remote patch, any link whose `TargetId` points to a non-existent note causes that note to be recreated (empty) in `LostAndFoundNote`.
 8. **Inner-entry ordering** — the `innerEntryList` of a note is always sorted by `OrderKey` (ascending), with the entry `Id` as a tie-breaker. Order is stable across concurrent insertions on different peers.
@@ -327,9 +327,9 @@ Each backend stores the same logical model in a different CRDT representation. R
 - `packages/core-yjs/README.md` — Y.js (state-vector cursor, Y.Text)
 - `packages/core-loro/README.md` — Loro CRDT (version-vector cursor, LoroText, Rust/WASM)
 
-### The `SNS_SyncCursor` abstraction
+### The `SDS_SyncCursor` abstraction
 
-The persistence interface uses an **opaque binary cursor** (`SNS_SyncCursor = Uint8Array`) instead of a raw integer clock. Each backend encodes the cursor differently:
+The persistence interface uses an **opaque binary cursor** (`SDS_SyncCursor = Uint8Array`) instead of a raw integer clock. Each backend encodes the cursor differently:
 
 | Backend | Cursor encoding |
 | --- | --- |
@@ -349,8 +349,8 @@ Binary snapshots and CRDT patches are **not cross-compatible** between backends.
 
    ```typescript
    // Example: migrate from json-joy to Y.js
-   import { SNS_NoteStore as oldStore } from '@rozek/sns-core-jj'
-   import { SNS_NoteStore as newStore } from '@rozek/sns-core-yjs'
+   import { SDS_NoteStore as oldStore } from '@rozek/sds-core-jj'
+   import { SDS_NoteStore as newStore } from '@rozek/sds-core-yjs'
    
    const oldContents = oldStore.fromBinary(existingSnapshot)
    ```
@@ -379,22 +379,22 @@ Binary snapshots and CRDT patches are **not cross-compatible** between backends.
 - The JSON export/import path preserves all Labels, Values, Info keys, MIME types, and the tree structure, but does **not** preserve CRDT history. Every peer receiving the migrated snapshot will see it as a single atomic origin — there is no incremental patch history to replay.
 - If you run multiple peers, all peers must migrate simultaneously to the same backend. A json-joy peer and a Y.js peer cannot exchange patches.
 - After migration, re-initialise your persistence store (clear old `patches` and `snapshots` rows and seed with the new binary snapshot).
-- All `SNS_SyncCursor` values stored in the database are backend-specific and must be discarded on migration.
+- All `SDS_SyncCursor` values stored in the database are backend-specific and must be discarded on migration.
 
 ---
 
 ## Implementing a new backend
 
-You can add a new CRDT engine by creating a package that implements the same `SNS_NoteStore` class surface. Here is what is required:
+You can add a new CRDT engine by creating a package that implements the same `SDS_NoteStore` class surface. Here is what is required:
 
 ### Requirements for a new backend
 
 **Static factory methods**
 
 ```typescript
-static fromScratch (Options?:SNS_NoteStoreOptions):SNS_NoteStore
-static fromBinary (Data:Uint8Array, Options?:SNS_NoteStoreOptions):SNS_NoteStore
-static fromJSON (Data:unknown, Options?:SNS_NoteStoreOptions):SNS_NoteStore
+static fromScratch (Options?:SDS_NoteStoreOptions):SDS_NoteStore
+static fromBinary (Data:Uint8Array, Options?:SDS_NoteStoreOptions):SDS_NoteStore
+static fromJSON (Data:unknown, Options?:SDS_NoteStoreOptions):SDS_NoteStore
 ```
 
 `fromScratch()` must create the three well-known entries (`RootNote`, `TrashNote`, `LostAndFoundNote`) with their fixed UUIDs and set `TrashNote` and `LostAndFoundNote` as children of `RootNote`. Two independent calls to `fromScratch()` on different peers must produce stores that can exchange patches and converge.
@@ -411,24 +411,24 @@ asJSON ():unknown
 **Sync**
 
 ```typescript
-get currentCursor ():SNS_SyncCursor
-exportPatch (since?:SNS_SyncCursor):Uint8Array
+get currentCursor ():SDS_SyncCursor
+exportPatch (since?:SDS_SyncCursor):Uint8Array
 applyRemotePatch (encodedPatch:Uint8Array):void
 ```
 
 `exportPatch()` with no argument exports a full snapshot patch; with a cursor it exports only the operations added since that cursor. `applyRemotePatch()` merges a remote patch into the local document and fires change handlers with `Origin = 'external'`.
 
-**Mutation methods** — identical to `@rozek/sns-core-jj` (the reference implementation)
+**Mutation methods** — identical to `@rozek/sds-core-jj` (the reference implementation)
 
 ```typescript
-newNoteAt (Container:SNS_Note, Index?:number):SNS_Note
-newLinkAt (Container:SNS_Note, Target:SNS_Note, Index?:number):SNS_Link
-EntryWithId (Id:string): SNS_Entry | undefined
-moveEntryTo (Entry:SNS_Entry, Container:SNS_Note, Index?:number):void
-deleteEntry (Entry:SNS_Entry):void
-purgeEntry (Entry:SNS_Entry):void
-deserializeNoteInto (Note:SNS_Note, Data:unknown):void
-deserializeLinkInto (Link:SNS_Link, Data:unknown):void
+newNoteAt (Container:SDS_Note, Index?:number):SDS_Note
+newLinkAt (Container:SDS_Note, Target:SDS_Note, Index?:number):SDS_Link
+EntryWithId (Id:string): SDS_Entry | undefined
+moveEntryTo (Entry:SDS_Entry, Container:SDS_Note, Index?:number):void
+deleteEntry (Entry:SDS_Entry):void
+purgeEntry (Entry:SDS_Entry):void
+deserializeNoteInto (Note:SDS_Note, Data:unknown):void
+deserializeLinkInto (Link:SDS_Link, Data:unknown):void
 recoverOrphans ():void
 transact (Callback:() => void):void
 onChangeInvoke (Handler:ChangeHandler):() => void
@@ -437,9 +437,9 @@ onChangeInvoke (Handler:ChangeHandler):() => void
 **Properties**
 
 ```typescript
-get RootNote ():         SNS_Note
-get TrashNote ():        SNS_Note
-get LostAndFoundNote (): SNS_Note
+get RootNote ():         SDS_Note
+get TrashNote ():        SDS_Note
+get LostAndFoundNote (): SDS_Note
 ```
 
 **Data storage constraints**
@@ -448,12 +448,12 @@ get LostAndFoundNote (): SNS_Note
 - Each entry must expose at minimum: `Kind`, `outerNoteId`, `OrderKey`, `Label`, `Info`, `MIMEType`, `ValueKind` and the appropriate value field.
 - Use `fractional-indexing` for `OrderKey` generation to maintain collaborative ordering.
 - Maintain in-memory `#ReverseIndex`, `#ForwardIndex`, `#LinkTargetIndex`, `#LinkForwardIndex`, and `#WrapperCache` for efficient traversal and incremental updates.
-- Re-use the `SNS_Entry`, `SNS_Note`, and `SNS_Link` classes from `@rozek/sns-core` (or copy and adapt them) — they delegate all CRDT operations back to the store via bracket-notation calls (`this._Store['_method']()`).
+- Re-use the `SDS_Entry`, `SDS_Note`, and `SDS_Link` classes from `@rozek/sds-core` (or copy and adapt them) — they delegate all CRDT operations back to the store via bracket-notation calls (`this._Store['_method']()`).
 
 **Change notifications**
 
 - Maintain a `#TransactDepth` counter. Increment it on entry, decrement on exit.
-- Collect a `SNS_ChangeSet` during the transaction.
+- Collect a `SDS_ChangeSet` during the transaction.
 - Fire all registered `ChangeHandler`s exactly once when the outermost transaction completes.
 - Remote patches must fire handlers with `Origin = 'external'`; local mutations with `Origin = 'internal'`.
 
@@ -463,25 +463,25 @@ Follow the same layout as `packages/core-jj`, `packages/core-yjs`, or `packages/
 
 ```
 packages/core-<name>/
-  package.json       ← name: @rozek/sns-core-<name>
+  package.json       ← name: @rozek/sds-core-<name>
   tsconfig.json      ← extends ../../tsconfig.base.json
   vite.config.ts
   src/
-    sns-core-<name>.ts   ← entry point (re-export all public symbols)
+    sds-core-<name>.ts   ← entry point (re-export all public symbols)
     store/
       constants.ts
-      SNS_NoteStore.ts   ← full implementation
-      SNS_Entry.ts       ← copied from core, local import
-      SNS_Note.ts
-      SNS_Link.ts
-    error/SNS_Error.ts
-    changeset/SNS_ChangeSet.ts
-    changeset/SNS_EntryChangeSet.ts
-    interfaces/SNS_PersistenceProvider.ts
+      SDS_NoteStore.ts   ← full implementation
+      SDS_Entry.ts       ← copied from core, local import
+      SDS_Note.ts
+      SDS_Link.ts
+    error/SDS_Error.ts
+    changeset/SDS_ChangeSet.ts
+    changeset/SDS_EntryChangeSet.ts
+    interfaces/SDS_PersistenceProvider.ts
     tests/
-      SNS_Error.test.ts
-      SNS_NoteStore.construction.test.ts   ← backend-specific
-      SNS_NoteStore.creation.test.ts
+      SDS_Error.test.ts
+      SDS_NoteStore.construction.test.ts   ← backend-specific
+      SDS_NoteStore.creation.test.ts
       … (mirror the core test suite)
   TestPlan.md
   TestCases.md

@@ -1,12 +1,12 @@
-# @rozek/sns-core-yjs
+# @rozek/sds-core-yjs
 
-The **Y.js CRDT backend** for [shareable-notes-store](../../README.md). Provides `SNS_NoteStore`, `SNS_Note`, `SNS_Link`, `SNS_Entry`, and `SNS_Error` backed by [Y.js](https://github.com/yjs/yjs) — a well-proven, production-ready CRDT library used in many collaborative applications. Drop-in replacement for `@rozek/sns-core-jj` and `@rozek/sns-core-loro`: only the import path changes.
+The **Y.js CRDT backend** for [shareable-data-store](../../README.md). Provides `SDS_NoteStore`, `SDS_Note`, `SDS_Link`, `SDS_Entry`, and `SDS_Error` backed by [Y.js](https://github.com/yjs/yjs) — a well-proven, production-ready CRDT library used in many collaborative applications. Drop-in replacement for `@rozek/sds-core-jj` and `@rozek/sds-core-loro`: only the import path changes.
 
 ---
 
 ## When to use this package
 
-Choose `@rozek/sns-core-yjs` when:
+Choose `@rozek/sds-core-yjs` when:
 
 - You already use Y.js elsewhere in your stack and want a consistent CRDT model.
 - You need character-level collaborative text editing on note values (`Y.Text`).
@@ -21,7 +21,7 @@ Choose one of the alternative backend packages when you need a different CRDT li
 ## Installation
 
 ```bash
-pnpm add @rozek/sns-core-yjs
+pnpm add @rozek/sds-core-yjs
 ```
 
 All runtime dependencies (`yjs`, `fflate`, `fractional-indexing`, `zod`) are bundled — no additional installs required.
@@ -30,7 +30,7 @@ All runtime dependencies (`yjs`, `fflate`, `fractional-indexing`, `zod`) are bun
 
 ## API
 
-The public API is identical across all backends. Refer to the `@rozek/sns-core-jj`[ README](../core-jj/README.md) for the complete reference — `SNS_NoteStore`, `SNS_Note`, `SNS_Link`, `SNS_Entry`, and `SNS_Error` all export the same interface.
+The public API is identical across all backends. Refer to the `@rozek/sds-core-jj`[ README](../core-jj/README.md) for the complete reference — `SDS_NoteStore`, `SDS_Note`, `SDS_Link`, `SDS_Entry`, and `SDS_Error` all export the same interface.
 
 The only backend-specific aspects are the binary encoding, cursor format, and patch encoding — see [Y.js-specific details](#yjs-specific-details) below.
 
@@ -41,9 +41,9 @@ The only backend-specific aspects are the binary encoding, cursor format, and pa
 ### Building a tree and subscribing to changes
 
 ```typescript
-import { SNS_NoteStore } from '@rozek/sns-core-yjs'
+import { SDS_NoteStore } from '@rozek/sds-core-yjs'
 
-const NoteStore = SNS_NoteStore.fromScratch()
+const NoteStore = SDS_NoteStore.fromScratch()
 
 const unsubscribe = NoteStore.onChangeInvoke((Origin, ChangeSet) => {
   for (const [EntryId, changedKeys] of Object.entries(ChangeSet)) {
@@ -66,11 +66,11 @@ unsubscribe()
 ### Syncing two stores via CRDT patches
 
 ```typescript
-import { SNS_NoteStore } from '@rozek/sns-core-yjs'
+import { SDS_NoteStore } from '@rozek/sds-core-yjs'
 
 // two peers start from the same snapshot
-const NoteStoreA = SNS_NoteStore.fromScratch()
-const NoteStoreB = SNS_NoteStore.fromBinary(NoteStoreA.asBinary())
+const NoteStoreA = SDS_NoteStore.fromScratch()
+const NoteStoreB = SDS_NoteStore.fromBinary(NoteStoreA.asBinary())
 
 // peer A makes a change
 const NoteA = NoteStoreA.newNoteAt(NoteStoreA.RootNote)
@@ -88,9 +88,9 @@ console.log(NoteB?.Label)  // 'shared note'
 ### Collaborative character editing
 
 ```typescript
-import { SNS_NoteStore } from '@rozek/sns-core-yjs'
+import { SDS_NoteStore } from '@rozek/sds-core-yjs'
 
-const NoteStore = SNS_NoteStore.fromScratch()
+const NoteStore = SDS_NoteStore.fromScratch()
 const Note = NoteStore.newNoteAt(NoteStore.RootNote)
 
 Note.writeValue('Hello, World!')
@@ -125,14 +125,14 @@ Unlike the json-joy backend, `fromScratch()` builds the document by creating the
 
 ## Switching backends
 
-To switch from `@rozek/sns-core-jj` (json-joy) to this package, change only the import path:
+To switch from `@rozek/sds-core-jj` (json-joy) to this package, change only the import path:
 
 ```typescript
 // before
-import { SNS_NoteStore } from '@rozek/sns-core-jj'
+import { SDS_NoteStore } from '@rozek/sds-core-jj'
 
 // after
-import { SNS_NoteStore } from '@rozek/sns-core-yjs'
+import { SDS_NoteStore } from '@rozek/sds-core-yjs'
 ```
 
 Persisted binary data (`asBinary()` snapshots and `exportPatch()` patches) is **not** cross-compatible between backends. See the [root README](../../README.md) for a data migration guide.
@@ -142,7 +142,7 @@ Persisted binary data (`asBinary()` snapshots and `exportPatch()` patches) is **
 ## Building
 
 ```bash
-pnpm --filter @rozek/sns-core-yjs build
+pnpm --filter @rozek/sds-core-yjs build
 ```
 
 Output is written to `packages/core-yjs/dist/`.

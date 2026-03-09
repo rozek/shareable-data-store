@@ -1,6 +1,6 @@
 {
-  "name": "@rozek/sns-browser-bundle-jj-jj",
-  "description": "Self-contained browser bundle for shareable-notes-store \u2014 json-joy CRDT backend, single-file ESM",
+  "name": "@rozek/sds-browser-bundle-jj-jj",
+  "description": "Self-contained browser bundle for shareable-data-store \u2014 json-joy CRDT backend, single-file ESM",
   "version": "0.0.1",
   "keywords": [
     "crdt",
@@ -18,24 +18,24 @@
     "dsgvo"
   ],
   "author": "Andreas Rozek",
-  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
     "directory": "packages/browser-bundle-jj"
   },
   "bugs": {
-    "url": "https://github.com/rozek/shareable-notes-store/issues"
+    "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
   "type": "module",
-  "main": "./dist/sns-browser-bundle-jj.js",
-  "module": "./dist/sns-browser-bundle-jj.js",
-  "types": "./dist/sns-browser-bundle-jj.d.ts",
+  "main": "./dist/sds-browser-bundle-jj.js",
+  "module": "./dist/sds-browser-bundle-jj.js",
+  "types": "./dist/sds-browser-bundle-jj.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/sns-browser-bundle-jj.js",
-      "types": "./dist/sns-browser-bundle-jj.d.ts"
+      "import": "./dist/sds-browser-bundle-jj.js",
+      "types": "./dist/sds-browser-bundle-jj.d.ts"
     }
   },
   "files": [
@@ -46,8 +46,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@rozek/sns-core": "workspace:*",
-    "@rozek/sns-core-jj": "workspace:*",
+    "@rozek/sds-core": "workspace:*",
+    "@rozek/sds-core-jj": "workspace:*",
     "fflate": "^0.8.0",
     "fractional-indexing": "^3.2.0",
     "json-joy": "^17.65.0",

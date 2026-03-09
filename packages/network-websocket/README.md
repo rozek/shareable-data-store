@@ -1,6 +1,6 @@
-# @rozek/sns-network-websocket
+# @rozek/sds-network-websocket
 
-WebSocket network and presence provider for the **shareable-notes-store** (SNS) family. Connects a local `SNS_NoteStore` to an `SNS_WebSocket_Server` relay, exchanges CRDT patches in real time, and synchronises presence state between all connected peers.
+WebSocket network and presence provider for the **shareable-data-store** (SNS) family. Connects a local `SDS_NoteStore` to an `SDS_WebSocket_Server` relay, exchanges CRDT patches in real time, and synchronises presence state between all connected peers.
 
 Works in **browsers** (native WebSocket API) and **Node.js 22+** (built-in WebSocket).
 
@@ -9,14 +9,14 @@ Works in **browsers** (native WebSocket API) and **Node.js 22+** (built-in WebSo
 ## Installation
 
 ```bash
-pnpm add @rozek/sns-network-websocket
+pnpm add @rozek/sds-network-websocket
 ```
 
 ---
 
 ## Concepts
 
-`SNS_WebSocketProvider` implements both `SNS_NetworkProvider` and `SNS_PresenceProvider` from `@rozek/sns-core`. A single instance can therefore be passed to `SNS_SyncEngine` for both roles.
+`SDS_WebSocketProvider` implements both `SDS_NetworkProvider` and `SDS_PresenceProvider` from `@rozek/sds-core`. A single instance can therefore be passed to `SDS_SyncEngine` for both roles.
 
 ### Wire protocol
 
@@ -27,7 +27,7 @@ All messages are binary frames with a one-byte type prefix:
 | `0x01` | PATCH | bidirectional | CRDT patch bytes |
 | `0x02` | VALUE | bidirectional | 32-byte SHA-256 hash + value bytes (≤ 1 MB) |
 | `0x03` | REQ_VALUE | client → server | 32-byte SHA-256 hash |
-| `0x04` | PRESENCE | bidirectional | UTF-8 JSON of `SNS_PresenceState` |
+| `0x04` | PRESENCE | bidirectional | UTF-8 JSON of `SDS_PresenceState` |
 | `0x05` | VALUE_CHUNK | bidirectional | hash + chunk-index + total-chunks + chunk bytes |
 
 Values larger than 1 MB are split into `VALUE_CHUNK` frames automatically and reassembled on the receiving end before the `onValue` callback fires.
@@ -40,20 +40,20 @@ When the WebSocket closes unexpectedly the provider transitions to `'reconnectin
 
 ## API Reference
 
-### `SNS_WebSocketProvider`
+### `SDS_WebSocketProvider`
 
 ```typescript
-import { SNS_WebSocketProvider } from '@rozek/sns-network-websocket'
+import { SDS_WebSocketProvider } from '@rozek/sds-network-websocket'
 
-class SNS_WebSocketProvider implements SNS_NetworkProvider, SNS_PresenceProvider {
+class SDS_WebSocketProvider implements SDS_NetworkProvider, SDS_PresenceProvider {
   constructor (StoreId:string)
 
-  // ── SNS_NetworkProvider ──────────────────────────────────────
+  // ── SDS_NetworkProvider ──────────────────────────────────────
 
   readonly StoreID:string
-  get ConnectionState ():SNS_ConnectionState  // 'disconnected' | 'connecting' | 'connected' | 'reconnecting'
+  get ConnectionState ():SDS_ConnectionState  // 'disconnected' | 'connecting' | 'connected' | 'reconnecting'
 
-  connect (URL:string, Options:SNS_ConnectionOptions):Promise<void>
+  connect (URL:string, Options:SDS_ConnectionOptions):Promise<void>
   disconnect ():void
 
   sendPatch (Patch:Uint8Array):void
@@ -62,22 +62,22 @@ class SNS_WebSocketProvider implements SNS_NetworkProvider, SNS_PresenceProvider
 
   onPatch (Callback:(Patch:Uint8Array) => void):() => void
   onValue (Callback:(ValueHash:string, Value:Uint8Array) => void):() => void
-  onConnectionChange (Callback:(State:SNS_ConnectionState) => void):() => void
+  onConnectionChange (Callback:(State:SDS_ConnectionState) => void):() => void
 
-  // ── SNS_PresenceProvider ─────────────────────────────────────
+  // ── SDS_PresenceProvider ─────────────────────────────────────
 
-  sendLocalState (State:SNS_LocalPresenceState):void
+  sendLocalState (State:SDS_LocalPresenceState):void
   onRemoteState (
-    Callback:(PeerId:string, State:SNS_RemotePresenceState | null) => void
+    Callback:(PeerId:string, State:SDS_RemotePresenceState | null) => void
   ):() => void
-  readonly PeerSet:ReadonlyMap<string, SNS_RemotePresenceState>
+  readonly PeerSet:ReadonlyMap<string, SDS_RemotePresenceState>
 }
 ```
 
-#### `SNS_ConnectionOptions`
+#### `SDS_ConnectionOptions`
 
 ```typescript
-interface SNS_ConnectionOptions {
+interface SDS_ConnectionOptions {
   Token:string             // JWT for authentication at the relay server
   reconnectDelayMs?: number // delay before reconnect attempt (default 2000 ms)
 }
@@ -89,19 +89,19 @@ All `on*` methods return an unsubscribe function. Call it to stop receiving the 
 
 ## Usage
 
-### With `SNS_SyncEngine` (recommended)
+### With `SDS_SyncEngine` (recommended)
 
 ```typescript
-import { SNS_NoteStore }                  from '@rozek/sns-core'
-import { SNS_BrowserPersistenceProvider } from '@rozek/sns-persistence-browser'
-import { SNS_WebSocketProvider }          from '@rozek/sns-network-websocket'
-import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
+import { SDS_NoteStore }                  from '@rozek/sds-core'
+import { SDS_BrowserPersistenceProvider } from '@rozek/sds-persistence-browser'
+import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const NoteStore   = SNS_NoteStore.fromScratch()
-const Persistence = new SNS_BrowserPersistenceProvider('my-notes')
-const Network     = new SNS_WebSocketProvider('my-notes')
+const NoteStore   = SDS_NoteStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('my-notes')
+const Network     = new SDS_WebSocketProvider('my-notes')
 
-const SyncEngine = new SNS_SyncEngine(NoteStore, {
+const SyncEngine = new SDS_SyncEngine(NoteStore, {
   PersistenceProvider:Persistence,
   NetworkProvider: Network,
   PresenceProvider:Network,
@@ -119,9 +119,9 @@ SyncEngine.onConnectionChange((State) => {
 ### Without the sync engine — direct use
 
 ```typescript
-import { SNS_WebSocketProvider } from '@rozek/sns-network-websocket'
+import { SDS_WebSocketProvider } from '@rozek/sds-network-websocket'
 
-const Network = new SNS_WebSocketProvider('my-store')
+const Network = new SDS_WebSocketProvider('my-store')
 
 const unsubPatch = Network.onPatch((patch) => {
   console.log('Received patch:', patch.byteLength, 'bytes')

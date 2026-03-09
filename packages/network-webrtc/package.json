@@ -1,26 +1,26 @@
 {
-  "name": "@rozek/sns-network-webrtc",
-  "description": "WebRTC sync + presence provider for shareable-notes-store (browser)",
+  "name": "@rozek/sds-network-webrtc",
+  "description": "WebRTC sync + presence provider for shareable-data-store (browser)",
   "version": "0.0.1",
   "author": "Andreas Rozek",
-  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
     "directory": "packages/network-webrtc"
   },
   "bugs": {
-    "url": "https://github.com/rozek/shareable-notes-store/issues"
+    "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
   "type": "module",
-  "main": "./dist/sns-network-webrtc.js",
-  "module": "./dist/sns-network-webrtc.js",
-  "types": "./dist/sns-network-webrtc.d.ts",
+  "main": "./dist/sds-network-webrtc.js",
+  "module": "./dist/sds-network-webrtc.js",
+  "types": "./dist/sds-network-webrtc.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/sns-network-webrtc.js",
-      "types": "./dist/sns-network-webrtc.d.ts"
+      "import": "./dist/sds-network-webrtc.js",
+      "types": "./dist/sds-network-webrtc.d.ts"
     }
   },
   "files": [
@@ -34,12 +34,12 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@rozek/sns-core": "workspace:*",
-    "@rozek/sns-network-websocket": "workspace:*"
+    "@rozek/sds-core": "workspace:*",
+    "@rozek/sds-network-websocket": "workspace:*"
   },
   "devDependencies": {
-    "@rozek/sns-core": "workspace:*",
-    "@rozek/sns-network-websocket": "workspace:*",
+    "@rozek/sds-core": "workspace:*",
+    "@rozek/sds-network-websocket": "workspace:*",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0",

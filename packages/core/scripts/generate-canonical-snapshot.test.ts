@@ -25,7 +25,7 @@
  * ║  src/store/canonical-empty-snapshot.ts.                                  ║
  * ╚══════════════════════════════════════════════════════════════════════════╝
  *
- * WHY this script bypasses SNS_NoteStore.fromScratch()
+ * WHY this script bypasses SDS_NoteStore.fromScratch()
  * -----------------------------------------------------
  * fromScratch() now delegates to fromBinary(CanonicalEmptySnapshot).
  * Using it here would be circular: the output would just be a re-compressed

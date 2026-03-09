@@ -1,10 +1,10 @@
-# Test Plan — `@rozek/sns-sync-engine`
+# Test Plan — `@rozek/sds-sync-engine`
 
 ---
 
 ## Goal
 
-Verify that `SNS_SyncEngine` correctly coordinates `SNS_NoteStore` with persistence, network, and presence providers across its full lifecycle.
+Verify that `SDS_SyncEngine` correctly coordinates `SDS_NoteStore` with persistence, network, and presence providers across its full lifecycle.
 
 ---
 
@@ -41,7 +41,7 @@ Verify that `SNS_SyncEngine` correctly coordinates `SNS_NoteStore` with persiste
 
 #### 1.1 Basic construction
 
-- **TC-1.1.1** — Constructing `SNS_SyncEngine` without any options succeeds, and `PeerId` is a non-empty string
+- **TC-1.1.1** — Constructing `SDS_SyncEngine` without any options succeeds, and `PeerId` is a non-empty string
 
 #### 1.2 Start with no providers
 
@@ -91,11 +91,11 @@ Verify that `SNS_SyncEngine` correctly coordinates `SNS_NoteStore` with persiste
 
 #### 1.1 connectTo without provider
 
-- **TC-3.1.1** — `connectTo()` when no `NetworkProvider` is configured rejects with an `SNS_Error` whose `Code` is `'no-network-provider'`
+- **TC-3.1.1** — `connectTo()` when no `NetworkProvider` is configured rejects with an `SDS_Error` whose `Code` is `'no-network-provider'`
 
 #### 1.2 Reconnect without prior connect
 
-- **TC-3.2.1** — `reconnect()` before any successful `connectTo()` rejects with an `SNS_Error` whose `Code` is `'not-yet-connected'`
+- **TC-3.2.1** — `reconnect()` before any successful `connectTo()` rejects with an `SDS_Error` whose `Code` is `'not-yet-connected'`
 
 ### 2. Outgoing patch dispatch
 

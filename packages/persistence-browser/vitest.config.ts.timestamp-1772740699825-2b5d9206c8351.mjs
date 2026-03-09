@@ -1,5 +1,5 @@
 // vitest.config.ts
-import { defineConfig } from "file:///sessions/upbeat-intelligent-lovelace/mnt/shareable-notes-store/node_modules/.pnpm/vitest@2.1.9_@types+node@25.3.3/node_modules/vitest/dist/config.js";
+import { defineConfig } from "file:///sessions/upbeat-intelligent-lovelace/mnt/shareable-data-store/node_modules/.pnpm/vitest@2.1.9_@types+node@25.3.3/node_modules/vitest/dist/config.js";
 var vitest_config_default = defineConfig({ test: { globals: true } });
 export {
   vitest_config_default as default

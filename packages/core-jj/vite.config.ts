@@ -11,13 +11,13 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   build: {
     lib: {
-      entry:    resolve(__dirname, 'src/sns-core-jj.ts'),
+      entry:    resolve(__dirname, 'src/sds-core-jj.ts'),
       formats:  ['es'],
-      fileName: 'sns-core-jj',
+      fileName: 'sds-core-jj',
     },
     outDir: 'dist',
     rollupOptions: {
-      external: [/^@rozek\/sns-core/, /^json-joy/],
+      external: [/^@rozek\/sds-core/, /^json-joy/],
     },
   },
   plugins: [

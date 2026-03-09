@@ -1,12 +1,12 @@
 name: Publish Docker Image
 
-# Builds the sns-websocket-server Docker image and pushes it to the GitHub
+# Builds the sds-websocket-server Docker image and pushes it to the GitHub
 # Container Registry (ghcr.io) whenever websocket-server sources change on the
 # main branch.  The resulting image can be pulled on any server with
 # "docker compose pull" — no local build, no node-gyp, no RAM spike.
 #
 # The image is public by default. To change visibility:
-#   GitHub → repository → Packages → sns-websocket-server → Package settings → Change visibility
+#   GitHub → repository → Packages → sds-websocket-server → Package settings → Change visibility
 
 on:
   push:
@@ -18,8 +18,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # GHCR image name: ghcr.io/<owner>/sns-websocket-server
-  IMAGE_NAME: ${{ github.repository_owner }}/sns-websocket-server
+  # GHCR image name: ghcr.io/<owner>/sds-websocket-server
+  IMAGE_NAME: ${{ github.repository_owner }}/sds-websocket-server
 
 jobs:
   build-and-push:
@@ -48,16 +48,16 @@ jobs:
 
       - name: Build packages
         # build all packages that websocket-server depends on, then itself
-        run: pnpm --filter @rozek/sns-websocket-server... build
+        run: pnpm --filter @rozek/sds-websocket-server... build
 
-      - name: Pack @rozek/sns-websocket-server
-        # creates rozek-sns-websocket-server-<version>.tgz in the Docker build context
+      - name: Pack @rozek/sds-websocket-server
+        # creates rozek-sds-websocket-server-<version>.tgz in the Docker build context
         # Note: pnpm pack does not support --filter, so we cd into the package directory
         run: |
           cd packages/websocket-server
           pnpm pack --pack-destination deployment/server/
-          mv deployment/server/rozek-sns-websocket-server-*.tgz \
-             deployment/server/sns-websocket-server.tgz
+          mv deployment/server/rozek-sds-websocket-server-*.tgz \
+             deployment/server/sds-websocket-server.tgz
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3

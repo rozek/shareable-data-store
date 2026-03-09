@@ -1,26 +1,26 @@
-# /opt/sns-server/docker-compose.yml
+# /opt/sds-websocket-server/docker-compose.yml
 #
 # All services that Caddy should proxy must be joined to the "internal"
 # network so Caddy can reach them by container name.
 services:
 
-  sns-server:
+  sds-server:
     # The image is built automatically by CI and pushed to GHCR.
     # On the server: "docker compose pull" fetches it, then "docker compose up -d" runs it.
     # To build and push manually from your dev machine, use docker-compose.build.yml:
     #   docker compose -f docker-compose.yml -f docker-compose.build.yml build
     #   docker compose -f docker-compose.yml -f docker-compose.build.yml push
-    image: ghcr.io/rozek/sns-websocket-server:latest
+    image: ghcr.io/rozek/sds-websocket-server:latest
     restart: unless-stopped
     env_file: .env
     environment:
-      - SNS_HOST=0.0.0.0
-      - SNS_PORT=3000
-      # SNS_PERSIST_DIR is read from .env; the volume below must match
+      - SDS_HOST=0.0.0.0
+      - SDS_PORT=3000
+      # SDS_PERSIST_DIR is read from .env; the volume below must match
     expose:
       - "3000"
     volumes:
-      - sns_stores:/data/stores   # SQLite persistence (omit if relay-only)
+      - sds_stores:/data/stores   # SQLite persistence (omit if relay-only)
     networks:
       - internal
     healthcheck:
@@ -56,7 +56,7 @@ services:
     networks:
       - internal
     depends_on:
-      - sns-server
+      - sds-server
 
 networks:
   internal:
@@ -64,4 +64,4 @@ networks:
 
 volumes:
   caddy_data:   # TLS certificates — managed by Docker, survives reinstalls
-  sns_stores:   # SQLite databases — managed by Docker, survives reinstalls
+  sds_stores:   # SQLite databases — managed by Docker, survives reinstalls

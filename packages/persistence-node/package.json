@@ -1,26 +1,26 @@
 {
-  "name": "@rozek/sns-persistence-node",
-  "description": "SQLite persistence provider for shareable-notes-store (Node.js)",
+  "name": "@rozek/sds-persistence-node",
+  "description": "SQLite persistence provider for shareable-data-store (Node.js)",
   "version": "0.0.1",
   "author": "Andreas Rozek",
-  "homepage": "https://github.com/rozek/shareable-notes-store#readme",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rozek/shareable-notes-store.git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
     "directory": "packages/persistence-node"
   },
   "bugs": {
-    "url": "https://github.com/rozek/shareable-notes-store/issues"
+    "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
   "type": "module",
-  "main": "./dist/sns-persistence-node.js",
-  "module": "./dist/sns-persistence-node.js",
-  "types": "./dist/sns-persistence-node.d.ts",
+  "main": "./dist/sds-persistence-node.js",
+  "module": "./dist/sds-persistence-node.js",
+  "types": "./dist/sds-persistence-node.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/sns-persistence-node.js",
-      "types": "./dist/sns-persistence-node.d.ts"
+      "import": "./dist/sds-persistence-node.js",
+      "types": "./dist/sds-persistence-node.d.ts"
     }
   },
   "files": [
@@ -34,11 +34,11 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@rozek/sns-core": "workspace:*",
+    "@rozek/sds-core": "workspace:*",
     "better-sqlite3": ">=9"
   },
   "devDependencies": {
-    "@rozek/sns-core": "workspace:*",
+    "@rozek/sds-core": "workspace:*",
     "@types/better-sqlite3": "^7.6.0",
     "better-sqlite3": "^9.0.0",
     "typescript": "^5.7.2",

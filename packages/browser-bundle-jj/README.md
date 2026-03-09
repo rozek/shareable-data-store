@@ -1,14 +1,14 @@
-# @rozek/sns-browser-bundle-jj
+# @rozek/sds-browser-bundle-jj
 
-A **single self-contained ESM file** that bundles the entire **shareable-notes-store** (SNS) stack for browser use:
+A **single self-contained ESM file** that bundles the entire **shareable-data-store** (SNS) stack for browser use:
 
-- `@rozek/sns-core-jj` — store, notes, links, **json-joy CRDT engine** (concrete implementation)
-- `@rozek/sns-network-websocket` — WebSocket sync & presence
-- `@rozek/sns-network-webrtc` — WebRTC peer-to-peer sync & presence
-- `@rozek/sns-persistence-browser` — IndexedDB persistence
-- `@rozek/sns-sync-engine` — coordination & lifecycle
+- `@rozek/sds-core-jj` — store, notes, links, **json-joy CRDT engine** (concrete implementation)
+- `@rozek/sds-network-websocket` — WebSocket sync & presence
+- `@rozek/sds-network-webrtc` — WebRTC peer-to-peer sync & presence
+- `@rozek/sds-persistence-browser` — IndexedDB persistence
+- `@rozek/sds-sync-engine` — coordination & lifecycle
 
-> **Note:** This bundle uses [**json-joy**](https://github.com/streamich/json-joy) as its CRDT backend (`@rozek/sns-core-jj`). If you need a different backend, use `@rozek/sns-browser-bundle-yjs` (Y.js) or `@rozek/sns-browser-bundle-loro` (Loro CRDT) instead.
+> **Note:** This bundle uses [**json-joy**](https://github.com/streamich/json-joy) as its CRDT backend (`@rozek/sds-core-jj`). If you need a different backend, use `@rozek/sds-browser-bundle-yjs` (Y.js) or `@rozek/sds-browser-bundle-loro` (Loro CRDT) instead.
 
 All npm dependencies (`json-joy`, `fflate`, `fractional-indexing`, `zod`) are inlined — there are **no external CDN requests** at runtime.
 
@@ -18,7 +18,7 @@ All npm dependencies (`json-joy`, `fflate`, `fractional-indexing`, `zod`) are in
 
 Every `import` statement in a browser application potentially loads code from a third-party server. With the standard per-package installation approach that means separate network requests to your own server for the SNS packages, plus requests to CDNs or npm mirrors for `json-joy`, `fflate`, etc.
 
-`@rozek/sns-browser-bundle-jj` eliminates that: copy `dist/sns-browser-bundle-jj.js` (≈ 439 KB raw, ≈ 100 KB gzip) to your own infrastructure and point your application's import map or bundler at it. Every byte of SNS code then comes from a single, auditable file served exclusively from your server — making it straightforward to demonstrate **GDPR / DSGVO compliance**.
+`@rozek/sds-browser-bundle-jj` eliminates that: copy `dist/sds-browser-bundle-jj.js` (≈ 439 KB raw, ≈ 100 KB gzip) to your own infrastructure and point your application's import map or bundler at it. Every byte of SNS code then comes from a single, auditable file served exclusively from your server — making it straightforward to demonstrate **GDPR / DSGVO compliance**.
 
 ---
 
@@ -26,31 +26,31 @@ Every `import` statement in a browser application potentially loads code from a 
 
 ### Via an import map (no bundler required)
 
-Copy `dist/sns-browser-bundle-jj.js` to your web server, then declare an import map in your HTML:
+Copy `dist/sds-browser-bundle-jj.js` to your web server, then declare an import map in your HTML:
 
 ```html
 <script type="importmap">
 {
   "imports": {
-    "@rozek/sns-browser-bundle-jj": "/js/sns-browser-bundle-jj.js"
+    "@rozek/sds-browser-bundle-jj": "/js/sds-browser-bundle-jj.js"
   }
 }
 </script>
 
 <script type="module">
   import {
-    SNS_NoteStore,
-    SNS_BrowserPersistenceProvider,
-    SNS_WebSocketProvider,
-    SNS_SyncEngine,
-  } from '@rozek/sns-browser-bundle-jj'
+    SDS_NoteStore,
+    SDS_BrowserPersistenceProvider,
+    SDS_WebSocketProvider,
+    SDS_SyncEngine,
+  } from '@rozek/sds-browser-bundle-jj'
 
   // ── build the stack ────────────────────────────────────────────
 
-  const NoteStore   = SNS_NoteStore.fromScratch()
-  const Persistence = new SNS_BrowserPersistenceProvider('my-store-id')
-  const Network     = new SNS_WebSocketProvider('my-store-id')
-  const SyncEngine  = new SNS_SyncEngine(NoteStore, {
+  const NoteStore   = SDS_NoteStore.fromScratch()
+  const Persistence = new SDS_BrowserPersistenceProvider('my-store-id')
+  const Network     = new SDS_WebSocketProvider('my-store-id')
+  const SyncEngine  = new SDS_SyncEngine(NoteStore, {
     PersistenceProvider:Persistence,
     NetworkProvider: Network,
     PresenceProvider:Network,   // WebSocketProvider implements both
@@ -87,14 +87,14 @@ export default defineConfig({
   resolve: {
     alias: {
       // redirect all SNS packages to the single bundle file
-      // Note: @rozek/sns-core-jj must come before @rozek/sns-core so the
+      // Note: @rozek/sds-core-jj must come before @rozek/sds-core so the
       // longer prefix wins the alias match.
-      '@rozek/sns-core-jj': '/public/js/sns-browser-bundle-jj.js',
-      '@rozek/sns-core': '/public/js/sns-browser-bundle-jj.js',
-      '@rozek/sns-network-websocket': '/public/js/sns-browser-bundle-jj.js',
-      '@rozek/sns-network-webrtc': '/public/js/sns-browser-bundle-jj.js',
-      '@rozek/sns-persistence-browser': '/public/js/sns-browser-bundle-jj.js',
-      '@rozek/sns-sync-engine': '/public/js/sns-browser-bundle-jj.js',
+      '@rozek/sds-core-jj': '/public/js/sds-browser-bundle-jj.js',
+      '@rozek/sds-core': '/public/js/sds-browser-bundle-jj.js',
+      '@rozek/sds-network-websocket': '/public/js/sds-browser-bundle-jj.js',
+      '@rozek/sds-network-webrtc': '/public/js/sds-browser-bundle-jj.js',
+      '@rozek/sds-persistence-browser': '/public/js/sds-browser-bundle-jj.js',
+      '@rozek/sds-sync-engine': '/public/js/sds-browser-bundle-jj.js',
     },
   },
 })
@@ -103,10 +103,10 @@ export default defineConfig({
 Then import as normal:
 
 ```typescript
-import { SNS_NoteStore }                  from '@rozek/sns-core'
-import { SNS_BrowserPersistenceProvider } from '@rozek/sns-persistence-browser'
-import { SNS_WebSocketProvider }          from '@rozek/sns-network-websocket'
-import { SNS_SyncEngine }                 from '@rozek/sns-sync-engine'
+import { SDS_NoteStore }                  from '@rozek/sds-core'
+import { SDS_BrowserPersistenceProvider } from '@rozek/sds-persistence-browser'
+import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 ```
 
 ---
@@ -117,13 +117,13 @@ The bundle re-exports the complete public API of all constituent packages. Refer
 
 | Export | Source package |
 | --- | --- |
-| `SNS_NoteStore`, `SNS_Entry`, `SNS_Note`, `SNS_Link` | `@rozek/sns-core-jj` (json-joy backend) |
-| `SNS_Error`, `SNS_ChangeSet`, `SNS_SyncCursor`, `SNS_PatchSeqNumber` | `@rozek/sns-core` (re-exported via `@rozek/sns-core-jj`) |
-| `SNS_PersistenceProvider`, `SNS_NetworkProvider`, `SNS_PresenceProvider` | `@rozek/sns-core` (re-exported via `@rozek/sns-core-jj`) |
-| `SNS_WebSocketProvider` | `@rozek/sns-network-websocket` |
-| `SNS_WebRTCProvider`, `SNS_WebRTCProviderOptions` | `@rozek/sns-network-webrtc` |
-| `SNS_BrowserPersistenceProvider` | `@rozek/sns-persistence-browser` |
-| `SNS_SyncEngine`, `SNS_SyncEngineOptions` | `@rozek/sns-sync-engine` |
+| `SDS_NoteStore`, `SDS_Entry`, `SDS_Note`, `SDS_Link` | `@rozek/sds-core-jj` (json-joy backend) |
+| `SDS_Error`, `SDS_ChangeSet`, `SDS_SyncCursor`, `SDS_PatchSeqNumber` | `@rozek/sds-core` (re-exported via `@rozek/sds-core-jj`) |
+| `SDS_PersistenceProvider`, `SDS_NetworkProvider`, `SDS_PresenceProvider` | `@rozek/sds-core` (re-exported via `@rozek/sds-core-jj`) |
+| `SDS_WebSocketProvider` | `@rozek/sds-network-websocket` |
+| `SDS_WebRTCProvider`, `SDS_WebRTCProviderOptions` | `@rozek/sds-network-webrtc` |
+| `SDS_BrowserPersistenceProvider` | `@rozek/sds-persistence-browser` |
+| `SDS_SyncEngine`, `SDS_SyncEngineOptions` | `@rozek/sds-sync-engine` |
 
 ---
 
@@ -133,14 +133,14 @@ The bundle re-exports the complete public API of all constituent packages. Refer
 
 ```typescript
 import {
-  SNS_NoteStore,
-  SNS_BrowserPersistenceProvider,
-  SNS_SyncEngine,
-} from '@rozek/sns-browser-bundle-jj'
+  SDS_NoteStore,
+  SDS_BrowserPersistenceProvider,
+  SDS_SyncEngine,
+} from '@rozek/sds-browser-bundle-jj'
 
-const NoteStore = SNS_NoteStore.fromScratch()
-const persistence = new SNS_BrowserPersistenceProvider('personal-notes')
-const engine = new SNS_SyncEngine(store, { PersistenceProvider:persistence })
+const NoteStore = SDS_NoteStore.fromScratch()
+const persistence = new SDS_BrowserPersistenceProvider('personal-notes')
+const engine = new SDS_SyncEngine(store, { PersistenceProvider:persistence })
 
 await engine.start()
 
@@ -152,17 +152,17 @@ note.Label = 'Survives page reloads via IndexedDB'
 
 ```typescript
 import {
-  SNS_NoteStore,
-  SNS_BrowserPersistenceProvider,
-  SNS_WebSocketProvider,
-  SNS_SyncEngine,
-} from '@rozek/sns-browser-bundle-jj'
+  SDS_NoteStore,
+  SDS_BrowserPersistenceProvider,
+  SDS_WebSocketProvider,
+  SDS_SyncEngine,
+} from '@rozek/sds-browser-bundle-jj'
 
-const NoteStore   = SNS_NoteStore.fromScratch()
-const Persistence = new SNS_BrowserPersistenceProvider('collab-store')
-const Network     = new SNS_WebSocketProvider('collab-store')
+const NoteStore   = SDS_NoteStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('collab-store')
+const Network     = new SDS_WebSocketProvider('collab-store')
 
-const SyncEngine = new SNS_SyncEngine(NoteStore, {
+const SyncEngine = new SDS_SyncEngine(NoteStore, {
   PersistenceProvider:Persistence,
   NetworkProvider: Network,
   PresenceProvider:Network,
@@ -185,19 +185,19 @@ engine.onPresenceChange((PeerId,PeerState) => {
 
 ```typescript
 import {
-  SNS_NoteStore,
-  SNS_BrowserPersistenceProvider,
-  SNS_WebSocketProvider,
-  SNS_WebRTCProvider,
-  SNS_SyncEngine,
-} from '@rozek/sns-browser-bundle-jj'
+  SDS_NoteStore,
+  SDS_BrowserPersistenceProvider,
+  SDS_WebSocketProvider,
+  SDS_WebRTCProvider,
+  SDS_SyncEngine,
+} from '@rozek/sds-browser-bundle-jj'
 
-const NoteStore   = SNS_NoteStore.fromScratch()
-const Persistence = new SNS_BrowserPersistenceProvider('p2p-store')
-const wsFallback  = new SNS_WebSocketProvider('p2p-store')
-const Network     = new SNS_WebRTCProvider('p2p-store', { Fallback:wsFallback })
+const NoteStore   = SDS_NoteStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('p2p-store')
+const wsFallback  = new SDS_WebSocketProvider('p2p-store')
+const Network     = new SDS_WebRTCProvider('p2p-store', { Fallback:wsFallback })
 
-const SyncEngine = new SNS_SyncEngine(NoteStore, {
+const SyncEngine = new SDS_SyncEngine(NoteStore, {
   PersistenceProvider:Persistence,
   NetworkProvider: Network,
   PresenceProvider:Network,
@@ -210,9 +210,9 @@ await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 ### Automatic trash expiry
 
 ```typescript
-import { SNS_NoteStore } from '@rozek/sns-browser-bundle-jj'
+import { SDS_NoteStore } from '@rozek/sds-browser-bundle-jj'
 
-const NoteStore = SNS_NoteStore.fromScratch({
+const NoteStore = SDS_NoteStore.fromScratch({
   TrashTTLms:7 * 24 * 60 * 60 * 1000,  // purge after 7 days
 })
 
@@ -227,15 +227,15 @@ window.addEventListener('beforeunload', () => NoteStore.dispose())
 From the monorepo root:
 
 ```bash
-pnpm --filter @rozek/sns-browser-bundle-jj build
+pnpm --filter @rozek/sds-browser-bundle-jj build
 ```
 
 The output is written to `packages/browser-bundle-jj/dist/`:
 
 | File | Description |
 | --- | --- |
-| `sns-browser-bundle-jj.js` | Single ESM file (≈ 439 KB raw, ≈ 100 KB gzip) |
-| `sns-browser-bundle-jj.d.ts` | Rolled-up TypeScript declarations |
+| `sds-browser-bundle-jj.js` | Single ESM file (≈ 439 KB raw, ≈ 100 KB gzip) |
+| `sds-browser-bundle-jj.d.ts` | Rolled-up TypeScript declarations |
 
 ---
 

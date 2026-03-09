@@ -1,8 +1,8 @@
-# Test Cases — `@rozek/sns-core-yjs`
+# Test Cases — `@rozek/sds-core-yjs`
 
-All test cases from [`@rozek/sns-core` TestCases.md](../core/TestCases.md) apply.
+All test cases from [`@rozek/sds-core` TestCases.md](../core/TestCases.md) apply.
 The test files under `src/tests/` use the same IDs and descriptions as the
-shared contract; only the import path points to `@rozek/sns-core-yjs`.
+shared contract; only the import path points to `@rozek/sds-core-yjs`.
 
 ---
 

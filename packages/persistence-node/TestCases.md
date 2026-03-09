@@ -1,4 +1,4 @@
-# Test Cases — @rozek/sns-persistence-node
+# Test Cases — @rozek/sds-persistence-node
 
 ## PC — Construction
 

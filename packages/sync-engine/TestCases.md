@@ -1,4 +1,4 @@
-# Test Cases — @rozek/sns-sync-engine
+# Test Cases — @rozek/sds-sync-engine
 
 ## SL — Lifecycle
 
@@ -22,7 +22,7 @@
 
 | # | Description | Expected |
 |---|---|---|
-| SN-01 | connectTo() without NetworkProvider throws SNS_Error 'no-network-provider' | throws |
+| SN-01 | connectTo() without NetworkProvider throws SDS_Error 'no-network-provider' | throws |
 | SN-02 | reconnect() without prior connectTo() throws 'not-yet-connected' | throws |
 | SN-03 | when connected, internal store change → network.sendPatch() called | sendPatch() called |
 | SN-04 | when disconnected, internal store change → patch queued; flushes on reconnect | sendPatch() called after reconnect |
