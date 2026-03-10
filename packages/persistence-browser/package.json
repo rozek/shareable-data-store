@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-persistence-browser",
   "description": "IndexedDB persistence provider for shareable-data-store",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
