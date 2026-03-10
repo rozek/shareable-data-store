@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-core-loro",
   "description": "Loro CRDT backend for shareable-data-store",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [
     "crdt",
     "items",

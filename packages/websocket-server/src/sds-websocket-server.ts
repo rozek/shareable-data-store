@@ -295,7 +295,7 @@ export class LiveStore {
 
 export function createSDSServer (Options?:Partial<SDS_ServerOptions>) {
   const JWTSecretStr = Options?.JWTSecret  ?? process.env['SDS_JWT_SECRET'] ?? ''
-  const Issuer       = Options?.Issuer     ?? process.env['SDS_ISSUER']
+  const Issuer       = Options?.Issuer     || process.env['SDS_ISSUER'] || undefined
   const Port         = Options?.Port       ?? parseInt(process.env['SDS_PORT'] ?? '3000', 10)
   const Host         = Options?.Host       ?? process.env['SDS_HOST'] ?? '127.0.0.1'
   const PersistDir   = Options?.PersistDir ?? process.env['SDS_PERSIST_DIR']
@@ -321,7 +321,8 @@ export function createSDSServer (Options?:Partial<SDS_ServerOptions>) {
     let Claims: SDSClaims
     try {
       Claims = await verifyToken(Token, Secret, Issuer)
-    } catch (_Signal) {
+    } catch (Signal) {
+      console.error('[/ws] token rejected:', (Signal as any)?.message ?? Signal)
       return {
         onOpen: (_Event, WS) => { WS.close(4001, 'Unauthorized') },
       }
@@ -388,7 +389,8 @@ export function createSDSServer (Options?:Partial<SDS_ServerOptions>) {
     let Claims:SDSClaims
     try {
       Claims = await verifyToken(Token, Secret, Issuer)
-    } catch (_Signal) {
+    } catch (Signal) {
+      console.error('[/signal] token rejected:', (Signal as any)?.message ?? Signal)
       return {
         onOpen: (_Event, WS) => { WS.close(4001, 'Unauthorized') },
       }
@@ -444,7 +446,8 @@ export function createSDSServer (Options?:Partial<SDS_ServerOptions>) {
     let AdminClaims:SDSClaims
     try {
       AdminClaims = await verifyToken(AdminToken, Secret, Issuer)
-    } catch (_Signal) {
+    } catch (Signal) {
+      console.error('[POST /api/token] token rejected:', (Signal as any)?.message ?? Signal)
       return HonoCtx.json({ error:'invalid token' }, 401)
     }
     if (AdminClaims.scope !== 'admin') {

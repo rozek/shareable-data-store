@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-core",
   "description": "Backend-agnostic shared types and interfaces for shareable-data-store",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [
     "crdt",
     "items",
