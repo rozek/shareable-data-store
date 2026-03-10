@@ -353,7 +353,7 @@ export class SDS_WebRTCProvider
 
   async #createOffer (RemotePeerId:string):Promise<void> {
     const PeerConn  = this.#createPeerConnection(RemotePeerId)
-    const DataChannel = PeerConn.createDataChannel('sns', { ordered:false, maxRetransmits:0 })
+    const DataChannel = PeerConn.createDataChannel('sds', { ordered:false, maxRetransmits:0 })
     this.#setupDataChannel(DataChannel, RemotePeerId)
     this.#Channels.set(RemotePeerId, DataChannel)
 

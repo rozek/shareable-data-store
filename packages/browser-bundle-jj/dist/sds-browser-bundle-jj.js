@@ -14444,7 +14444,7 @@ qr = function(e) {
     }
   }
 }, $l = async function(e) {
-  const t = N(this, ne, Xs).call(this, e), i = t.createDataChannel("sns", { ordered: !1, maxRetransmits: 0 });
+  const t = N(this, ne, Xs).call(this, e), i = t.createDataChannel("sds", { ordered: !1, maxRetransmits: 0 });
   N(this, ne, Ys).call(this, i, e), S(this, De).set(e, i);
   const n = await t.createOffer();
   await t.setLocalDescription(n), N(this, ne, qr).call(this, { type: "offer", from: S(this, Me), to: e, sdp: n });
@@ -14554,7 +14554,7 @@ class _0 {
     D(this, it);
     D(this, qe);
     D(this, Gr);
-    H(this, qe, e), H(this, Gr, `sns:${e}`);
+    H(this, qe, e), H(this, Gr, `sds:${e}`);
   }
   //----------------------------------------------------------------------------//
   //                           SDS_PersistenceProvider                          //
@@ -14716,7 +14716,7 @@ class k0 {
     // tracks entryId → blob hash for all entries whose value is in a *-reference kind;
     // used to call releaseValue() when the entry's value changes or the entry is purged
     D(this, Je, /* @__PURE__ */ new Map());
-    H(this, be, e), H(this, ge, t.PersistenceProvider ?? void 0), H(this, ce, t.NetworkProvider ?? void 0), H(this, vt, t.PresenceProvider ?? t.NetworkProvider ?? void 0), H(this, mn, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && S(this, ce) != null && H(this, Fe, new BroadcastChannel(`sns:${S(this, ce).StoreId}`));
+    H(this, be, e), H(this, ge, t.PersistenceProvider ?? void 0), H(this, ce, t.NetworkProvider ?? void 0), H(this, vt, t.PresenceProvider ?? t.NetworkProvider ?? void 0), H(this, mn, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && S(this, ce) != null && H(this, Fe, new BroadcastChannel(`sds:${S(this, ce).StoreId}`));
   }
   //----------------------------------------------------------------------------//
   //                                 Lifecycle                                  //

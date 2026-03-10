@@ -58,7 +58,7 @@ class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
 | `DbPath` | Directory where the SQLite file is created (created if it doesn't exist) |
 | `StoreId` | Logical store identifier; multiple stores can share the same database file |
 
-The SQLite file is named `<DbPath>/sns.db`. WAL mode is enabled automatically for better concurrent-read performance.
+The SQLite file is named `<DbPath>/sds.db`. WAL mode is enabled automatically for better concurrent-read performance.
 
 ---
 
@@ -111,7 +111,7 @@ await SyncEngine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 ```typescript
 const PersistenceA = new SDS_DesktopPersistenceProvider('./data', 'store-a')
 const PersistenceB = new SDS_DesktopPersistenceProvider('./data', 'store-b')
-// both use ./data/sns.db but different store_id values
+// both use ./data/sds.db but different store_id values
 ```
 
 ---

@@ -6,7 +6,7 @@
 
 // IndexedDB-backed SDS_PersistenceProvider for browser environments.
 //
-// IndexedDB object stores (all within one database named 'sns:<storeId>'):
+// IndexedDB object stores (all within one database named 'sds:<storeId>'):
 //
 //   snapshots   keyPath: 'storeId'
 //               { storeId:string, data:Uint8Array, clock:number }
@@ -49,7 +49,7 @@ export class SDS_BrowserPersistenceProvider implements SDS_PersistenceProvider {
 
   constructor (StoreId:string) {
     this.#StoreId = StoreId
-    this.#DBName  = `sns:${StoreId}`
+    this.#DBName  = `sds:${StoreId}`
   }
 
 /**** #open — lazily open DB ****/

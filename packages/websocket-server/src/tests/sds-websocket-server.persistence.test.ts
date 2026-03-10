@@ -54,7 +54,7 @@
     let Store:    LiveStore
 
     beforeEach(() => {
-      TempDir  = fs.mkdtempSync(path.join(os.tmpdir(), 'sns-persist-test-'))
+      TempDir  = fs.mkdtempSync(path.join(os.tmpdir(), 'sds-persist-test-'))
       DbPath   = path.join(TempDir, 'test.db')
       Provider = new SDS_DesktopPersistenceProvider(DbPath, 'store-1')
       Store    = new LiveStore('store-1', Provider)

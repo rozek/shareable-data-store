@@ -13,7 +13,7 @@ import { SDS_DesktopPersistenceProvider } from '../sds-persistence-node.js'
 /**** makeTmpDb — creates a temporary SQLite database path for test use ****/
 
 function makeTmpDb ():{ DbPath:string; cleanup:() => void } {
-  const Dir     = mkdtempSync(join(tmpdir(), 'sns-test-'))
+  const Dir     = mkdtempSync(join(tmpdir(), 'sds-test-'))
   const DbPath  = join(Dir, 'test.db')
   const cleanup = () => { try { rmSync(Dir, { recursive:true, force:true }) } catch {} }
   return { DbPath, cleanup }

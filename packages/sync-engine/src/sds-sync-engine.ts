@@ -114,7 +114,7 @@ export class SDS_SyncEngine {
       typeof BroadcastChannel !== 'undefined'
 
     if (useBroadcastChannel && this.#Network != undefined) {
-      this.#BC = new BroadcastChannel(`sns:${this.#Network.StoreId}`)
+      this.#BC = new BroadcastChannel(`sds:${this.#Network.StoreId}`)
     }
   }
 

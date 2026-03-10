@@ -220,7 +220,7 @@ v = function(t) {
     }
   }
 }, J = async function(t) {
-  const n = c(this, r, U).call(this, t), s = n.createDataChannel("sns", { ordered: !1, maxRetransmits: 0 });
+  const n = c(this, r, U).call(this, t), s = n.createDataChannel("sds", { ordered: !1, maxRetransmits: 0 });
   c(this, r, L).call(this, s, t), e(this, u).set(t, s);
   const i = await n.createOffer();
   await n.setLocalDescription(i), c(this, r, v).call(this, { type: "offer", from: e(this, y), to: t, sdp: i });

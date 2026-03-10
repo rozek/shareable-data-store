@@ -23,7 +23,7 @@ class j {
     D(this, w);
     D(this, i);
     D(this, B);
-    x(this, i, t), x(this, B, `sns:${t}`);
+    x(this, i, t), x(this, B, `sds:${t}`);
   }
   //----------------------------------------------------------------------------//
   //                           SDS_PersistenceProvider                          //

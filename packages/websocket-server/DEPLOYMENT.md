@@ -127,8 +127,8 @@ cd /opt/shareable-data-store
 corepack enable
 pnpm install
 pnpm --filter @rozek/sds-websocket-server build
-pnpm --filter @rozek/sds-websocket-server pack --pack-destination /tmp/sns-pack/
-mv /tmp/sns-pack/rozek-sds-websocket-server-*.tgz /opt/sds-websocket-server/server/sds-websocket-server.tgz
+pnpm --filter @rozek/sds-websocket-server pack --pack-destination /tmp/sds-pack/
+mv /tmp/sds-pack/rozek-sds-websocket-server-*.tgz /opt/sds-websocket-server/server/sds-websocket-server.tgz
 
 # 5. build the Docker image (uses docker-compose.build.yml to add the build: section)
 cd /opt/sds-websocket-server
@@ -153,9 +153,9 @@ cp -r packages/websocket-server/deployment/server /opt/sds-websocket-server/serv
 pnpm install
 pnpm --filter @rozek/sds-websocket-server build
 cd packages/websocket-server
-pnpm pack --pack-destination /tmp/sns-pack/
+pnpm pack --pack-destination /tmp/sds-pack/
 cd -
-mv /tmp/sns-pack/rozek-sds-websocket-server-*.tgz /opt/sds-websocket-server/server/sds-websocket-server.tgz
+mv /tmp/sds-pack/rozek-sds-websocket-server-*.tgz /opt/sds-websocket-server/server/sds-websocket-server.tgz
 
 cd /opt/sds-websocket-server
 docker compose -f docker-compose.yml -f docker-compose.build.yml build
@@ -255,9 +255,9 @@ Build on a development machine or in CI (where RAM is plentiful), ship only the 
 ```bash
 pnpm --filter @rozek/sds-websocket-server build
 cd packages/websocket-server
-pnpm pack --pack-destination /tmp/sns-pack/
+pnpm pack --pack-destination /tmp/sds-pack/
 cd -
-scp /tmp/sns-pack/rozek-sds-websocket-server-*.tgz user@server:/opt/sds-websocket-server/
+scp /tmp/sds-pack/rozek-sds-websocket-server-*.tgz user@server:/opt/sds-websocket-server/
 ```
 
 **On the server:**

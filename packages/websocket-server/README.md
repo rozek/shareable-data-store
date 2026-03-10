@@ -260,6 +260,19 @@ my-server.example.com {
 
 ---
 
+## Deployment
+
+For production use — Docker + Caddy, bare Node.js (relay-only or with SQLite persistence), backup and restore, operations, and security hardening — refer to [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+It covers four ready-to-use setups:
+
+- **A1 (recommended):** Docker + Caddy + pre-built image from GHCR — no compilation, automatic TLS, works on servers with as little as 1 GB RAM
+- **A2:** Docker + Caddy + build on server — for teams that prefer to build the image locally
+- **B1:** bare Node.js, relay-only — smallest possible footprint, no native addons
+- **B2 / B3:** bare Node.js + SQLite persistence via pre-built binary or tarball
+
+---
+
 ## Wire Protocol
 
 The server is protocol-agnostic: it forwards raw binary frames without inspecting the payload (except for the one-byte type prefix used for scope enforcement). The frame format is defined by `@rozek/sds-network-websocket`:

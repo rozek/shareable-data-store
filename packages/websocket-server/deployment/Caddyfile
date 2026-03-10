@@ -61,7 +61,7 @@
 
     # access log with rotation
     log {
-        output file /data/logs/sns-access.log {
+        output file /data/logs/sds-access.log {
             roll_size 10mb
             roll_keep 5
         }

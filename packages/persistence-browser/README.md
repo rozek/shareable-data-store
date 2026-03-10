@@ -16,7 +16,7 @@ No native dependencies; pure browser API.
 
 ## Concepts
 
-The provider creates one IndexedDB database per store (named `sns:<storeId>`) with three object stores:
+The provider creates one IndexedDB database per store (named `sds:<storeId>`) with three object stores:
 
 | Object store | Key | Contents |
 |---|---|---|
@@ -57,7 +57,7 @@ class SDS_BrowserPersistenceProvider implements SDS_PersistenceProvider {
 
 | Parameter | Description |
 |---|---|
-| `StoreId` | Logical store name; determines the IndexedDB database name (`sns:<StoreId>`) |
+| `StoreId` | Logical store name; determines the IndexedDB database name (`sds:<StoreId>`) |
 
 `releaseValue` uses reference counting: the blob row is deleted only when the counter reaches zero, so the same blob can be referenced by multiple items safely.
 
@@ -112,7 +112,7 @@ await Engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 ### Multiple independent stores
 
 ```typescript
-// each store gets its own IndexedDB database: sns:items, sns:tasks, …
+// each store gets its own IndexedDB database: sds:items, sds:tasks, …
 const dataPersistence = new SDS_BrowserPersistenceProvider('items')
 const tasksPersistence = new SDS_BrowserPersistenceProvider('tasks')
 ```

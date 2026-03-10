@@ -60,7 +60,7 @@ class at {
     // tracks entryId → blob hash for all entries whose value is in a *-reference kind;
     // used to call releaseValue() when the entry's value changes or the entry is purged
     r(this, y, /* @__PURE__ */ new Map());
-    c(this, u, e), c(this, d, s.PersistenceProvider ?? void 0), c(this, a, s.NetworkProvider ?? void 0), c(this, P, s.PresenceProvider ?? s.NetworkProvider ?? void 0), c(this, k, s.PresenceTimeoutMs ?? 12e4), (s.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && t(this, a) != null && c(this, w, new BroadcastChannel(`sns:${t(this, a).StoreId}`));
+    c(this, u, e), c(this, d, s.PersistenceProvider ?? void 0), c(this, a, s.NetworkProvider ?? void 0), c(this, P, s.PresenceProvider ?? s.NetworkProvider ?? void 0), c(this, k, s.PresenceTimeoutMs ?? 12e4), (s.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && t(this, a) != null && c(this, w, new BroadcastChannel(`sds:${t(this, a).StoreId}`));
   }
   //----------------------------------------------------------------------------//
   //                                 Lifecycle                                  //
