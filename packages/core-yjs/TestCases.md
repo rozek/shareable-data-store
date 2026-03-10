@@ -14,3 +14,10 @@ shared contract; only the import path points to `@rozek/sds-core-yjs`.
 well-known entry IDs.  Y.js state-vector-based delta encoding correctly handles
 the case where both docs started from divergent initial states — Y.js simply
 merges both sets of updates.  No canonical pre-generated snapshot is required.
+
+## SDS_DataStore.construction.test.ts — Backend-specific (Y.js)
+
+| # | Test case | Expected result |
+|---|---|---|
+| YJS-C-01 | `fromScratch()` contains exactly the three well-known items with correct inner-entry order | `RootItem.innerEntryList` has length 2 and contains both `TrashItem.Id` and `LostAndFoundItem.Id` |
+

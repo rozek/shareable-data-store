@@ -83,7 +83,7 @@ describe('SDS_DataStore (Y.js) — Construction', () => {
     expect(Item.ValueKind).toBe('literal-reference')
   })
 
-  it('C-11: fromScratch() contains exactly the three well-known items', () => {
+  it('YJS-C-01: fromScratch() contains exactly the three well-known items', () => {
     // Y.js backend: no canonical snapshot — the well-known entries are created
     // directly in fromScratch() using fixed UUIDs.
     const Store = SDS_DataStore.fromScratch()
@@ -96,7 +96,7 @@ describe('SDS_DataStore (Y.js) — Construction', () => {
     expect(InnerIds).toHaveLength(2)
   })
 
-  it('C-12: two independent fromScratch() stores can exchange patches', () => {
+  it('C-11: two independent fromScratch() stores can exchange patches', () => {
     // Y.js merges patches from independent stores correctly — no canonical
     // snapshot is required because Y.js conflict resolution is deterministic.
     const StoreA = SDS_DataStore.fromScratch()

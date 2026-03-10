@@ -83,7 +83,7 @@ describe('SDS_DataStore (Loro) — Construction', () => {
     expect(Item.ValueKind).toBe('literal-reference')
   })
 
-  it('C-11: fromScratch() contains exactly the three well-known items', () => {
+  it('LO-C-01: fromScratch() contains exactly the three well-known items', () => {
     // Loro backend: no canonical snapshot — the well-known entries are created
     // directly in fromScratch() using fixed UUIDs via LoroMap containers.
     const Store = SDS_DataStore.fromScratch()
@@ -96,7 +96,7 @@ describe('SDS_DataStore (Loro) — Construction', () => {
     expect(InnerIds).toHaveLength(2)
   })
 
-  it('C-12: two independent fromScratch() stores can exchange patches', () => {
+  it('C-11: two independent fromScratch() stores can exchange patches', () => {
     // Loro CRDT merges patches from independent stores correctly — no canonical
     // snapshot is required because Loro conflict resolution is deterministic.
     const StoreA = SDS_DataStore.fromScratch()

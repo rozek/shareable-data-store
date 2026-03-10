@@ -72,6 +72,7 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 | N-11 | `newLinkAt` with non-existent target throws | throws `SDS_Error` |
 | N-12 | `newItemAt` with `null` outerItem throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
 | N-13 | `newLinkAt` with `null` Target throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
+| N-14 | `newLinkAt` with a link (not an item) as target throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
 
 ---
 
@@ -177,6 +178,7 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 | D-19 | `purgeExpiredTrashEntries(60_000)` returns 2 when two entries are both expired | returns 2 |
 | D-20 | `dispose()` stops the auto-purge timer | spy called once before dispose; still called only once after 2 s more |
 | D-21 | auto-purge timer calls `purgeExpiredTrashEntries` when `TrashTTLms` is configured | entry expired 90 s ago is absent after one check interval |
+| D-22 | moving an entry out of TrashItem removes `Info._trashedAt` | `data.Info['_trashedAt'] === undefined` after `moveEntryTo(data, RootItem)` |
 
 ---
 
@@ -227,6 +229,8 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 | SY-06 | `applyRemotePatch` containing a move: `outerItem` and both containers' `innerEntryList` correct on receiver | moved entry in new container, absent from old container |
 | SY-07 | `applyRemotePatch` containing a purge: entry absent from receiver and from `TrashItem.innerEntryList` | `EntryWithId` returns `undefined`; Trash list does not contain the Id |
 | SY-08 | ChangeSet from `applyRemotePatch` records `outerItem` only for entries whose placement changed | new entry has `outerItem`; unaffected bystander does not |
+| SY-09 | link whose target was purged by a remote peer → placeholder item for that target in `LostAndFoundItem` | `EntryWithId(Target.Id)` is defined; `isItem` is `true`; `outerItem.Id === LostAndFoundItem.Id` |
+| SY-10 | `applyRemotePatch(new Uint8Array(0))` is a no-op — store is unchanged and no exception is thrown | store state identical before and after; no throw |
 
 ---
 

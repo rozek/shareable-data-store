@@ -83,6 +83,13 @@ import type { SDS_Link }       from './SDS_Link.js'
     // how often the auto-purge check runs, in milliseconds.
     // defaults to min(TrashTTLms / 4, 3 600 000).
     TrashCheckIntervalMs?:number
+
+    // [json-joy backend only] called whenever applyRemotePatch() suppresses an
+    // internal CRDT exception (caused by a known json-joy _gcTree bug).  other
+    // backends (core-loro, core-yjs) never invoke this callback.  the CRDT
+    // state is consistent when this fires; the callback is intended for
+    // observability only (e.g. logging, diagnostics) — not for error recovery.
+    onApplyPatchError?: (Error:unknown) => void
   }
 
 export abstract class SDS_DataStore {

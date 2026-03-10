@@ -103,4 +103,13 @@ describe('SDS_DataStore — Entry Creation', () => {
       expect.objectContaining({ code:'invalid-argument' })
     )
   })
+
+  it('N-14: newLinkAt with a link as target throws SDS_Error invalid-argument', () => {
+    const Store  = SDS_DataStore.fromScratch()
+    const Target = Store.newItemAt(undefined, Store.RootItem)
+    const Link   = Store.newLinkAt(Target, Store.RootItem)
+    expect(() => Store.newLinkAt(Link as unknown as SDS_Item, Store.RootItem)).toThrowError(
+      expect.objectContaining({ code:'invalid-argument' })
+    )
+  })
 })

@@ -46,6 +46,14 @@ the json-joy backend for every contract test case.
 - **Binary values** — Y.js supports binary CRDT values natively; large binary
   values are stored as plain `Uint8Array` entries in `Y.Map`.
 
+- **Conservative `'Label'` change events** — after every `applyRemotePatch`,
+  `#updateIndicesFromView()` records a `'Label'` change for every entry it
+  processes, even when the label did not actually change.  Y.js does not expose
+  a per-field diff for nested maps, so the backend errs on the side of
+  over-reporting rather than missing a real update.  consumers should treat
+  `'Label'` in a ChangeSet as "label may have changed" rather than "label
+  definitely changed".
+
 ---
 
 ## Pass criteria

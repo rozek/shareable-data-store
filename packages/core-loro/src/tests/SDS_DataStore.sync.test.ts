@@ -61,6 +61,36 @@ describe('SDS_DataStore — Sync', () => {
     expect(Store.LostAndFoundItem.innerEntryList.length).toBe(Before)
   })
 
+
+  it('SY-05: orphaned entry rescued to LostAndFoundItem after remote peer purges its parent', () => {
+    const StoreA    = SDS_DataStore.fromScratch()
+
+    // StoreA creates Outer; record the cursor so we can export only the delta later
+    const Outer     = StoreA.newItemAt(undefined, StoreA.RootItem)
+    const CursorAfterCreate = StoreA.currentCursor
+
+    // StoreB starts from the same snapshot (already knows about Outer)
+    const StoreB    = SDS_DataStore.fromBinary(StoreA.asBinary())
+
+    // StoreB creates Child inside Outer (local only; StoreA does not know about it)
+    const OuterOnB  = StoreB.EntryWithId(Outer.Id) as SDS_Item
+    const Child     = StoreB.newItemAt(undefined, OuterOnB)
+
+    // StoreA deletes and purges Outer; Child's parent ceases to exist on StoreA
+    StoreA.deleteEntry(Outer)
+    StoreA.purgeEntry(Outer)
+
+    // Export only the delta since the snapshot (delete+purge operations)
+    // so StoreB doesn't re-process the createOuter it already has
+    StoreB.applyRemotePatch(StoreA.exportPatch(CursorAfterCreate))
+
+    // applyRemotePatch calls recoverOrphans() automatically, but we also call
+    // it explicitly to match the documented test contract
+    StoreB.recoverOrphans()
+    expect(StoreB.EntryWithId(Child.Id)).toBeDefined()
+    expect(StoreB.EntryWithId(Child.Id)?.outerItem?.Id).toBe(StoreB.LostAndFoundItem.Id)
+  })
+
   it('SY-06: applyRemotePatch containing a move updates innerEntryList on the receiver', () => {
     const StoreA    = SDS_DataStore.fromScratch()
     const StoreB    = SDS_DataStore.fromBinary(StoreA.asBinary())
@@ -133,5 +163,30 @@ describe('SDS_DataStore — Sync', () => {
     Store2.onChangeInvoke(Handler)
     Store2.applyRemotePatch(Patch)
     expect(Handler.mock.calls[0][0]).toBe('external')
+  })
+
+  it('SY-09: dangling link target rescued to LostAndFound after remote peer purges it', () => {
+    const StoreA            = SDS_DataStore.fromScratch()
+    const Target            = StoreA.newItemAt(undefined, StoreA.RootItem)
+    const CursorAfterCreate = StoreA.currentCursor
+    const StoreB            = SDS_DataStore.fromBinary(StoreA.asBinary())
+    const TargetOnB         = StoreB.EntryWithId(Target.Id) as SDS_Item
+    StoreB.newLinkAt(TargetOnB, StoreB.RootItem)
+    StoreA.deleteEntry(Target)
+    StoreA.purgeEntry(Target)
+    StoreB.applyRemotePatch(StoreA.exportPatch(CursorAfterCreate))
+
+    const Rescued = StoreB.EntryWithId(Target.Id)
+    expect(Rescued).toBeDefined()
+    expect(Rescued?.isItem).toBe(true)
+    expect(Rescued?.outerItem?.Id).toBe(StoreB.LostAndFoundItem.Id)
+  })
+
+  it('SY-10: applyRemotePatch with empty Uint8Array is a no-op', () => {
+    const Store  = SDS_DataStore.fromScratch()
+    const Before = Array.from(Store.RootItem.innerEntryList).map(e => e.Id)
+    expect(() => Store.applyRemotePatch(new Uint8Array(0))).not.toThrow()
+    const After  = Array.from(Store.RootItem.innerEntryList).map(e => e.Id)
+    expect(After).toEqual(Before)
   })
 })

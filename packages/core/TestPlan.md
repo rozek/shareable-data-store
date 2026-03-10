@@ -32,7 +32,7 @@ layer, and that every backend exposes an identical observable API.
 - Transactions — `transact()` is nestable; only the outermost call emits a ChangeSet event
 - Change events — `onChangeInvoke()` fires with correct origin and ChangeSet; the returned unsubscribe function stops delivery
 - Remote patch — `applyRemotePatch()` applies a patch exported from a second store instance, merging changes correctly
-- Orphan recovery — `recoverOrphans()` places orphans into `LostAndFoundItem`
+- Orphan recovery — `recoverOrphans()` places orphans into `LostAndFoundItem`; creates placeholder items in `LostAndFoundItem` for links whose target was purged by a remote peer
 - Deserialisation — `deserializeItemInto()` and `deserializeLinkInto()` import subtrees
 
 **Out of scope:** Persistence (IndexedDB, SQLite), Network (WebSocket, WebRTC), Presence, SyncEngine.
@@ -157,6 +157,7 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 
 - **TC-4.4.1** — `newItemAt()` with an empty MIME type throws an `SDS_Error` with `Code` `'invalid-argument'`
 - **TC-4.4.2** — `newLinkAt()` with a non-existent target entry throws
+- **TC-4.4.3** — `newLinkAt()` with a link (not an item) as target throws an `SDS_Error` with `Code` `'invalid-argument'`
 
 ---
 
@@ -397,12 +398,17 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 - **TC-12.1.1** — Two stores created from the same binary start with identical views
 - **TC-12.1.2** — A patch exported from Store 1 and applied to Store 2 propagates the mutation to Store 2
 - **TC-12.1.3** — Patches from both stores can be merged so that each store converges to the same final state
+- **TC-12.1.4** — `applyRemotePatch(new Uint8Array(0))` is a no-op: the store state is unchanged and no exception is thrown
 
 ### 2. Orphan recovery
 
 #### 2.1 recoverOrphans no-op case
 
 - **TC-12.2.1** — `recoverOrphans()` on a clean store (no orphans) makes no observable changes
+
+#### 2.2 Dangling link recovery
+
+- **TC-12.2.2** — When a link's target was purged by a remote peer, `recoverOrphans()` creates a placeholder item for the target in `LostAndFoundItem`; the placeholder is an item (`isItem === true`) with `outerItem` equal to `LostAndFoundItem`
 
 ### 3. Origin tracking
 

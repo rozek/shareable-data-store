@@ -51,6 +51,24 @@ are specific to the canonical snapshot mechanism:
 
 ---
 
+## Additional tests — json-joy-specific sync behaviour
+
+The json-joy backend wraps each individual `applyPatch` call in an inner
+`try/catch` because json-joy's `_gcTree` traversal contains a bug: when two
+peers concurrently create and delete a node, `ObjNode.children()` may pass
+`undefined` to its callback, causing a runtime exception.  The CRDT state is
+already consistent at that point; the inner catch suppresses the error and lets
+`#updateIndicesFromView()` + `recoverOrphans()` reconcile in-memory indices with
+the model view.
+
+Callers can observe these suppressed errors via the optional `onApplyPatchError`
+property of `SDS_DataStoreOptions`.  The following test verifies that this path
+is wired up without being triggered in normal operation:
+
+- **JJ-SY-01** — `onApplyPatchError` callback is not invoked during a normal `applyRemotePatch` (no CRDT conflict, no exception expected)
+
+---
+
 ## Backend differences from the contract defaults
 
 - **Cursor format** — `currentCursor` is a 4-byte big-endian `uint32` encoding the patch-log index (opaque to callers).
@@ -58,6 +76,7 @@ are specific to the canonical snapshot mechanism:
 - **Canonical snapshot** — `fromScratch()` loads `CanonicalEmptySnapshot` instead of building the document from scratch; this guarantees shared CRDT node IDs across peers.
 - **Char-level editing** — `changeValue()` uses json-joy's str-mod operations on the CRDT string node.
 - **Binary values** — small binary values are stored inline in the CRDT; large ones as hash references.
+- **`onApplyPatchError` option** — `SDS_DataStoreOptions` accepts an optional `onApplyPatchError` callback; when the inner `applyPatch` call throws (due to the `_gcTree` bug), the error is passed to this callback before being suppressed.
 
 ---
 

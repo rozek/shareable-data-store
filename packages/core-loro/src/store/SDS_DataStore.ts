@@ -531,13 +531,14 @@ export class SDS_DataStore extends SDS_StoreBase {
     return Count
   }
 
-/**** dispose — cleanup and stop background timers ****/
+/**** dispose — stop background timer and remove all change listeners ****/
 
   dispose ():void {
     if (this.#TrashCheckTimer != null) {
       clearInterval(this.#TrashCheckTimer)
       this.#TrashCheckTimer = null
     }
+    this.#Handlers.clear()
   }
 
 //----------------------------------------------------------------------------//
@@ -577,6 +578,7 @@ export class SDS_DataStore extends SDS_StoreBase {
 /**** applyRemotePatch — merge remote changes and rebuild indices ****/
 
   applyRemotePatch (encodedPatch:Uint8Array):void {
+    if (encodedPatch.byteLength === 0) { return }
     this.#ApplyingExternal = true
     try {
       this.#doc.import(encodedPatch)
@@ -608,7 +610,15 @@ export class SDS_DataStore extends SDS_StoreBase {
 /**** recoverOrphans — move entries with missing parents to lost-and-found ****/
 
   recoverOrphans ():void {
-    const allIds   = new Set(Object.keys(this.#EntriesMap.toJSON() as object))
+    // Build the set of "live" entry IDs — tombstoned entries (outerItemId === '')
+    // must be excluded so that children of purged parents are correctly identified
+    // as orphans.  RootId is the only legitimate entry with outerItemId === ''.
+    const RawEntries = this.#EntriesMap.toJSON() as Record<string,any>
+    const allIds     = new Set(
+      Object.entries(RawEntries)
+        .filter(([Id, Data]) => Id === RootId || Data.outerItemId !== '')
+        .map(([Id]) => Id)
+    )
     let hasChanges = false
 
     this.transact(() => {
@@ -760,7 +770,7 @@ export class SDS_DataStore extends SDS_StoreBase {
     const EntriesJSON = this.#EntriesMap.toJSON() as Record<string,any>
     const SeenIds     = new Set<string>()
 
-    // Pass 1: created and changed entries
+    // pass 1: created and changed entries
     for (const [EntryId, EntryData] of Object.entries(EntriesJSON)) {
       SeenIds.add(EntryId)
 
@@ -797,7 +807,7 @@ export class SDS_DataStore extends SDS_StoreBase {
       this.#recordChange(EntryId, 'Label')
     }
 
-    // Pass 2: deleted entries
+    // pass 2: deleted entries
     const deletedEntries = Array.from(this.#ForwardIndex.entries())
       .filter(([Id]) => ! SeenIds.has(Id))
     for (const [EntryId, oldOuterItemId] of deletedEntries) {
@@ -1002,12 +1012,12 @@ export class SDS_DataStore extends SDS_StoreBase {
 
     // in Loro, we "delete" by marking as having no valid outer data — Loro doesn't
     // support removing a nested container key directly in all versions.
-    // We set all fields to tombstone values and remove from our indices.
-    // Data: their CRDT doc will keep the key but it becomes an orphan
+    // we set all fields to tombstone values and remove from our indices.
+    // their CRDT doc will keep the key but it becomes an orphan
     // that is invisible to normal traversal (outerItemId = '' / not in any index).
-    // For a true delete, use:
+    // for a true delete, use:
     //   this.#EntriesMap.delete(EntryId)   // if supported by loro-crdt version
-    // Otherwise we tombstone the entry:
+    // otherwise we tombstone the entry:
     EntryMap.set('outerItemId', '')
     EntryMap.set('OrderKey',    '')
 
@@ -1346,7 +1356,7 @@ export class SDS_DataStore extends SDS_StoreBase {
   _TargetOf (Id:string):SDS_Item {
     const EntryMap = this.#getEntryMap(Id)
     const TargetId = EntryMap?.get('TargetId') as string | undefined
-    if (! TargetId) {
+    if (TargetId == null || TargetId === '') {
       throw new SDS_Error('not-found', `link '${Id}' has no target`)
     }
     return this.#wrappedItem(TargetId)

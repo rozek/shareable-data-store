@@ -5,7 +5,7 @@
 *******************************************************************************/
 
 import { describe, it, expect } from 'vitest'
-import { SDS_DataStore }           from '../store/SDS_DataStore.js'
+import { SDS_DataStore }          from '../store/SDS_DataStore.js'
 import { CanonicalEmptySnapshot } from '../store/canonical-empty-snapshot.js'
 
 const RootId         = '00000000-0000-4000-8000-000000000000'
@@ -94,12 +94,12 @@ describe('SDS_DataStore — Construction', () => {
   // the old snapshot.  The tests therefore also serve as a living specification
   // of the expected behaviour.
 
-  it('C-11: CanonicalEmptySnapshot starts with gzip magic bytes', () => {
+  it('JJ-C-01: CanonicalEmptySnapshot starts with gzip magic bytes', () => {
     expect(CanonicalEmptySnapshot[0]).toBe(0x1f)
     expect(CanonicalEmptySnapshot[1]).toBe(0x8b)
   })
 
-  it('C-12: CanonicalEmptySnapshot contains exactly the three well-known items', () => {
+  it('JJ-C-02: CanonicalEmptySnapshot contains exactly the three well-known items', () => {
     const Store = SDS_DataStore.fromBinary(CanonicalEmptySnapshot)
     expect(Store.RootItem.Id).toBe(RootId)
     expect(Store.TrashItem.Id).toBe(TrashId)
@@ -112,7 +112,7 @@ describe('SDS_DataStore — Construction', () => {
     expect(InnerIds).toHaveLength(2)
   })
 
-  it('C-13: two independent fromScratch() stores can exchange patches', () => {
+  it('C-11: two independent fromScratch() stores can exchange patches', () => {
     // core invariant: every peer calling fromScratch() starts from the same
     // CRDT node-Id space, so patches are always compatible.
     const StoreA = SDS_DataStore.fromScratch()

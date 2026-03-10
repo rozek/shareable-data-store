@@ -22,3 +22,10 @@ required.
 instead of physically removing the map key.  The observable result is
 identical to the contract specification: `EntryWithId(id)` returns `undefined`
 and the entry no longer appears in any `innerEntryList`.
+
+## SDS_DataStore.construction.test.ts — Backend-specific (Loro)
+
+| # | Test case | Expected result |
+|---|---|---|
+| LO-C-01 | `fromScratch()` contains exactly the three well-known items with correct inner-entry order | `RootItem.innerEntryList` has length 2 and contains both `TrashItem.Id` and `LostAndFoundItem.Id` |
+

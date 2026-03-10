@@ -86,13 +86,14 @@ describe('SDS_SyncEngine — Persistence', () => {
     const Engine = new SDS_SyncEngine(Store, { PersistenceProvider:Persist })
     await Engine.start()
 
-    // each label change generates a patch. We use a large label to quickly exceed
-    // the 512 KiB (524,288 byte) threshold. With 150,000 chars per patch and
-    // 4 iterations, accumulated bytes ≈ 600 KB > 512 KiB.
-    const BigLabel = 'L'.repeat(150_000)
+    // writeValue with a string at the inline threshold (DefaultLiteralSizeLimit =
+    // 131,072 chars) stores the full string in the CRDT patch (~131 KiB each).
+    // Four such writes accumulate ≈ 524 KiB > 512 KiB checkpoint threshold.
+
     const Item = Store.newItemAt(undefined, Store.RootItem)
+    const Base = 'V'.repeat(131_071)
     for (let i = 0; i < 4; i++) {
-      Item.Label = BigLabel + i
+      Item.writeValue(Base + i)  // vary last char so each call is a real change
     }
 
     // allow async checkpoint writes to complete

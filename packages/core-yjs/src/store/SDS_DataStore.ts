@@ -481,7 +481,7 @@ export class SDS_DataStore extends SDS_StoreBase {
       EntryMap.set('outerItemId', TrashId)
       EntryMap.set('OrderKey',    OrderKey)
 
-      // Ensure Info Y.Map exists before writing _trashedAt
+      // ensure Info Y.Map exists before writing _trashedAt
       let InfoMap = EntryMap.get('Info') as Y.Map<any> | undefined
       if (! (InfoMap instanceof Y.Map)) {
         InfoMap = new Y.Map()
@@ -545,13 +545,14 @@ export class SDS_DataStore extends SDS_StoreBase {
     return Count
   }
 
-/**** dispose — cleanup trash timer ****/
+/**** dispose — stop background timer and remove all change listeners ****/
 
   dispose ():void {
     if (this.#TrashCheckTimer != null) {
       clearInterval(this.#TrashCheckTimer)
       this.#TrashCheckTimer = null
     }
+    this.#Handlers.clear()
   }
 
 //----------------------------------------------------------------------------//
@@ -564,7 +565,7 @@ export class SDS_DataStore extends SDS_StoreBase {
     this.#TransactionDepth++
     try {
       if (this.#TransactionDepth === 1 && ! this.#ApplyingExternal) {
-        // Outermost local transaction: wrap in a Y.js transaction so all
+        // outermost local transaction: wrap in a Y.js transaction so all
         // CRDT mutations are batched into a single update event.
         this.#doc.transact(() => { Callback() })
       } else {
@@ -595,6 +596,7 @@ export class SDS_DataStore extends SDS_StoreBase {
 /**** applyRemotePatch — apply remote changes and update indices ****/
 
   applyRemotePatch (encodedPatch:Uint8Array):void {
+    if (encodedPatch.byteLength === 0) { return }
     this.#ApplyingExternal = true
     try {
       Y.applyUpdate(this.#doc, encodedPatch)
@@ -634,7 +636,7 @@ export class SDS_DataStore extends SDS_StoreBase {
       this.#EntriesMap.forEach((EntryMap, EntryId) => {
         if (EntryId === RootId) { return }
 
-        // Orphaned entry: outerItemId points to a missing data
+        // orphaned entry: outerItemId points to a missing entry
         const outerItemId = EntryMap.get('outerItemId') as string | undefined
         if (outerItemId && ! allIds.has(outerItemId)) {
           const OrderKey = generateKeyBetween(this.#lastOrderKeyOf(LostAndFoundId), null)
@@ -646,13 +648,13 @@ export class SDS_DataStore extends SDS_StoreBase {
           hasChanges = true
         }
 
-        // Dangling link: TargetId points to a missing data
+        // dangling link: TargetId points to a missing entry
         if (EntryMap.get('Kind') === 'link') {
           const TargetId = EntryMap.get('TargetId') as string | undefined
           if (TargetId && ! allIds.has(TargetId)) {
             const OrderKey = generateKeyBetween(this.#lastOrderKeyOf(LostAndFoundId), null)
             const newItem  = new Y.Map<any>()
-            newItem.set('Kind',        'data')
+            newItem.set('Kind',        'item')
             newItem.set('outerItemId', LostAndFoundId)
             newItem.set('OrderKey',    OrderKey)
             newItem.set('Label',       new Y.Text())
@@ -771,7 +773,7 @@ export class SDS_DataStore extends SDS_StoreBase {
   #updateIndicesFromView ():void {
     const SeenIds = new Set<string>()
 
-    // Pass 1: created and changed entries
+    // pass 1: created and changed entries
     this.#EntriesMap.forEach((EntryMap, EntryId) => {
       SeenIds.add(EntryId)
 
@@ -809,7 +811,7 @@ export class SDS_DataStore extends SDS_StoreBase {
       this.#recordChange(EntryId, 'Label')
     })
 
-    // Pass 2: deleted entries
+    // pass 2: deleted entries
     const deletedEntries = Array.from(this.#ForwardIndex.entries())
       .filter(([Id]) => ! SeenIds.has(Id))
     for (const [EntryId, oldOuterItemId] of deletedEntries) {
@@ -996,7 +998,7 @@ export class SDS_DataStore extends SDS_StoreBase {
     const innerEntries = Array.from(this.#ReverseIndex.get(EntryId) ?? new Set<string>())
     for (const innerEntryId of innerEntries) {
       if (this.#SubtreeHasIncomingLinks(innerEntryId, RootReachable, Protected)) {
-        // Inner rescue: move to TrashItem top level
+        // inner rescue: move to TrashItem top level
         const innerMap = this.#EntriesMap.get(innerEntryId)!
         const OrderKey = generateKeyBetween(this.#lastOrderKeyOf(TrashId), null)
         innerMap.set('outerItemId', TrashId)
@@ -1340,7 +1342,7 @@ export class SDS_DataStore extends SDS_StoreBase {
   _TargetOf (Id:string):SDS_Item {
     const EntryMap = this.#EntriesMap.get(Id)
     const TargetId = EntryMap?.get('TargetId') as string | undefined
-    if (! TargetId) {
+    if (TargetId == null || TargetId === '') {
       throw new SDS_Error('not-found', `link '${Id}' has no target`)
     }
     return this.#wrappedItem(TargetId)
