@@ -1,17 +1,17 @@
-var q = Object.defineProperty;
+var I = Object.defineProperty;
 var F = (a) => {
   throw TypeError(a);
 };
-var E = (a, t, n) => t in a ? q(a, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : a[t] = n;
-var N = (a, t, n) => E(a, typeof t != "symbol" ? t + "" : t, n), k = (a, t, n) => t.has(a) || F("Cannot " + n);
-var e = (a, t, n) => (k(a, t, "read from private field"), n ? n.call(a) : t.get(a)), d = (a, t, n) => t.has(a) ? F("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(a) : t.set(a, n), w = (a, t, n, s) => (k(a, t, "write to private field"), s ? s.call(a, n) : t.set(a, n), n), c = (a, t, n) => (k(a, t, "access private method"), n);
-var U, y, h, p, S, u, C, b, m, P, g, T, l, r, H, v, J, V, x, A, L, B, O, _;
-class $ {
+var _ = (a, t, n) => t in a ? I(a, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : a[t] = n;
+var N = (a, t, n) => _(a, typeof t != "symbol" ? t + "" : t, n), A = (a, t, n) => t.has(a) || F("Cannot " + n);
+var e = (a, t, n) => (A(a, t, "read from private field"), n ? n.call(a) : t.get(a)), d = (a, t, n) => t.has(a) ? F("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(a) : t.set(a, n), w = (a, t, n, s) => (A(a, t, "write to private field"), s ? s.call(a, n) : t.set(a, n), n), c = (a, t, n) => (A(a, t, "access private method"), n);
+var k, y, h, p, S, u, g, b, m, T, C, P, l, r, H, v, x, J, V, U, L, B, W, E;
+class q {
   /**** Constructor ****/
   constructor(t, n = {}) {
     d(this, r);
     N(this, "StoreId");
-    d(this, U);
+    d(this, k);
     d(this, y, crypto.randomUUID());
     d(this, h);
     /**** Signalling WebSocket ****/
@@ -20,27 +20,31 @@ class $ {
     d(this, S, /* @__PURE__ */ new Map());
     d(this, u, /* @__PURE__ */ new Map());
     /**** Connection state ****/
-    d(this, C, "disconnected");
+    d(this, g, "disconnected");
     /**** Event Handlers ****/
     d(this, b, /* @__PURE__ */ new Set());
     d(this, m, /* @__PURE__ */ new Set());
-    d(this, P, /* @__PURE__ */ new Set());
-    d(this, g, /* @__PURE__ */ new Set());
+    d(this, T, /* @__PURE__ */ new Set());
+    d(this, C, /* @__PURE__ */ new Set());
     /**** Presence Peer Set ****/
-    d(this, T, /* @__PURE__ */ new Map());
+    d(this, P, /* @__PURE__ */ new Map());
     /**** Fallback Mode ****/
     d(this, l, !1);
-    this.StoreId = t, w(this, U, n), w(this, h, n.Fallback ?? void 0);
+    this.StoreId = t, w(this, k, n), w(this, h, n.Fallback ?? void 0);
   }
   //----------------------------------------------------------------------------//
   //                            SDS_NetworkProvider                             //
   //----------------------------------------------------------------------------//
   /**** ConnectionState ****/
   get ConnectionState() {
-    return e(this, C);
+    return e(this, g);
   }
   /**** connect ****/
   async connect(t, n) {
+    if (!/^wss?:\/\/.+\/signal\/.+/.test(t))
+      throw new TypeError(
+        `SDS WebRTC: invalid signalling URL '${t}' — expected wss://<host>/signal/<storeId>`
+      );
     return new Promise((s, i) => {
       const o = `${t}?token=${encodeURIComponent(n.Token)}`, f = new WebSocket(o);
       w(this, p, f), c(this, r, H).call(this, "connecting"), f.onopen = () => {
@@ -52,14 +56,14 @@ class $ {
         } else
           i(new Error("WebRTC signalling connection failed"));
       }, f.onclose = () => {
-        e(this, C) !== "disconnected" && (c(this, r, H).call(this, "reconnecting"), setTimeout(() => {
-          e(this, C) === "reconnecting" && this.connect(t, n).catch(() => {
+        e(this, g) !== "disconnected" && (c(this, r, H).call(this, "reconnecting"), setTimeout(() => {
+          e(this, g) === "reconnecting" && this.connect(t, n).catch(() => {
           });
         }, n.reconnectDelayMs ?? 2e3));
       }, f.onmessage = (D) => {
         try {
-          const W = JSON.parse(D.data);
-          c(this, r, J).call(this, W, n);
+          const O = JSON.parse(D.data);
+          c(this, r, x).call(this, O, n);
         } catch {
         }
       };
@@ -96,7 +100,7 @@ class $ {
       (o = e(this, h)) == null || o.sendValue(t, n);
       return;
     }
-    const s = c(this, r, O).call(this, t), i = new Uint8Array(33 + n.byteLength);
+    const s = c(this, r, W).call(this, t), i = new Uint8Array(33 + n.byteLength);
     i[0] = 2, i.set(s, 1), i.set(n, 33);
     for (const f of e(this, u).values())
       if (f.readyState === "open")
@@ -112,7 +116,7 @@ class $ {
       (i = e(this, h)) == null || i.requestValue(t);
       return;
     }
-    const n = c(this, r, O).call(this, t), s = new Uint8Array(33);
+    const n = c(this, r, W).call(this, t), s = new Uint8Array(33);
     s[0] = 3, s.set(n, 1);
     for (const o of e(this, u).values())
       if (o.readyState === "open")
@@ -135,8 +139,8 @@ class $ {
   }
   /**** onConnectionChange ****/
   onConnectionChange(t) {
-    return e(this, P).add(t), () => {
-      e(this, P).delete(t);
+    return e(this, T).add(t), () => {
+      e(this, T).delete(t);
     };
   }
   //----------------------------------------------------------------------------//
@@ -160,23 +164,23 @@ class $ {
   }
   /**** onRemoteState ****/
   onRemoteState(t) {
-    return e(this, g).add(t), () => {
-      e(this, g).delete(t);
+    return e(this, C).add(t), () => {
+      e(this, C).delete(t);
     };
   }
   /**** PeerSet ****/
   get PeerSet() {
-    return e(this, T);
+    return e(this, P);
   }
 }
-U = new WeakMap(), y = new WeakMap(), h = new WeakMap(), p = new WeakMap(), S = new WeakMap(), u = new WeakMap(), C = new WeakMap(), b = new WeakMap(), m = new WeakMap(), P = new WeakMap(), g = new WeakMap(), T = new WeakMap(), l = new WeakMap(), r = new WeakSet(), //----------------------------------------------------------------------------//
+k = new WeakMap(), y = new WeakMap(), h = new WeakMap(), p = new WeakMap(), S = new WeakMap(), u = new WeakMap(), g = new WeakMap(), b = new WeakMap(), m = new WeakMap(), T = new WeakMap(), C = new WeakMap(), P = new WeakMap(), l = new WeakMap(), r = new WeakSet(), //----------------------------------------------------------------------------//
 //                                  Private                                   //
 //----------------------------------------------------------------------------//
 /**** #setState — updates the connection state and notifies all registered handlers ****/
 H = function(t) {
-  if (e(this, C) !== t) {
-    w(this, C, t);
-    for (const n of e(this, P))
+  if (e(this, g) !== t) {
+    w(this, g, t);
+    for (const n of e(this, T))
       try {
         n(t);
       } catch {
@@ -186,18 +190,18 @@ H = function(t) {
 v = function(t) {
   var n;
   ((n = e(this, p)) == null ? void 0 : n.readyState) === WebSocket.OPEN && e(this, p).send(JSON.stringify(t));
-}, J = async function(t, n) {
+}, x = async function(t, n) {
   switch (t.type) {
     case "hello": {
       if (t.from === e(this, y))
         return;
-      e(this, S).has(t.from) || await c(this, r, V).call(this, t.from);
+      e(this, S).has(t.from) || await c(this, r, J).call(this, t.from);
       break;
     }
     case "offer": {
       if (t.to !== e(this, y))
         return;
-      await c(this, r, x).call(this, t.from, t.sdp);
+      await c(this, r, V).call(this, t.from, t.sdp);
       break;
     }
     case "answer": {
@@ -215,19 +219,19 @@ v = function(t) {
       break;
     }
   }
-}, V = async function(t) {
-  const n = c(this, r, A).call(this, t), s = n.createDataChannel("sns", { ordered: !1, maxRetransmits: 0 });
+}, J = async function(t) {
+  const n = c(this, r, U).call(this, t), s = n.createDataChannel("sns", { ordered: !1, maxRetransmits: 0 });
   c(this, r, L).call(this, s, t), e(this, u).set(t, s);
   const i = await n.createOffer();
   await n.setLocalDescription(i), c(this, r, v).call(this, { type: "offer", from: e(this, y), to: t, sdp: i });
-}, x = async function(t, n) {
-  const s = c(this, r, A).call(this, t);
+}, V = async function(t, n) {
+  const s = c(this, r, U).call(this, t);
   await s.setRemoteDescription(new RTCSessionDescription(n));
   const i = await s.createAnswer();
   await s.setLocalDescription(i), c(this, r, v).call(this, { type: "answer", from: e(this, y), to: t, sdp: i });
 }, /**** #createPeerConnection — creates and configures a new RTCPeerConnection for RemotePeerId ****/
-A = function(t) {
-  const n = e(this, U).ICEServers ?? [
+U = function(t) {
+  const n = e(this, k).ICEServers ?? [
     { urls: "stun:stun.cloudflare.com:3478" }
   ], s = new RTCPeerConnection({ iceServers: n });
   return e(this, S).set(t, s), s.onicecandidate = (i) => {
@@ -241,8 +245,8 @@ A = function(t) {
     c(this, r, L).call(this, i.channel, t), e(this, u).set(t, i.channel);
   }, s.onconnectionstatechange = () => {
     if (s.connectionState === "failed" || s.connectionState === "closed") {
-      e(this, S).delete(t), e(this, u).delete(t), e(this, T).delete(t);
-      for (const i of e(this, g))
+      e(this, S).delete(t), e(this, u).delete(t), e(this, P).delete(t);
+      for (const i of e(this, C))
         try {
           i(t, void 0);
         } catch {
@@ -272,7 +276,7 @@ B = function(t, n) {
     case 2: {
       if (i.byteLength < 32)
         return;
-      const o = c(this, r, _).call(this, i.slice(0, 32)), f = i.slice(32);
+      const o = c(this, r, E).call(this, i.slice(0, 32)), f = i.slice(32);
       for (const D of e(this, m))
         try {
           D(o, f);
@@ -285,8 +289,8 @@ B = function(t, n) {
         const o = JSON.parse(new TextDecoder().decode(i));
         if (typeof o.PeerId != "string")
           break;
-        o.lastSeen = Date.now(), e(this, T).set(o.PeerId, o);
-        for (const f of e(this, g))
+        o.lastSeen = Date.now(), e(this, P).set(o.PeerId, o);
+        for (const f of e(this, C))
           try {
             f(o.PeerId, o);
           } catch {
@@ -297,15 +301,15 @@ B = function(t, n) {
     }
   }
 }, /**** #hexToBytes ****/
-O = function(t) {
+W = function(t) {
   const n = new Uint8Array(t.length / 2);
   for (let s = 0; s < t.length; s += 2)
     n[s / 2] = parseInt(t.slice(s, s + 2), 16);
   return n;
 }, /**** #bytesToHex ****/
-_ = function(t) {
+E = function(t) {
   return Array.from(t).map((n) => n.toString(16).padStart(2, "0")).join("");
 };
 export {
-  $ as SDS_WebRTCProvider
+  q as SDS_WebRTCProvider
 };

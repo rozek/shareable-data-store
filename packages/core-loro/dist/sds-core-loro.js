@@ -3558,7 +3558,7 @@ const ze = class ze extends sn {
           const o = a.TargetId;
           if (o && !t.has(o)) {
             const c = Oe(u(this, l, _t).call(this, ue), null), d = g(this, te).setContainer(o, new E());
-            d.set("Kind", "data"), d.set("outerItemId", ue), d.set("OrderKey", c), d.setContainer("Label", new j()), d.setContainer("Info", new E()), d.set("MIMEType", ""), d.set("ValueKind", "none"), u(this, l, ie).call(this, ue, o), t.add(o), u(this, l, I).call(this, ue, "innerEntryList");
+            d.set("Kind", "item"), d.set("outerItemId", ue), d.set("OrderKey", c), d.setContainer("Label", new j()), d.setContainer("Info", new E()), d.set("MIMEType", ""), d.set("ValueKind", "none"), u(this, l, ie).call(this, ue, o), t.add(o), u(this, l, I).call(this, ue, "innerEntryList");
           }
         }
       }
@@ -3850,7 +3850,7 @@ Ye = function(t) {
   const r = u(this, l, T).call(this, t);
   if (r == null || r.get("Kind") !== "item")
     throw new W("invalid-argument", `item '${t}' does not exist`);
-}, /**** #wrap / #wrapItem / #wrapLink — return cached wrapper objects ****/
+}, /**** #wrapped / #wrappedItem / #wrappedLink — return cached wrapper objects ****/
 pt = function(t) {
   const r = u(this, l, T).call(this, t);
   if (r == null)
@@ -3868,7 +3868,7 @@ pt = function(t) {
     return r;
   const n = new fr(this, t);
   return u(this, l, er).call(this, t, n), n;
-}, /**** #cacheWrapper — add wrapper to LRU cache, evicting oldest if full ****/
+}, /**** #CacheWrapper — add wrapper to LRU cache, evicting oldest if full ****/
 er = function(t, r) {
   if (g(this, xe).size >= g(this, Nt)) {
     const n = g(this, xe).keys().next().value;
@@ -3892,10 +3892,16 @@ Xr = function() {
   for (const [i, o] of Object.entries(t)) {
     r.add(i);
     const c = o.outerItemId || void 0, d = g(this, Me).get(i);
-    if (c !== d && (d != null && (u(this, l, De).call(this, d, i), u(this, l, I).call(this, d, "innerEntryList")), c != null && (u(this, l, ie).call(this, c, i), u(this, l, I).call(this, c, "innerEntryList")), u(this, l, I).call(this, i, "outerItem")), o.Kind === "link") {
-      const f = o.TargetId, m = g(this, we).get(i);
-      f !== m && (m != null && u(this, l, yt).call(this, m, i), f != null && u(this, l, Ge).call(this, f, i));
-    } else g(this, we).has(i) && u(this, l, yt).call(this, g(this, we).get(i), i);
+    switch (c !== d && (d != null && (u(this, l, De).call(this, d, i), u(this, l, I).call(this, d, "innerEntryList")), c != null && (u(this, l, ie).call(this, c, i), u(this, l, I).call(this, c, "innerEntryList")), u(this, l, I).call(this, i, "outerItem")), !0) {
+      case o.Kind === "link": {
+        const f = o.TargetId, m = g(this, we).get(i);
+        f !== m && (m != null && u(this, l, yt).call(this, m, i), f != null && u(this, l, Ge).call(this, f, i));
+        break;
+      }
+      case g(this, we).has(i):
+        u(this, l, yt).call(this, g(this, we).get(i), i);
+        break;
+    }
     u(this, l, I).call(this, i, "Label");
   }
   const n = Array.from(g(this, Me).entries()).filter(([i]) => !r.has(i));
@@ -3920,7 +3926,7 @@ Ge = function(t, r) {
 yt = function(t, r) {
   var n;
   (n = g(this, Re).get(t)) == null || n.delete(r), g(this, we).delete(r);
-}, /**** #orderKeyAt — generate fractional order key for insertion position ****/
+}, /**** #OrderKeyAt — generate fractional order key for insertion position ****/
 Qe = function(t, r) {
   const n = (o) => {
     if (o.length === 0 || r == null) {
@@ -3958,7 +3964,7 @@ en = function(t) {
       n.has(i) || u(this, l, tr).call(this, i, r, n) && (n.add(i), a = !0);
   }
   return n.has(t);
-}, /**** #subtreeHasIncomingLinks — check if subtree has links from reachable entries ****/
+}, /**** #SubtreeHasIncomingLinks — check if subtree has links from reachable entries ****/
 tr = function(t, r, n) {
   const a = [t], i = /* @__PURE__ */ new Set();
   for (; a.length > 0; ) {
@@ -4014,7 +4020,7 @@ nr = function(t) {
       f.set("outerItemId", Z), f.set("OrderKey", m), u(this, l, De).call(this, t, d), u(this, l, ie).call(this, Z, d), u(this, l, I).call(this, Z, "innerEntryList"), u(this, l, I).call(this, d, "outerItem");
     } else
       u(this, l, nr).call(this, d);
-  if (r.set("outerItemId", ""), r.set("OrderKey", ""), a && (u(this, l, De).call(this, a, t), u(this, l, I).call(this, a, "innerEntryList")), n === "link") {
+  if (u(this, l, I).call(this, t, "Existence"), r.set("outerItemId", ""), r.set("OrderKey", ""), a && (u(this, l, De).call(this, a, t), u(this, l, I).call(this, a, "innerEntryList")), n === "link") {
     const d = r.get("TargetId");
     d && u(this, l, yt).call(this, d, t);
   }

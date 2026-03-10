@@ -1621,7 +1621,7 @@ class gt extends Qa {
   getMap(e = "") {
     return (
       /** @type {YMap<T>} */
-      this.get(e, O)
+      this.get(e, D)
     );
   }
   /**
@@ -1712,13 +1712,13 @@ class Ko extends Fo {
    * @return {ID}
    */
   readLeftID() {
-    return D(E(this.restDecoder), E(this.restDecoder));
+    return L(E(this.restDecoder), E(this.restDecoder));
   }
   /**
    * @return {ID}
    */
   readRightID() {
-    return D(E(this.restDecoder), E(this.restDecoder));
+    return L(E(this.restDecoder), E(this.restDecoder));
   }
   /**
    * Read the next client id.
@@ -2156,17 +2156,17 @@ const Hl = (n, e, t, r) => {
       switch (Cr & h) {
         case 0: {
           const u = n.readLen();
-          o[l] = new Ee(D(a, c), u), c += u;
+          o[l] = new Ee(L(a, c), u), c += u;
           break;
         }
         case 10: {
           const u = E(n.restDecoder);
-          o[l] = new Ae(D(a, c), u), c += u;
+          o[l] = new Ae(L(a, c), u), c += u;
           break;
         }
         default: {
           const u = (h & (tt | xe)) === 0, f = new J(
-            D(a, c),
+            L(a, c),
             null,
             // left
             (h & xe) === xe ? n.readLeftID() : null,
@@ -2351,7 +2351,7 @@ class Gt {
     this.client = e, this.clock = t;
   }
 }
-const Gn = (n, e) => n === e || n !== null && e !== null && n.client === e.client && n.clock === e.clock, D = (n, e) => new Gt(n, e), oh = (n) => {
+const Gn = (n, e) => n === e || n !== null && e !== null && n.client === e.client && n.clock === e.clock, L = (n, e) => new Gt(n, e), oh = (n) => {
   for (const [e, t] of n.doc.share.entries())
     if (t === n)
       return e;
@@ -2359,7 +2359,7 @@ const Gn = (n, e) => n === e || n !== null && e !== null && n.client === e.clien
 }, jt = (n, e) => e === void 0 ? !n.deleted : e.sv.has(n.id.client) && (e.sv.get(n.id.client) || 0) > n.id.clock && !jo(e.ds, n.id), fs = (n, e) => {
   const t = kt(n.meta, fs, Qt), r = n.doc.store;
   t.has(e) || (e.sv.forEach((s, i) => {
-    s < q(r, i) && yt(n, D(i, s));
+    s < q(r, i) && yt(n, L(i, s));
   }), Uo(n, e.ds, (s) => {
   }), t.add(e));
 };
@@ -2574,10 +2574,10 @@ function* dh(n) {
       const a = n.readInfo();
       if (a === 10) {
         const c = E(n.restDecoder);
-        yield new Ae(D(s, i), c), i += c;
+        yield new Ae(L(s, i), c), i += c;
       } else if ((Cr & a) !== 0) {
         const c = (a & (tt | xe)) === 0, l = new J(
-          D(s, i),
+          L(s, i),
           null,
           // left
           (a & xe) === xe ? n.readLeftID() : null,
@@ -2597,7 +2597,7 @@ function* dh(n) {
         yield l, i += l.length;
       } else {
         const c = n.readLen();
-        yield new Ee(D(s, i), c), i += c;
+        yield new Ee(L(s, i), c), i += c;
       }
     }
   }
@@ -2631,19 +2631,19 @@ class qs {
 const fh = (n) => ur(n, Ko, zn), gh = (n, e) => {
   if (n.constructor === Ee) {
     const { client: t, clock: r } = n.id;
-    return new Ee(D(t, r + e), n.length - e);
+    return new Ee(L(t, r + e), n.length - e);
   } else if (n.constructor === Ae) {
     const { client: t, clock: r } = n.id;
-    return new Ae(D(t, r + e), n.length - e);
+    return new Ae(L(t, r + e), n.length - e);
   } else {
     const t = (
       /** @type {Item} */
       n
     ), { client: r, clock: s } = t.id;
     return new J(
-      D(r, s + e),
+      L(r, s + e),
       null,
-      D(r, s + e - 1),
+      L(r, s + e - 1),
       null,
       t.rightOrigin,
       t.parent,
@@ -2690,7 +2690,7 @@ const fh = (n) => ur(n, Ko, zn), gh = (n, e) => {
         else {
           lt(a, i.struct, i.offset);
           const w = f.id.clock - i.struct.id.clock - i.struct.length;
-          i = { struct: new Ae(D(u, i.struct.id.clock + i.struct.length), w), offset: 0 };
+          i = { struct: new Ae(L(u, i.struct.id.clock + i.struct.length), w), offset: 0 };
         }
       else {
         const w = i.struct.id.clock + i.struct.length - f.id.clock;
@@ -3157,7 +3157,7 @@ const na = (n, e, t) => {
   const i = n.doc, o = i.clientID, a = i.store, c = t === null ? e._start : t.right;
   let l = [];
   const h = () => {
-    l.length > 0 && (s = new J(D(o, q(a, o)), s, s && s.lastId, c, c && c.id, e, null, new Ot(l)), s.integrate(n, 0), l = []);
+    l.length > 0 && (s = new J(L(o, q(a, o)), s, s && s.lastId, c, c && c.id, e, null, new Ot(l)), s.integrate(n, 0), l = []);
   };
   r.forEach((u) => {
     if (u === null)
@@ -3175,20 +3175,20 @@ const na = (n, e, t) => {
           switch (h(), u.constructor) {
             case Uint8Array:
             case ArrayBuffer:
-              s = new J(D(o, q(a, o)), s, s && s.lastId, c, c && c.id, e, null, new Bn(new Uint8Array(
+              s = new J(L(o, q(a, o)), s, s && s.lastId, c, c && c.id, e, null, new Bn(new Uint8Array(
                 /** @type {Uint8Array} */
                 u
               ))), s.integrate(n, 0);
               break;
             case gt:
-              s = new J(D(o, q(a, o)), s, s && s.lastId, c, c && c.id, e, null, new Pn(
+              s = new J(L(o, q(a, o)), s, s && s.lastId, c, c && c.id, e, null, new Pn(
                 /** @type {Doc} */
                 u
               )), s.integrate(n, 0);
               break;
             default:
               if (u instanceof ie)
-                s = new J(D(o, q(a, o)), s, s && s.lastId, c, c && c.id, e, null, new st(u)), s.integrate(n, 0);
+                s = new J(L(o, q(a, o)), s, s && s.lastId, c, c && c.id, e, null, new st(u)), s.integrate(n, 0);
               else
                 throw new Error("Unexpected content type in insert operation");
           }
@@ -3204,7 +3204,7 @@ const na = (n, e, t) => {
   for (i !== null && (o = i.p, t -= i.index, t === 0 && (o = o.prev, t += o && o.countable && !o.deleted ? o.length : 0)); o !== null; o = o.right)
     if (!o.deleted && o.countable) {
       if (t <= o.length) {
-        t < o.length && yt(n, D(o.id.client, o.id.clock + t));
+        t < o.length && yt(n, L(o.id.client, o.id.clock + t));
         break;
       }
       t -= o.length;
@@ -3222,9 +3222,9 @@ const na = (n, e, t) => {
   const s = t, i = r, o = Ur(e, t);
   let a = e._start;
   for (o !== null && (a = o.p, t -= o.index); a !== null && t > 0; a = a.right)
-    !a.deleted && a.countable && (t < a.length && yt(n, D(a.id.client, a.id.clock + t)), t -= a.length);
+    !a.deleted && a.countable && (t < a.length && yt(n, L(a.id.client, a.id.clock + t)), t -= a.length);
   for (; r > 0 && a !== null; )
-    a.deleted || (r < a.length && yt(n, D(a.id.client, a.id.clock + r)), a.delete(n), r -= a.length), a = a.right;
+    a.deleted || (r < a.length && yt(n, L(a.id.client, a.id.clock + r)), a.delete(n), r -= a.length), a = a.right;
   if (r > 0)
     throw oa();
   e._searchMarker && Nn(
@@ -3270,7 +3270,7 @@ const na = (n, e, t) => {
         else
           throw new Error("Unexpected content type");
     }
-  new J(D(o, q(i.store, o)), s, s && s.lastId, null, null, e, t, a).integrate(n, 0);
+  new J(L(o, q(i.store, o)), s, s && s.lastId, null, null, e, t, a).integrate(n, 0);
 }, ei = (n, e) => {
   n.doc ?? ce();
   const t = n._map.get(e);
@@ -3511,7 +3511,7 @@ class Eh extends $r {
     super(e, t), this.keysChanged = r;
   }
 }
-class O extends ie {
+class D extends ie {
   /**
    *
    * @param {Iterable<readonly [string, any]>=} entries - an optional iterable to initialize the YMap
@@ -3538,7 +3538,7 @@ class O extends ie {
    * @return {YMap<MapType>}
    */
   _copy() {
-    return new O();
+    return new D();
   }
   /**
    * Makes a copy of this data type that can be included somewhere else.
@@ -3548,7 +3548,7 @@ class O extends ie {
    * @return {YMap<MapType>}
    */
   clone() {
-    const e = new O();
+    const e = new D();
     return this.forEach((t, r) => {
       e.set(r, t instanceof ie ? (
         /** @type {typeof value} */
@@ -3712,7 +3712,7 @@ class O extends ie {
     e.writeTypeRef(Yh);
   }
 }
-const Ah = (n) => new O(), ft = (n, e) => n === e || typeof n == "object" && typeof e == "object" && n && e && Fc(n, e);
+const Ah = (n) => new D(), ft = (n, e) => n === e || typeof n == "object" && typeof e == "object" && n && e && Fc(n, e);
 class ps {
   /**
    * @param {Item|null} left
@@ -3753,7 +3753,7 @@ const Di = (n, e, t) => {
         );
         break;
       default:
-        e.right.deleted || (t < e.right.length && yt(n, D(e.right.id.client, e.right.id.clock + t)), e.index += e.right.length, t -= e.right.length);
+        e.right.deleted || (t < e.right.length && yt(n, L(e.right.id.client, e.right.id.clock + t)), e.index += e.right.length, t -= e.right.length);
         break;
     }
     e.left = e.right, e.right = e.right.right;
@@ -3783,7 +3783,7 @@ const Di = (n, e, t) => {
     ), t.forward();
   const s = n.doc, i = s.clientID;
   r.forEach((o, a) => {
-    const c = t.left, l = t.right, h = new J(D(i, q(s.store, i)), c, c && c.lastId, l, l && l.id, e, null, new W(a, o));
+    const c = t.left, l = t.right, h = new J(L(i, q(s.store, i)), c, c && c.lastId, l, l && l.id, e, null, new W(a, o));
     h.integrate(n, 0), t.right = h, t.forward();
   });
 }, fn = (n, e) => {
@@ -3808,7 +3808,7 @@ const Di = (n, e, t) => {
     if (!ft(l, c)) {
       o.set(a, l);
       const { left: h, right: u } = t;
-      t.right = new J(D(i, q(s.store, i)), h, h && h.lastId, u, u && u.id, e, null, new W(a, c)), t.right.integrate(n, 0), t.forward();
+      t.right = new J(L(i, q(s.store, i)), h, h && h.lastId, u, u && u.id, e, null, new W(a, c)), t.right.integrate(n, 0), t.forward();
     }
   }
   return o;
@@ -3823,7 +3823,7 @@ const Di = (n, e, t) => {
     r
   ) : r instanceof ie ? new st(r) : new Nt(r);
   let { left: l, right: h, index: u } = t;
-  e._searchMarker && Nn(e._searchMarker, t.index, c.getLength()), h = new J(D(o, q(i.store, o)), l, l && l.lastId, h, h && h.id, e, null, c), h.integrate(n, 0), t.right = h, t.index = u, t.forward(), ua(n, e, t, a);
+  e._searchMarker && Nn(e._searchMarker, t.index, c.getLength()), h = new J(L(o, q(i.store, o)), l, l && l.lastId, h, h && h.id, e, null, c), h.integrate(n, 0), t.right = h, t.index = u, t.forward(), ua(n, e, t, a);
 }, Li = (n, e, t, r, s) => {
   const i = n.doc, o = i.clientID;
   da(t, s);
@@ -3850,7 +3850,7 @@ const Di = (n, e, t) => {
           break;
         }
         default:
-          r < t.right.length && yt(n, D(t.right.id.client, t.right.id.clock + r)), r -= t.right.length;
+          r < t.right.length && yt(n, L(t.right.id.client, t.right.id.clock + r)), r -= t.right.length;
           break;
       }
     t.forward();
@@ -3860,7 +3860,7 @@ const Di = (n, e, t) => {
     for (; r > 0; r--)
       c += `
 `;
-    t.right = new J(D(o, q(i.store, o)), t.left, t.left && t.left.lastId, t.right, t.right && t.right.id, e, null, new Ge(c)), t.right.integrate(n, 0), t.forward();
+    t.right = new J(L(o, q(i.store, o)), t.left, t.left && t.left.lastId, t.right, t.right && t.right.id, e, null, new Ge(c)), t.right.integrate(n, 0), t.forward();
   }
   ua(n, e, t, a);
 }, ga = (n, e, t, r, s) => {
@@ -3986,7 +3986,7 @@ const Di = (n, e, t) => {
         case st:
         case Nt:
         case Ge:
-          t < e.right.length && yt(n, D(e.right.id.client, e.right.id.clock + t)), t -= e.right.length, e.right.delete(n);
+          t < e.right.length && yt(n, L(e.right.id.client, e.right.id.clock + t)), t -= e.right.length, e.right.delete(n);
           break;
       }
     e.forward();
@@ -4948,7 +4948,7 @@ class Vh extends $r {
     });
   }
 }
-class gr extends O {
+class gr extends D {
   /**
    * @param {string} hookName nodeName of the Dom Node.
    */
@@ -5929,16 +5929,16 @@ class st {
 }
 const ru = (n) => new st(Gh[n.readTypeRef()](n)), yr = (n, e, t) => {
   const { client: r, clock: s } = e.id, i = new J(
-    D(r, s + t),
+    L(r, s + t),
     e,
-    D(r, s + t - 1),
+    L(r, s + t - 1),
     e.right,
     e.rightOrigin,
     e.parent,
     e.parentSub,
     e.content.splice(t)
   );
-  return e.deleted && i.markDeleted(), e.keep && (i.keep = !0), e.redone !== null && (i.redone = D(e.redone.client, e.redone.clock + t)), e.right = i, i.right !== null && (i.right.left = i), n._mergeStructs.push(i), i.parentSub !== null && i.right === null && i.parent._map.set(i.parentSub, i), e.length = t, i;
+  return e.deleted && i.markDeleted(), e.keep && (i.keep = !0), e.redone !== null && (i.redone = L(e.redone.client, e.redone.clock + t)), e.right = i, i.right !== null && (i.right.left = i), n._mergeStructs.push(i), i.parentSub !== null && i.right === null && i.parent._map.set(i.parentSub, i), e.length = t, i;
 };
 class J extends ti {
   /**
@@ -6020,7 +6020,7 @@ class J extends ti {
    * @param {number} offset
    */
   integrate(e, t) {
-    if (t > 0 && (this.id.clock += t, this.left = Ei(e, e.doc.store, D(this.id.client, this.id.clock - 1)), this.origin = this.left.lastId, this.content = this.content.splice(t), this.length -= t), this.parent) {
+    if (t > 0 && (this.id.clock += t, this.left = Ei(e, e.doc.store, L(this.id.client, this.id.clock - 1)), this.origin = this.left.lastId, this.content = this.content.splice(t), this.length -= t), this.parent) {
       if (!this.left && (!this.right || this.right.left !== null) || this.left && this.left.right !== this.right) {
         let r = this.left, s;
         if (r !== null)
@@ -6094,7 +6094,7 @@ class J extends ti {
    * Computes the last content address of this Item.
    */
   get lastId() {
-    return this.length === 1 ? this.id : D(this.id.client, this.id.clock + this.length - 1);
+    return this.length === 1 ? this.id : L(this.id.client, this.id.clock + this.length - 1);
   }
   /**
    * Try to merge two items
@@ -6147,7 +6147,7 @@ class J extends ti {
    * @param {number} offset
    */
   write(e, t) {
-    const r = t > 0 ? D(this.id.client, this.id.clock + t - 1) : this.origin, s = this.rightOrigin, i = this.parentSub, o = this.content.getRef() & Cr | (r === null ? 0 : xe) | // origin is defined
+    const r = t > 0 ? L(this.id.client, this.id.clock + t - 1) : this.origin, s = this.rightOrigin, i = this.parentSub, o = this.content.getRef() & Cr | (r === null ? 0 : xe) | // origin is defined
     (s === null ? 0 : tt) | // right origin is defined
     (i === null ? 0 : Cn);
     if (e.writeInfo(o), r !== null && e.writeLeftID(r), s !== null && e.writeRightID(s), r === null && s === null) {
@@ -9458,9 +9458,9 @@ function _n(n) {
     throw new re("invalid-argument", ((t = e.error.issues[0]) == null ? void 0 : t.message) ?? "InsertionIndex must be a non-negative integer");
 }
 function La(n, e, t, r) {
-  const s = n.Id, i = new O();
+  const s = n.Id, i = new D();
   i.set("Kind", n.Kind), i.set("outerItemId", e), i.set("OrderKey", t), i.set("Label", new $(n.Label ?? ""));
-  const o = new O();
+  const o = new D();
   for (const [a, c] of Object.entries(n.Info ?? {}))
     o.set(a, c);
   if (i.set("Info", o), n.Kind === "item") {
@@ -9487,7 +9487,7 @@ function La(n, e, t, r) {
     i.set("TargetId", a.TargetId ?? ""), r.set(s, i);
   }
 }
-var Ze, x, jn, Yt, et, Xt, ke, ht, ut, Fe, Ke, Sr, It, dt, Ct, d, Ft, bn, at, rr, Es, Na, Ma, we, bt, Kt, xn, zt, Sn, Bt, Ra, As, Va, Ts, Os, L, $a, Ds, Ls, Ua;
+var Ze, x, jn, Yt, et, Xt, ke, ht, ut, Fe, Ke, Sr, It, dt, Ct, d, Ft, bn, at, rr, Es, Na, Ma, we, bt, Kt, xn, zt, Sn, Bt, Ra, As, Va, Ts, Os, O, $a, Ds, Ls, Ua;
 const xt = class xt extends Fa {
   //----------------------------------------------------------------------------//
   //                               Construction                                 //
@@ -9534,12 +9534,12 @@ const xt = class xt extends Fa {
   static fromScratch(t) {
     const r = new gt(), s = r.getMap("Entries");
     return r.transact(() => {
-      const i = new O();
-      i.set("Kind", "item"), i.set("outerItemId", ""), i.set("OrderKey", ""), i.set("Label", new $()), i.set("Info", new O()), i.set("MIMEType", ""), i.set("ValueKind", "none"), s.set(Ue, i);
-      const o = new O();
-      o.set("Kind", "item"), o.set("outerItemId", Ue), o.set("OrderKey", "a0"), o.set("Label", new $("trash")), o.set("Info", new O()), o.set("MIMEType", ""), o.set("ValueKind", "none"), s.set(B, o);
-      const a = new O();
-      a.set("Kind", "item"), a.set("outerItemId", Ue), a.set("OrderKey", "a1"), a.set("Label", new $("lost-and-found")), a.set("Info", new O()), a.set("MIMEType", ""), a.set("ValueKind", "none"), s.set(Ce, a);
+      const i = new D();
+      i.set("Kind", "item"), i.set("outerItemId", ""), i.set("OrderKey", ""), i.set("Label", new $()), i.set("Info", new D()), i.set("MIMEType", ""), i.set("ValueKind", "none"), s.set(Ue, i);
+      const o = new D();
+      o.set("Kind", "item"), o.set("outerItemId", Ue), o.set("OrderKey", "a0"), o.set("Label", new $("trash")), o.set("Info", new D()), o.set("MIMEType", ""), o.set("ValueKind", "none"), s.set(B, o);
+      const a = new D();
+      a.set("Kind", "item"), a.set("outerItemId", Ue), a.set("OrderKey", "a1"), a.set("Label", new $("lost-and-found")), a.set("Info", new D()), a.set("MIMEType", ""), a.set("ValueKind", "none"), s.set(Ce, a);
     }), new xt(r, t);
   }
   /**** fromBinary — restore store from compressed update ****/
@@ -9585,8 +9585,8 @@ const xt = class xt extends Fa {
     oi(i), _n(s), g(this, d, Ft).call(this, r.Id);
     const o = crypto.randomUUID(), a = g(this, d, zt).call(this, r.Id, s), c = i === Ut ? "" : i;
     return this.transact(() => {
-      const l = new O();
-      l.set("Kind", "item"), l.set("outerItemId", r.Id), l.set("OrderKey", a), l.set("Label", new $()), l.set("Info", new O()), l.set("MIMEType", c), l.set("ValueKind", "none"), m(this, x).set(o, l), g(this, d, we).call(this, r.Id, o), g(this, d, L).call(this, r.Id, "innerEntryList"), g(this, d, L).call(this, o, "outerItem");
+      const l = new D();
+      l.set("Kind", "item"), l.set("outerItemId", r.Id), l.set("OrderKey", a), l.set("Label", new $()), l.set("Info", new D()), l.set("MIMEType", c), l.set("ValueKind", "none"), m(this, x).set(o, l), g(this, d, we).call(this, r.Id, o), g(this, d, O).call(this, r.Id, "innerEntryList"), g(this, d, O).call(this, o, "outerItem");
     }), g(this, d, at).call(this, o);
   }
   /**** newLinkAt — create link as inner link of outer data ****/
@@ -9596,8 +9596,8 @@ const xt = class xt extends Fa {
     _n(s), g(this, d, Ft).call(this, t.Id), g(this, d, Ft).call(this, r.Id);
     const i = crypto.randomUUID(), o = g(this, d, zt).call(this, r.Id, s);
     return this.transact(() => {
-      const a = new O();
-      a.set("Kind", "link"), a.set("outerItemId", r.Id), a.set("OrderKey", o), a.set("Label", new $()), a.set("Info", new O()), a.set("TargetId", t.Id), m(this, x).set(i, a), g(this, d, we).call(this, r.Id, i), g(this, d, Kt).call(this, t.Id, i), g(this, d, L).call(this, r.Id, "innerEntryList"), g(this, d, L).call(this, i, "outerItem");
+      const a = new D();
+      a.set("Kind", "link"), a.set("outerItemId", r.Id), a.set("OrderKey", o), a.set("Label", new $()), a.set("Info", new D()), a.set("TargetId", t.Id), m(this, x).set(i, a), g(this, d, we).call(this, r.Id, i), g(this, d, Kt).call(this, t.Id, i), g(this, d, O).call(this, r.Id, "innerEntryList"), g(this, d, O).call(this, i, "outerItem");
     }), g(this, d, rr).call(this, i);
   }
   //----------------------------------------------------------------------------//
@@ -9614,7 +9614,7 @@ const xt = class xt extends Fa {
     g(this, d, Ds).call(this, i, o);
     const a = g(this, d, zt).call(this, r.Id, s), c = o.get(i.Id);
     return this.transact(() => {
-      g(this, d, Ls).call(this, i, r.Id, a, o), g(this, d, L).call(this, r.Id, "innerEntryList");
+      g(this, d, Ls).call(this, i, r.Id, a, o), g(this, d, O).call(this, r.Id, "innerEntryList");
     }), g(this, d, at).call(this, c);
   }
   /**** deserializeLinkInto — import link; always assigns a new Id ****/
@@ -9626,12 +9626,12 @@ const xt = class xt extends Fa {
       throw new re("invalid-argument", "Serialisation must be an SDS_LinkJSON object");
     const o = crypto.randomUUID(), a = g(this, d, zt).call(this, r.Id, s);
     return this.transact(() => {
-      const c = new O();
+      const c = new D();
       c.set("Kind", "link"), c.set("outerItemId", r.Id), c.set("OrderKey", a), c.set("Label", new $(i.Label ?? ""));
-      const l = new O();
+      const l = new D();
       for (const [h, u] of Object.entries(i.Info ?? {}))
         l.set(h, u);
-      c.set("Info", l), c.set("TargetId", i.TargetId ?? ""), m(this, x).set(o, c), g(this, d, we).call(this, r.Id, o), i.TargetId && g(this, d, Kt).call(this, i.TargetId, o), g(this, d, L).call(this, r.Id, "innerEntryList");
+      c.set("Info", l), c.set("TargetId", i.TargetId ?? ""), m(this, x).set(o, c), g(this, d, we).call(this, r.Id, o), i.TargetId && g(this, d, Kt).call(this, i.TargetId, o), g(this, d, O).call(this, r.Id, "innerEntryList");
     }), g(this, d, rr).call(this, o);
   }
   //----------------------------------------------------------------------------//
@@ -9649,9 +9649,9 @@ const xt = class xt extends Fa {
       const a = m(this, x).get(t.Id);
       if (a.set("outerItemId", r.Id), a.set("OrderKey", o), i === B && r.Id !== B) {
         const c = a.get("Info");
-        c instanceof O && c.has("_trashedAt") && (c.delete("_trashedAt"), g(this, d, L).call(this, t.Id, "Info._trashedAt"));
+        c instanceof D && c.has("_trashedAt") && (c.delete("_trashedAt"), g(this, d, O).call(this, t.Id, "Info._trashedAt"));
       }
-      i != null && (g(this, d, bt).call(this, i, t.Id), g(this, d, L).call(this, i, "innerEntryList")), g(this, d, we).call(this, r.Id, t.Id), g(this, d, L).call(this, r.Id, "innerEntryList"), g(this, d, L).call(this, t.Id, "outerItem");
+      i != null && (g(this, d, bt).call(this, i, t.Id), g(this, d, O).call(this, i, "innerEntryList")), g(this, d, we).call(this, r.Id, t.Id), g(this, d, O).call(this, r.Id, "innerEntryList"), g(this, d, O).call(this, t.Id, "outerItem");
     });
   }
   /**** _rebalanceInnerEntriesOf — backend-specific raw rebalance; caller must hold a transaction ****/
@@ -9662,7 +9662,7 @@ const xt = class xt extends Fa {
     const s = Cs(null, null, r.length);
     r.forEach((i, o) => {
       const a = m(this, x).get(i.Id);
-      a != null && (a.set("OrderKey", s[o]), g(this, d, L).call(this, i.Id, "outerItem"));
+      a != null && (a.set("OrderKey", s[o]), g(this, d, O).call(this, i.Id, "outerItem"));
     });
   }
   /**** deleteEntry — move entry to trash with timestamp ****/
@@ -9674,7 +9674,7 @@ const xt = class xt extends Fa {
       const i = m(this, x).get(t.Id);
       i.set("outerItemId", B), i.set("OrderKey", s);
       let o = i.get("Info");
-      o instanceof O || (o = new O(), i.set("Info", o)), o.set("_trashedAt", Date.now()), r != null && (g(this, d, bt).call(this, r, t.Id), g(this, d, L).call(this, r, "innerEntryList")), g(this, d, we).call(this, B, t.Id), g(this, d, L).call(this, B, "innerEntryList"), g(this, d, L).call(this, t.Id, "outerItem"), g(this, d, L).call(this, t.Id, "Info._trashedAt");
+      o instanceof D || (o = new D(), i.set("Info", o)), o.set("_trashedAt", Date.now()), r != null && (g(this, d, bt).call(this, r, t.Id), g(this, d, O).call(this, r, "innerEntryList")), g(this, d, we).call(this, B, t.Id), g(this, d, O).call(this, B, "innerEntryList"), g(this, d, O).call(this, t.Id, "outerItem"), g(this, d, O).call(this, t.Id, "Info._trashedAt");
     });
   }
   /**** purgeEntry — permanently delete entry and subtree ****/
@@ -9707,7 +9707,7 @@ const xt = class xt extends Fa {
       const c = m(this, x).get(a);
       if (c == null || c.get("outerItemId") !== B)
         continue;
-      const l = c.get("Info"), h = l instanceof O ? l.get("_trashedAt") : void 0;
+      const l = c.get("Info"), h = l instanceof D ? l.get("_trashedAt") : void 0;
       if (typeof h == "number" && !(s - h < r))
         try {
           this.purgeEntry(g(this, d, bn).call(this, a)), o++;
@@ -9778,13 +9778,13 @@ const xt = class xt extends Fa {
         const i = r.get("outerItemId");
         if (i && !t.has(i)) {
           const o = Qe(g(this, d, Sn).call(this, Ce), null);
-          r.set("outerItemId", Ce), r.set("OrderKey", o), g(this, d, we).call(this, Ce, s), g(this, d, L).call(this, s, "outerItem"), g(this, d, L).call(this, Ce, "innerEntryList");
+          r.set("outerItemId", Ce), r.set("OrderKey", o), g(this, d, we).call(this, Ce, s), g(this, d, O).call(this, s, "outerItem"), g(this, d, O).call(this, Ce, "innerEntryList");
         }
         if (r.get("Kind") === "link") {
           const o = r.get("TargetId");
           if (o && !t.has(o)) {
-            const a = Qe(g(this, d, Sn).call(this, Ce), null), c = new O();
-            c.set("Kind", "data"), c.set("outerItemId", Ce), c.set("OrderKey", a), c.set("Label", new $()), c.set("Info", new O()), c.set("MIMEType", ""), c.set("ValueKind", "none"), m(this, x).set(o, c), g(this, d, we).call(this, Ce, o), t.add(o), g(this, d, L).call(this, Ce, "innerEntryList");
+            const a = Qe(g(this, d, Sn).call(this, Ce), null), c = new D();
+            c.set("Kind", "data"), c.set("outerItemId", Ce), c.set("OrderKey", a), c.set("Label", new $()), c.set("Info", new D()), c.set("MIMEType", ""), c.set("ValueKind", "none"), m(this, x).set(o, c), g(this, d, we).call(this, Ce, o), t.add(o), g(this, d, O).call(this, Ce, "innerEntryList");
           }
         }
       });
@@ -9832,7 +9832,7 @@ const xt = class xt extends Fa {
       if (s == null)
         return;
       let i = s.get("Label");
-      i instanceof $ ? (i.delete(0, i.length), r.length > 0 && i.insert(0, r)) : (i = new $(r), s.set("Label", i)), g(this, d, L).call(this, t, "Label");
+      i instanceof $ ? (i.delete(0, i.length), r.length > 0 && i.insert(0, r)) : (i = new $(r), s.set("Label", i)), g(this, d, O).call(this, t, "Label");
     });
   }
   /**** _TypeOf — get data MIME type ****/
@@ -9846,7 +9846,7 @@ const xt = class xt extends Fa {
     const s = r === Ut ? "" : r;
     this.transact(() => {
       var i;
-      (i = m(this, x).get(t)) == null || i.set("MIMEType", s), g(this, d, L).call(this, t, "Type");
+      (i = m(this, x).get(t)) == null || i.set("MIMEType", s), g(this, d, O).call(this, t, "Type");
     });
   }
   /**** _ValueKindOf — get data value kind ****/
@@ -9908,7 +9908,7 @@ const xt = class xt extends Fa {
             break;
           }
         }
-        g(this, d, L).call(this, t, "Value");
+        g(this, d, O).call(this, t, "Value");
       }
     });
   }
@@ -9925,7 +9925,7 @@ const xt = class xt extends Fa {
         const c = s - r;
         c > 0 && a.delete(r, c), i.length > 0 && a.insert(r, i);
       }
-      g(this, d, L).call(this, t, "Value");
+      g(this, d, O).call(this, t, "Value");
     });
   }
   /**** _getValueRefOf — return the ValueRef for *-reference entries ****/
@@ -9945,38 +9945,38 @@ const xt = class xt extends Fa {
         if (typeof i != "string")
           return;
         const o = m(r, x).get(t), a = o == null ? void 0 : o.get("Info");
-        return a instanceof O ? a.get(i) : void 0;
+        return a instanceof D ? a.get(i) : void 0;
       },
       set(s, i, o) {
         return typeof i != "string" ? !1 : o === void 0 ? (r.transact(() => {
           var l;
           const a = m(r, x).get(t), c = a == null ? void 0 : a.get("Info");
-          c instanceof O && c.has(i) && (c.delete(i), g(l = r, d, L).call(l, t, `Info.${i}`));
+          c instanceof D && c.has(i) && (c.delete(i), g(l = r, d, O).call(l, t, `Info.${i}`));
         }), !0) : (Wa(i), Ha(o), r.transact(() => {
           var l;
           const a = m(r, x).get(t);
           if (a == null)
             return;
           let c = a.get("Info");
-          c instanceof O || (c = new O(), a.set("Info", c)), c.set(i, o), g(l = r, d, L).call(l, t, `Info.${i}`);
+          c instanceof D || (c = new D(), a.set("Info", c)), c.set(i, o), g(l = r, d, O).call(l, t, `Info.${i}`);
         }), !0);
       },
       deleteProperty(s, i) {
         return typeof i != "string" ? !1 : (r.transact(() => {
           var c;
           const o = m(r, x).get(t), a = o == null ? void 0 : o.get("Info");
-          a instanceof O && a.has(i) && (a.delete(i), g(c = r, d, L).call(c, t, `Info.${i}`));
+          a instanceof D && a.has(i) && (a.delete(i), g(c = r, d, O).call(c, t, `Info.${i}`));
         }), !0);
       },
       ownKeys() {
         const s = m(r, x).get(t), i = s == null ? void 0 : s.get("Info");
-        return i instanceof O ? Array.from(i.keys()) : [];
+        return i instanceof D ? Array.from(i.keys()) : [];
       },
       getOwnPropertyDescriptor(s, i) {
         if (typeof i != "string")
           return;
         const o = m(r, x).get(t), a = o == null ? void 0 : o.get("Info");
-        if (!(a instanceof O))
+        if (!(a instanceof D))
           return;
         const c = a.get(i);
         return c !== void 0 ? { configurable: !0, enumerable: !0, value: c } : void 0;
@@ -10050,20 +10050,20 @@ Ft = function(t) {
   const r = m(this, x).get(t);
   if (r == null || r.get("Kind") !== "item")
     throw new re("invalid-argument", `item '${t}' does not exist`);
-}, /**** #wrap / #wrapItem / #wrapLink — return cached wrapper objects ****/
+}, /**** #wrapped — return cached wrapper objects ****/
 bn = function(t) {
   const r = m(this, x).get(t);
   if (r == null)
     throw new re("invalid-argument", `entry '${t}' not found`);
   return r.get("Kind") === "item" ? g(this, d, at).call(this, t) : g(this, d, rr).call(this, t);
-}, /**** #wrapItem — return or create cached wrapper for data ****/
+}, /**** #wrappedItem — return or create cached wrapper for data ****/
 at = function(t) {
   const r = m(this, Ke).get(t);
   if (r instanceof ai)
     return r;
   const s = new ai(this, t);
   return g(this, d, Es).call(this, t, s), s;
-}, /**** #wrapLink — return or create cached wrapper for link ****/
+}, /**** #wrappedLink — return or create cached wrapper for link ****/
 rr = function(t) {
   const r = m(this, Ke).get(t);
   if (r instanceof ci)
@@ -10092,15 +10092,21 @@ Ma = function() {
   m(this, x).forEach((i, o) => {
     t.add(o);
     const a = i.get("outerItemId") || void 0, c = m(this, ht).get(o);
-    if (a !== c && (c != null && (g(this, d, bt).call(this, c, o), g(this, d, L).call(this, c, "innerEntryList")), a != null && (g(this, d, we).call(this, a, o), g(this, d, L).call(this, a, "innerEntryList")), g(this, d, L).call(this, o, "outerItem")), i.get("Kind") === "link") {
-      const l = i.get("TargetId"), h = m(this, Fe).get(o);
-      l !== h && (h != null && g(this, d, xn).call(this, h, o), l != null && g(this, d, Kt).call(this, l, o));
-    } else m(this, Fe).has(o) && g(this, d, xn).call(this, m(this, Fe).get(o), o);
-    g(this, d, L).call(this, o, "Label");
+    switch (a !== c && (c != null && (g(this, d, bt).call(this, c, o), g(this, d, O).call(this, c, "innerEntryList")), a != null && (g(this, d, we).call(this, a, o), g(this, d, O).call(this, a, "innerEntryList")), g(this, d, O).call(this, o, "outerItem")), !0) {
+      case i.get("Kind") === "link": {
+        const l = i.get("TargetId"), h = m(this, Fe).get(o);
+        l !== h && (h != null && g(this, d, xn).call(this, h, o), l != null && g(this, d, Kt).call(this, l, o));
+        break;
+      }
+      case m(this, Fe).has(o):
+        g(this, d, xn).call(this, m(this, Fe).get(o), o);
+        break;
+    }
+    g(this, d, O).call(this, o, "Label");
   });
   const r = Array.from(m(this, ht).entries()).filter(([i]) => !t.has(i));
   for (const [i, o] of r)
-    g(this, d, bt).call(this, o, i), g(this, d, L).call(this, o, "innerEntryList");
+    g(this, d, bt).call(this, o, i), g(this, d, O).call(this, o, "innerEntryList");
   const s = Array.from(m(this, Fe).entries()).filter(([i]) => !t.has(i));
   for (const [i, o] of s)
     g(this, d, xn).call(this, o, i);
@@ -10120,7 +10126,7 @@ Kt = function(t, r) {
 xn = function(t, r) {
   var s;
   (s = m(this, ut).get(t)) == null || s.delete(r), m(this, Fe).delete(r);
-}, /**** #orderKeyAt — generate fractional key at insertion position ****/
+}, /**** #OrderKeyAt — generate fractional key at insertion position ****/
 zt = function(t, r) {
   const s = (a) => {
     if (a.length === 0 || r == null) {
@@ -10158,7 +10164,7 @@ Ra = function(t) {
       s.has(o) || g(this, d, As).call(this, o, r, s) && (s.add(o), i = !0);
   }
   return s.has(t);
-}, /**** #subtreeHasIncomingLinks — check if subtree has root-reachable links ****/
+}, /**** #SubtreeHasIncomingLinks — check if subtree has root-reachable links ****/
 As = function(t, r, s) {
   const i = [t], o = /* @__PURE__ */ new Set();
   for (; i.length > 0; ) {
@@ -10211,16 +10217,16 @@ Os = function(t) {
   for (const l of c)
     if (g(this, d, As).call(this, l, o, a)) {
       const h = m(this, x).get(l), u = Qe(g(this, d, Sn).call(this, B), null);
-      h.set("outerItemId", B), h.set("OrderKey", u), g(this, d, bt).call(this, t, l), g(this, d, we).call(this, B, l), g(this, d, L).call(this, B, "innerEntryList"), g(this, d, L).call(this, l, "outerItem");
+      h.set("outerItemId", B), h.set("OrderKey", u), g(this, d, bt).call(this, t, l), g(this, d, we).call(this, B, l), g(this, d, O).call(this, B, "innerEntryList"), g(this, d, O).call(this, l, "outerItem");
     } else
       g(this, d, Os).call(this, l);
-  if (m(this, x).delete(t), i && (g(this, d, bt).call(this, i, t), g(this, d, L).call(this, i, "innerEntryList")), s === "link") {
+  if (g(this, d, O).call(this, t, "Existence"), m(this, x).delete(t), i && (g(this, d, bt).call(this, i, t), g(this, d, O).call(this, i, "innerEntryList")), s === "link") {
     const l = r.get("TargetId");
     l && g(this, d, xn).call(this, l, t);
   }
   m(this, Ke).delete(t);
 }, /**** #recordChange — add property change to pending changeset ****/
-L = function(t, r) {
+O = function(t, r) {
   m(this, dt)[t] == null && (m(this, dt)[t] = /* @__PURE__ */ new Set()), m(this, dt)[t].add(r);
 }, /**** #notifyHandlers — call change handlers with origin and changeset ****/
 $a = function(t, r) {
@@ -10237,9 +10243,9 @@ Ds = function(t, r) {
       g(this, d, Ds).call(this, s, r);
 }, /**** #importEntryFromJSON — recursively create a Y.js entry and update indices ****/
 Ls = function(t, r, s, i) {
-  const o = i.get(t.Id), a = new O();
+  const o = i.get(t.Id), a = new D();
   a.set("Kind", t.Kind), a.set("outerItemId", r), a.set("OrderKey", s), a.set("Label", new $(t.Label ?? ""));
-  const c = new O();
+  const c = new D();
   for (const [l, h] of Object.entries(t.Info ?? {}))
     c.set(l, h);
   if (a.set("Info", c), t.Kind === "item") {

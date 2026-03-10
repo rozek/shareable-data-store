@@ -1,10 +1,10 @@
-var ze = Object.defineProperty;
+var Be = Object.defineProperty;
 var le = (r) => {
   throw TypeError(r);
 };
-var Be = (r, e, t) => e in r ? ze(r, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : r[e] = t;
-var he = (r, e, t) => Be(r, typeof e != "symbol" ? e + "" : e, t), fe = (r, e, t) => e.has(r) || le("Cannot " + t);
-var S = (r, e, t) => (fe(r, e, "read from private field"), t ? t.call(r) : e.get(r)), X = (r, e, t) => e.has(r) ? le("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(r) : e.set(r, t), me = (r, e, t, s) => (fe(r, e, "write to private field"), s ? s.call(r, t) : e.set(r, t), t);
+var ze = (r, e, t) => e in r ? Be(r, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : r[e] = t;
+var he = (r, e, t) => ze(r, typeof e != "symbol" ? e + "" : e, t), fe = (r, e, t) => e.has(r) || le("Cannot " + t);
+var I = (r, e, t) => (fe(r, e, "read from private field"), t ? t.call(r) : e.get(r)), X = (r, e, t) => e.has(r) ? le("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(r) : e.set(r, t), me = (r, e, t, s) => (fe(r, e, "write to private field"), s ? s.call(r, t) : e.set(r, t), t);
 class V extends Error {
   constructor(t, s) {
     super(s);
@@ -26,22 +26,22 @@ function $t(r) {
   const e = globalThis.Buffer;
   return e != null ? new Uint8Array(e.from(r, "base64")) : Uint8Array.from(atob(r), (t) => t.charCodeAt(0));
 }
-var I, j;
+var S, j;
 class Lt {
   constructor() {
     //----------------------------------------------------------------------------//
     //                          Large-value blob store                            //
     //----------------------------------------------------------------------------//
-    // In-memory map holding large-value blobs (those with ValueKind
+    // in-memory map holding large-value blobs (those with ValueKind
     // '*-reference'). Written by backends on writeValue and by the SyncEngine when
     // a blob arrives from the network or is loaded from persistence.
-    X(this, I, /* @__PURE__ */ new Map());
-    // Optional async loader injected by SDS_SyncEngine so that _readValueOf can
+    X(this, S, /* @__PURE__ */ new Map());
+    // optional async loader injected by SDS_SyncEngine so that _readValueOf can
     // transparently fetch blobs from the persistence layer on demand.
     X(this, j);
   }
-  /**** _blobHash — FNV-1a 32-bit content hash used as blob identity key ****/
-  static _blobHash(e) {
+  /**** _BLOBhash — FNV-1a 32-bit content hash used as blob identity key ****/
+  static _BLOBhash(e) {
     let t = 2166136261;
     for (let s = 0; s < e.length; s++)
       t = Math.imul(t ^ e[s], 16777619) >>> 0;
@@ -49,24 +49,24 @@ class Lt {
   }
   /**** _storeValueBlob — cache a blob (called by backends on write) ****/
   _storeValueBlob(e, t) {
-    S(this, I).set(e, t);
+    I(this, S).set(e, t);
   }
   /**** _getValueBlobAsync — look up a blob; fall back to the persistence loader ****/
   async _getValueBlobAsync(e) {
-    let t = S(this, I).get(e);
-    return t == null && S(this, j) != null && (t = await S(this, j).call(this, e), t != null && S(this, I).set(e, t)), t;
+    let t = I(this, S).get(e);
+    return t == null && I(this, j) != null && (t = await I(this, j).call(this, e), t != null && I(this, S).set(e, t)), t;
   }
   /**** storeValueBlob — public entry point for SyncEngine ****/
   storeValueBlob(e, t) {
-    S(this, I).set(e, t);
+    I(this, S).set(e, t);
   }
   /**** getValueBlobByHash — synchronous lookup (returns undefined if not cached) ****/
   getValueBlobByHash(e) {
-    return S(this, I).get(e);
+    return I(this, S).get(e);
   }
   /**** hasValueBlob — check whether a blob is already in the local cache ****/
   hasValueBlob(e) {
-    return S(this, I).has(e);
+    return I(this, S).has(e);
   }
   /**** setValueBlobLoader — called by SDS_SyncEngine to enable lazy persistence loading ****/
   setValueBlobLoader(e) {
@@ -153,7 +153,7 @@ class Lt {
     return h.innerEntries = Array.from(this._innerEntriesOf(e)).map((u) => this._EntryAsJSON(u.Id)), h;
   }
 }
-I = new WeakMap(), j = new WeakMap();
+S = new WeakMap(), j = new WeakMap();
 var g;
 (function(r) {
   r.assertEqual = (n) => {
@@ -633,7 +633,7 @@ class y {
     return this._refinement((s, n) => e(s) ? !0 : (n.addIssue(typeof t == "function" ? t(s, n) : t), !1));
   }
   _refinement(e) {
-    return new z({
+    return new B({
       schema: this,
       typeName: p.ZodEffects,
       effect: { type: "refinement", refinement: e }
@@ -653,7 +653,7 @@ class y {
     return A.create(this, this._def);
   }
   nullable() {
-    return B.create(this, this._def);
+    return z.create(this, this._def);
   }
   nullish() {
     return this.nullable().optional();
@@ -662,16 +662,16 @@ class y {
     return w.create(this);
   }
   promise() {
-    return G.create(this, this._def);
+    return H.create(this, this._def);
   }
   or(e) {
     return Y.create([this, e], this._def);
   }
   and(e) {
-    return H.create(this, e, this._def);
+    return G.create(this, e, this._def);
   }
   transform(e) {
-    return new z({
+    return new B({
       ..._(this._def),
       schema: this,
       typeName: p.ZodEffects,
@@ -723,7 +723,7 @@ class y {
     return this.safeParse(null).success;
   }
 }
-const Ke = /^c[^\s-]{8,}$/i, qe = /^[0-9a-z]+$/, Ye = /^[0-9A-HJKMNP-TV-Z]{26}$/i, He = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i, Ge = /^[a-z0-9_-]{21}$/i, Qe = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, Xe = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/, et = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i, tt = "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$";
+const Ke = /^c[^\s-]{8,}$/i, qe = /^[0-9a-z]+$/, Ye = /^[0-9A-HJKMNP-TV-Z]{26}$/i, Ge = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i, He = /^[a-z0-9_-]{21}$/i, Qe = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, Xe = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/, et = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i, tt = "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$";
 let ee;
 const rt = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/, st = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/, nt = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/, at = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/, it = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/, ot = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/, je = "((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))", dt = new RegExp(`^${je}$`);
 function Ve(r) {
@@ -820,13 +820,13 @@ class C extends y {
           message: a.message
         }), s.dirty());
       else if (a.kind === "uuid")
-        He.test(e.data) || (n = this._getOrReturnCtx(e, n), c(n, {
+        Ge.test(e.data) || (n = this._getOrReturnCtx(e, n), c(n, {
           validation: "uuid",
           code: d.invalid_string,
           message: a.message
         }), s.dirty());
       else if (a.kind === "nanoid")
-        Ge.test(e.data) || (n = this._getOrReturnCtx(e, n), c(n, {
+        He.test(e.data) || (n = this._getOrReturnCtx(e, n), c(n, {
           validation: "nanoid",
           code: d.invalid_string,
           message: a.message
@@ -1547,7 +1547,7 @@ q.create = (r) => new q({
   typeName: p.ZodDate,
   ..._(r)
 });
-class Se extends y {
+class Ie extends y {
   _parse(e) {
     if (this._getType(e) !== l.symbol) {
       const s = this._getOrReturnCtx(e);
@@ -1560,7 +1560,7 @@ class Se extends y {
     return b(e.data);
   }
 }
-Se.create = (r) => new Se({
+Ie.create = (r) => new Ie({
   typeName: p.ZodSymbol,
   ..._(r)
 });
@@ -1581,7 +1581,7 @@ ne.create = (r) => new ne({
   typeName: p.ZodUndefined,
   ..._(r)
 });
-class Ie extends y {
+class Se extends y {
   _parse(e) {
     if (this._getType(e) !== l.null) {
       const s = this._getOrReturnCtx(e);
@@ -1594,7 +1594,7 @@ class Ie extends y {
     return b(e.data);
   }
 }
-Ie.create = (r) => new Ie({
+Se.create = (r) => new Se({
   typeName: p.ZodNull,
   ..._(r)
 });
@@ -1740,7 +1740,7 @@ function Z(r) {
   } else return r instanceof w ? new w({
     ...r._def,
     type: Z(r.element)
-  }) : r instanceof A ? A.create(Z(r.unwrap())) : r instanceof B ? B.create(Z(r.unwrap())) : r instanceof R ? R.create(r.items.map((e) => Z(e))) : r;
+  }) : r instanceof A ? A.create(Z(r.unwrap())) : r instanceof z ? z.create(Z(r.unwrap())) : r instanceof R ? R.create(r.items.map((e) => Z(e))) : r;
 }
 class x extends y {
   constructor() {
@@ -2129,7 +2129,7 @@ function ie(r, e) {
     return { valid: !0, data: n };
   } else return t === l.date && s === l.date && +r == +e ? { valid: !0, data: r } : { valid: !1 };
 }
-class H extends y {
+class G extends y {
   _parse(e) {
     const { status: t, ctx: s } = this._processInputParams(e), n = (a, i) => {
       if (xe(a) || xe(i))
@@ -2161,7 +2161,7 @@ class H extends y {
     }));
   }
 }
-H.create = (r, e, t) => new H({
+G.create = (r, e, t) => new G({
   left: r,
   right: e,
   typeName: p.ZodIntersection,
@@ -2456,7 +2456,7 @@ Ne.create = (r, e) => new Ne({
   typeName: p.ZodNativeEnum,
   ..._(e)
 });
-class G extends y {
+class H extends y {
   unwrap() {
     return this._def.type;
   }
@@ -2475,12 +2475,12 @@ class G extends y {
     })));
   }
 }
-G.create = (r, e) => new G({
+H.create = (r, e) => new H({
   type: r,
   typeName: p.ZodPromise,
   ..._(e)
 });
-class z extends y {
+class B extends y {
   innerType() {
     return this._def.schema;
   }
@@ -2560,13 +2560,13 @@ class z extends y {
     g.assertNever(n);
   }
 }
-z.create = (r, e, t) => new z({
+B.create = (r, e, t) => new B({
   schema: r,
   typeName: p.ZodEffects,
   effect: e,
   ..._(t)
 });
-z.createWithPreprocess = (r, e, t) => new z({
+B.createWithPreprocess = (r, e, t) => new B({
   schema: e,
   effect: { type: "preprocess", transform: r },
   typeName: p.ZodEffects,
@@ -2585,7 +2585,7 @@ A.create = (r, e) => new A({
   typeName: p.ZodOptional,
   ..._(e)
 });
-class B extends y {
+class z extends y {
   _parse(e) {
     return this._getType(e) === l.null ? b(null) : this._def.innerType._parse(e);
   }
@@ -2593,7 +2593,7 @@ class B extends y {
     return this._def.innerType;
   }
 }
-B.create = (r, e) => new B({
+z.create = (r, e) => new z({
   innerType: r,
   typeName: p.ZodNullable,
   ..._(e)
@@ -2777,12 +2777,12 @@ const xt = ae.create;
 E.create;
 w.create;
 const kt = Y.create;
-H.create;
+G.create;
 R.create;
 M.create;
-G.create;
+H.create;
 A.create;
-B.create;
+z.create;
 function Q(r, e) {
   var n;
   const t = r.safeParse(e);
@@ -2795,9 +2795,9 @@ const bt = J({
   invalid_type_error: "Label must be a string"
 }).max(pe, `Label must not exceed ${pe} characters`), wt = J({
   invalid_type_error: "MIMEType must be a non-empty string"
-}).min(1, "MIMEType must be a non-empty string").max(_e, `MIMEType must not exceed ${_e} characters`), St = J({
+}).min(1, "MIMEType must be a non-empty string").max(_e, `MIMEType must not exceed ${_e} characters`), It = J({
   invalid_type_error: "Info key must be a string"
-}).min(1, "Info key must not be empty").max(ye, `Info key must not exceed ${ye} characters`), It = xt().superRefine((r, e) => {
+}).min(1, "Info key must not be empty").max(ye, `Info key must not exceed ${ye} characters`), St = xt().superRefine((r, e) => {
   let t;
   try {
     t = JSON.stringify(r);
@@ -2820,10 +2820,10 @@ function Tt(r) {
   Q(wt, r);
 }
 function Mt(r) {
-  Q(St, r);
-}
-function zt(r) {
   Q(It, r);
+}
+function Bt(r) {
+  Q(St, r);
 }
 class Le {
   constructor(e, t) {
@@ -2933,7 +2933,7 @@ function te(r, e, t) {
   const n = (t ? `${t}: ` : "") + (((a = s.error.issues[0]) == null ? void 0 : a.message) ?? "invalid argument");
   throw new V("invalid-argument", n);
 }
-class Bt extends Le {
+class zt extends Le {
   constructor(e, t) {
     super(e, t);
   }
@@ -3011,12 +3011,12 @@ export {
   Lt as SDS_DataStore,
   Le as SDS_Entry,
   V as SDS_Error,
-  Bt as SDS_Item,
+  zt as SDS_Item,
   Dt as SDS_Link,
   De as TrashId,
   $t as _base64ToUint8Array,
   Ue as _uint8ArrayToBase64,
-  zt as checkInfoValueSize,
+  Bt as checkInfoValueSize,
   Mt as expectValidInfoKey,
   Ot as expectValidLabel,
   Tt as expectValidMIMEType,

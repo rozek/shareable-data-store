@@ -64,8 +64,8 @@ export declare type SDS_ConnectionState = 'disconnected' | 'connecting' | 'conne
 
 export declare abstract class SDS_DataStore {
     #private;
-    /**** _blobHash — FNV-1a 32-bit content hash used as blob identity key ****/
-    protected static _blobHash(Data: Uint8Array): string;
+    /**** _BLOBhash — FNV-1a 32-bit content hash used as blob identity key ****/
+    protected static _BLOBhash(Data: Uint8Array): string;
     /**** _storeValueBlob — cache a blob (called by backends on write) ****/
     protected _storeValueBlob(Hash: string, Blob: Uint8Array): void;
     /**** _getValueBlobAsync — look up a blob; fall back to the persistence loader ****/

@@ -36,7 +36,7 @@ export declare class SDS_DataStore extends SDS_DataStore_2 {
     /**** fromScratch — create store from canonical empty snapshot ****/
     static fromScratch(Options?: SDS_DataStoreOptions): SDS_DataStore;
     /**** fromBinary — deserialize store from binary snapshot ****/
-    static fromBinary(Binary: Uint8Array, Options?: SDS_DataStoreOptions): SDS_DataStore;
+    static fromBinary(Serialisation: Uint8Array, Options?: SDS_DataStoreOptions): SDS_DataStore;
     /**** fromJSON — deserialize store from a plain JSON object or JSON string ****/
     static fromJSON(Serialisation: unknown, Options?: SDS_DataStoreOptions): SDS_DataStore;
     /**** RootItem / TrashItem / LostAndFoundItem — access special items ****/
@@ -84,7 +84,7 @@ export declare class SDS_DataStore extends SDS_DataStore_2 {
     /**** _EntryAsBinary — gzip-compress the JSON representation of an entry ****/
     _EntryAsBinary(Id: string): Uint8Array;
     /**** get — proxy handler for property access ****/
-    get(target: any, property: string | symbol): any;
+    get(Target: any, Property: string | symbol): any;
     /**** set / deleteProperty / ownKeys / getOwnPropertyDescriptor — proxy traps ****/
     set(): boolean;
     deleteProperty(): boolean;

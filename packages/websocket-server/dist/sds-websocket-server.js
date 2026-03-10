@@ -1,27 +1,27 @@
 import { Hono as I } from "hono";
 import { serve as j } from "@hono/node-server";
 import { createNodeWebSocket as U } from "@hono/node-ws";
-import { jwtVerify as q, SignJWT as M } from "jose";
-import B from "node:path";
-const E = 1, A = 2, W = 5, _ = 32;
-function L(n) {
-  return Array.from(n).map((t) => t.toString(16).padStart(2, "0")).join("");
+import { jwtVerify as q, SignJWT as B } from "jose";
+import M from "node:path";
+const P = 1, D = 2, C = 5, m = 32;
+function J(n) {
+  return Array.from(n).map((e) => e.toString(16).padStart(2, "0")).join("");
 }
-class V {
+class L {
   StoreId;
   #t = /* @__PURE__ */ new Set();
   #e;
   #n = /* @__PURE__ */ new Map();
-  constructor(t, e) {
-    this.StoreId = t, this.#e = e;
+  constructor(e, t) {
+    this.StoreId = e, this.#e = t;
   }
   /**** addClient ****/
-  addClient(t) {
-    this.#t.add(t);
+  addClient(e) {
+    this.#t.add(e);
   }
   /**** removeClient ****/
-  removeClient(t) {
-    this.#t.delete(t);
+  removeClient(e) {
+    this.#t.delete(e);
   }
   /**** isEmpty ****/
   isEmpty() {
@@ -32,129 +32,136 @@ class V {
     return this.#e != null;
   }
   /**** broadcast — sends Data to all clients in this store except Sender ****/
-  broadcast(t, e) {
-    for (const s of this.#t)
-      if (s !== e)
+  broadcast(e, t) {
+    for (const r of this.#t)
+      if (r !== t)
         try {
-          s.send(t);
+          r.send(e);
         } catch {
         }
   }
   /**** replayTo — sends stored snapshot and patches to a newly connected client ****/
-  async replayTo(t) {
-    const e = this.#e;
-    if (e == null)
+  async replayTo(e) {
+    const t = this.#e;
+    if (t == null)
       return;
-    const s = await e.loadSnapshot();
-    if (s != null) {
-      const u = new Uint8Array(1 + s.byteLength);
-      u[0] = A, u.set(s, 1);
+    const r = await t.loadSnapshot();
+    if (r != null) {
+      const c = new Uint8Array(1 + r.byteLength);
+      c[0] = D, c.set(r, 1);
       try {
-        t.send(u);
+        e.send(c);
       } catch {
       }
     }
-    const c = await e.loadPatchesSince(0);
-    for (const u of c) {
-      const i = new Uint8Array(1 + u.byteLength);
-      i[0] = E, i.set(u, 1);
+    const i = await t.loadPatchesSince(0);
+    for (const c of i) {
+      const u = new Uint8Array(1 + c.byteLength);
+      u[0] = P, u.set(c, 1);
       try {
-        t.send(i);
+        e.send(u);
       } catch {
       }
     }
   }
   /**** persistPatch — stores a patch payload (bytes after the 0x01 type byte) ****/
-  persistPatch(t) {
-    this.#e?.appendPatch(t, Date.now()).catch(() => {
+  persistPatch(e) {
+    this.#e?.appendPatch(e, Date.now()).catch(() => {
     });
   }
   /**** persistValue — stores a value payload (hash + data, bytes after 0x02);
                        prunes all accumulated patches since the value is a full state ****/
-  persistValue(t) {
-    const e = this.#e;
-    e?.saveSnapshot(t).then(() => e.prunePatches(Date.now() + 1)).catch(() => {
+  persistValue(e) {
+    const t = this.#e;
+    t?.saveSnapshot(e).then(() => t.prunePatches(Date.now() + 1)).catch(() => {
     });
   }
   /**** handleChunk — accumulates VALUE_CHUNK frames; persists the assembled
                       value when all chunks have arrived ****/
-  handleChunk(t) {
-    if (t.byteLength < 1 + _ + 8)
+  handleChunk(e) {
+    if (e.byteLength < 1 + m + 8)
       return;
-    const e = t.slice(1, 1 + _), s = L(e), c = new DataView(t.buffer, t.byteOffset + 1 + _), u = c.getUint32(0, !1), i = c.getUint32(4, !1), w = t.slice(1 + _ + 8);
-    let y = this.#n.get(s);
-    if (y == null && (y = { Chunks: /* @__PURE__ */ new Map(), Total: i }, this.#n.set(s, y)), y.Chunks.set(u, w), y.Chunks.size < y.Total)
+    const t = 2 * 1024 * 1024 * 1024, r = e.slice(1, 1 + m), i = J(r), c = new DataView(e.buffer, e.byteOffset + 1 + m), u = c.getUint32(0, !1), y = c.getUint32(4, !1), v = e.slice(1 + m + 8);
+    let h = this.#n.get(i);
+    if (h == null && (h = { Chunks: /* @__PURE__ */ new Map(), Total: y }, this.#n.set(i, h)), h.Chunks.set(u, v), h.Chunks.size < h.Total)
       return;
-    this.#n.delete(s);
-    const b = [];
-    for (let d = 0; d < y.Total; d++) {
-      const a = y.Chunks.get(d);
-      a != null && b.push(a);
+    this.#n.delete(i);
+    const _ = [];
+    for (let o = 0; o < h.Total; o++) {
+      const s = h.Chunks.get(o);
+      s != null && _.push(s);
     }
-    const v = b.reduce((d, a) => d + a.byteLength, 0), r = new Uint8Array(_ + v);
-    r.set(e, 0);
-    let h = _;
-    for (const d of b)
-      r.set(d, h), h += d.byteLength;
-    this.persistValue(r);
+    const a = _.reduce((o, s) => o + s.byteLength, 0);
+    if (a > t) {
+      console.warn(`SDS: blob ${i} rejected — size ${a} exceeds limit of ${t} bytes`);
+      return;
+    }
+    const d = new Uint8Array(m + a);
+    d.set(r, 0);
+    let w = m;
+    for (const o of _)
+      d.set(o, w), w += o.byteLength;
+    this.persistValue(d);
   }
   /**** close — closes the underlying SQLite connection ****/
   async close() {
     await this.#e?.close();
   }
 }
-const P = /* @__PURE__ */ new Map();
-async function D(n, t) {
-  let e = P.get(n);
-  if (e == null) {
-    let s;
-    if (t != null) {
-      const { SDS_DesktopPersistenceProvider: c } = await import("@rozek/sds-persistence-node"), u = n.replace(/[^a-zA-Z0-9_-]/g, "_"), i = B.join(t, `${u}.db`);
-      s = new c(i, n);
+const k = /* @__PURE__ */ new Map();
+async function A(n, e) {
+  let t = k.get(n);
+  if (t == null) {
+    let r;
+    if (e != null) {
+      const { SDS_DesktopPersistenceProvider: i } = await import("@rozek/sds-persistence-node"), c = n.replace(/[^a-zA-Z0-9_-]/g, "_"), u = M.join(e, `${c}.db`);
+      r = new i(u, n);
     }
-    e = new V(n, s), P.set(n, e);
+    t = new L(n, r), k.set(n, t);
   }
-  return e;
+  return t;
 }
-function C(n, t) {
-  const e = P.get(n);
-  e != null && (e.removeClient(t), e.isEmpty() && (P.delete(n), e.close().catch(() => {
+function W(n, e) {
+  const t = k.get(n);
+  t != null && (t.removeClient(e), t.isEmpty() && (k.delete(n), t.close().catch(() => {
   })));
 }
-async function T(n, t, e) {
-  const { payload: s } = await q(n, t, {
+async function E(n, e, t) {
+  const { payload: r } = await q(n, e, {
     algorithms: ["HS256"],
-    ...e != null ? { issuer: e } : {}
+    ...t != null ? { issuer: t } : {}
   });
-  if (typeof s.sub != "string" || typeof s.aud != "string")
-    throw new Error("missing claims");
-  const c = s.scope;
-  if (c !== "read" && c !== "write" && c !== "admin")
-    throw new Error("invalid scope");
+  if (typeof r.sub != "string" || typeof r.aud != "string")
+    throw new TypeError("JWT is missing required claims (sub, aud)");
+  const i = r.scope;
+  if (i !== "read" && i !== "write" && i !== "admin")
+    throw new TypeError(`JWT scope '${i}' is invalid — must be 'read', 'write', or 'admin'`);
   return {
-    sub: s.sub,
-    aud: s.aud,
-    scope: c,
-    iss: s.iss
+    sub: r.sub,
+    aud: r.aud,
+    scope: i,
+    iss: r.iss
   };
 }
-async function z(n, t, e, s, c, u) {
-  const i = new M({ sub: t, aud: e, scope: s }).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime(Math.floor(Date.now() / 1e3) + Math.round(c / 1e3));
-  return u != null && i.setIssuer(u), i.sign(n);
+async function R(n, e, t, r, i, c) {
+  const u = new B({ sub: e, aud: t, scope: r }).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime(Math.floor(Date.now() / 1e3) + Math.round(i / 1e3));
+  return c != null && u.setIssuer(c), u.sign(n);
+}
+function z(n) {
+  return n === P || n === D || n === C;
 }
 function H(n) {
-  return n === E || n === A || n === W;
-}
-function O(n) {
-  const t = n?.JWTSecret ?? process.env.SDS_JWT_SECRET ?? "", e = n?.Issuer ?? process.env.SDS_ISSUER, s = n?.Port ?? parseInt(process.env.SDS_PORT ?? "3000", 10), c = n?.Host ?? process.env.SDS_HOST ?? "127.0.0.1", u = n?.PersistDir ?? process.env.SDS_PERSIST_DIR;
-  if (t.length === 0)
-    throw new Error("SDS_JWT_SECRET environment variable is required");
-  const i = new TextEncoder().encode(t), w = new I(), { injectWebSocket: y, upgradeWebSocket: b } = U({ app: w });
-  w.get("/ws/:storeId", b(async (r) => {
-    const h = r.req.param("storeId"), d = r.req.query("token") ?? "";
-    let a;
+  const e = n?.JWTSecret ?? process.env.SDS_JWT_SECRET ?? "", t = n?.Issuer ?? process.env.SDS_ISSUER, r = n?.Port ?? parseInt(process.env.SDS_PORT ?? "3000", 10), i = n?.Host ?? process.env.SDS_HOST ?? "127.0.0.1", c = n?.PersistDir ?? process.env.SDS_PERSIST_DIR;
+  if (e.length === 0)
+    throw new TypeError("SDS_JWT_SECRET is required (set via options.JWTSecret or the SDS_JWT_SECRET environment variable)");
+  if (e.length < 32)
+    throw new TypeError("SDS_JWT_SECRET must be at least 32 characters long to provide sufficient entropy for HS256");
+  const u = new TextEncoder().encode(e), y = new I(), { injectWebSocket: v, upgradeWebSocket: h } = U({ app: y });
+  y.get("/ws/:storeId", h(async (a) => {
+    const d = a.req.param("storeId"), w = a.req.query("token") ?? "";
+    let o;
     try {
-      a = await T(d, i, e);
+      o = await E(w, u, t);
     } catch {
       return {
         onOpen: (p, S) => {
@@ -162,23 +169,23 @@ function O(n) {
         }
       };
     }
-    if (a.aud !== h)
+    if (o.aud !== d)
       return {
         onOpen: (l, p) => {
           p.close(4003, "Forbidden");
         }
       };
-    const o = await D(h, u);
-    let m;
+    const s = await A(d, c);
+    let b;
     const f = {
       send: (l) => {
-        m.send(l);
+        b.send(l);
       },
-      scope: a.scope
+      scope: o.scope
     };
     return {
       onOpen: (l, p) => {
-        m = p, o.addClient(f), o.hasPersistence() && o.replayTo(f).catch(() => {
+        b = p, s.addClient(f), s.hasPersistence() && s.replayTo(f).catch(() => {
         });
       },
       onMessage: (l, p) => {
@@ -188,29 +195,29 @@ function O(n) {
         const g = new Uint8Array(S);
         if (g.byteLength < 1)
           return;
-        const k = g[0];
-        if (!(a.scope === "read" && H(k)) && (o.broadcast(g, f), o.hasPersistence()))
+        const T = g[0];
+        if (!(o.scope === "read" && z(T)) && (s.broadcast(g, f), s.hasPersistence()))
           switch (!0) {
-            case k === E:
-              o.persistPatch(g.slice(1));
+            case T === P:
+              s.persistPatch(g.slice(1));
               break;
-            case k === A:
-              o.persistValue(g.slice(1));
+            case T === D:
+              s.persistValue(g.slice(1));
               break;
-            case k === W:
-              o.handleChunk(g);
+            case T === C:
+              s.handleChunk(g);
               break;
           }
       },
       onClose: () => {
-        C(h, f);
+        W(d, f);
       }
     };
-  })), w.get("/signal/:storeId", b(async (r) => {
-    const h = r.req.param("storeId"), d = r.req.query("token") ?? "";
-    let a;
+  })), y.get("/signal/:storeId", h(async (a) => {
+    const d = a.req.param("storeId"), w = a.req.query("token") ?? "";
+    let o;
     try {
-      a = await T(d, i, e);
+      o = await E(w, u, t);
     } catch {
       return {
         onOpen: (p, S) => {
@@ -218,98 +225,102 @@ function O(n) {
         }
       };
     }
-    if (a.aud !== h)
+    if (o.aud !== d)
       return {
         onOpen: (l, p) => {
           p.close(4003, "Forbidden");
         }
       };
-    const o = await D(`signal:${h}`);
-    let m;
+    const s = await A(`signal:${d}`);
+    let b;
     const f = {
       send: (l) => {
-        m.send(l);
+        b.send(l);
       },
-      scope: a.scope
+      scope: o.scope
     };
     return {
       onOpen: (l, p) => {
-        m = p, o.addClient(f);
+        b = p, s.addClient(f);
       },
       onMessage: (l, p) => {
         const S = l.data;
-        if (S instanceof ArrayBuffer)
-          o.broadcast(new Uint8Array(S), f);
-        else if (typeof S == "string") {
-          const g = new TextEncoder().encode(S);
-          o.broadcast(g, f);
+        switch (!0) {
+          case S instanceof ArrayBuffer:
+            s.broadcast(new Uint8Array(S), f);
+            break;
+          case typeof S == "string": {
+            const g = new TextEncoder().encode(S);
+            s.broadcast(g, f);
+            break;
+          }
         }
       },
       onClose: () => {
-        C(`signal:${h}`, f);
+        W(`signal:${d}`, f);
       }
     };
-  })), w.post("/api/token", async (r) => {
-    const h = r.req.header("Authorization") ?? "";
-    if (!h.startsWith("Bearer "))
-      return r.json({ error: "missing token" }, 401);
-    const d = h.slice(7);
-    let a;
-    try {
-      a = await T(d, i, e);
-    } catch {
-      return r.json({ error: "invalid token" }, 401);
-    }
-    if (a.scope !== "admin")
-      return r.json({ error: "admin scope required" }, 403);
+  })), y.post("/api/token", async (a) => {
+    const d = a.req.header("Authorization") ?? "";
+    if (!d.startsWith("Bearer "))
+      return a.json({ error: "missing token" }, 401);
+    const w = d.slice(7);
     let o;
     try {
-      o = await r.req.json();
+      o = await E(w, u, t);
     } catch {
-      return r.json({ error: "invalid JSON body" }, 400);
+      return a.json({ error: "invalid token" }, 401);
     }
-    if (typeof o.sub != "string" || typeof o.scope != "string")
-      return r.json({ error: "sub and scope required" }, 400);
-    const m = R(o.exp ?? "24h"), f = await z(
-      i,
-      o.sub,
-      a.aud,
-      o.scope,
-      m,
-      e
+    if (o.scope !== "admin")
+      return a.json({ error: "admin scope required" }, 403);
+    let s;
+    try {
+      s = await a.req.json();
+    } catch {
+      return a.json({ error: "invalid JSON body" }, 400);
+    }
+    if (typeof s.sub != "string" || typeof s.scope != "string")
+      return a.json({ error: "sub and scope required" }, 400);
+    const b = O(s.exp ?? "24h"), f = await R(
+      u,
+      s.sub,
+      o.aud,
+      s.scope,
+      b,
+      t
     );
-    return r.json({ token: f });
+    return a.json({ token: f });
   });
-  function v() {
-    const r = j({ fetch: w.fetch, port: s, hostname: c });
-    y(r);
+  function _() {
+    const a = j({ fetch: y.fetch, port: r, hostname: i });
+    v(a);
   }
-  return { app: w, start: v };
+  return { app: y, start: _ };
 }
-function R(n) {
-  const t = /^(\d+)(s|m|h|d)$/.exec(n);
-  if (t == null)
+function O(n) {
+  const e = /^(\d+)(s|m|h|d)$/.exec(n);
+  if (e == null)
     return 1440 * 60 * 1e3;
-  const e = parseInt(t[1], 10);
-  switch (t[2]) {
+  const t = parseInt(e[1], 10);
+  switch (e[2]) {
     case "s":
-      return e * 1e3;
+      return t * 1e3;
     case "m":
-      return e * 60 * 1e3;
+      return t * 60 * 1e3;
     case "h":
-      return e * 60 * 60 * 1e3;
+      return t * 60 * 60 * 1e3;
     case "d":
-      return e * 24 * 60 * 60 * 1e3;
+      return t * 24 * 60 * 60 * 1e3;
     default:
       return 1440 * 60 * 1e3;
   }
 }
 if (process.argv[1]?.endsWith("sds-websocket-server.js")) {
-  const { start: n } = O();
+  const { start: n } = H();
   n();
 }
 export {
-  V as LiveStore,
-  O as createSDSServer,
-  H as rejectWriteFrame
+  L as LiveStore,
+  H as createSDSServer,
+  z as rejectWriteFrame
 };

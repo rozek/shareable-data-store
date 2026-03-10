@@ -2,7 +2,7 @@ var ir = (n) => {
   throw TypeError(n);
 };
 var jt = (n, e, t) => e.has(n) || ir("Cannot " + t);
-var m = (n, e, t) => (jt(n, e, "read from private field"), t ? t.call(n) : e.get(n)), U = (n, e, t) => e.has(n) ? ir("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(n) : e.set(n, t), pe = (n, e, t, r) => (jt(n, e, "write to private field"), r ? r.call(n, t) : e.set(n, t), t), u = (n, e, t) => (jt(n, e, "access private method"), t);
+var m = (n, e, t) => (jt(n, e, "read from private field"), t ? t.call(n) : e.get(n)), B = (n, e, t) => e.has(n) ? ir("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(n) : e.set(n, t), pe = (n, e, t, r) => (jt(n, e, "write to private field"), r ? r.call(n, t) : e.set(n, t), t), u = (n, e, t) => (jt(n, e, "access private method"), t);
 var Rt = (n, e, t, r) => ({
   set _(s) {
     pe(n, e, s, t);
@@ -202,8 +202,8 @@ var bn = /* @__PURE__ */ _e(Ze, 9, 0), kn = /* @__PURE__ */ _e(Ze, 9, 1), xn = /
                 x[M++] = K;
             }
           }
-          var ee = x.subarray(0, Q), B = x.subarray(Q);
-          L = Lt(ee), X = Lt(B), j = _e(ee, L, 1), W = _e(B, X, 1);
+          var ee = x.subarray(0, Q), U = x.subarray(Q);
+          L = Lt(ee), X = Lt(U), j = _e(ee, L, 1), W = _e(U, X, 1);
         } else
           me(1);
       else {
@@ -238,26 +238,26 @@ var bn = /* @__PURE__ */ _e(Ze, 9, 0), kn = /* @__PURE__ */ _e(Ze, 9, 1), xn = /
           var M = se - 257, Z = Ct[M];
           ae = he(n, p, (1 << Z) - 1) + Dr[M], p += Z;
         }
-        var ve = W[Vt(n, p) & ce], Be = ve >> 4;
+        var ve = W[Vt(n, p) & ce], Ue = ve >> 4;
         ve || me(3), p += ve & 15;
-        var B = wn[Be];
-        if (Be > 3) {
-          var Z = St[Be];
-          B += Vt(n, p) & (1 << Z) - 1, p += Z;
+        var U = wn[Ue];
+        if (Ue > 3) {
+          var Z = St[Ue];
+          U += Vt(n, p) & (1 << Z) - 1, p += Z;
         }
         if (p > fe) {
           c && me(0);
           break;
         }
         o && d(k + 131072);
-        var Ue = k + ae;
-        if (k < B) {
-          var _t = a - B, wt = Math.min(B, Ue);
+        var Be = k + ae;
+        if (k < U) {
+          var _t = a - U, wt = Math.min(U, Be);
           for (_t + k < 0 && me(3); k < wt; ++k)
             t[k] = r[_t + k];
         }
-        for (; k < Ue; ++k)
-          t[k] = t[k - B];
+        for (; k < Be; ++k)
+          t[k] = t[k - U];
       }
     }
     e.l = j, e.p = be, e.b = k, e.f = f, j && (f = 1, e.m = L, e.d = W, e.n = X);
@@ -276,7 +276,7 @@ var bn = /* @__PURE__ */ _e(Ze, 9, 0), kn = /* @__PURE__ */ _e(Ze, 9, 1), xn = /
     n[r] && t.push({ s: r, f: n[r] });
   var s = t.length, a = t.slice();
   if (!s)
-    return { t: Br, l: 0 };
+    return { t: Ur, l: 0 };
   if (s == 1) {
     var i = new F(t[0].s + 1);
     return i[t[0].s] = 1, { t: i, l: 1 };
@@ -358,9 +358,9 @@ var bn = /* @__PURE__ */ _e(Ze, 9, 0), kn = /* @__PURE__ */ _e(Ze, 9, 1), xn = /
   var Ee = d + 5 << 3, ne = dt(s, Ze) + dt(a, vt) + i, J = dt(s, k) + dt(a, L) + i + 14 + 3 * H + dt($, z) + 2 * $[16] + 3 * $[17] + 7 * $[18];
   if (c >= 0 && Ee <= ne && Ee <= J)
     return Kr(e, f, n.subarray(c, c + d));
-  var K, V, ee, B;
+  var K, V, ee, U;
   if (ke(e, f, 1 + (J < ne)), f += 2, J < ne) {
-    K = _e(k, j, 0), V = k, ee = _e(L, X, 0), B = L;
+    K = _e(k, j, 0), V = k, ee = _e(L, X, 0), U = L;
     var ot = _e(z, M, 0);
     ke(e, f, D - 257), ke(e, f + 5, Q - 1), ke(e, f + 10, H - 4), f += 14;
     for (var A = 0; A < H; ++A)
@@ -372,19 +372,19 @@ var bn = /* @__PURE__ */ _e(Ze, 9, 0), kn = /* @__PURE__ */ _e(Ze, 9, 1), xn = /
         ke(e, f, ot[ae]), f += z[ae], ae > 15 && (ke(e, f, se[A] >> 5 & 127), f += se[A] >> 12);
       }
   } else
-    K = bn, V = Ze, ee = xn, B = vt;
+    K = bn, V = Ze, ee = xn, U = vt;
   for (var A = 0; A < o; ++A) {
     var Z = r[A];
     if (Z > 255) {
       var ae = Z >> 18 & 31;
       ut(e, f, K[ae + 257]), f += V[ae + 257], ae > 7 && (ke(e, f, Z >> 23 & 31), f += Ct[ae]);
       var ve = Z & 31;
-      ut(e, f, ee[ve]), f += B[ve], ve > 3 && (ut(e, f, Z >> 5 & 8191), f += St[ve]);
+      ut(e, f, ee[ve]), f += U[ve], ve > 3 && (ut(e, f, Z >> 5 & 8191), f += St[ve]);
     } else
       ut(e, f, K[Z]), f += V[Z];
   }
   return ut(e, f, K[256]), f + V[256];
-}, On = /* @__PURE__ */ new nr([65540, 131080, 131088, 131104, 262176, 1048704, 1048832, 2114560, 2117632]), Br = /* @__PURE__ */ new F(0), Cn = function(n, e, t, r, s, a) {
+}, On = /* @__PURE__ */ new nr([65540, 131080, 131088, 131104, 262176, 1048704, 1048832, 2114560, 2117632]), Ur = /* @__PURE__ */ new F(0), Cn = function(n, e, t, r, s, a) {
   var i = a.z || n.length, o = new F(r + i + 5 * (1 + Math.ceil(i / 7e3)) + s), c = o.subarray(r, o.length - s), d = a.l, f = (a.r || 0) & 7;
   if (e) {
     f && (c[0] = a.r >> 3);
@@ -401,26 +401,26 @@ var bn = /* @__PURE__ */ _e(Ze, 9, 0), kn = /* @__PURE__ */ _e(Ze, 9, 1), xn = /
           for (var V = 0; V < 30; ++V)
             Q[V] = 0;
         }
-        var ee = 2, B = 0, ot = j, ce = ne - J & 32767;
+        var ee = 2, U = 0, ot = j, ce = ne - J & 32767;
         if (K > 2 && Ee == D(x - ce))
           for (var be = Math.min(k, K) - 1, se = Math.min(32767, x), ae = Math.min(258, K); ce <= se && --ot && ne != J; ) {
             if (n[x + ee] == n[x + ee - ce]) {
               for (var Z = 0; Z < ae && n[x + Z] == n[x + Z - ce]; ++Z)
                 ;
               if (Z > ee) {
-                if (ee = Z, B = ce, Z > be)
+                if (ee = Z, U = ce, Z > be)
                   break;
-                for (var ve = Math.min(ce, Z - 2), Be = 0, V = 0; V < ve; ++V) {
-                  var Ue = x - ce + V & 32767, _t = L[Ue], wt = Ue - _t & 32767;
-                  wt > Be && (Be = wt, J = Ue);
+                for (var ve = Math.min(ce, Z - 2), Ue = 0, V = 0; V < ve; ++V) {
+                  var Be = x - ce + V & 32767, _t = L[Be], wt = Be - _t & 32767;
+                  wt > Ue && (Ue = wt, J = Be);
                 }
               }
             }
             ne = J, J = L[ne], ce += ne - J & 32767;
           }
-        if (B) {
-          G[z++] = 268435456 | $t[ee] << 18 | fr[B];
-          var lt = $t[ee] & 31, ct = fr[B] & 31;
+        if (U) {
+          G[z++] = 268435456 | $t[ee] << 18 | fr[U];
+          var lt = $t[ee] & 31, ct = fr[U] & 31;
           A += Ct[lt] + St[ct], ++q[257 + lt], ++Q[ct], M = x + ee, ++$;
         } else
           G[z++] = n[x], ++q[n[x]];
@@ -462,12 +462,12 @@ var bn = /* @__PURE__ */ _e(Ze, 9, 0), kn = /* @__PURE__ */ _e(Ze, 9, 1), xn = /
     i.set(a), i.set(n, a.length), n = i, s.w = a.length;
   }
   return Cn(n, e.level == null ? 6 : e.level, e.mem == null ? s.l ? Math.ceil(Math.max(8, Math.min(13, Math.log(n.length))) * 1.5) : 20 : 12 + e.mem, t, r, s);
-}, Bt = function(n, e, t) {
+}, Ut = function(n, e, t) {
   for (; t; ++e)
     n[e] = t, t >>>= 8;
 }, Rn = function(n, e) {
   var t = e.filename;
-  if (n[0] = 31, n[1] = 139, n[2] = 8, n[8] = e.level < 2 ? 4 : e.level == 9 ? 2 : 0, n[9] = 3, e.mtime != 0 && Bt(n, 4, Math.floor(new Date(e.mtime || Date.now()) / 1e3)), t) {
+  if (n[0] = 31, n[1] = 139, n[2] = 8, n[8] = e.level < 2 ? 4 : e.level == 9 ? 2 : 0, n[9] = 3, e.mtime != 0 && Ut(n, 4, Math.floor(new Date(e.mtime || Date.now()) / 1e3)), t) {
     n[3] = 8;
     for (var r = 0; r <= t.length; ++r)
       n[r + 10] = t.charCodeAt(r);
@@ -490,7 +490,7 @@ function vr(n, e) {
   var t = An(), r = n.length;
   t.p(n);
   var s = jn(n, e, Zn(e), 8), a = s.length;
-  return Rn(s, e), Bt(s, a - 8, t.d()), Bt(s, a - 4, r), s;
+  return Rn(s, e), Ut(s, a - 8, t.d()), Ut(s, a - 4, r), s;
 }
 function Mt(n, e) {
   var t = Ln(n);
@@ -498,10 +498,10 @@ function Mt(n, e) {
 }
 var Mn = typeof TextDecoder < "u" && /* @__PURE__ */ new TextDecoder(), Nn = 0;
 try {
-  Mn.decode(Br, { stream: !0 }), Nn = 1;
+  Mn.decode(Ur, { stream: !0 }), Nn = 1;
 } catch {
 }
-const Ur = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const Br = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 function Qe(n, e, t) {
   const r = t[0];
   if (e != null && n >= e)
@@ -582,7 +582,7 @@ function Pn(n, e) {
   } else
     return t + r.join("");
 }
-function Ae(n, e, t = Ur) {
+function Ae(n, e, t = Br) {
   if (n != null && pr(n, t), e != null && pr(e, t), n != null && e != null && n >= e)
     throw new Error(n + " >= " + e);
   if (n == null) {
@@ -610,7 +610,7 @@ function Ae(n, e, t = Ur) {
     throw new Error("cannot increment any more");
   return o < e ? o : r + Qe(s, null, t);
 }
-function Ut(n, e, t, r = Ur) {
+function Bt(n, e, t, r = Br) {
   if (t === 0)
     return [];
   if (t === 1)
@@ -1192,7 +1192,7 @@ class C {
     return this.safeParse(null).success;
   }
 }
-const Kn = /^c[^\s-]{8,}$/i, Bn = /^[0-9a-z]+$/, Un = /^[0-9A-HJKMNP-TV-Z]{26}$/i, Fn = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i, Wn = /^[a-z0-9_-]{21}$/i, qn = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, Hn = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/, Yn = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i, Gn = "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$";
+const Kn = /^c[^\s-]{8,}$/i, Un = /^[0-9a-z]+$/, Bn = /^[0-9A-HJKMNP-TV-Z]{26}$/i, Fn = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i, Wn = /^[a-z0-9_-]{21}$/i, qn = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, Hn = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/, Yn = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i, Gn = "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$";
 let Nt;
 const Qn = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/, Xn = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/, Jn = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/, es = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/, ts = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/, rs = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/, qr = "((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))", ns = new RegExp(`^${qr}$`);
 function Hr(n) {
@@ -1307,13 +1307,13 @@ class De extends C {
           message: a.message
         }), r.dirty());
       else if (a.kind === "cuid2")
-        Bn.test(e.data) || (s = this._getOrReturnCtx(e, s), g(s, {
+        Un.test(e.data) || (s = this._getOrReturnCtx(e, s), g(s, {
           validation: "cuid2",
           code: v.invalid_string,
           message: a.message
         }), r.dirty());
       else if (a.kind === "ulid")
-        Un.test(e.data) || (s = this._getOrReturnCtx(e, s), g(s, {
+        Bn.test(e.data) || (s = this._getOrReturnCtx(e, s), g(s, {
           validation: "ulid",
           code: v.invalid_string,
           message: a.message
@@ -3553,7 +3553,7 @@ function Gr(n, e, t, r) {
       break;
   }
   if (r.api.obj(["Entries"]).set({ [s]: h.obj(o) }), n.innerEntries.length > 0) {
-    const c = Ut(null, null, n.innerEntries.length);
+    const c = Bt(null, null, n.innerEntries.length);
     for (let d = 0; d < n.innerEntries.length; d++)
       Gr(n.innerEntries[d], s, c[d], r);
   }
@@ -3573,32 +3573,32 @@ const Xe = class Xe extends fn {
   /**** constructor — initialize store with model and configuration ****/
   constructor(t, r) {
     super();
-    U(this, l);
+    B(this, l);
     /**** private state ****/
-    U(this, O);
-    U(this, yt);
-    U(this, Je);
-    U(this, xe, null);
-    U(this, $e, /* @__PURE__ */ new Set());
+    B(this, O);
+    B(this, yt);
+    B(this, Je);
+    B(this, xe, null);
+    B(this, $e, /* @__PURE__ */ new Set());
     // reverse index: outerItemId → Set<entryId>
-    U(this, ie, /* @__PURE__ */ new Map());
+    B(this, ie, /* @__PURE__ */ new Map());
     // forward index: entryId → outerItemId (kept in sync with #ReverseIndex)
-    U(this, je, /* @__PURE__ */ new Map());
+    B(this, je, /* @__PURE__ */ new Map());
     // incoming link index: targetId → Set<linkId>
-    U(this, Re, /* @__PURE__ */ new Map());
+    B(this, Re, /* @__PURE__ */ new Map());
     // link forward index: linkId → targetId (kept in sync with #LinkTargetIndex)
-    U(this, ge, /* @__PURE__ */ new Map());
+    B(this, ge, /* @__PURE__ */ new Map());
     // LRU wrapper cache
-    U(this, ye, /* @__PURE__ */ new Map());
-    U(this, Ot, hn);
+    B(this, ye, /* @__PURE__ */ new Map());
+    B(this, Ot, hn);
     // transaction nesting
-    U(this, et, 0);
+    B(this, et, 0);
     // ChangeSet accumulator inside a transaction
-    U(this, Le, {});
+    B(this, Le, {});
     // patch log for exportPatch() — only locally generated patches (as binaries)
-    U(this, tt, []);
+    B(this, tt, []);
     // suppress index updates / change tracking when applying remote patches
-    U(this, ze, !1);
+    B(this, ze, !1);
     pe(this, O, t), pe(this, yt, (r == null ? void 0 : r.LiteralSizeLimit) ?? mn), pe(this, Je, (r == null ? void 0 : r.TrashTTLms) ?? 2592e6), u(this, l, sn).call(this);
     const s = (r == null ? void 0 : r.TrashCheckIntervalMs) ?? Math.min(Math.floor(m(this, Je) / 4), 36e5);
     pe(this, xe, setInterval(
@@ -3730,7 +3730,7 @@ const Xe = class Xe extends fn {
     const r = u(this, l, Ge).call(this, t);
     if (r.length === 0)
       return;
-    const s = Ut(null, null, r.length);
+    const s = Bt(null, null, r.length);
     r.forEach((a, i) => {
       m(this, O).api.val(["Entries", a.Id, "outerPlacement"]).set(h.con({ outerItemId: t, OrderKey: s[i] })), u(this, l, T).call(this, a.Id, "outerItem");
     });
@@ -4191,28 +4191,35 @@ Qt = function(t, r, s, a) {
       break;
   }
   if (m(this, O).api.obj(["Entries"]).set({ [i]: h.obj(d) }), u(this, l, ue).call(this, r, i), u(this, l, T).call(this, r, "innerEntryList"), u(this, l, T).call(this, i, "outerItem"), t.innerEntries.length > 0) {
-    const f = Ut(null, null, t.innerEntries.length);
+    const f = Bt(null, null, t.innerEntries.length);
     for (let p = 0; p < t.innerEntries.length; p++)
       u(this, l, Qt).call(this, t.innerEntries[p], i, f[p], a);
   }
 }, /**** #view — get current model state view ****/
 I = function() {
   return m(this, O).api.view();
-}, /**** #wrap — wrap raw entry data in SDS_Entry object ****/
+}, /**** #wrapped — wrap raw entry data in SDS_Entry object ****/
 te = function(t) {
   const s = u(this, l, I).call(this).Entries[t];
   if (s == null)
     return null;
   const a = s.Kind;
-  return a === "item" ? u(this, l, rn).call(this, t) : a === "link" ? u(this, l, nn).call(this, t) : null;
-}, /**** #wrapItem — wrap raw data data in SDS_Item object ****/
+  switch (!0) {
+    case a === "item":
+      return u(this, l, rn).call(this, t);
+    case a === "link":
+      return u(this, l, nn).call(this, t);
+    default:
+      return null;
+  }
+}, /**** #wrappedItem — wrap raw data data in SDS_Item object ****/
 rn = function(t) {
   const r = m(this, ye).get(t);
   if (r instanceof lr)
     return r;
   const s = new lr(this, t);
   return u(this, l, Xt).call(this, t, s), s;
-}, /**** #wrapLink — wrap raw link data in SDS_Link object ****/
+}, /**** #wrappedLink — wrap raw link data in SDS_Link object ****/
 nn = function(t) {
   const r = m(this, ye).get(t);
   if (r instanceof cr)
@@ -4245,10 +4252,16 @@ an = function() {
   for (const [o, c] of Object.entries(r)) {
     t.add(o);
     const d = (i = c.outerPlacement) == null ? void 0 : i.outerItemId, f = m(this, je).get(o);
-    if (d !== f && (f != null && (u(this, l, Ce).call(this, f, o), u(this, l, T).call(this, f, "innerEntryList")), d != null && (u(this, l, ue).call(this, d, o), u(this, l, T).call(this, d, "innerEntryList")), u(this, l, T).call(this, o, "outerItem")), c.Kind === "link") {
-      const p = c.TargetId, k = m(this, ge).get(o);
-      p !== k && (k != null && u(this, l, mt).call(this, k, o), p != null && u(this, l, He).call(this, p, o));
-    } else m(this, ge).has(o) && u(this, l, mt).call(this, m(this, ge).get(o), o);
+    switch (d !== f && (f != null && (u(this, l, Ce).call(this, f, o), u(this, l, T).call(this, f, "innerEntryList")), d != null && (u(this, l, ue).call(this, d, o), u(this, l, T).call(this, d, "innerEntryList")), u(this, l, T).call(this, o, "outerItem")), !0) {
+      case c.Kind === "link": {
+        const p = c.TargetId, k = m(this, ge).get(o);
+        p !== k && (k != null && u(this, l, mt).call(this, k, o), p != null && u(this, l, He).call(this, p, o));
+        break;
+      }
+      case m(this, ge).has(o):
+        u(this, l, mt).call(this, m(this, ge).get(o), o);
+        break;
+    }
     u(this, l, T).call(this, o, "Label");
   }
   const s = Array.from(m(this, je).entries()).filter(([o]) => !t.has(o));
@@ -4273,7 +4286,7 @@ He = function(t, r) {
 mt = function(t, r) {
   var s;
   (s = m(this, Re).get(t)) == null || s.delete(r), m(this, ge).delete(r);
-}, /**** #orderKeyAt — generate order key for insertion position ****/
+}, /**** #OrderKeyAt — generate order key for insertion position ****/
 Ye = function(t, r) {
   const s = (o) => {
     if (o.length === 0 || r == null) {
@@ -4317,7 +4330,7 @@ on = function(t) {
       s.has(i) || u(this, l, Jt).call(this, i, r, s) && (s.add(i), a = !0);
   }
   return s.has(t);
-}, /**** #subtreeHasIncomingLinks — check for incoming links to subtree ****/
+}, /**** #SubtreeHasIncomingLinks — check for incoming links to subtree ****/
 Jt = function(t, r, s) {
   const a = [t], i = /* @__PURE__ */ new Set();
   for (; a.length > 0; ) {
