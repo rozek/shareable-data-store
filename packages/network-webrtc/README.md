@@ -68,7 +68,7 @@ class SDS_WebRTCProvider implements SDS_NetworkProvider, SDS_PresenceProvider {
 
   sendLocalState (State:SDS_LocalPresenceState):void
   onRemoteState (
-    Callback:(PeerId:string, State:SDS_RemotePresenceState | null) => void
+    Callback:(PeerId:string, State:SDS_RemotePresenceState | undefined) => void
   ):() => void
   readonly PeerSet:ReadonlyMap<string, SDS_RemotePresenceState>
 }

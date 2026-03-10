@@ -240,11 +240,11 @@ export class LiveStore {
       ...(ExpectedIssuer != null ? { issuer:ExpectedIssuer } : {}),
     })
     if (typeof Payload.sub !== 'string' || typeof Payload.aud !== 'string') {
-      throw new Error('missing claims')
+      throw new TypeError('JWT is missing required claims (sub, aud)')
     }
     const Scope = (Payload as any).scope as string
     if (Scope !== 'read' && Scope !== 'write' && Scope !== 'admin') {
-      throw new Error('invalid scope')
+      throw new TypeError(`JWT scope '${Scope}' is invalid — must be 'read', 'write', or 'admin'`)
     }
     return {
       sub:   Payload.sub,
@@ -301,10 +301,10 @@ export function createSDSServer (Options?:Partial<SDS_ServerOptions>) {
   const PersistDir   = Options?.PersistDir ?? process.env['SDS_PERSIST_DIR']
 
   if (JWTSecretStr.length === 0) {
-    throw new Error('SDS_JWT_SECRET environment variable is required')
+    throw new TypeError('SDS_JWT_SECRET is required (set via options.JWTSecret or the SDS_JWT_SECRET environment variable)')
   }
   if (JWTSecretStr.length < 32) {
-    throw new Error('SDS_JWT_SECRET must be at least 32 characters long for HS256')
+    throw new TypeError('SDS_JWT_SECRET must be at least 32 characters long to provide sufficient entropy for HS256')
   }
   const Secret = new TextEncoder().encode(JWTSecretStr)
 

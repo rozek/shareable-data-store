@@ -49,7 +49,7 @@ Both variants use the same `docker-compose.yml` with Caddy as a TLS-terminating 
 ### Common prerequisites
 
 - Docker with the Compose plugin installed
-- Ports 80 and 443 reachable from the internet
+- ports 80 and 443 reachable from the internet
 - DNS A/AAAA records for all domains pointing to this server
 
 ### Setup A1 — Docker + Caddy + Pre-built Image (recommended)
@@ -294,7 +294,7 @@ node server.mjs
 
 ---
 
-## Directory Structure After Setup (Docker variants)
+## Directory Structure After Setup (Docker Variants)
 
 ```
 /opt/sds-websocket-server/
@@ -331,13 +331,13 @@ Key variables:
 | Variable | Required | Description |
 | --- | --- | --- |
 | `SDS_JWT_SECRET` | **yes** | HS256 signing secret — at least 32 random bytes, base64url-encoded |
-| `SDS_ISSUER` | no | Validated as the `iss` claim in JWTs |
-| `SDS_HOST` | no | Bind address inside the container (default: `0.0.0.0`) |
-| `SDS_PORT` | no | Port inside the container (default: `3000`) |
-| `SDS_PERSIST_DIR` | no | Enable SQLite persistence. Must match the container-side mount path from `docker-compose.yml` — with the default configuration use `/data/stores`. Without Docker any writable directory path on the host works. |
-| *(custom)* | no | Add one variable per additional service subdomain (e.g. `WIKI_DOMAIN=wiki.example.com`) and reference it in the Caddyfile. |
-| `SDS_DOMAIN` | **yes** (Docker) | Subdomain for the SDS server — Caddy requests a TLS certificate for it automatically |
-| `ACME_EMAIL` | **yes** (Docker) | E-mail address for Let's Encrypt notifications (shared across all subdomains) |
+| `SDS_ISSUER` | no | validated as the `iss` claim in JWTs |
+| `SDS_HOST` | no | bind address inside the container (default: `0.0.0.0`) |
+| `SDS_PORT` | no | port inside the container (default: `3000`) |
+| `SDS_PERSIST_DIR` | no | enable SQLite persistence. Must match the container-side mount path from `docker-compose.yml` — with the default configuration use `/data/stores`. Without Docker any writable directory path on the host works. |
+| *(custom)* | no | add one variable per additional service subdomain (e.g. `WIKI_DOMAIN=wiki.example.com`) and reference it in the Caddyfile. |
+| `SDS_DOMAIN` | **yes** (Docker) | subdomain for the SDS server — Caddy requests a TLS certificate for it automatically |
+| `ACME_EMAIL` | **yes** (Docker) | EMail address for Let's Encrypt notifications (shared across all subdomains) |
 
 Generate a strong `SDS_JWT_SECRET`:
 
@@ -493,10 +493,10 @@ echo | openssl s_client \
 ## Security Notes
 
 - `SDS_JWT_SECRET` must have at least 256 bits of entropy (≥ 32 random bytes, base64url-encoded).
-- Protect the `.env` file: `chmod 600 /opt/sds-websocket-server/.env`
-- Admin tokens should have a short lifetime and be rotated after use.
-- The SDS server is **not** intended for direct internet exposure — `SDS_HOST=0.0.0.0` applies only within the Docker network; Caddy is the sole publicly reachable service.
+- protect the `.env` file: `chmod 600 /opt/sds-websocket-server/.env`
+- admin tokens should have a short lifetime and be rotated after use.
+- the SDS server is **not** intended for direct internet exposure — `SDS_HOST=0.0.0.0` applies only within the Docker network; Caddy is the sole publicly reachable service.
 - In multi-tenant setups each store should have its own `aud` claim and separate admin tokens.
 - TLS certificates are stored in the named Docker volume `caddy_data` — back it up regularly (see Backup & Restore above).
-- When `SDS_PERSIST_DIR` is set, back up the named Docker volume `sds_stores` regularly — it contains the authoritative CRDT state for all stores (see Backup & Restore above).
-- In relay-only mode (no `SDS_PERSIST_DIR`) the server holds no persistent state; a restart is safe at any time.
+- when `SDS_PERSIST_DIR` is set, back up the named Docker volume `sds_stores` regularly — it contains the authoritative CRDT state for all stores (see Backup & Restore above).
+- in relay-only mode (no `SDS_PERSIST_DIR`) the server holds no persistent state; a restart is safe at any time.

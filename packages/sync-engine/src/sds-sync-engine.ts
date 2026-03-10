@@ -261,19 +261,13 @@ export class SDS_SyncEngine {
   async #loadAndRestore ():Promise<void> {
     if (this.#Persistence == undefined) { return }
     const Snapshot = await this.#Persistence.loadSnapshot()
+    // Note: snapshots are opaque CRDT binaries that cannot be applied via applyRemotePatch.
+    // Restoration is handled by passing a pre-initialised store to SyncEngine at construction
+    // time (use SDS_DataStore.fromBinary outside the engine). The snapshot sequence number
+    // is stored separately so that only the patches written after the snapshot need replaying.
     if (Snapshot != undefined) {
-      try {
-        const SnapshotStore = (this.#Store.constructor as any).fromBinary(Snapshot)
-        // instead of creating a new store, we apply patches on top of the existing empty store
-        // by exporting a full patch from the loaded snapshot store and applying to this.#Store.
-        // Simpler approach: use the snapshot binary directly as first patch
-        // (The SDS_DataStore.fromBinary wraps the model; we can't replace the store.)
-        // The SyncEngine must be given a freshly created store here.
-        // We apply the snapshot as an "import" by getting its binary model data.
-        // SDS_DataStore exposes applyRemotePatch; snapshot binary is not a patch.
-        // → Use asBinary/fromBinary at construction time instead (outside SyncEngine).
-        // Here: just apply patches since clock 0.
-      } catch (_Signal) {}
+      // Snapshot was already baked into this.#Store before construction — nothing to do here.
+      // We read #SnapshotSeq from persistence so loadPatchesSince() starts at the right point.
     }
     const Patches = await this.#Persistence.loadPatchesSince(this.#SnapshotSeq)
     for (const PatchBytes of Patches) {

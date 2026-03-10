@@ -26,15 +26,15 @@ While the network connection is in `'disconnected'` or `'reconnecting'` state, o
 
 Every local mutation's patch bytes are accumulated. When the total crosses **512 KB**, the engine writes a new snapshot and prunes all patches up to that point. A final checkpoint is also written on `stop()` if there are any un-checkpointed patches.
 
-### Large-value transfer
+### Large-Value Transfer
 
 When a data's value changes to a reference kind (`'literal-reference'` or `'binary-reference'`), the engine sends the blob to the network provider. When the store receives a patch referencing an unknown blob hash, the engine requests the blob from the network provider.
 
-### Presence heartbeat
+### Presence Heartbeat
 
 The engine periodically re-broadcasts the local presence state so that remote peers can detect stale entries (timeout controlled by `PresenceTimeoutMs`).
 
-### BroadcastChannel (browser / Tauri)
+### BroadcastChannel (Browser / Tauri)
 
 When running in a browser or Tauri context, the engine optionally uses a `BroadcastChannel` to relay patches and presence frames between tabs opened on the same origin, without going through the server.
 
@@ -50,12 +50,12 @@ import { SDS_SyncEngine } from '@rozek/sds-sync-engine'
 class SDS_SyncEngine {
   constructor (Store:SDS_DataStore, Options?:SDS_SyncEngineOptions)
 
-  // ── Lifecycle ────────────────────────────────────────────────
+/**** Lifecycle ****/
 
   start ():Promise<void>   // restore, wire providers
   stop ():Promise<void>    // flush queue, write checkpoint, close providers
 
-  // ── Network ──────────────────────────────────────────────────
+/**** Network ****/
 
   connectTo (URL:string, Options:SDS_ConnectionOptions):Promise<void>
   disconnect ():void
@@ -64,7 +64,7 @@ class SDS_SyncEngine {
   get ConnectionState ():SDS_ConnectionState
   onConnectionChange (Callback:(State:SDS_ConnectionState) => void):() => void
 
-  // ── Presence ─────────────────────────────────────────────────
+/**** Presence ****/
 
   readonly PeerId:string   // unique identifier for this engine instance (UUID)
 
@@ -105,26 +105,26 @@ All providers are optional. You can use any combination — for example persiste
 
 ## Usage
 
-### Persistence only — offline-capable local store
+### Persistence only — offline-capable local Store
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core'
 import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
 import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SDS_DataStore.fromScratch()
-const persistence = new SDS_DesktopPersistenceProvider('./data', 'my-store')
+const DataStore   = SDS_DataStore.fromScratch()
+const Persistence = new SDS_DesktopPersistenceProvider('./data', 'my-store')
 
-const engine = new SDS_SyncEngine(store, { PersistenceProvider:persistence })
+const engine = new SDS_SyncEngine(DataStore, { PersistenceProvider:Persistence })
 await engine.start()
 
-const data = store.newItemAt('text/plain', store.RootItem)
+const data = DataStore.newItemAt('text/plain', DataStore.RootItem)
 data.Label = 'This data survives restarts'
 
 await engine.stop()  // writes checkpoint, closes DB
 ```
 
-### Full stack — persistence + WebSocket + presence
+### Full Stack — Persistence + WebSocket + Presence
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core'
@@ -132,61 +132,61 @@ import { SDS_BrowserPersistenceProvider } from '@rozek/sds-persistence-browser'
 import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
 import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SDS_DataStore.fromScratch()
-const persistence = new SDS_BrowserPersistenceProvider('my-store')
-const network = new SDS_WebSocketProvider('my-store')
+const DataStore   = SDS_DataStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('my-store')
+const Network     = new SDS_WebSocketProvider('my-store')
 
-const engine = new SDS_SyncEngine(store, {
-  PersistenceProvider:persistence,
-  NetworkProvider: network,
-  PresenceProvider: network,
+const SyncEngine = new SDS_SyncEngine(DataStore, {
+  PersistenceProvider:Persistence,
+  NetworkProvider: Network,
+  PresenceProvider:Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
+await SyncEngine.start()
+await SyncEngine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 
-engine.onConnectionChange((state) => {
-  if (state === 'connected') console.log('Online — syncing')
-  if (state === 'reconnecting') console.log('Offline — patches queued')
+SyncEngine.onConnectionChange((ConnectionState) => {
+  if (ConnectionState === 'connected')    console.log('Online — syncing')
+  if (ConnectionState === 'reconnecting') console.log('Offline — patches queued')
 })
 ```
 
-### Presence — show collaborators
+### Presence — show Collaborators
 
 ```typescript
 // announce yourself
-engine.setPresenceTo({
+SyncEngine.setPresenceTo({
   UserName: 'Alice',
   UserColor:'#3498db',
-  UserFocus:{ entryId:data.Id, Property:'Value', Cursor:{ from:4, to:4 } },
+  UserFocus:{ EntryId:data.Id, Property:'Value', Cursor:{ from:4, to:4 } },
 })
 
 // react to any peer change (local or remote)
-engine.onPresenceChange((peerId, state, origin) => {
-  if (state == null) {
+SyncEngine.onPresenceChange((PeerId,PeerState,Origin) => {
+  if (PeerState == null) {
     // peer timed out
-    removeAvatarFor(peerId)
-  } else if (origin === 'remote') {
-    showAvatarFor(peerId, state)
+    removeAvatarFor(PeerId)
+  } else if (Origin === 'remote') {
+    showAvatarFor(PeerId,PeerState)
   }
 })
 
 // snapshot of all currently active peers
-for (const [peerId, state] of engine.PeerSet) {
-  console.log(peerId, state.UserName, state.UserFocus)
+for (const [PeerId,PeerState] of SyncEngine.PeerSet) {
+  console.log(PeerId, PeerState.UserName, PeerState.UserFocus)
 }
 ```
 
 ### Reconnect after a planned disconnect
 
 ```typescript
-await engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
+await SyncEngine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 
 // … later …
-engine.disconnect()
+SyncEngine.disconnect()
 
 // … reconnect using the same URL and token
-await engine.reconnect()
+await SyncEngine.reconnect()
 ```
 
 ---

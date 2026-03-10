@@ -61,9 +61,9 @@ Copy `dist/sds-browser-bundle-jj.js` to your web server, then declare an import 
 
   // ── work with items ────────────────────────────────────────────
 
-  const Data = DataStore.newItemAt(DataStore.RootItem)
+  const Data = DataStore.newItemAt(undefined, DataStore.RootItem)
   Data.Label = 'Hello from the browser bundle!'
-  Data.Value = 'No CDN, no third-party dependencies!'
+  Data.writeValue('No CDN, no third-party dependencies!')
 
   DataStore.onChangeInvoke((Origin,ChangeSet) => {
     console.log('changed:',ChangeSet)
@@ -139,13 +139,13 @@ import {
 } from '@rozek/sds-browser-bundle-jj'
 
 const DataStore = SDS_DataStore.fromScratch()
-const persistence = new SDS_BrowserPersistenceProvider('personal-store')
-const engine = new SDS_SyncEngine(store, { PersistenceProvider:persistence })
+const Persistence = new SDS_BrowserPersistenceProvider('personal-store')
+const Engine = new SDS_SyncEngine(DataStore, { PersistenceProvider:Persistence })
 
-await engine.start()
+await Engine.start()
 
-const data = store.newItemAt(store.RootItem)
-data.Label = 'Survives page reloads via IndexedDB'
+const Data = DataStore.newItemAt(undefined, DataStore.RootItem)
+Data.Label = 'Survives page reloads via IndexedDB'
 ```
 
 ### Real-time collaboration over WebSocket
@@ -172,7 +172,7 @@ await SyncEngine.start()
 await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 
 // track remote peers
-engine.onPresenceChange((PeerId,PeerState) => {
+SyncEngine.onPresenceChange((PeerId,PeerState) => {
   if (PeerState != null) {
     console.log(`peer ${PeerId} joined:`,PeerState)
   } else {

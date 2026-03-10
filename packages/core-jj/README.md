@@ -48,10 +48,10 @@ const unsubscribe = Store.onChangeInvoke((Origin, ChangeSet) => {
 })
 
 Store.transact(() => {
-  const Journal = Store.newItemAt(Store.RootItem)
+  const Journal = Store.newItemAt(undefined, Store.RootItem)
   Journal.Label = 'Journal'
 
-  const Entry = Store.newItemAt(Journal)
+  const Entry = Store.newItemAt(undefined, Journal)
   Entry.Label = '2025-01-01'
   Entry.Info['mood'] = 'hopeful'
 })
@@ -69,7 +69,7 @@ const StoreA = SDS_DataStore.fromScratch()
 const StoreB = SDS_DataStore.fromBinary(StoreA.asBinary())
 
 // peer A makes a change
-const ItemA = StoreA.newItemAt(StoreA.RootItem)
+const ItemA = StoreA.newItemAt(undefined, StoreA.RootItem)
 ItemA.Label = 'shared item'
 
 // peer A exports a patch and peer B applies it
@@ -87,7 +87,7 @@ console.log(ItemB?.Label)  // 'shared item'
 import { SDS_DataStore } from '@rozek/sds-core-jj'
 
 const Store = SDS_DataStore.fromScratch({ LiteralSizeLimit: 65536 })
-const Item = Store.newItemAt(Store.RootItem)
+const Item = Store.newItemAt(undefined, Store.RootItem)
 
 Item.writeValue('Hello, World!')
 

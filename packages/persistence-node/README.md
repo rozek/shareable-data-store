@@ -19,7 +19,7 @@ Requires Node.js 18+ and a native build toolchain for `better-sqlite3`.
 The provider uses three SQLite tables:
 
 | Table | Contents |
-|---|---|
+| --- | --- |
 | `snapshots` | One compressed full-store snapshot per `store_id` |
 | `patches` | Incremental CRDT patches keyed by `(store_id, clock)` |
 | `blobs` | Large value blobs keyed by SHA-256 hash, with reference counting |
@@ -36,25 +36,25 @@ On startup `SDS_SyncEngine` calls `loadSnapshot()` to restore the last checkpoin
 import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
 
 class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
-  constructor(DbPath:string, StoreId:string)
+  constructor (DbPath:string, StoreId:string)
 
-  loadSnapshot():Promise<Uint8Array | null>
-  saveSnapshot(Data:Uint8Array):Promise<void>
+  loadSnapshot ():Promise<Uint8Array | null>
+  saveSnapshot (Data:Uint8Array):Promise<void>
 
-  loadPatchesSince(Clock:number):Promise<Uint8Array[]>
-  appendPatch(Patch:Uint8Array, Clock:number):Promise<void>
-  prunePatches(beforeClock:number):Promise<void>
+  loadPatchesSince (Clock:number):Promise<Uint8Array[]>
+  appendPatch (Patch:Uint8Array, Clock:number):Promise<void>
+  prunePatches (beforeClock:number):Promise<void>
 
-  loadValue(ValueHash:string):Promise<Uint8Array | null>
-  saveValue(ValueHash:string, Data:Uint8Array):Promise<void>
-  releaseValue(ValueHash:string):Promise<void>
+  loadValue (ValueHash:string):Promise<Uint8Array | null>
+  saveValue (ValueHash:string, Data:Uint8Array):Promise<void>
+  releaseValue (ValueHash:string):Promise<void>
 
-  close():Promise<void>
+  close ():Promise<void>
 }
 ```
 
 | Parameter | Description |
-|---|---|
+| --- | --- |
 | `DbPath` | Directory where the SQLite file is created (created if it doesn't exist) |
 | `StoreId` | Logical store identifier; multiple stores can share the same database file |
 
@@ -64,27 +64,27 @@ The SQLite file is named `<DbPath>/sns.db`. WAL mode is enabled automatically fo
 
 ## Usage
 
-### Standalone — persistence only
+### Standalone — Persistence only
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core'
 import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
 import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SDS_DataStore.fromScratch()
-const persistence = new SDS_DesktopPersistenceProvider('./data', 'my-store')
+const Store       = SDS_DataStore.fromScratch()
+const Persistence = new SDS_DesktopPersistenceProvider('./data', 'my-store')
 
-const engine = new SDS_SyncEngine(store, { PersistenceProvider:persistence })
-await engine.start()   // restores snapshot + patches from SQLite
+const SyncEngine = new SDS_SyncEngine(Store, { PersistenceProvider:Persistence })
+await SyncEngine.start()   // restores snapshot + patches from SQLite
 
 // work with the store normally …
-const data = store.newItemAt('text/plain', store.RootItem)
-data.Label = 'Persisted data'
+const Data = Store.newItemAt('text/plain', Store.RootItem)
+Data.Label = 'Persisted data'
 
-await engine.stop()    // flushes final checkpoint and closes the DB
+await SyncEngine.stop()    // flushes final checkpoint and closes the DB
 ```
 
-### With network sync
+### With Network Sync
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core'
@@ -92,31 +92,31 @@ import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
 import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
 import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SDS_DataStore.fromScratch()
-const persistence = new SDS_DesktopPersistenceProvider('./data', 'my-store')
-const network = new SDS_WebSocketProvider('my-store')
+const Store       = SDS_DataStore.fromScratch()
+const Persistence = new SDS_DesktopPersistenceProvider('./data', 'my-store')
+const Network     = new SDS_WebSocketProvider('my-store')
 
-const engine = new SDS_SyncEngine(store, {
-  PersistenceProvider:persistence,
-  NetworkProvider: network,
-  PresenceProvider: network,
+const SyncEngine = new SDS_SyncEngine(Store, {
+  PersistenceProvider:Persistence,
+  NetworkProvider: Network,
+  PresenceProvider:Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
+await SyncEngine.start()
+await SyncEngine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 ```
 
-### Multiple stores in one database
+### Multiple Stores in one Database
 
 ```typescript
-const persistenceA = new SDS_DesktopPersistenceProvider('./data', 'store-a')
-const persistenceB = new SDS_DesktopPersistenceProvider('./data', 'store-b')
+const PersistenceA = new SDS_DesktopPersistenceProvider('./data', 'store-a')
+const PersistenceB = new SDS_DesktopPersistenceProvider('./data', 'store-b')
 // both use ./data/sns.db but different store_id values
 ```
 
 ---
 
-## Database schema
+## Database Schema
 
 ```sql
 CREATE TABLE IF NOT EXISTS snapshots (

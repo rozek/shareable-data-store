@@ -61,9 +61,9 @@ Copy `dist/sds-browser-bundle-yjs.js` to your web server, then declare an import
 
   // ── work with items ────────────────────────────────────────────
 
-  const Data = DataStore.newItemAt(DataStore.RootItem)
+  const Data = DataStore.newItemAt(undefined, DataStore.RootItem)
   Data.Label = 'Hello from the browser bundle!'
-  Data.Value = 'No CDN, no third-party dependencies!'
+  Data.writeValue('No CDN, no third-party dependencies!')
 
   DataStore.onChangeInvoke((Origin,ChangeSet) => {
     console.log('changed:', ChangeSet)
@@ -71,7 +71,7 @@ Copy `dist/sds-browser-bundle-yjs.js` to your web server, then declare an import
 
   // ── clean up on page unload ────────────────────────────────────
 
-  window.addEventListener('beforeunload', () => engine.stop())
+  window.addEventListener('beforeunload', () => SyncEngine.stop())
 </script>
 ```
 
@@ -144,7 +144,7 @@ const SyncEngine  = new SDS_SyncEngine(DataStore, { PersistenceProvider:Persiste
 
 await SyncEngine.start()
 
-const Data = DataStore.newItemAt(DataStore.RootItem)
+const Data = DataStore.newItemAt(undefined, DataStore.RootItem)
 Data.Label = 'Survives page reloads via IndexedDB'
 ```
 
@@ -172,7 +172,7 @@ await SyncEngine.start()
 await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
 
 // track remote peers
-engine.onPresenceChange((PeerId,PeerState) => {
+SyncEngine.onPresenceChange((PeerId,PeerState) => {
   if (PeerState != null) {
     console.log(`peer ${PeerId} joined:`,PeerState)
   } else {

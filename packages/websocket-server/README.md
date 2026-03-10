@@ -74,12 +74,24 @@ interface SDS_ServerOptions {
   JWTSecret:   string  // HMAC-SHA256 signing secret (required, min 32 chars recommended)
   Issuer?:     string  // JWT iss claim to validate (optional)
   Port?:       number  // TCP port (default: 3000; also read from SDS_PORT)
-  Host?:       string  // Bind address (default: 127.0.0.1; also read from SDS_HOST)
-  PersistDir?: string  // Directory for per-store SQLite databases; omit for relay-only mode
+  Host?:       string  // bind address (default: 127.0.0.1; also read from SDS_HOST)
+  PersistDir?: string  // directory for per-store SQLite databases; omit for relay-only mode
 }
 ```
 
-Options take priority over environment variables. When `PersistDir` (or the `SDS_PERSIST_DIR` environment variable) is set, the server opens one SQLite database per store in that directory and:
+Options take priority over environment variables.
+
+#### Environment variables
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `SDS_JWT_SECRET` | *(required)* | HMAC-SHA256 signing secret — must be at least 32 characters |
+| `SDS_ISSUER` | *(none)* | expected JWT `iss` claim; omit to skip issuer validation |
+| `SDS_PORT` | `3000` | TCP port the server listens on |
+| `SDS_HOST` | `127.0.0.1` | bind address (`0.0.0.0` to listen on all interfaces) |
+| `SDS_PERSIST_DIR` | *(none)* | directory for per-store SQLite databases; omit for relay-only mode |
+
+When `PersistDir` (or the `SDS_PERSIST_DIR` environment variable) is set, the server opens one SQLite database per store in that directory and:
 
 - replays the stored snapshot and all subsequent patches to every newly connecting client
 - persists every incoming PATCH frame
@@ -105,8 +117,8 @@ wss://my-server.example.com/ws/my-store?token=<jwt>
 
 | Claim | Required | Description |
 | --- | --- | --- |
-| `sub` | yes | Subject (user identifier) |
-| `aud` | yes | must match `:storeId` |
+| `sub` | yes | subject (user identifier) |
+| `aud` | yes | must match `:StoreId` |
 | `scope` | yes | `'read'`, `'write'`, or `'admin'` |
 | `exp` | recommended | expiry timestamp |
 
@@ -174,7 +186,7 @@ Content-Type: application/json
 
 ---
 
-### Internal helpers (exported for testing)
+### Internal Helpers (exported for Testing)
 
 ```typescript
 // per-store client registry
@@ -187,7 +199,7 @@ class LiveStore {
 }
 
 // returns true if a frame of type `MsgType` must be dropped for read-scope clients
-function rejectWriteFrame(MsgType:number):boolean
+function rejectWriteFrame (MsgType:number):boolean
 
 // client interface expected by LiveStore
 interface LiveClient {
@@ -200,7 +212,7 @@ interface LiveClient {
 
 ## Examples
 
-### Self-contained server with token issuance
+### Self-contained Server with Token Issuance
 
 ```typescript
 import { createSDSServer } from '@rozek/sds-websocket-server'
@@ -216,7 +228,7 @@ serve({ fetch:App.fetch, Port:3000 })
 // admins issue tokens via POST /api/token (authenticated with an admin JWT)
 ```
 
-### Issuing a token programmatically (e.g. from your auth server)
+### Issuing a Token programmatically (e.g. from your Auth Server)
 
 ```typescript
 import { SignJWT } from 'jose'
@@ -233,7 +245,7 @@ const Token = await new SignJWT({ sub:'alice', aud:'my-store', scope:'write' })
 // wss://host/ws/my-store?token=<Token>
 ```
 
-### Behind a reverse proxy (Caddy / nginx)
+### Behind a Reverse Proxy (Caddy / nginx)
 
 The server binds to `127.0.0.1:3000` by default. Point your reverse proxy at that address and handle TLS termination there:
 
@@ -248,7 +260,7 @@ my-server.example.com {
 
 ---
 
-## Wire protocol
+## Wire Protocol
 
 The server is protocol-agnostic: it forwards raw binary frames without inspecting the payload (except for the one-byte type prefix used for scope enforcement). The frame format is defined by `@rozek/sds-network-websocket`:
 

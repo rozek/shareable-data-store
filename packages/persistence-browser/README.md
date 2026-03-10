@@ -72,19 +72,19 @@ import { SDS_DataStore }                  from '@rozek/sds-core'
 import { SDS_BrowserPersistenceProvider } from '@rozek/sds-persistence-browser'
 import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SDS_DataStore.fromScratch()
-const persistence = new SDS_BrowserPersistenceProvider('my-store')
+const Store       = SDS_DataStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('my-store')
 
-const engine = new SDS_SyncEngine(store, { PersistenceProvider:persistence })
+const Engine = new SDS_SyncEngine(Store, { PersistenceProvider:Persistence })
 
 // restores from IndexedDB before resolving — works fully offline
-await engine.start()
+await Engine.start()
 
-const data = store.newItemAt('text/plain', store.RootItem)
-data.Label = 'Survives a page refresh'
-await data.writeValue('Stored in IndexedDB.')
+const Data = Store.newItemAt('text/plain', Store.RootItem)
+Data.Label = 'Survives a page refresh'
+await Data.writeValue('Stored in IndexedDB.')
 
-await engine.stop()   // final checkpoint written to IndexedDB
+await Engine.stop()   // final checkpoint written to IndexedDB
 ```
 
 ### With WebSocket sync
@@ -95,18 +95,18 @@ import { SDS_BrowserPersistenceProvider } from '@rozek/sds-persistence-browser'
 import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
 import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
-const store = SDS_DataStore.fromScratch()
-const persistence = new SDS_BrowserPersistenceProvider('my-store')
-const network = new SDS_WebSocketProvider('my-store')
+const Store       = SDS_DataStore.fromScratch()
+const Persistence = new SDS_BrowserPersistenceProvider('my-store')
+const Network     = new SDS_WebSocketProvider('my-store')
 
-const engine = new SDS_SyncEngine(store, {
-  PersistenceProvider:persistence,
-  NetworkProvider: network,
-  PresenceProvider: network,
+const Engine = new SDS_SyncEngine(Store, {
+  PersistenceProvider:Persistence,
+  NetworkProvider: Network,
+  PresenceProvider: Network,
 })
 
-await engine.start()
-await engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
+await Engine.start()
+await Engine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 ```
 
 ### Multiple independent stores

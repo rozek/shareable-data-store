@@ -2,8 +2,6 @@
 
 A CRDT-based, offline-capable, real-time-syncable **tree-of-data** library for Browser and Node.js.
 
-# work-in-progress - please ignore for the moment, will be released in a few days
-
 Data Items are organised in a hierarchy (with optional links between them), can carry arbitrary typed values (text, binary, large blobs), and synchronise across devices and users without conflicts — even when peers are offline for extended periods. The library is split into small, composable packages so you can use only what you need.
 
 The CRDT engine is **pluggable**: choose from three ready-made backends or write your own: [Y.js](https://yjs.dev/), [Loro CRDT](https://loro.dev/) or [JSON JOY](https://jsonjoy.com/).
@@ -21,13 +19,13 @@ Next steps:
 
 ## Packages
 
-### Shared types
+### Shared Types
 
 | Package | Description |
 | --- | --- |
 | `@rozek/sds-core` | Backend-agnostic shared types: `SDS_Error`, `SDS_ChangeSet`, `SDS_Entry`/`Data`/`Link` base classes, the `SDS_DataStore` contract interface, and all provider interfaces. No CRDT engine — the interface must be implemented by a backend. |
 
-### CRDT backends (choose one)
+### CRDT Backends (choose one)
 
 | Package | CRDT engine | Description |
 | --- | --- | --- |
@@ -37,7 +35,7 @@ Next steps:
 
 All three backend packages expose an **identical public API**. Import from whichever backend suits your project; application code never calls any CRDT library directly.
 
-### Infrastructure (backend-agnostic)
+### Infrastructure (Backend-agnostic)
 
 | Package | Description |
 | --- | --- |
@@ -76,7 +74,7 @@ All providers are optional and interchangeable. A browser PWA might use IndexedD
 
 ---
 
-## Quick start
+## Quick Start
 
 ### Choosing a backend
 
@@ -95,23 +93,23 @@ import { SDS_DataStore } from '@rozek/sds-core-loro'
 
 The examples below use `@rozek/sds-core-jj` but work identically with any backend.
 
-### Local-only — no network, no server
+### Local-only — no Network, no Server
 
 ```typescript
 import { SDS_DataStore } from '@rozek/sds-core-jj'
 
 const DataStore = SDS_DataStore.fromScratch()
 
-const DataItem = Store.newItemAt(DataStore.RootItem)
+const DataItem = DataStore.newItemAt(undefined, DataStore.RootItem)
 DataItem.Label = 'My first data'
 DataItem.writeValue('Hello, world!')
 
 // serialise to binary and restore later
 const StoreSnapshot = DataStore.asBinary()
-const restoredStore = SDS_DataStore.fromBinary(Snapshot)
+const restoredStore = SDS_DataStore.fromBinary(StoreSnapshot)
 ```
 
-### Browser PWA — offline-first with WebSocket sync
+### Browser PWA — offline-first with WebSocket Sync
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core-jj'
@@ -136,11 +134,11 @@ await SyncEngine.start()
 await SyncEngine.connectTo('wss://my-server.example.com', { Token:'<jwt>' })
 
 // write items — the engine handles persistence and sync transparently
-const DataItem = Store.newItemAt(Store.RootItem)
+const DataItem = DataStore.newItemAt(undefined, DataStore.RootItem)
 DataItem.Label = 'Hello from the browser!'
 ```
 
-### Node.js / Electron — SQLite persistence
+### Node.js / Electron — SQLite Persistence
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core-jj'
@@ -184,7 +182,7 @@ Engine.onPresenceChange((PeerId, State, Origin) => {
 })
 ```
 
-### Running the relay server
+### Running the Relay Server
 
 ```typescript
 import { createSDSServer } from '@rozek/sds-websocket-server'
@@ -199,7 +197,7 @@ serve({ fetch:App.fetch, Port:3000 }, () => {
 
 ---
 
-## Data model
+## Data Model
 
 Every store starts with three well-known items:
 
@@ -221,9 +219,9 @@ Links are pointer entries: they live inside a container data and point to a targ
 
 ## Requirements
 
-### Functional requirements
+### Functional Requirements
 
-**Data store**
+**Data Store**
 
 - the store holds an ordered, arbitrarily deep tree of entries. Each entry is either an *item* or a *link*.
 - an item carries a MIME type, a string or binary value (or no value at all), a plain-text label, and an arbitrary key–value metadata map (`Info`).
@@ -259,7 +257,7 @@ Links are pointer entries: they live inside a container data and point to a targ
 - the server exposes a WebRTC signalling endpoint and an admin API for token issuance.
 - large value blobs are transferred as chunked binary frames independent of the CRDT patch stream.
 
-### Non-functional requirements
+### Non-functional Requirements
 
 - **Runtime support** — browser (modern, ESM-capable) and Node.js 22+; no CommonJS.
 - **Module format** — ESM-only throughout, with TypeScript declaration files (`.d.ts`).
@@ -275,7 +273,7 @@ Links are pointer entries: they live inside a container data and point to a targ
 
 ## Data model
 
-### The store as seen by application code
+### The Store as seen by Application Code
 
 From the application's perspective the store looks like a document-oriented tree:
 
@@ -297,7 +295,7 @@ The three well-known items are always present and have fixed UUIDs:
 | `00000000-0000-4000-8000-000000000001` | `TrashItem` |
 | `00000000-0000-4000-8000-000000000002` | `LostAndFoundItem` |
 
-### Store rules
+### Store Rules
 
 The following invariants are maintained at all times:
 
@@ -310,17 +308,17 @@ The following invariants are maintained at all times:
 7. **Dangling-link rescue** — after applying a remote patch, any link whose `TargetId` points to a non-existent item causes that item to be recreated (empty) in `LostAndFoundItem`.
 8. **Inner-entry ordering** — the `innerEntryList` of an item is always sorted by `OrderKey` (ascending), with the entry `Id` as a tie-breaker. Order is stable across concurrent insertions on different peers.
 
-### Flat map layout
+### Flat Map Layout
 
 Internally the store uses a **flat** `Entries` map (keyed by UUID) rather than a nested tree structure. This is true for all backends. The entry's `outerItemId` and `OrderKey` fields record its position in the tree. A move is a single field update; patches stay small regardless of tree depth.
 
-### Fractional indexing for collaborative ordering
+### Fractional Indexing for collaborative Ordering
 
 CRDT maps are inherently unordered. To give users a stable, collaboratively editable inner-entry order without conflicts, each entry records an `OrderKey` alongside its `outerItemId`. `OrderKey` strings are generated by the `fractional-indexing` npm package.
 
 The algorithm was originally developed by Evan Wallace at Figma and later published by the Rocicorp team. Just as there is always a rational number between any two distinct rationals, there is always a lexicographically ordered string between any two distinct strings. A key can always be generated between any two neighbours without modifying their keys; concurrent inserts at the same position produce different keys resolved by UUID as a tie-breaker.
 
-### In-memory secondary indices
+### In-memory secondary Indices
 
 Because the CRDT only stores `outerItemId` *inside the inner entry*, reconstructing the inner-entry list of a given item requires scanning all entries — O(n). The store maintains a `#ReverseIndex` (`Map<outerItemId, Set<innerId>>`) and a `#LinkTargetIndex` (`Map<targetId, Set<linkId>>`) as in-memory secondary indices. Both are rebuilt from scratch once during construction and then kept in sync incrementally for every mutation.
 
@@ -328,7 +326,7 @@ Remote patches use a *forward-index diff*: companion maps `#ForwardIndex` and `#
 
 ---
 
-## Backend-specific details
+## Backend-specific Details
 
 Each backend stores the same logical model in a different CRDT representation. Refer to the individual package READMEs for details:
 
@@ -336,7 +334,7 @@ Each backend stores the same logical model in a different CRDT representation. R
 - `packages/core-yjs/README.md` — Y.js (state-vector cursor, Y.Text)
 - `packages/core-loro/README.md` — Loro CRDT (version-vector cursor, LoroText, Rust/WASM)
 
-### The `SDS_SyncCursor` abstraction
+### The `SDS_SyncCursor` Abstraction
 
 The persistence interface uses an **opaque binary cursor** (`SDS_SyncCursor = Uint8Array`) instead of a raw integer clock. Each backend encodes the cursor differently:
 
@@ -350,7 +348,7 @@ The sync engine and all persistence providers treat the cursor as an opaque blob
 
 ---
 
-## Migrating between backends
+## Migrating between Backends
 
 Binary snapshots and CRDT patches are **not cross-compatible** between backends. To migrate existing data from one backend to another:
 
@@ -392,13 +390,13 @@ Binary snapshots and CRDT patches are **not cross-compatible** between backends.
 
 ---
 
-## Implementing a new backend
+## Implementing a new Backend
 
 You can add a new CRDT engine by creating a package that implements the same `SDS_DataStore` class surface. Here is what is required:
 
-### Requirements for a new backend
+### Requirements for a new Backend
 
-**Static factory methods**
+**Static Factory Methods**
 
 ```typescript
 static fromScratch (Options?:SDS_DataStoreOptions):SDS_DataStore
@@ -427,13 +425,13 @@ applyRemotePatch (encodedPatch:Uint8Array):void
 
 `exportPatch()` with no argument exports a full snapshot patch; with a cursor it exports only the operations added since that cursor. `applyRemotePatch()` merges a remote patch into the local document and fires change handlers with `Origin = 'external'`.
 
-**Mutation methods** — identical to `@rozek/sds-core-jj` (the reference implementation)
+**Mutation Methods** — identical to `@rozek/sds-core-jj` (the reference implementation)
 
 ```typescript
-newItemAt (Container:SDS_Item, Index?:number):SDS_Item
-newLinkAt (Container:SDS_Item, Target:SDS_Item, Index?:number):SDS_Link
+newItemAt (MIMEType:string|undefined, outerItem:SDS_Item, InsertionIndex?:number):SDS_Item
+newLinkAt (Target:SDS_Item, outerItem:SDS_Item, InsertionIndex?:number):SDS_Link
 EntryWithId (Id:string): SDS_Entry | undefined
-moveEntryTo (Entry:SDS_Entry, Container:SDS_Item, Index?:number):void
+moveEntryTo (Entry:SDS_Entry, outerItem:SDS_Item, InsertionIndex?:number):void
 deleteEntry (Entry:SDS_Entry):void
 purgeEntry (Entry:SDS_Entry):void
 deserializeItemInto (Data:unknown, Container:SDS_Item, InsertionIndex?:number):SDS_Item
@@ -451,7 +449,7 @@ get TrashItem ():SDS_Item
 get LostAndFoundItem ():SDS_Item
 ```
 
-**Data storage constraints**
+**Data Storage Constraints**
 
 - store entries in a flat map keyed by UUID (no nested tree in the CRDT layer).
 - each entry must expose at minimum: `Kind`, `outerItemId`, `OrderKey`, `Label`, `Info`, `MIMEType`, `ValueKind` and the appropriate value field.
@@ -459,14 +457,14 @@ get LostAndFoundItem ():SDS_Item
 - maintain in-memory `#ReverseIndex`, `#ForwardIndex`, `#LinkTargetIndex`, `#LinkForwardIndex`, and `#WrapperCache` for efficient traversal and incremental updates.
 - re-use the `SDS_Entry`, `SDS_Item`, and `SDS_Link` classes from `@rozek/sds-core` (or copy and adapt them) — they delegate all CRDT operations back to the store via bracket-notation calls (`this._Store['_method']()`).
 
-**Change notifications**
+**Change Notifications**
 
 - maintain a `#TransactDepth` counter. Increment it on entry, decrement on exit.
 - collect a `SDS_ChangeSet` during the transaction.
 - fire all registered `ChangeHandler`s exactly once when the outermost transaction completes.
 - remote patches must fire handlers with `Origin = 'external'`; local mutations with `Origin = 'internal'`.
 
-### Package structure
+### Package Structure
 
 Follow the same layout as `packages/core-jj`, `packages/core-yjs`, or `packages/core-loro`:
 

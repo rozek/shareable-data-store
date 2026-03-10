@@ -100,7 +100,11 @@ export class SDS_WebRTCProvider
 /**** connect ****/
 
   async connect (URL:string, Options:SDS_ConnectionOptions):Promise<void> {
-// TODO: validate URL
+    if (! /^wss?:\/\/.+\/signal\/.+/.test(URL)) {
+      throw new TypeError(
+        `SDS WebRTC: invalid signalling URL '${URL}' — expected wss://<host>/signal/<storeId>`
+      )
+    }
     // URL is a signalling URL: wss://.../signal/:storeId
     return new Promise<void>((resolve, reject) => {
       const SignallingURL = `${URL}?token=${encodeURIComponent(Options.Token)}`

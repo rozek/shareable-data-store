@@ -95,7 +95,7 @@ After setting up the import map as shown above:
 
   // ── work with items ────────────────────────────────────────────
 
-  const Data = DataStore.newItemAt(DataStore.RootItem)
+  const Data = DataStore.newItemAt(undefined, DataStore.RootItem)
   Data.Label = 'Hello from the Loro bundle!'
 
   DataStore.onChangeInvoke((Origin,ChangeSet) => {
@@ -177,7 +177,7 @@ const SyncEngine  = new SDS_SyncEngine(DataStore, { PersistenceProvider:Persiste
 
 await SyncEngine.start()
 
-const Data = DataStore.newItemAt(DataStore.RootItem)
+const Data = DataStore.newItemAt(undefined, DataStore.RootItem)
 Data.Label = 'Survives page reloads via IndexedDB'
 ```
 
