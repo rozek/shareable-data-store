@@ -897,7 +897,7 @@ export class SDS_DataStore extends SDS_StoreBase {
         case (typeof Value === 'string'): {
           const Encoder = new TextEncoder()
           const Bytes = Encoder.encode(Value as string)
-          const Hash = SDS_DataStore._blobHash(Bytes)
+          const Hash = SDS_DataStore._BLOBhash(Bytes)
           this._storeValueBlob(Hash, Bytes)
           this.#Model.api.obj(['Entries', Id]).set({
             ValueKind: Schema.val(Schema.str('literal-reference')),
@@ -914,7 +914,7 @@ export class SDS_DataStore extends SDS_StoreBase {
         }
         default: {
           const Bytes = Value as Uint8Array
-          const Hash = SDS_DataStore._blobHash(Bytes)
+          const Hash = SDS_DataStore._BLOBhash(Bytes)
           this._storeValueBlob(Hash, Bytes)
           this.#Model.api.obj(['Entries', Id]).set({
             ValueKind: Schema.val(Schema.str('binary-reference')),
