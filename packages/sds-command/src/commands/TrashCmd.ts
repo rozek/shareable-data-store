@@ -1,0 +1,135 @@
+/*******************************************************************************
+*                                                                              *
+*                               TrashCmd                                       *
+*                                                                              *
+*******************************************************************************/
+
+// trash management: list, purge-all, purge-expired
+
+import type { Command }  from 'commander'
+import { TrashId }       from '@rozek/sds-core'
+
+import type { SDSConfig }  from '../Config.js'
+import { printResult, printLine } from '../Output.js'
+import { loadContext, closeContext } from '../StoreAccess.js'
+
+const DefaultTrashTTLms = 30*24*60*60*1000  // 30 days
+
+//----------------------------------------------------------------------------//
+//                            registerTrashCommands                           //
+//----------------------------------------------------------------------------//
+
+/**** registerTrashCommands — attaches the `trash` sub-tree to Program ****/
+
+export function registerTrashCommands (Program:Command):void {
+  const TrashCmd = Program.command('trash')
+    .description('trash inspection and cleanup')
+
+/**** trash list ****/
+
+  TrashCmd.command('list')
+    .description('list all entries currently in the trash')
+    .option('--only <kind>', 'filter by kind: items | links')
+    .action(async (Options, SubCommand) => {
+      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      await cmdTrashList(Config, Options.only)
+    })
+
+/**** trash purge-all ****/
+
+  TrashCmd.command('purge-all')
+    .description('permanently delete every entry in the trash')
+    .action(async (_Options, SubCommand) => {
+      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      await cmdTrashPurgeAll(Config)
+    })
+
+/**** trash purge-expired ****/
+
+  TrashCmd.command('purge-expired')
+    .description('permanently delete trash entries older than --ttl milliseconds')
+    .option('--ttl <ms>', 'TTL in milliseconds (default: 30 days)', String(DefaultTrashTTLms))
+    .action(async (Options, SubCommand) => {
+      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      await cmdTrashPurgeExpired(Config, parseInt(Options.ttl, 10))
+    })
+}
+
+//----------------------------------------------------------------------------//
+//                           command implementations                          //
+//----------------------------------------------------------------------------//
+
+/**** cmdTrashList ****/
+
+async function cmdTrashList (Config:SDSConfig, OnlyKind:string | undefined):Promise<void> {
+  const Context = await loadContext(Config)
+  try {
+    const TrashItem = Context.Store.TrashItem
+    const Entries   = Context.Store._innerEntriesOf(TrashItem.Id)
+    const Filtered  = Entries.filter((Entry) => {
+      if (OnlyKind == null) { return true }
+      const Kind = Entry.isItem ? 'item' : 'link'
+      return (OnlyKind === Kind+'s') || (OnlyKind === Kind)
+    })
+
+    if (Config.Format === 'json') {
+      printResult(Config, Filtered.map((Entry) => ({
+        id:    Entry.Id,
+        kind:  Entry.isItem ? 'item' : 'link',
+        label: Entry.Label,
+      })))
+    } else {
+      if (Filtered.length === 0) {
+        printLine('(trash is empty)')
+      } else {
+        for (const Entry of Filtered) {
+          const Kind = Entry.isItem ? 'item' : 'link'
+          printLine(`${Entry.Id}  ${Kind}  ${Entry.Label}`)
+        }
+      }
+    }
+  } finally {
+    await closeContext(Context)
+  }
+}
+
+/**** cmdTrashPurgeAll ****/
+
+async function cmdTrashPurgeAll (Config:SDSConfig):Promise<void> {
+  const Context = await loadContext(Config)
+  try {
+    const TrashItem = Context.Store.TrashItem
+    const Entries   = [ ...Context.Store._innerEntriesOf(TrashItem.Id) ]
+    let   Count     = 0
+
+    for (const Entry of Entries) {
+      try { Entry.purge(); Count++ } catch { /* skip protected entries */ }
+    }
+
+    if (Config.Format === 'json') {
+      printResult(Config, { purged:Count })
+    } else {
+      printLine(`purged ${Count} entr${Count === 1 ? 'y' : 'ies'} from trash`)
+    }
+  } finally {
+    await closeContext(Context)
+  }
+}
+
+/**** cmdTrashPurgeExpired ****/
+
+async function cmdTrashPurgeExpired (Config:SDSConfig, TTLms:number):Promise<void> {
+  const EffectiveTTL = isNaN(TTLms) ? DefaultTrashTTLms : TTLms
+  const Context      = await loadContext(Config)
+  try {
+    const Count = Context.Store.purgeExpiredTrashEntries(EffectiveTTL)
+
+    if (Config.Format === 'json') {
+      printResult(Config, { purged:Count, ttlMs:EffectiveTTL })
+    } else {
+      printLine(`purged ${Count} expired entr${Count === 1 ? 'y' : 'ies'} from trash`)
+    }
+  } finally {
+    await closeContext(Context)
+  }
+}

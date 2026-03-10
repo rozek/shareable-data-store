@@ -1,0 +1,64 @@
+/*******************************************************************************
+*                                                                              *
+*                                   REPL                                       *
+*                                                                              *
+*******************************************************************************/
+
+// interactive REPL — reads command lines from stdin, executes them via the
+// same commander program used for one-shot CLI invocations
+
+import readline from 'node:readline'
+import { tokenizeLine } from './CommandTokenizer.js'
+
+//----------------------------------------------------------------------------//
+//                                startREPL                                   //
+//----------------------------------------------------------------------------//
+
+/**** startREPL — runs a read-eval-print loop until the user exits ****/
+
+export async function startREPL (
+  executeCommand:(Tokens:string[]) => Promise<number>
+):Promise<void> {
+  const isTTY = process.stdin.isTTY
+
+  const REPLInterface = readline.createInterface({
+    input:    process.stdin,
+    output:   process.stdout,
+    terminal: isTTY,
+    prompt:   'sds> ',
+  })
+
+  if (isTTY) {
+    process.stdout.write(
+      'SDS interactive shell — type "help" for commands, "exit" to quit\n'
+    )
+    REPLInterface.prompt()
+  }
+
+  for await (const rawLine of REPLInterface) {
+    const Line = rawLine.trim()
+
+    if ((Line === '') || Line.startsWith('#')) {
+      if (isTTY) { REPLInterface.prompt() }
+      continue
+    }
+
+    if ((Line === 'exit') || (Line === 'quit')) { break }
+
+    const Tokens = tokenizeLine(Line)
+    if (Tokens.length === 0) {
+      if (isTTY) { REPLInterface.prompt() }
+      continue
+    }
+
+    try {
+      await executeCommand(Tokens)
+    } catch (Signal) {
+      process.stderr.write(`sds: ${(Signal as Error).message}\n`)
+    }
+
+    if (isTTY) { REPLInterface.prompt() }
+  }
+
+  REPLInterface.close()
+}

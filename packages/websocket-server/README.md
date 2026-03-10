@@ -11,6 +11,8 @@ The relay server for the **shareable-data-store** (SDS) family. A [Hono](https:/
 
 Runs on Node.js 18+ using `@hono/node-server`.
 
+You may install the server locally or deploy it using a Docker image (refer to [DEPLOYMENT.md](./DEPLOYMENT.md))
+
 ---
 
 ## Installation
