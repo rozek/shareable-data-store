@@ -75,7 +75,7 @@ export declare class SDS_DataStore extends SDS_DataStore_2 {
     purgeEntry(Entry: SDS_Entry): void;
     /**** purgeExpiredTrashEntries — remove trash items past TTL ****/
     purgeExpiredTrashEntries(TTLms?: number): number;
-    /**** dispose — cleanup trash timer ****/
+    /**** dispose — stop background timer and remove all change listeners ****/
     dispose(): void;
     /**** transact — execute callback in batched transaction ****/
     transact(Callback: () => void): void;
@@ -262,6 +262,7 @@ export declare interface SDS_DataStoreOptions {
     LiteralSizeLimit?: number;
     TrashTTLms?: number;
     TrashCheckIntervalMs?: number;
+    onApplyPatchError?: (Error: unknown) => void;
 }
 
 export declare class SDS_Entry {

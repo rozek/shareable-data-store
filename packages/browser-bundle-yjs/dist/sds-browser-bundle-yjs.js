@@ -20,7 +20,7 @@ class j extends Error {
     this.code = t, this.name = "SDS_Error";
   }
 }
-const Te = "00000000-0000-4000-8000-000000000000", G = "00000000-0000-4000-8000-000000000001", Ce = "00000000-0000-4000-8000-000000000002", Sn = "text/plain", Pl = 131072, Fl = 2048, Zl = 5e3, No = 1024, Ro = 256, Mo = 1024, Vo = 1048576, zl = 200;
+const Te = "00000000-0000-4000-8000-000000000000", G = "00000000-0000-4000-8000-000000000001", Ce = "00000000-0000-4000-8000-000000000002", xn = "text/plain", Pl = 131072, Fl = 2048, Zl = 5e3, No = 1024, Ro = 256, Mo = 1024, Vo = 1048576, zl = 200;
 function Hl(n) {
   const e = globalThis.Buffer;
   if (e != null)
@@ -34,7 +34,7 @@ function Ka(n) {
   const e = globalThis.Buffer;
   return e != null ? new Uint8Array(e.from(n, "base64")) : Uint8Array.from(atob(n), (t) => t.charCodeAt(0));
 }
-var wt, $n, Ba;
+var wt, Un, Ba;
 let Jl = (Ba = class {
   constructor() {
     //----------------------------------------------------------------------------//
@@ -46,7 +46,7 @@ let Jl = (Ba = class {
     _(this, wt, /* @__PURE__ */ new Map());
     // optional async loader injected by SDS_SyncEngine so that _readValueOf can
     // transparently fetch blobs from the persistence layer on demand.
-    _(this, $n);
+    _(this, Un);
   }
   /**** _BLOBhash — FNV-1a 32-bit content hash used as blob identity key ****/
   static _BLOBhash(e) {
@@ -62,7 +62,7 @@ let Jl = (Ba = class {
   /**** _getValueBlobAsync — look up a blob; fall back to the persistence loader ****/
   async _getValueBlobAsync(e) {
     let t = l(this, wt).get(e);
-    return t == null && l(this, $n) != null && (t = await l(this, $n).call(this, e), t != null && l(this, wt).set(e, t)), t;
+    return t == null && l(this, Un) != null && (t = await l(this, Un).call(this, e), t != null && l(this, wt).set(e, t)), t;
   }
   /**** storeValueBlob — public entry point for SyncEngine ****/
   storeValueBlob(e, t) {
@@ -78,7 +78,7 @@ let Jl = (Ba = class {
   }
   /**** setValueBlobLoader — called by SDS_SyncEngine to enable lazy persistence loading ****/
   setValueBlobLoader(e) {
-    x(this, $n, e);
+    x(this, Un, e);
   }
   //----------------------------------------------------------------------------//
   //                                   Import                                   //
@@ -160,7 +160,7 @@ let Jl = (Ba = class {
     }
     return c.innerEntries = Array.from(this._innerEntriesOf(e)).map((h) => this._EntryAsJSON(h.Id)), c;
   }
-}, wt = new WeakMap(), $n = new WeakMap(), Ba);
+}, wt = new WeakMap(), Un = new WeakMap(), Ba);
 var V;
 (function(n) {
   n.assertEqual = (r) => {
@@ -1733,12 +1733,12 @@ at.create = (n, e) => new at({
   typeName: E.ZodArray,
   ...A(e)
 });
-function xn(n) {
+function In(n) {
   if (n instanceof Q) {
     const e = {};
     for (const t in n.shape) {
       const s = n.shape[t];
-      e[t] = Ht.create(xn(s));
+      e[t] = Ht.create(In(s));
     }
     return new Q({
       ...n._def,
@@ -1746,8 +1746,8 @@ function xn(n) {
     });
   } else return n instanceof at ? new at({
     ...n._def,
-    type: xn(n.element)
-  }) : n instanceof Ht ? Ht.create(xn(n.unwrap())) : n instanceof rs ? rs.create(xn(n.unwrap())) : n instanceof fn ? fn.create(n.items.map((e) => xn(e))) : n;
+    type: In(n.element)
+  }) : n instanceof Ht ? Ht.create(In(n.unwrap())) : n instanceof rs ? rs.create(In(n.unwrap())) : n instanceof gn ? gn.create(n.items.map((e) => In(e))) : n;
 }
 class Q extends M {
   constructor() {
@@ -1983,7 +1983,7 @@ class Q extends M {
    * @deprecated
    */
   deepPartial() {
-    return xn(this);
+    return In(this);
   }
   partial(e) {
     const t = {};
@@ -2174,7 +2174,7 @@ kr.create = (n, e, t) => new kr({
   typeName: E.ZodIntersection,
   ...A(t)
 });
-class fn extends M {
+class gn extends M {
   _parse(e) {
     const { status: t, ctx: s } = this._processInputParams(e);
     if (s.parsedType !== k.array)
@@ -2208,16 +2208,16 @@ class fn extends M {
     return this._def.items;
   }
   rest(e) {
-    return new fn({
+    return new gn({
       ...this._def,
       rest: e
     });
   }
 }
-fn.create = (n, e) => {
+gn.create = (n, e) => {
   if (!Array.isArray(n))
     throw new Error("You must pass an array of schemas to z.tuple([ ... ])");
-  return new fn({
+  return new gn({
     items: n,
     typeName: E.ZodTuple,
     rest: null,
@@ -2785,7 +2785,7 @@ Gt.create;
 at.create;
 const xh = vr.create;
 kr.create;
-fn.create;
+gn.create;
 ns.create;
 br.create;
 Ht.create;
@@ -3107,7 +3107,7 @@ class $h {
     this._observers = qe();
   }
 }
-const lt = Math.floor, dr = Math.abs, Ga = (n, e) => n < e ? n : e, yn = (n, e) => n > e ? n : e, qa = (n) => n !== 0 ? n < 0 : 1 / n < 0, ea = 1, ta = 2, ci = 4, li = 8, Ns = 32, It = 64, Re = 128, Kr = 31, Li = 63, dn = 127, Uh = 2147483647, Sr = Number.MAX_SAFE_INTEGER, na = Number.MIN_SAFE_INTEGER, jh = Number.isInteger || ((n) => typeof n == "number" && isFinite(n) && lt(n) === n), Bh = String.fromCharCode, Kh = (n) => n.toLowerCase(), Ph = /^\s*/g, Fh = (n) => n.replace(Ph, ""), Zh = /([A-Z])/g, sa = (n, e) => Fh(n.replace(Zh, (t) => `${e}${Kh(t)}`)), zh = (n) => {
+const lt = Math.floor, dr = Math.abs, Ga = (n, e) => n < e ? n : e, wn = (n, e) => n > e ? n : e, qa = (n) => n !== 0 ? n < 0 : 1 / n < 0, ea = 1, ta = 2, ci = 4, li = 8, Ns = 32, It = 64, Re = 128, Kr = 31, Li = 63, fn = 127, Uh = 2147483647, Sr = Number.MAX_SAFE_INTEGER, na = Number.MIN_SAFE_INTEGER, jh = Number.isInteger || ((n) => typeof n == "number" && isFinite(n) && lt(n) === n), Bh = String.fromCharCode, Kh = (n) => n.toLowerCase(), Ph = /^\s*/g, Fh = (n) => n.replace(Ph, ""), Zh = /([A-Z])/g, sa = (n, e) => Fh(n.replace(Zh, (t) => `${e}${Kh(t)}`)), zh = (n) => {
   const e = unescape(encodeURIComponent(n)), t = e.length, s = new Uint8Array(t);
   for (let r = 0; r < t; r++)
     s[r] = /** @type {number} */
@@ -3140,18 +3140,18 @@ const Pr = () => new Qs(), Gh = (n) => {
   return e.set(new Uint8Array(n.cbuf.buffer, 0, n.cpos), t), e;
 }, qh = (n, e) => {
   const t = n.cbuf.length;
-  t - n.cpos < e && (n.bufs.push(new Uint8Array(n.cbuf.buffer, 0, n.cpos)), n.cbuf = new Uint8Array(yn(t, e) * 2), n.cpos = 0);
+  t - n.cpos < e && (n.bufs.push(new Uint8Array(n.cbuf.buffer, 0, n.cpos)), n.cbuf = new Uint8Array(wn(t, e) * 2), n.cpos = 0);
 }, se = (n, e) => {
   const t = n.cbuf.length;
   n.cpos === t && (n.bufs.push(n.cbuf), n.cbuf = new Uint8Array(t * 2), n.cpos = 0), n.cbuf[n.cpos++] = e;
 }, Ni = se, D = (n, e) => {
-  for (; e > dn; )
-    se(n, Re | dn & e), e = lt(e / 128);
-  se(n, dn & e);
+  for (; e > fn; )
+    se(n, Re | fn & e), e = lt(e / 128);
+  se(n, fn & e);
 }, ao = (n, e) => {
   const t = qa(e);
   for (t && (e = -e), se(n, (e > Li ? Re : 0) | (t ? It : 0) | Li & e), e = lt(e / 64); e > 0; )
-    se(n, (e > dn ? Re : 0) | dn & e), e = lt(e / 128);
+    se(n, (e > fn ? Re : 0) | fn & e), e = lt(e / 128);
 }, Ri = new Uint8Array(3e4), Yh = Ri.length / 3, Xh = (n, e) => {
   if (e.length < Yh) {
     const t = Rs.encodeInto(e, Ri).written || 0;
@@ -3169,10 +3169,10 @@ const Pr = () => new Qs(), Gh = (n) => {
       /** @type {number} */
       t.codePointAt(r)
     );
-}, Ln = Rs && /** @type {any} */
+}, Nn = Rs && /** @type {any} */
 Rs.encodeInto ? Xh : Qh, Fr = (n, e) => {
   const t = n.cbuf.length, s = n.cpos, r = Ga(t - s, e.length), i = e.length - r;
-  n.cbuf.set(e.subarray(0, r), s), n.cpos += r, i > 0 && (n.bufs.push(n.cbuf), n.cbuf = new Uint8Array(yn(t * 2, i)), n.cbuf.set(e.subarray(r)), n.cpos = i);
+  n.cbuf.set(e.subarray(0, r), s), n.cpos += r, i > 0 && (n.bufs.push(n.cbuf), n.cbuf = new Uint8Array(wn(t * 2, i)), n.cbuf.set(e.subarray(r)), n.cpos = i);
 }, Oe = (n, e) => {
   D(n, e.byteLength), Fr(n, e);
 }, co = (n, e) => {
@@ -3185,7 +3185,7 @@ Rs.encodeInto ? Xh : Qh, Fr = (n, e) => {
 ), ra = new DataView(new ArrayBuffer(4)), su = (n) => (ra.setFloat32(0, n), ra.getFloat32(0) === n), Ms = (n, e) => {
   switch (typeof e) {
     case "string":
-      se(n, 119), Ln(n, e);
+      se(n, 119), Nn(n, e);
       break;
     case "number":
       jh(e) && dr(e) <= Uh ? (se(n, 125), ao(n, e)) : su(e) ? (se(n, 124), eu(n, e)) : (se(n, 123), tu(n, e));
@@ -3208,7 +3208,7 @@ Rs.encodeInto ? Xh : Qh, Fr = (n, e) => {
         D(n, t.length);
         for (let s = 0; s < t.length; s++) {
           const r = t[s];
-          Ln(n, r), Ms(n, e[r]);
+          Nn(n, r), Ms(n, e[r]);
         }
       }
       break;
@@ -3292,7 +3292,7 @@ class ru {
   }
   toUint8Array() {
     const e = new Qs();
-    return this.sarr.push(this.s), this.s = "", Ln(e, this.sarr.join("")), Fr(e, this.lensE.toUint8Array()), ot(e);
+    return this.sarr.push(this.s), this.s = "", Nn(e, this.sarr.join("")), Fr(e, this.lensE.toUint8Array()), ot(e);
   }
 }
 const ht = (n) => new Error(n), Ye = () => {
@@ -3316,7 +3316,7 @@ const hs = (n) => new Zr(n), iu = (n) => n.pos !== n.arr.length, ou = (n, e) => 
   const s = n.arr.length;
   for (; n.pos < s; ) {
     const r = n.arr[n.pos++];
-    if (e = e + (r & dn) * t, t *= 128, r < Re)
+    if (e = e + (r & fn) * t, t *= 128, r < Re)
       return e;
     if (e > Sr)
       throw Xa;
@@ -3329,7 +3329,7 @@ const hs = (n) => new Zr(n), iu = (n) => n.pos !== n.arr.length, ou = (n, e) => 
     return r * t;
   const i = n.arr.length;
   for (; n.pos < i; ) {
-    if (e = n.arr[n.pos++], t = t + (e & dn) * s, s *= 128, e < Re)
+    if (e = n.arr[n.pos++], t = t + (e & fn) * s, s *= 128, e < Re)
       return r * t;
     if (t > Sr)
       throw Xa;
@@ -3358,7 +3358,7 @@ const hs = (n) => new Zr(n), iu = (n) => n.pos !== n.arr.length, ou = (n, e) => 
 }, cu = (n) => (
   /** @type any */
   Os.decode(Ae(n))
-), Nn = Os ? cu : au, ho = (n, e) => {
+), Rn = Os ? cu : au, ho = (n, e) => {
   const t = new DataView(n.arr.buffer, n.arr.byteOffset + n.pos, e);
   return n.pos += e, t;
 }, lu = (n) => ho(n, 4).getFloat32(0, !1), hu = (n) => ho(n, 8).getFloat64(0, !1), uu = (n) => (
@@ -3382,12 +3382,12 @@ const hs = (n) => new Zr(n), iu = (n) => n.pos !== n.arr.length, ou = (n, e) => 
   // CASE 121: boolean (false)
   (n) => !0,
   // CASE 120: boolean (true)
-  Nn,
+  Rn,
   // CASE 119: string
   (n) => {
     const e = O(n), t = {};
     for (let s = 0; s < e; s++) {
-      const r = Nn(n);
+      const r = Rn(n);
       t[r] = Vs(n);
     }
     return t;
@@ -3454,7 +3454,7 @@ class fu {
    * @param {Uint8Array} uint8Array
    */
   constructor(e) {
-    this.decoder = new gr(e), this.str = Nn(this.decoder), this.spos = 0;
+    this.decoder = new gr(e), this.str = Rn(this.decoder), this.spos = 0;
   }
   /**
    * @return {string}
@@ -4082,9 +4082,9 @@ const us = (...n) => n.findIndex((e) => Er.check(e)) >= 0 ? us(...n.map((e) => j
   ie((n) => n === yo)
 ), pc = ie((n) => typeof n == "symbol");
 ie((n) => n === pc);
-const Rn = ie((n) => typeof n == "number"), mc = (
+const Mn = ie((n) => typeof n == "number"), mc = (
   /** @type {Schema<Schema<number>>} */
-  ie((n) => n === Rn)
+  ie((n) => n === Mn)
 ), as = ie((n) => typeof n == "string"), yc = (
   /** @type {Schema<Schema<string>>} */
   ie((n) => n === as)
@@ -4100,7 +4100,7 @@ const Gr = Hr(null), ad = (
 );
 Y(Uint8Array);
 Y(po, (n) => n.shape === Uint8Array);
-const cd = us(Rn, as, Gr, wc, yo, Wr, pc);
+const cd = us(Mn, as, Gr, wc, yo, Wr, pc);
 (() => {
   const n = (
     /** @type {$Array<$any>} */
@@ -4108,7 +4108,7 @@ const cd = us(Rn, as, Gr, wc, yo, Wr, pc);
   ), e = (
     /** @type {$Record<$string,$any>} */
     lc(as, Tr)
-  ), t = us(Rn, as, Gr, Wr, n, e);
+  ), t = us(Mn, as, Gr, Wr, n, e);
   return n.shape = t, e.shape.values = t, t;
 })();
 const js = (n) => {
@@ -4204,7 +4204,7 @@ const hd = (n) => new ld(
   hd(
     /** @type {Schema<prng.PRNG>} */
     Tr
-  ).if(mc, (n, e) => di(e, na, Sr)).if(yc, (n, e) => $u(e)).if(od, (n, e) => ua(e)).if(id, (n, e) => BigInt(di(e, na, Sr))).if(Er, (n, e) => bn(e, fi(e, n.shape))).if(Hu, (n, e) => {
+  ).if(mc, (n, e) => di(e, na, Sr)).if(yc, (n, e) => $u(e)).if(od, (n, e) => ua(e)).if(id, (n, e) => BigInt(di(e, na, Sr))).if(Er, (n, e) => Sn(e, fi(e, n.shape))).if(Hu, (n, e) => {
     const t = {};
     for (const s in n.shape) {
       let r = n.shape[s];
@@ -4219,29 +4219,29 @@ const hd = (n) => new ld(
   }).if(qu, (n, e) => {
     const t = [], s = rc(e, 0, 42);
     for (let r = 0; r < s; r++)
-      t.push(bn(e, n.shape));
+      t.push(Sn(e, n.shape));
     return t;
   }).if(ic, (n, e) => fi(e, n.shape)).if(ad, (n, e) => null).if(td, (n, e) => {
-    const t = bn(e, n.res);
+    const t = Sn(e, n.res);
     return () => t;
-  }).if(rd, (n, e) => bn(e, fi(e, [
-    Rn,
+  }).if(rd, (n, e) => Sn(e, fi(e, [
+    Mn,
     as,
     Gr,
     wc,
     yo,
     Wr,
-    dc(Rn),
-    lc(us("a", "b", "c"), Rn)
+    dc(Mn),
+    lc(us("a", "b", "c"), Mn)
   ]))).if(Wu, (n, e) => {
     const t = {}, s = di(e, 0, 3);
     for (let r = 0; r < s; r++) {
-      const i = bn(e, n.shape.keys), o = bn(e, n.shape.values);
+      const i = Sn(e, n.shape.keys), o = Sn(e, n.shape.values);
       t[i] = o;
     }
     return t;
   }).done()
-), bn = (n, e) => (
+), Sn = (n, e) => (
   /** @type {any} */
   _c(js(e), n)
 ), qr = (
@@ -4380,7 +4380,7 @@ const Cc = (n, e, t) => e.clients.forEach((s, r) => {
     let t, s;
     for (t = 1, s = 1; t < e.length; t++) {
       const r = e[s - 1], i = e[t];
-      r.clock + r.len >= i.clock ? r.len = yn(r.len, i.clock + i.len - r.clock) : (s < t && (e[s] = i), s++);
+      r.clock + r.len >= i.clock ? r.len = wn(r.len, i.clock + i.len - r.clock) : (s < t && (e[s] = i), s++);
     }
     e.length = s;
   });
@@ -4460,7 +4460,7 @@ const Cc = (n, e, t) => e.clients.forEach((s, r) => {
     }
   }
   if (s.clients.size > 0) {
-    const i = new gn();
+    const i = new pn();
     return D(i.restEncoder, 0), ds(i, s), i.toUint8Array();
   }
   return null;
@@ -4592,7 +4592,7 @@ class Jt extends $h {
   getArray(e = "") {
     return (
       /** @type {YArray<T>} */
-      this.get(e, Vn)
+      this.get(e, $n)
     );
   }
   /**
@@ -4636,7 +4636,7 @@ class Jt extends $h {
    * @public
    */
   getXmlFragment(e = "") {
-    return this.get(e, pn);
+    return this.get(e, mn);
   }
   /**
    * Converts the entire document into a js object, recursively traversing each yjs type
@@ -4730,7 +4730,7 @@ class Ac extends Oc {
    * @return {string}
    */
   readString() {
-    return Nn(this.restDecoder);
+    return Rn(this.restDecoder);
   }
   /**
    * @return {boolean} isKey
@@ -4770,13 +4770,13 @@ class Ac extends Oc {
    * @return {any}
    */
   readJSON() {
-    return JSON.parse(Nn(this.restDecoder));
+    return JSON.parse(Rn(this.restDecoder));
   }
   /**
    * @return {string}
    */
   readKey() {
-    return Nn(this.restDecoder);
+    return Rn(this.restDecoder);
   }
 }
 class Dd {
@@ -4814,13 +4814,13 @@ class cs extends Dd {
    * @return {ID}
    */
   readLeftID() {
-    return new Mn(this.clientDecoder.read(), this.leftClockDecoder.read());
+    return new Vn(this.clientDecoder.read(), this.leftClockDecoder.read());
   }
   /**
    * @return {ID}
    */
   readRightID() {
-    return new Mn(this.clientDecoder.read(), this.rightClockDecoder.read());
+    return new Vn(this.clientDecoder.read(), this.rightClockDecoder.read());
   }
   /**
    * Read the next client id.
@@ -4951,7 +4951,7 @@ class nr extends Dc {
    * @param {string} s
    */
   writeString(e) {
-    Ln(this.restEncoder, e);
+    Nn(this.restEncoder, e);
   }
   /**
    * @param {boolean} isYKey
@@ -4989,13 +4989,13 @@ class nr extends Dc {
    * @param {any} embed
    */
   writeJSON(e) {
-    Ln(this.restEncoder, JSON.stringify(e));
+    Nn(this.restEncoder, JSON.stringify(e));
   }
   /**
    * @param {string} key
    */
   writeKey(e) {
-    Ln(this.restEncoder, e);
+    Nn(this.restEncoder, e);
   }
 }
 class Lc {
@@ -5022,7 +5022,7 @@ class Lc {
     e === 0 && je(), D(this.restEncoder, e - 1), this.dsCurrVal += e;
   }
 }
-class gn extends Lc {
+class pn extends Lc {
   constructor() {
     super(), this.keyMap = /* @__PURE__ */ new Map(), this.keyClock = 0, this.keyClockEncoder = new hi(), this.clientEncoder = new fr(), this.leftClockEncoder = new hi(), this.rightClockEncoder = new hi(), this.infoEncoder = new ia(Ni), this.stringEncoder = new ru(), this.parentInfoEncoder = new ia(Ni), this.typeRefEncoder = new fr(), this.lenEncoder = new fr();
   }
@@ -5116,7 +5116,7 @@ class gn extends Lc {
   }
 }
 const Ld = (n, e, t, s) => {
-  s = yn(s, e[0].id.clock);
+  s = wn(s, e[0].id.clock);
   const r = ut(e, s);
   D(n.restEncoder, e.length - r), n.writeClient(t), D(n.restEncoder, s);
   const i = e[r];
@@ -5262,7 +5262,7 @@ const Ld = (n, e, t, s) => {
     }
   }
   if (a.clients.size > 0) {
-    const m = new gn();
+    const m = new pn();
     return bo(m, a, /* @__PURE__ */ new Map()), D(m.restEncoder, 0), { missing: c, update: m.toUint8Array() };
   }
   return null;
@@ -5305,14 +5305,14 @@ const Ld = (n, e, t, s) => {
   Vd(r, n, t, new s(r));
 }, ga = (n, e, t) => Nc(n, e, t, Ac), $d = (n, e, t = /* @__PURE__ */ new Map()) => {
   bo(n, e.store, t), ds(n, Ad(e.store));
-}, Ud = (n, e = new Uint8Array([0]), t = new gn()) => {
+}, Ud = (n, e = new Uint8Array([0]), t = new pn()) => {
   const s = Rc(e);
   $d(t, n, s);
   const r = [t.toUint8Array()];
   if (n.store.pendingDs && r.push(n.store.pendingDs), n.store.pendingStructs && r.push(Qd(n.store.pendingStructs.update, e)), r.length > 1) {
     if (t.constructor === nr)
       return Yd(r.map((i, o) => o === 0 ? i : tf(i)));
-    if (t.constructor === gn)
+    if (t.constructor === pn)
       return Ar(r);
   }
   return r[0];
@@ -5335,7 +5335,7 @@ const pa = () => new Fd(), ma = (n, e) => n.l.push(e), ya = (n, e) => {
   const t = n.l, s = t.length;
   n.l = t.filter((r) => e !== r), s === n.l.length && console.error("[yjs] Tried to remove event handler that doesn't exist.");
 }, Vc = (n, e, t) => fo(n.l, [e, t]);
-class Mn {
+class Vn {
   /**
    * @param {number} client client id
    * @param {number} clock unique per client id, continuous number
@@ -5344,12 +5344,12 @@ class Mn {
     this.client = e, this.clock = t;
   }
 }
-const cr = (n, e) => n === e || n !== null && e !== null && n.client === e.client && n.clock === e.clock, R = (n, e) => new Mn(n, e), Zd = (n) => {
+const cr = (n, e) => n === e || n !== null && e !== null && n.client === e.client && n.clock === e.clock, R = (n, e) => new Vn(n, e), Zd = (n) => {
   for (const [e, t] of n.doc.share.entries())
     if (t === n)
       return e;
   throw je();
-}, In = (n, e) => e === void 0 ? !n.deleted : e.sv.has(n.id.client) && (e.sv.get(n.id.client) || 0) > n.id.clock && !Ec(e.ds, n.id), $i = (n, e) => {
+}, Cn = (n, e) => e === void 0 ? !n.deleted : e.sv.has(n.id.client) && (e.sv.get(n.id.client) || 0) > n.id.clock && !Ec(e.ds, n.id), $i = (n, e) => {
   const t = Qt(n.meta, $i, is), s = n.doc.store;
   t.has(e) || (e.sv.forEach((r, i) => {
     r < re(s, i) && Yt(n, R(i, r));
@@ -5518,7 +5518,7 @@ const _a = (n, e) => e.deleteSet.clients.size === 0 && !Rh(e.afterState, (t, s) 
           const m = (
             /** @type {Array<GC|Item>} */
             r.clients.get(f)
-          ), w = yn(ut(m, g), 1);
+          ), w = wn(ut(m, g), 1);
           for (let S = m.length - 1; S >= w; )
             S -= 1 + mr(m, S);
         }
@@ -5535,7 +5535,7 @@ const _a = (n, e) => e.deleteSet.clients.size === 0 && !Rh(e.afterState, (t, s) 
         _a(u, t) && s.emit("update", [u.toUint8Array(), t.origin, s, t]);
       }
       if (s._observers.has("updateV2")) {
-        const u = new gn();
+        const u = new pn();
         _a(u, t) && s.emit("updateV2", [u.toUint8Array(), t.origin, s, t]);
       }
       const { subdocsAdded: a, subdocsLoaded: c, subdocsRemoved: h } = t;
@@ -5644,7 +5644,7 @@ const Yd = (n) => Ar(n, Ac, nr), Xd = (n, e) => {
       t.content.splice(e)
     );
   }
-}, Ar = (n, e = cs, t = gn) => {
+}, Ar = (n, e = cs, t = pn) => {
   if (n.length === 1)
     return n[0];
   const s = n.map((u) => new e(hs(u)));
@@ -5703,7 +5703,7 @@ const Yd = (n) => Ar(n, Ac, nr), Xd = (n, e) => {
   i !== null && (Mt(a, i.struct, i.offset), i = null), Io(a);
   const c = s.map((u) => ko(u)), h = Td(c);
   return ds(o, h), o.toUint8Array();
-}, Qd = (n, e, t = cs, s = gn) => {
+}, Qd = (n, e, t = cs, s = pn) => {
   const r = Rc(e), i = new s(), o = new xo(i), a = new t(hs(n)), c = new So(a, !1);
   for (; c.curr; ) {
     const u = c.curr, f = u.id.client, g = r.get(f) || 0;
@@ -5712,7 +5712,7 @@ const Yd = (n) => Ar(n, Ac, nr), Xd = (n, e) => {
       continue;
     }
     if (u.id.clock + u.length > g)
-      for (Mt(o, u, yn(g - u.id.clock, 0)), c.next(); c.curr && c.curr.id.client === f; )
+      for (Mt(o, u, wn(g - u.id.clock, 0)), c.next(); c.curr && c.curr.id.client === f; )
         Mt(o, c.curr, 0), c.next();
     else
       for (; c.curr && c.curr.id.client === f && c.curr.id.clock + c.curr.length <= g; )
@@ -5950,7 +5950,7 @@ const rf = (n) => {
       }
       r.p = i, i.marker = !0;
     }
-    (e < r.index || t > 0 && e === r.index) && (r.index = yn(e, r.index + t));
+    (e < r.index || t > 0 && e === r.index) && (r.index = wn(e, r.index + t));
   }
 }, ei = (n, e, t) => {
   const s = n, r = e.changedParentTypes;
@@ -6150,7 +6150,7 @@ const Zc = (n, e, t) => {
   const i = n.doc, o = i.clientID, a = i.store, c = t === null ? e._start : t.right;
   let h = [];
   const u = () => {
-    h.length > 0 && (r = new ee(R(o, re(a, o)), r, r && r.lastId, c, c && c.id, e, null, new mn(h)), r.integrate(n, 0), h = []);
+    h.length > 0 && (r = new ee(R(o, re(a, o)), r, r && r.lastId, c, c && c.id, e, null, new yn(h)), r.integrate(n, 0), h = []);
   };
   s.forEach((f) => {
     if (f === null)
@@ -6233,7 +6233,7 @@ const Zc = (n, e, t) => {
   const r = e._map.get(t) || null, i = n.doc, o = i.clientID;
   let a;
   if (s == null)
-    a = new mn([s]);
+    a = new yn([s]);
   else
     switch (s.constructor) {
       case Number:
@@ -6243,7 +6243,7 @@ const Zc = (n, e, t) => {
       case String:
       case Date:
       case BigInt:
-        a = new mn([s]);
+        a = new yn([s]);
         break;
       case Uint8Array:
         a = new sr(
@@ -6283,7 +6283,7 @@ const Zc = (n, e, t) => {
     let i = s;
     for (; i !== null && (!e.sv.has(i.id.client) || i.id.clock >= (e.sv.get(i.id.client) || 0)); )
       i = i.left;
-    i !== null && In(i, e) && (t[r] = i.content.getContent()[i.length - 1]);
+    i !== null && Cn(i, e) && (t[r] = i.content.getContent()[i.length - 1]);
   }), t;
 }, lr = (n) => (n.doc ?? me(), Cd(
   n._map.entries(),
@@ -6292,7 +6292,7 @@ const Zc = (n, e, t) => {
 ));
 class hf extends Xr {
 }
-class Vn extends de {
+class $n extends de {
   constructor() {
     super(), this._prelimContent = [], this._searchMarker = [];
   }
@@ -6303,7 +6303,7 @@ class Vn extends de {
    * @return {YArray<T>}
    */
   static from(e) {
-    const t = new Vn();
+    const t = new $n();
     return t.push(e), t;
   }
   /**
@@ -6327,7 +6327,7 @@ class Vn extends de {
    * @return {YArray<T>}
    */
   _copy() {
-    return new Vn();
+    return new $n();
   }
   /**
    * Makes a copy of this data type that can be included somewhere else.
@@ -6337,7 +6337,7 @@ class Vn extends de {
    * @return {YArray<T>}
    */
   clone() {
-    const e = new Vn();
+    const e = new $n();
     return e.insert(0, this.toArray().map(
       (t) => t instanceof de ? (
         /** @type {typeof el} */
@@ -6493,7 +6493,7 @@ class Vn extends de {
     e.writeTypeRef(Mf);
   }
 }
-const uf = (n) => new Vn();
+const uf = (n) => new $n();
 class df extends Xr {
   /**
    * @param {YMap<T>} ymap The YArray that changed.
@@ -6814,7 +6814,7 @@ const ba = (n, e, t) => {
   const a = tl(n, e, t, r), c = s.constructor === String ? new dt(
     /** @type {string} */
     s
-  ) : s instanceof de ? new Tt(s) : new wn(s);
+  ) : s instanceof de ? new Tt(s) : new _n(s);
   let { left: h, right: u, index: f } = t;
   e._searchMarker && Bs(e._searchMarker, t.index, c.getLength()), u = new ee(R(o, re(i.store, o)), h, h && h.lastId, u, u && u.id, e, null, c), u.integrate(n, 0), t.right = u, t.index = f, t.forward(), Qc(n, e, t, a);
 }, Sa = (n, e, t, s, r) => {
@@ -6977,7 +6977,7 @@ const ba = (n, e, t) => {
     if (e.right.deleted === !1)
       switch (e.right.content.constructor) {
         case Tt:
-        case wn:
+        case _n:
         case dt:
           t < e.right.length && Yt(n, R(e.right.id.client, e.right.id.clock + t)), t -= e.right.length, e.right.delete(n);
           break;
@@ -7062,7 +7062,7 @@ class yf extends Xr {
         for (; o !== null; ) {
           switch (o.content.constructor) {
             case Tt:
-            case wn:
+            case _n:
               this.adds(o) ? this.deletes(o) || (g(), a = "insert", h = o.content.getContent()[0], g()) : this.deletes(o) ? (a !== "delete" && (g(), a = "delete"), f += 1) : o.deleted || (a !== "retain" && (g(), a = "retain"), u += 1);
               break;
             case dt:
@@ -7241,16 +7241,16 @@ class F extends de {
     }
     const u = () => {
       for (; c !== null; ) {
-        if (In(c, e) || t !== void 0 && In(c, t))
+        if (Cn(c, e) || t !== void 0 && Cn(c, t))
           switch (c.content.constructor) {
             case dt: {
               const f = i.get("ychange");
-              e !== void 0 && !In(c, e) ? (f === void 0 || f.user !== c.id.client || f.type !== "removed") && (h(), i.set("ychange", s ? s("removed", c.id) : { type: "removed" })) : t !== void 0 && !In(c, t) ? (f === void 0 || f.user !== c.id.client || f.type !== "added") && (h(), i.set("ychange", s ? s("added", c.id) : { type: "added" })) : f !== void 0 && (h(), i.delete("ychange")), a += /** @type {ContentString} */
+              e !== void 0 && !Cn(c, e) ? (f === void 0 || f.user !== c.id.client || f.type !== "removed") && (h(), i.set("ychange", s ? s("removed", c.id) : { type: "removed" })) : t !== void 0 && !Cn(c, t) ? (f === void 0 || f.user !== c.id.client || f.type !== "added") && (h(), i.set("ychange", s ? s("added", c.id) : { type: "added" })) : f !== void 0 && (h(), i.delete("ychange")), a += /** @type {ContentString} */
               c.content.str;
               break;
             }
             case Tt:
-            case wn: {
+            case _n: {
               h();
               const f = {
                 insert: c.content.getContent()[0]
@@ -7268,7 +7268,7 @@ class F extends de {
               break;
             }
             case te:
-              In(c, e) && (h(), fs(
+              Cn(c, e) && (h(), fs(
                 i,
                 /** @type {ContentFormat} */
                 c.content
@@ -7447,7 +7447,7 @@ class wi {
     if (e !== null && (!this._firstCall || e.deleted || !this._filter(t)))
       do
         if (t = /** @type {any} */
-        e.content.type, !e.deleted && (t.constructor === ls || t.constructor === pn) && t._start !== null)
+        e.content.type, !e.deleted && (t.constructor === ls || t.constructor === mn) && t._start !== null)
           e = t._start;
         else
           for (; e !== null; ) {
@@ -7468,7 +7468,7 @@ class wi {
     ), done: !1 });
   }
 }
-class pn extends de {
+class mn extends de {
   constructor() {
     super(), this._prelimContent = [];
   }
@@ -7497,7 +7497,7 @@ class pn extends de {
     ), this._prelimContent = null;
   }
   _copy() {
-    return new pn();
+    return new mn();
   }
   /**
    * Makes a copy of this data type that can be included somewhere else.
@@ -7507,7 +7507,7 @@ class pn extends de {
    * @return {YXmlFragment}
    */
   clone() {
-    const e = new pn();
+    const e = new mn();
     return e.insert(0, this.toArray().map((t) => t instanceof de ? t.clone() : t)), e;
   }
   get length() {
@@ -7727,8 +7727,8 @@ class pn extends de {
     e.writeTypeRef(jf);
   }
 }
-const _f = (n) => new pn();
-class ls extends pn {
+const _f = (n) => new mn();
+class ls extends mn {
   constructor(e = "UNDEFINED") {
     super(), this.nodeName = e, this._prelimAttrs = /* @__PURE__ */ new Map();
   }
@@ -8407,7 +8407,7 @@ class rr {
   }
 }
 const Ef = (n) => new rr(sl(n.readString(), n.readAny()));
-class wn {
+class _n {
   /**
    * @param {Object} embed
    */
@@ -8436,7 +8436,7 @@ class wn {
    * @return {ContentEmbed}
    */
   copy() {
-    return new wn(this.embed);
+    return new _n(this.embed);
   }
   /**
    * @param {number} offset
@@ -8482,7 +8482,7 @@ class wn {
     return 5;
   }
 }
-const Tf = (n) => new wn(n.readJSON());
+const Tf = (n) => new _n(n.readJSON());
 class te {
   /**
    * @param {string} key
@@ -8654,7 +8654,7 @@ const Af = (n) => {
   }
   return new Mr(t);
 }, Df = Ir("node_env") === "development";
-class mn {
+class yn {
   /**
    * @param {Array<any>} arr
    */
@@ -8683,14 +8683,14 @@ class mn {
    * @return {ContentAny}
    */
   copy() {
-    return new mn(this.arr);
+    return new yn(this.arr);
   }
   /**
    * @param {number} offset
    * @return {ContentAny}
    */
   splice(e) {
-    const t = new mn(this.arr.slice(e));
+    const t = new yn(this.arr.slice(e));
     return this.arr = this.arr.slice(0, e), t;
   }
   /**
@@ -8739,7 +8739,7 @@ const Lf = (n) => {
   const e = n.readLen(), t = [];
   for (let s = 0; s < e; s++)
     t.push(n.readAny());
-  return new mn(t);
+  return new yn(t);
 };
 class dt {
   /**
@@ -8995,13 +8995,13 @@ class ee extends Oo {
       return this.origin.client;
     if (this.rightOrigin && this.rightOrigin.client !== this.id.client && this.rightOrigin.clock >= re(t, this.rightOrigin.client))
       return this.rightOrigin.client;
-    if (this.parent && this.parent.constructor === Mn && this.id.client !== this.parent.client && this.parent.clock >= re(t, this.parent.client))
+    if (this.parent && this.parent.constructor === Vn && this.id.client !== this.parent.client && this.parent.clock >= re(t, this.parent.client))
       return this.parent.client;
     if (this.origin && (this.left = wa(e, t, this.origin), this.origin = this.left.lastId), this.rightOrigin && (this.right = Yt(e, this.rightOrigin), this.rightOrigin = this.right.id), this.left && this.left.constructor === $e || this.right && this.right.constructor === $e)
       this.parent = null;
     else if (!this.parent)
       this.left && this.left.constructor === ee ? (this.parent = this.left.parent, this.parentSub = this.left.parentSub) : this.right && this.right.constructor === ee && (this.parent = this.right.parent, this.parentSub = this.right.parentSub);
-    else if (this.parent.constructor === Mn) {
+    else if (this.parent.constructor === Vn) {
       const s = mi(t, this.parent);
       s.constructor === $e ? this.parent = null : this.parent = /** @type {ContentType} */
       s.content.type;
@@ -9155,7 +9155,7 @@ class ee extends Oo {
           e.writeParentInfo(!0), e.writeString(h);
         } else
           e.writeParentInfo(!1), e.writeLeftID(c.id);
-      } else a.constructor === String ? (e.writeParentInfo(!0), e.writeString(a)) : a.constructor === Mn ? (e.writeParentInfo(!1), e.writeLeftID(a)) : je();
+      } else a.constructor === String ? (e.writeParentInfo(!0), e.writeString(a)) : a.constructor === Vn ? (e.writeParentInfo(!1), e.writeLeftID(a)) : je();
       i !== null && e.writeString(i);
     }
     this.content.write(e, t);
@@ -9388,8 +9388,8 @@ var Hf = /* @__PURE__ */ ct(Xt, 9, 0), Jf = /* @__PURE__ */ ct(Xt, 9, 1), Wf = /
   var h = function(ps) {
     var ms = t.length;
     if (ps > ms) {
-      var kn = new ue(Math.max(ms * 2, ps));
-      kn.set(t), t = kn;
+      var bn = new ue(Math.max(ms * 2, ps));
+      bn.set(t), t = bn;
     }
   }, u = e.f || 0, f = e.p || 0, g = e.b || 0, m = e.l, w = e.d, S = e.m, W = e.n, Ke = r * 8;
   do {
@@ -9453,11 +9453,11 @@ var Hf = /* @__PURE__ */ ct(Xt, 9, 0), Jf = /* @__PURE__ */ ct(Xt, 9, 1), Wf = /
           var X = xe - 257, H = ti[X];
           Ie = Pe(n, f, (1 << H) - 1) + ll[X], f += H;
         }
-        var Xe = w[vi(n, f) & Ve], _n = Xe >> 4;
+        var Xe = w[vi(n, f) & Ve], vn = Xe >> 4;
         Xe || Ze(3), f += Xe & 15;
-        var le = zf[_n];
-        if (_n > 3) {
-          var H = ni[_n];
+        var le = zf[vn];
+        if (vn > 3) {
+          var H = ni[vn];
           le += vi(n, f) & (1 << H) - 1, f += H;
         }
         if (f > Ke) {
@@ -9465,13 +9465,13 @@ var Hf = /* @__PURE__ */ ct(Xt, 9, 0), Jf = /* @__PURE__ */ ct(Xt, 9, 1), Wf = /
           break;
         }
         a && h(g + 131072);
-        var vn = g + Ie;
+        var kn = g + Ie;
         if (g < le) {
-          var ir = i - le, or = Math.min(le, vn);
+          var ir = i - le, or = Math.min(le, kn);
           for (ir + g < 0 && Ze(3); g < or; ++g)
             t[g] = s[ir + g];
         }
-        for (; g < vn; ++g)
+        for (; g < kn; ++g)
           t[g] = t[g - le];
       }
     }
@@ -9625,9 +9625,9 @@ var Hf = /* @__PURE__ */ ct(Xt, 9, 0), Jf = /* @__PURE__ */ ct(Xt, 9, 1), Wf = /
               if (H > ke) {
                 if (ke = H, le = Ve, H > ft)
                   break;
-                for (var Xe = Math.min(Ve, H - 2), _n = 0, z = 0; z < Xe; ++z) {
-                  var vn = T - Ve + z & 32767, ir = S[vn], or = vn - ir & 32767;
-                  or > _n && (_n = or, ve = vn);
+                for (var Xe = Math.min(Ve, H - 2), vn = 0, z = 0; z < Xe; ++z) {
+                  var kn = T - Ve + z & 32767, ir = S[kn], or = kn - ir & 32767;
+                  or > vn && (vn = or, ve = kn);
                 }
               }
             }
@@ -9646,8 +9646,8 @@ var Hf = /* @__PURE__ */ ct(Xt, 9, 0), Jf = /* @__PURE__ */ ct(Xt, 9, 1), Wf = /
     u = Ea(n, c, h, we, fe, _e, U, ae, ge, T - ge, u), h || (i.r = u & 7 | c[u / 8 | 0] << 3, u -= 7, i.h = W, i.p = S, i.i = T, i.w = X);
   } else {
     for (var T = i.w || 0; T < o + h; T += 65535) {
-      var kn = T + 65535;
-      kn >= o && (c[u / 8 | 0] = h, kn = o), u = dl(c, u + 1, n.subarray(T, kn));
+      var bn = T + 65535;
+      bn >= o && (c[u / 8 | 0] = h, bn = o), u = dl(c, u + 1, n.subarray(T, bn));
     }
     i.i = o;
   }
@@ -9717,7 +9717,7 @@ try {
 } catch {
 }
 const gl = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-function Dn(n, e, t) {
+function Ln(n, e, t) {
   const s = t[0];
   if (e != null && n >= e)
     throw new Error(n + " >= " + e);
@@ -9728,14 +9728,14 @@ function Dn(n, e, t) {
     for (; (n[o] || s) === e[o]; )
       o++;
     if (o > 0)
-      return e.slice(0, o) + Dn(n.slice(o), e.slice(o), t);
+      return e.slice(0, o) + Ln(n.slice(o), e.slice(o), t);
   }
   const r = n ? t.indexOf(n[0]) : 0, i = e != null ? t.indexOf(e[0]) : t.length;
   if (i - r > 1) {
     const o = Math.round(0.5 * (r + i));
     return t[o];
   } else
-    return e && e.length > 1 ? e.slice(0, 1) : t[r] + Dn(n.slice(1), null, t);
+    return e && e.length > 1 ? e.slice(0, 1) : t[r] + Ln(n.slice(1), null, t);
 }
 function pl(n) {
   if (n.length !== ml(n[0]))
@@ -9805,7 +9805,7 @@ function yt(n, e, t = gl) {
       return "a" + t[0];
     const c = bs(e), h = e.slice(c.length);
     if (c === "A" + t[0].repeat(26))
-      return c + Dn("", h, t);
+      return c + Ln("", h, t);
     if (c < e)
       return c;
     const u = lg(c, t);
@@ -9815,15 +9815,15 @@ function yt(n, e, t = gl) {
   }
   if (e == null) {
     const c = bs(n), h = n.slice(c.length), u = Da(c, t);
-    return u ?? c + Dn(h, null, t);
+    return u ?? c + Ln(h, null, t);
   }
   const s = bs(n), r = n.slice(s.length), i = bs(e), o = e.slice(i.length);
   if (s === i)
-    return s + Dn(r, o, t);
+    return s + Ln(r, o, t);
   const a = Da(s, t);
   if (a == null)
     throw new Error("cannot increment any more");
-  return a < e ? a : s + Dn(r, null, t);
+  return a < e ? a : s + Ln(r, null, t);
 }
 function zi(n, e, t, s = gl) {
   if (t === 0)
@@ -9852,7 +9852,7 @@ function yl(n, e, t, s) {
   for (const [a, c] of Object.entries(n.Info ?? {}))
     o.set(a, c);
   if (i.set("Info", o), n.Kind === "item") {
-    const a = n, c = a.Type === Sn ? "" : a.Type ?? "";
+    const a = n, c = a.Type === xn ? "" : a.Type ?? "";
     switch (i.set("MIMEType", c), !0) {
       case (a.ValueKind === "literal" && a.Value !== void 0): {
         i.set("ValueKind", "literal"), i.set("literalValue", new F(a.Value));
@@ -9875,7 +9875,7 @@ function yl(n, e, t, s) {
     i.set("TargetId", a.TargetId ?? ""), s.set(r, i);
   }
 }
-var tt, I, Zs, Un, _t, jn, De, Vt, $t, nt, st, Ur, nn, Ut, sn, p, Cn, Ss, Nt, yr, Hi, wl, _l, Ee, en, En, xs, Tn, Is, On, vl, Ji, kl, Wi, Gi, L, bl, qi, Yi, Sl;
+var tt, I, Zs, jn, _t, nn, De, Vt, $t, nt, st, Ur, sn, Ut, rn, p, En, Ss, Nt, yr, Hi, wl, _l, Ee, en, Tn, xs, On, Is, An, vl, Ji, kl, Wi, Gi, L, bl, qi, Yi, Sl;
 const tn = class tn extends Jl {
   //----------------------------------------------------------------------------//
   //                               Construction                                 //
@@ -9889,9 +9889,9 @@ const tn = class tn extends Jl {
     _(this, tt);
     _(this, I);
     _(this, Zs);
-    _(this, Un);
+    _(this, jn);
     _(this, _t, null);
-    _(this, jn, /* @__PURE__ */ new Set());
+    _(this, nn, /* @__PURE__ */ new Set());
     // reverse index: outerItemId → Set<entryId>
     _(this, De, /* @__PURE__ */ new Map());
     // forward index: entryId → outerItemId  (kept in sync with #ReverseIndex)
@@ -9904,13 +9904,13 @@ const tn = class tn extends Jl {
     _(this, st, /* @__PURE__ */ new Map());
     _(this, Ur, Zl);
     // transaction nesting
-    _(this, nn, 0);
+    _(this, sn, 0);
     // ChangeSet accumulator inside a transaction
     _(this, Ut, {});
     // suppress index updates / change tracking when applying remote patches
-    _(this, sn, !1);
-    x(this, tt, t), x(this, I, t.getMap("Entries")), x(this, Zs, (s == null ? void 0 : s.LiteralSizeLimit) ?? Pl), x(this, Un, (s == null ? void 0 : s.TrashTTLms) ?? 2592e6), d(this, p, wl).call(this);
-    const r = (s == null ? void 0 : s.TrashCheckIntervalMs) ?? Math.min(Math.floor(l(this, Un) / 4), 36e5);
+    _(this, rn, !1);
+    x(this, tt, t), x(this, I, t.getMap("Entries")), x(this, Zs, (s == null ? void 0 : s.LiteralSizeLimit) ?? Pl), x(this, jn, (s == null ? void 0 : s.TrashTTLms) ?? 2592e6), d(this, p, wl).call(this);
+    const r = (s == null ? void 0 : s.TrashCheckIntervalMs) ?? Math.min(Math.floor(l(this, jn) / 4), 36e5);
     x(this, _t, setInterval(
       () => {
         this.purgeExpiredTrashEntries();
@@ -9969,9 +9969,9 @@ const tn = class tn extends Jl {
   /**** newItemAt — create a new item of given type as inner entry of outerItem ****/
   newItemAt(t, s, r) {
     if (s == null) throw new j("invalid-argument", "outerItem must not be missing");
-    const i = t ?? Sn;
-    Ai(i), _s(r), d(this, p, Cn).call(this, s.Id);
-    const o = crypto.randomUUID(), a = d(this, p, Tn).call(this, s.Id, r), c = i === Sn ? "" : i;
+    const i = t ?? xn;
+    Ai(i), _s(r), d(this, p, En).call(this, s.Id);
+    const o = crypto.randomUUID(), a = d(this, p, On).call(this, s.Id, r), c = i === xn ? "" : i;
     return this.transact(() => {
       const h = new N();
       h.set("Kind", "item"), h.set("outerItemId", s.Id), h.set("OrderKey", a), h.set("Label", new F()), h.set("Info", new N()), h.set("MIMEType", c), h.set("ValueKind", "none"), l(this, I).set(o, h), d(this, p, Ee).call(this, s.Id, o), d(this, p, L).call(this, s.Id, "innerEntryList"), d(this, p, L).call(this, o, "outerItem");
@@ -9981,11 +9981,11 @@ const tn = class tn extends Jl {
   newLinkAt(t, s, r) {
     if (t == null) throw new j("invalid-argument", "Target must not be missing");
     if (s == null) throw new j("invalid-argument", "outerItem must not be missing");
-    _s(r), d(this, p, Cn).call(this, t.Id), d(this, p, Cn).call(this, s.Id);
-    const i = crypto.randomUUID(), o = d(this, p, Tn).call(this, s.Id, r);
+    _s(r), d(this, p, En).call(this, t.Id), d(this, p, En).call(this, s.Id);
+    const i = crypto.randomUUID(), o = d(this, p, On).call(this, s.Id, r);
     return this.transact(() => {
       const a = new N();
-      a.set("Kind", "link"), a.set("outerItemId", s.Id), a.set("OrderKey", o), a.set("Label", new F()), a.set("Info", new N()), a.set("TargetId", t.Id), l(this, I).set(i, a), d(this, p, Ee).call(this, s.Id, i), d(this, p, En).call(this, t.Id, i), d(this, p, L).call(this, s.Id, "innerEntryList"), d(this, p, L).call(this, i, "outerItem");
+      a.set("Kind", "link"), a.set("outerItemId", s.Id), a.set("OrderKey", o), a.set("Label", new F()), a.set("Info", new N()), a.set("TargetId", t.Id), l(this, I).set(i, a), d(this, p, Ee).call(this, s.Id, i), d(this, p, Tn).call(this, t.Id, i), d(this, p, L).call(this, s.Id, "innerEntryList"), d(this, p, L).call(this, i, "outerItem");
     }), d(this, p, yr).call(this, i);
   }
   //----------------------------------------------------------------------------//
@@ -9994,13 +9994,13 @@ const tn = class tn extends Jl {
   /**** deserializeItemInto — import item subtree; always remaps all IDs ****/
   deserializeItemInto(t, s, r) {
     if (s == null) throw new j("invalid-argument", "outerItem must not be missing");
-    _s(r), d(this, p, Cn).call(this, s.Id);
+    _s(r), d(this, p, En).call(this, s.Id);
     const i = t;
     if (i == null || i.Kind !== "item")
       throw new j("invalid-argument", "Serialisation must be an SDS_ItemJSON object");
     const o = /* @__PURE__ */ new Map();
     d(this, p, qi).call(this, i, o);
-    const a = d(this, p, Tn).call(this, s.Id, r), c = o.get(i.Id);
+    const a = d(this, p, On).call(this, s.Id, r), c = o.get(i.Id);
     return this.transact(() => {
       d(this, p, Yi).call(this, i, s.Id, a, o), d(this, p, L).call(this, s.Id, "innerEntryList");
     }), d(this, p, Nt).call(this, c);
@@ -10008,18 +10008,18 @@ const tn = class tn extends Jl {
   /**** deserializeLinkInto — import link; always assigns a new Id ****/
   deserializeLinkInto(t, s, r) {
     if (s == null) throw new j("invalid-argument", "outerItem must not be missing");
-    _s(r), d(this, p, Cn).call(this, s.Id);
+    _s(r), d(this, p, En).call(this, s.Id);
     const i = t;
     if (i == null || i.Kind !== "link")
       throw new j("invalid-argument", "Serialisation must be an SDS_LinkJSON object");
-    const o = crypto.randomUUID(), a = d(this, p, Tn).call(this, s.Id, r);
+    const o = crypto.randomUUID(), a = d(this, p, On).call(this, s.Id, r);
     return this.transact(() => {
       const c = new N();
       c.set("Kind", "link"), c.set("outerItemId", s.Id), c.set("OrderKey", a), c.set("Label", new F(i.Label ?? ""));
       const h = new N();
       for (const [u, f] of Object.entries(i.Info ?? {}))
         h.set(u, f);
-      c.set("Info", h), c.set("TargetId", i.TargetId ?? ""), l(this, I).set(o, c), d(this, p, Ee).call(this, s.Id, o), i.TargetId && d(this, p, En).call(this, i.TargetId, o), d(this, p, L).call(this, s.Id, "innerEntryList");
+      c.set("Info", h), c.set("TargetId", i.TargetId ?? ""), l(this, I).set(o, c), d(this, p, Ee).call(this, s.Id, o), i.TargetId && d(this, p, Tn).call(this, i.TargetId, o), d(this, p, L).call(this, s.Id, "innerEntryList");
     }), d(this, p, yr).call(this, o);
   }
   //----------------------------------------------------------------------------//
@@ -10032,7 +10032,7 @@ const tn = class tn extends Jl {
         "move-would-cycle",
         "cannot move an entry into one of its own descendants"
       );
-    const i = this._outerItemIdOf(t.Id), o = d(this, p, Tn).call(this, s.Id, r);
+    const i = this._outerItemIdOf(t.Id), o = d(this, p, On).call(this, s.Id, r);
     this.transact(() => {
       const a = l(this, I).get(t.Id);
       if (a.set("outerItemId", s.Id), a.set("OrderKey", o), i === G && s.Id !== G) {
@@ -10044,7 +10044,7 @@ const tn = class tn extends Jl {
   }
   /**** _rebalanceInnerEntriesOf — backend-specific raw rebalance; caller must hold a transaction ****/
   _rebalanceInnerEntriesOf(t) {
-    const s = d(this, p, On).call(this, t);
+    const s = d(this, p, An).call(this, t);
     if (s.length === 0)
       return;
     const r = zi(null, null, s.length);
@@ -10086,7 +10086,7 @@ const tn = class tn extends Jl {
   //----------------------------------------------------------------------------//
   /**** purgeExpiredTrashEntries — remove trash items past TTL ****/
   purgeExpiredTrashEntries(t) {
-    const s = t ?? l(this, Un);
+    const s = t ?? l(this, jn);
     if (s == null)
       return 0;
     const r = Date.now(), i = Array.from(l(this, De).get(G) ?? /* @__PURE__ */ new Set());
@@ -10104,33 +10104,33 @@ const tn = class tn extends Jl {
     }
     return o;
   }
-  /**** dispose — cleanup trash timer ****/
+  /**** dispose — stop background timer and remove all change listeners ****/
   dispose() {
-    l(this, _t) != null && (clearInterval(l(this, _t)), x(this, _t, null));
+    l(this, _t) != null && (clearInterval(l(this, _t)), x(this, _t, null)), l(this, nn).clear();
   }
   //----------------------------------------------------------------------------//
   //                           Transactions & Events                            //
   //----------------------------------------------------------------------------//
   /**** transact — execute callback in batched transaction ****/
   transact(t) {
-    ar(this, nn)._++;
+    ar(this, sn)._++;
     try {
-      l(this, nn) === 1 && !l(this, sn) ? l(this, tt).transact(() => {
+      l(this, sn) === 1 && !l(this, rn) ? l(this, tt).transact(() => {
         t();
       }) : t();
     } finally {
-      if (ar(this, nn)._--, l(this, nn) === 0) {
+      if (ar(this, sn)._--, l(this, sn) === 0) {
         const s = { ...l(this, Ut) };
         x(this, Ut, {});
-        const r = l(this, sn) ? "external" : "internal";
+        const r = l(this, rn) ? "external" : "internal";
         d(this, p, bl).call(this, r, s);
       }
     }
   }
   /**** onChangeInvoke — subscribe to change events ****/
   onChangeInvoke(t) {
-    return l(this, jn).add(t), () => {
-      l(this, jn).delete(t);
+    return l(this, nn).add(t), () => {
+      l(this, nn).delete(t);
     };
   }
   //----------------------------------------------------------------------------//
@@ -10138,15 +10138,17 @@ const tn = class tn extends Jl {
   //----------------------------------------------------------------------------//
   /**** applyRemotePatch — apply remote changes and update indices ****/
   applyRemotePatch(t) {
-    x(this, sn, !0);
-    try {
-      ga(l(this, tt), t), this.transact(() => {
-        d(this, p, _l).call(this);
-      });
-    } finally {
-      x(this, sn, !1);
+    if (t.byteLength !== 0) {
+      x(this, rn, !0);
+      try {
+        ga(l(this, tt), t), this.transact(() => {
+          d(this, p, _l).call(this);
+        });
+      } finally {
+        x(this, rn, !1);
+      }
+      this.recoverOrphans();
     }
-    this.recoverOrphans();
   }
   /**** currentCursor — get state vector for sync ****/
   get currentCursor() {
@@ -10172,7 +10174,7 @@ const tn = class tn extends Jl {
           const o = s.get("TargetId");
           if (o && !t.has(o)) {
             const a = yt(d(this, p, Is).call(this, Ce), null), c = new N();
-            c.set("Kind", "data"), c.set("outerItemId", Ce), c.set("OrderKey", a), c.set("Label", new F()), c.set("Info", new N()), c.set("MIMEType", ""), c.set("ValueKind", "none"), l(this, I).set(o, c), d(this, p, Ee).call(this, Ce, o), t.add(o), d(this, p, L).call(this, Ce, "innerEntryList");
+            c.set("Kind", "item"), c.set("outerItemId", Ce), c.set("OrderKey", a), c.set("Label", new F()), c.set("Info", new N()), c.set("MIMEType", ""), c.set("ValueKind", "none"), l(this, I).set(o, c), d(this, p, Ee).call(this, Ce, o), t.add(o), d(this, p, L).call(this, Ce, "innerEntryList");
           }
         }
       });
@@ -10226,12 +10228,12 @@ const tn = class tn extends Jl {
   /**** _TypeOf — get data MIME type ****/
   _TypeOf(t) {
     const s = l(this, I).get(t), r = (s == null ? void 0 : s.get("MIMEType")) ?? "";
-    return r === "" ? Sn : r;
+    return r === "" ? xn : r;
   }
   /**** _setTypeOf — set data MIME type ****/
   _setTypeOf(t, s) {
     Ai(s);
-    const r = s === Sn ? "" : s;
+    const r = s === xn ? "" : s;
     this.transact(() => {
       var i;
       (i = l(this, I).get(t)) == null || i.set("MIMEType", r), d(this, p, L).call(this, t, "Type");
@@ -10282,7 +10284,7 @@ const tn = class tn extends Jl {
             break;
           }
           case typeof s == "string": {
-            const o = new TextEncoder().encode(s), a = tn._blobHash(o);
+            const o = new TextEncoder().encode(s), a = tn._BLOBhash(o);
             this._storeValueBlob(a, o), r.set("ValueKind", "literal-reference"), r.set("ValueRef", { Hash: a, Size: o.byteLength });
             break;
           }
@@ -10291,7 +10293,7 @@ const tn = class tn extends Jl {
             break;
           }
           default: {
-            const i = s, o = tn._blobHash(i);
+            const i = s, o = tn._BLOBhash(i);
             this._storeValueBlob(o, i), r.set("ValueKind", "binary-reference"), r.set("ValueRef", { Hash: o, Size: i.byteLength });
             break;
           }
@@ -10378,7 +10380,7 @@ const tn = class tn extends Jl {
   }
   /**** _innerEntriesOf — get sorted children as array-like proxy ****/
   _innerEntriesOf(t) {
-    const s = this, r = d(this, p, On).call(this, t);
+    const s = this, r = d(this, p, An).call(this, t);
     return new Proxy([], {
       get(i, o) {
         var a;
@@ -10409,7 +10411,7 @@ const tn = class tn extends Jl {
   /**** _TargetOf — get link target data ****/
   _TargetOf(t) {
     const s = l(this, I).get(t), r = s == null ? void 0 : s.get("TargetId");
-    if (!r)
+    if (r == null || r === "")
       throw new j("not-found", `link '${t}' has no target`);
     return d(this, p, Nt).call(this, r);
   }
@@ -10430,11 +10432,11 @@ const tn = class tn extends Jl {
     }
   }
 };
-tt = new WeakMap(), I = new WeakMap(), Zs = new WeakMap(), Un = new WeakMap(), _t = new WeakMap(), jn = new WeakMap(), De = new WeakMap(), Vt = new WeakMap(), $t = new WeakMap(), nt = new WeakMap(), st = new WeakMap(), Ur = new WeakMap(), nn = new WeakMap(), Ut = new WeakMap(), sn = new WeakMap(), p = new WeakSet(), //----------------------------------------------------------------------------//
+tt = new WeakMap(), I = new WeakMap(), Zs = new WeakMap(), jn = new WeakMap(), _t = new WeakMap(), nn = new WeakMap(), De = new WeakMap(), Vt = new WeakMap(), $t = new WeakMap(), nt = new WeakMap(), st = new WeakMap(), Ur = new WeakMap(), sn = new WeakMap(), Ut = new WeakMap(), rn = new WeakMap(), p = new WeakSet(), //----------------------------------------------------------------------------//
 //                              Internal helpers                              //
 //----------------------------------------------------------------------------//
 /**** #requireItemExists — throw if data does not exist ****/
-Cn = function(t) {
+En = function(t) {
   const s = l(this, I).get(t);
   if (s == null || s.get("Kind") !== "item")
     throw new j("invalid-argument", `item '${t}' does not exist`);
@@ -10471,7 +10473,7 @@ wl = function() {
     const r = t.get("outerItemId");
     if (r && d(this, p, Ee).call(this, r, s), t.get("Kind") === "link") {
       const i = t.get("TargetId");
-      i && d(this, p, En).call(this, i, s);
+      i && d(this, p, Tn).call(this, i, s);
     }
   });
 }, /**** #updateIndicesFromView — incremental diff after remote patches ****/
@@ -10483,7 +10485,7 @@ _l = function() {
     switch (a !== c && (c != null && (d(this, p, en).call(this, c, o), d(this, p, L).call(this, c, "innerEntryList")), a != null && (d(this, p, Ee).call(this, a, o), d(this, p, L).call(this, a, "innerEntryList")), d(this, p, L).call(this, o, "outerItem")), !0) {
       case i.get("Kind") === "link": {
         const h = i.get("TargetId"), u = l(this, nt).get(o);
-        h !== u && (u != null && d(this, p, xs).call(this, u, o), h != null && d(this, p, En).call(this, h, o));
+        h !== u && (u != null && d(this, p, xs).call(this, u, o), h != null && d(this, p, Tn).call(this, h, o));
         break;
       }
       case l(this, nt).has(o):
@@ -10507,7 +10509,7 @@ en = function(t, s) {
   var r;
   (r = l(this, De).get(t)) == null || r.delete(s), l(this, Vt).delete(s);
 }, /**** #addToLinkTargetIndex — add link to target index ****/
-En = function(t, s) {
+Tn = function(t, s) {
   let r = l(this, $t).get(t);
   r == null && (r = /* @__PURE__ */ new Set(), l(this, $t).set(t, r)), r.add(s), l(this, nt).set(s, t);
 }, /**** #removeFromLinkTargetIndex — remove link from target index ****/
@@ -10515,7 +10517,7 @@ xs = function(t, s) {
   var r;
   (r = l(this, $t).get(t)) == null || r.delete(s), l(this, nt).delete(s);
 }, /**** #OrderKeyAt — generate fractional key at insertion position ****/
-Tn = function(t, s) {
+On = function(t, s) {
   const r = (a) => {
     if (a.length === 0 || s == null) {
       const h = a.length > 0 ? a[a.length - 1].OrderKey : null;
@@ -10527,15 +10529,15 @@ Tn = function(t, s) {
       c < a.length ? a[c].OrderKey : null
     );
   };
-  let i = d(this, p, On).call(this, t);
+  let i = d(this, p, An).call(this, t);
   const o = r(i);
-  return o.length <= zl ? o : (this._rebalanceInnerEntriesOf(t), r(d(this, p, On).call(this, t)));
+  return o.length <= zl ? o : (this._rebalanceInnerEntriesOf(t), r(d(this, p, An).call(this, t)));
 }, /**** #lastOrderKeyOf — get last inner entry's order key ****/
 Is = function(t) {
-  const s = d(this, p, On).call(this, t);
+  const s = d(this, p, An).call(this, t);
   return s.length > 0 ? s[s.length - 1].OrderKey : null;
 }, /**** #sortedInnerEntriesOf — retrieve children sorted by order key ****/
-On = function(t) {
+An = function(t) {
   const s = l(this, De).get(t) ?? /* @__PURE__ */ new Set(), r = [];
   for (const i of s) {
     const o = l(this, I).get(i);
@@ -10619,7 +10621,7 @@ L = function(t, s) {
 }, /**** #notifyHandlers — call change handlers with origin and changeset ****/
 bl = function(t, s) {
   if (Object.keys(s).length !== 0)
-    for (const r of l(this, jn))
+    for (const r of l(this, nn))
       try {
         r(t, s);
       } catch {
@@ -10637,7 +10639,7 @@ Yi = function(t, s, r, i) {
   for (const [h, u] of Object.entries(t.Info ?? {}))
     c.set(h, u);
   if (a.set("Info", c), t.Kind === "item") {
-    const h = t, u = h.Type === Sn ? "" : h.Type ?? "";
+    const h = t, u = h.Type === xn ? "" : h.Type ?? "";
     switch (a.set("MIMEType", u), !0) {
       case (h.ValueKind === "literal" && h.Value !== void 0): {
         a.set("ValueKind", "literal"), a.set("literalValue", new F(h.Value));
@@ -10657,7 +10659,7 @@ Yi = function(t, s, r, i) {
     });
   } else {
     const h = t, u = i.has(h.TargetId) ? i.get(h.TargetId) : h.TargetId;
-    a.set("TargetId", u ?? ""), l(this, I).set(o, a), d(this, p, Ee).call(this, s, o), u && d(this, p, En).call(this, u, o);
+    a.set("TargetId", u ?? ""), l(this, I).set(o, a), d(this, p, Ee).call(this, s, o), u && d(this, p, Tn).call(this, u, o);
   }
 }, /**** #isDescendantOf — check ancestor relationship ****/
 Sl = function(t, s) {
@@ -10691,7 +10693,7 @@ function Ua(n) {
 function ja(n) {
   return Array.from(n).map((e) => e.toString(16).padStart(2, "0")).join("");
 }
-var vt, kt, zs, Bn, rn, Kn, on, Pn, Fn, Zn, Hs, J, Xi, An, Cs, xl, Il, Cl;
+var vt, kt, zs, Bn, on, Kn, an, Pn, Fn, Zn, Hs, J, Xi, Dn, Cs, xl, Il, Cl;
 class gg {
   /**** constructor ****/
   constructor(e) {
@@ -10701,9 +10703,9 @@ class gg {
     _(this, kt);
     _(this, zs, "");
     _(this, Bn);
-    _(this, rn);
+    _(this, on);
     _(this, Kn, /* @__PURE__ */ new Set());
-    _(this, on, /* @__PURE__ */ new Set());
+    _(this, an, /* @__PURE__ */ new Set());
     _(this, Pn, /* @__PURE__ */ new Set());
     _(this, Fn, /* @__PURE__ */ new Set());
     // incoming value chunk reassembly: hash → chunks array
@@ -10730,24 +10732,24 @@ class gg {
   }
   /**** sendPatch ****/
   sendPatch(e) {
-    d(this, J, An).call(this, vs(Na, e));
+    d(this, J, Dn).call(this, vs(Na, e));
   }
   /**** sendValue ****/
   sendValue(e, t) {
     const s = Ua(e);
     if (t.byteLength <= ur)
-      d(this, J, An).call(this, vs(Ra, bi(s, t)));
+      d(this, J, Dn).call(this, vs(Ra, bi(s, t)));
     else {
       const r = Math.ceil(t.byteLength / ur);
       for (let i = 0; i < r; i++) {
         const o = i * ur, a = t.slice(o, o + ur), c = new Uint8Array(et + 8);
-        c.set(s, 0), new DataView(c.buffer).setUint32(et, i, !1), new DataView(c.buffer).setUint32(et + 4, r, !1), d(this, J, An).call(this, vs($a, bi(c, a)));
+        c.set(s, 0), new DataView(c.buffer).setUint32(et, i, !1), new DataView(c.buffer).setUint32(et + 4, r, !1), d(this, J, Dn).call(this, vs($a, bi(c, a)));
       }
     }
   }
   /**** requestValue ****/
   requestValue(e) {
-    d(this, J, An).call(this, vs(Ma, Ua(e)));
+    d(this, J, Dn).call(this, vs(Ma, Ua(e)));
   }
   /**** onPatch ****/
   onPatch(e) {
@@ -10757,8 +10759,8 @@ class gg {
   }
   /**** onValue ****/
   onValue(e) {
-    return l(this, on).add(e), () => {
-      l(this, on).delete(e);
+    return l(this, an).add(e), () => {
+      l(this, an).delete(e);
     };
   }
   /**** onConnectionChange ****/
@@ -10773,7 +10775,7 @@ class gg {
   /**** sendLocalState ****/
   sendLocalState(e) {
     const t = new TextEncoder().encode(JSON.stringify(e));
-    d(this, J, An).call(this, vs(Va, t));
+    d(this, J, Dn).call(this, vs(Va, t));
   }
   /**** onRemoteState ****/
   onRemoteState(e) {
@@ -10786,7 +10788,7 @@ class gg {
     return l(this, Hs);
   }
 }
-vt = new WeakMap(), kt = new WeakMap(), zs = new WeakMap(), Bn = new WeakMap(), rn = new WeakMap(), Kn = new WeakMap(), on = new WeakMap(), Pn = new WeakMap(), Fn = new WeakMap(), Zn = new WeakMap(), Hs = new WeakMap(), J = new WeakSet(), /**** #doConnect ****/
+vt = new WeakMap(), kt = new WeakMap(), zs = new WeakMap(), Bn = new WeakMap(), on = new WeakMap(), Kn = new WeakMap(), an = new WeakMap(), Pn = new WeakMap(), Fn = new WeakMap(), Zn = new WeakMap(), Hs = new WeakMap(), J = new WeakSet(), /**** #doConnect ****/
 Xi = function() {
   return new Promise((e, t) => {
     const s = `${l(this, zs)}?token=${encodeURIComponent(l(this, Bn).Token)}`, r = new WebSocket(s);
@@ -10804,7 +10806,7 @@ Xi = function() {
 //                                  Private                                   //
 //----------------------------------------------------------------------------//
 /**** #send ****/
-An = function(e) {
+Dn = function(e) {
   var t;
   ((t = l(this, kt)) == null ? void 0 : t.readyState) === WebSocket.OPEN && l(this, kt).send(e);
 }, /**** #setState ****/
@@ -10821,13 +10823,13 @@ Cs = function(e) {
 xl = function() {
   var t;
   const e = ((t = l(this, Bn)) == null ? void 0 : t.reconnectDelayMs) ?? 2e3;
-  x(this, rn, setTimeout(() => {
+  x(this, on, setTimeout(() => {
     l(this, vt) === "reconnecting" && d(this, J, Xi).call(this).catch(() => {
     });
   }, e));
 }, /**** #clearReconnectTimer ****/
 Il = function() {
-  l(this, rn) != null && (clearTimeout(l(this, rn)), x(this, rn, void 0));
+  l(this, on) != null && (clearTimeout(l(this, on)), x(this, on, void 0));
 }, /**** #handleFrame ****/
 Cl = function(e) {
   if (e.byteLength < 1)
@@ -10846,7 +10848,7 @@ Cl = function(e) {
       if (s.byteLength < et)
         return;
       const r = ja(s.slice(0, et)), i = s.slice(et);
-      for (const o of l(this, on))
+      for (const o of l(this, an))
         try {
           o(r, i);
         } catch {
@@ -10880,7 +10882,7 @@ Cl = function(e) {
           ...Array.from({ length: h.total }, (f, g) => h.chunks.get(g))
         );
         l(this, Zn).delete(r);
-        for (const f of l(this, on))
+        for (const f of l(this, an))
           try {
             f(r, u);
           } catch {
@@ -10890,7 +10892,7 @@ Cl = function(e) {
     }
   }
 };
-var Js, ze, pe, jt, rt, He, Bt, zn, Hn, Jn, an, Wn, Le, $, Es, Ts, El, Tl, Ol, Qi, eo, Al, to, Dl;
+var Js, ze, pe, jt, rt, He, Bt, zn, Hn, Jn, cn, Wn, Le, $, Es, Ts, El, Tl, Ol, Qi, eo, Al, to, Dl;
 class pg {
   /**** Constructor ****/
   constructor(e, t = {}) {
@@ -10910,7 +10912,7 @@ class pg {
     _(this, zn, /* @__PURE__ */ new Set());
     _(this, Hn, /* @__PURE__ */ new Set());
     _(this, Jn, /* @__PURE__ */ new Set());
-    _(this, an, /* @__PURE__ */ new Set());
+    _(this, cn, /* @__PURE__ */ new Set());
     /**** Presence Peer Set ****/
     _(this, Wn, /* @__PURE__ */ new Map());
     /**** Fallback Mode ****/
@@ -11049,8 +11051,8 @@ class pg {
   }
   /**** onRemoteState ****/
   onRemoteState(e) {
-    return l(this, an).add(e), () => {
-      l(this, an).delete(e);
+    return l(this, cn).add(e), () => {
+      l(this, cn).delete(e);
     };
   }
   /**** PeerSet ****/
@@ -11058,7 +11060,7 @@ class pg {
     return l(this, Wn);
   }
 }
-Js = new WeakMap(), ze = new WeakMap(), pe = new WeakMap(), jt = new WeakMap(), rt = new WeakMap(), He = new WeakMap(), Bt = new WeakMap(), zn = new WeakMap(), Hn = new WeakMap(), Jn = new WeakMap(), an = new WeakMap(), Wn = new WeakMap(), Le = new WeakMap(), $ = new WeakSet(), //----------------------------------------------------------------------------//
+Js = new WeakMap(), ze = new WeakMap(), pe = new WeakMap(), jt = new WeakMap(), rt = new WeakMap(), He = new WeakMap(), Bt = new WeakMap(), zn = new WeakMap(), Hn = new WeakMap(), Jn = new WeakMap(), cn = new WeakMap(), Wn = new WeakMap(), Le = new WeakMap(), $ = new WeakSet(), //----------------------------------------------------------------------------//
 //                                  Private                                   //
 //----------------------------------------------------------------------------//
 /**** #setState — updates the connection state and notifies all registered handlers ****/
@@ -11131,7 +11133,7 @@ Qi = function(e) {
   }, s.onconnectionstatechange = () => {
     if (s.connectionState === "failed" || s.connectionState === "closed") {
       l(this, rt).delete(e), l(this, He).delete(e), l(this, Wn).delete(e);
-      for (const r of l(this, an))
+      for (const r of l(this, cn))
         try {
           r(e, void 0);
         } catch {
@@ -11175,7 +11177,7 @@ Al = function(e, t) {
         if (typeof i.PeerId != "string")
           break;
         i.lastSeen = Date.now(), l(this, Wn).set(i.PeerId, i);
-        for (const o of l(this, an))
+        for (const o of l(this, cn))
           try {
             o(i.PeerId, i);
           } catch {
@@ -11332,7 +11334,7 @@ bt = new WeakMap(), Je = new WeakMap(), Ws = new WeakMap(), We = new WeakSet(), 
   });
 };
 const ug = 512 * 1024;
-var he, q, K, Kt, Gn, qn, Gs, qs, cn, Yn, Pt, Xn, ln, hn, un, St, Ft, Ge, Ys, Qn, xt, it, B, Ll, Nl, Rl, Ml, Vl, no, $l, so, Ul, jl, ro;
+var he, q, K, Kt, Gn, qn, Gs, qs, ln, Yn, Pt, Xn, hn, un, dn, St, Ft, Ge, Ys, Qn, xt, it, B, Ll, Nl, Rl, Ml, Vl, no, $l, so, Ul, jl, ro;
 class yg {
   //----------------------------------------------------------------------------//
   //                                Constructor                                 //
@@ -11349,7 +11351,7 @@ class yg {
     _(this, Gs);
     _(this, qs, []);
     // outgoing patch queue (patches created while disconnected)
-    _(this, cn, 0);
+    _(this, ln, 0);
     // accumulated patch bytes since last checkpoint
     _(this, Yn, 0);
     // sequence number of the last saved snapshot
@@ -11361,10 +11363,10 @@ class yg {
     // each local mutation.  Backend-agnostic: the DataStore owns the format.
     _(this, Xn, new Uint8Array(0));
     // heartbeat timer
-    _(this, ln);
     _(this, hn);
+    _(this, un);
     // presence peer tracking
-    _(this, un, /* @__PURE__ */ new Map());
+    _(this, dn, /* @__PURE__ */ new Map());
     _(this, St, /* @__PURE__ */ new Map());
     _(this, Ft, /* @__PURE__ */ new Set());
     // BroadcastChannel (optional, browser/tauri only)
@@ -11399,7 +11401,7 @@ class yg {
   /**** stop ****/
   async stop() {
     var e, t, s;
-    l(this, ln) != null && (clearInterval(l(this, ln)), x(this, ln, void 0));
+    l(this, hn) != null && (clearInterval(l(this, hn)), x(this, hn, void 0));
     for (const r of l(this, St).values())
       clearTimeout(r);
     l(this, St).clear();
@@ -11408,7 +11410,7 @@ class yg {
         r();
       } catch {
       }
-    x(this, xt, []), (e = l(this, Ge)) == null || e.close(), x(this, Ge, void 0), (t = l(this, K)) == null || t.disconnect(), l(this, q) != null && l(this, cn) > 0 && await d(this, B, no).call(this), await ((s = l(this, q)) == null ? void 0 : s.close());
+    x(this, xt, []), (e = l(this, Ge)) == null || e.close(), x(this, Ge, void 0), (t = l(this, K)) == null || t.disconnect(), l(this, q) != null && l(this, ln) > 0 && await d(this, B, no).call(this), await ((s = l(this, q)) == null ? void 0 : s.close());
   }
   //----------------------------------------------------------------------------//
   //                             Network Connection                             //
@@ -11452,7 +11454,7 @@ class yg {
   /**** setPresenceTo ****/
   setPresenceTo(e) {
     var s, r;
-    x(this, hn, e);
+    x(this, un, e);
     const t = { ...e, PeerId: this.PeerId };
     (s = l(this, Kt)) == null || s.sendLocalState(e), (r = l(this, Ge)) == null || r.postMessage({ type: "presence", payload: e });
     for (const i of l(this, Ft))
@@ -11464,7 +11466,7 @@ class yg {
   }
   /**** PeerSet (remote peers only) ****/
   get PeerSet() {
-    return l(this, un);
+    return l(this, dn);
   }
   /**** onPresenceChange ****/
   onPresenceChange(e) {
@@ -11473,7 +11475,7 @@ class yg {
     };
   }
 }
-he = new WeakMap(), q = new WeakMap(), K = new WeakMap(), Kt = new WeakMap(), Gn = new WeakMap(), qn = new WeakMap(), Gs = new WeakMap(), qs = new WeakMap(), cn = new WeakMap(), Yn = new WeakMap(), Pt = new WeakMap(), Xn = new WeakMap(), ln = new WeakMap(), hn = new WeakMap(), un = new WeakMap(), St = new WeakMap(), Ft = new WeakMap(), Ge = new WeakMap(), Ys = new WeakMap(), Qn = new WeakMap(), xt = new WeakMap(), it = new WeakMap(), B = new WeakSet(), Ll = async function() {
+he = new WeakMap(), q = new WeakMap(), K = new WeakMap(), Kt = new WeakMap(), Gn = new WeakMap(), qn = new WeakMap(), Gs = new WeakMap(), qs = new WeakMap(), ln = new WeakMap(), Yn = new WeakMap(), Pt = new WeakMap(), Xn = new WeakMap(), hn = new WeakMap(), un = new WeakMap(), dn = new WeakMap(), St = new WeakMap(), Ft = new WeakMap(), Ge = new WeakMap(), Ys = new WeakMap(), Qn = new WeakMap(), xt = new WeakMap(), it = new WeakMap(), B = new WeakSet(), Ll = async function() {
   if (l(this, q) == null)
     return;
   await l(this, q).loadSnapshot();
@@ -11500,7 +11502,7 @@ Nl = function() {
     ar(this, Pt)._++;
     const i = l(this, he).exportPatch(r);
     x(this, Xn, l(this, he).currentCursor), i.byteLength !== 0 && (l(this, q) != null && (l(this, q).appendPatch(i, l(this, Pt)).catch(() => {
-    }), x(this, cn, l(this, cn) + i.byteLength), l(this, cn) >= ug && d(this, B, no).call(this).catch(() => {
+    }), x(this, ln, l(this, ln) + i.byteLength), l(this, ln) >= ug && d(this, B, no).call(this).catch(() => {
     })), ((o = l(this, K)) == null ? void 0 : o.ConnectionState) === "connected" ? (l(this, K).sendPatch(i), (a = l(this, Ge)) == null || a.postMessage({ type: "patch", payload: i })) : l(this, qs).push(i), d(this, B, so).call(this, s, "send").catch(() => {
     }));
   });
@@ -11531,9 +11533,9 @@ Rl = function() {
 }, /**** #wirePresenceHeartbeat — starts a periodic timer to re-broadcast local presence state ****/
 Ml = function() {
   const e = l(this, Gn) / 4;
-  x(this, ln, setInterval(() => {
+  x(this, hn, setInterval(() => {
     var t, s;
-    l(this, hn) != null && ((t = l(this, Kt)) == null || t.sendLocalState(l(this, hn)), (s = l(this, Ge)) == null || s.postMessage({ type: "presence", payload: l(this, hn) }));
+    l(this, un) != null && ((t = l(this, Kt)) == null || t.sendLocalState(l(this, un)), (s = l(this, Ge)) == null || s.postMessage({ type: "presence", payload: l(this, un) }));
   }, e));
 }, /**** #wireBroadcastChannel — wires the BroadcastChannel for cross-tab patch and presence relay ****/
 Vl = function() {
@@ -11554,7 +11556,7 @@ Vl = function() {
     }
   });
 }, no = async function() {
-  l(this, q) != null && (await l(this, q).saveSnapshot(l(this, he).asBinary()), await l(this, q).prunePatches(l(this, Pt)), x(this, Yn, l(this, Pt)), x(this, cn, 0));
+  l(this, q) != null && (await l(this, q).saveSnapshot(l(this, he).asBinary()), await l(this, q).prunePatches(l(this, Pt)), x(this, Yn, l(this, Pt)), x(this, ln, 0));
 }, //----------------------------------------------------------------------------//
 //                            Offline Queue Flush                             //
 //----------------------------------------------------------------------------//
@@ -11601,7 +11603,7 @@ Ul = function(e, t) {
     return;
   }
   const s = { ...t, _lastSeen: Date.now() };
-  l(this, un).set(e, s), d(this, B, jl).call(this, e);
+  l(this, dn).set(e, s), d(this, B, jl).call(this, e);
   for (const r of l(this, Ft))
     try {
       r(e, t, "remote");
@@ -11621,9 +11623,9 @@ jl = function(e) {
   l(this, St).set(e, s);
 }, /**** #removePeer — removes a peer from the peer set and notifies presence change handlers ****/
 ro = function(e) {
-  if (!l(this, un).has(e))
+  if (!l(this, dn).has(e))
     return;
-  l(this, un).delete(e);
+  l(this, dn).delete(e);
   const t = l(this, St).get(e);
   t != null && (clearTimeout(t), l(this, St).delete(e));
   for (const s of l(this, Ft))
