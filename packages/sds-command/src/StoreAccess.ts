@@ -137,6 +137,12 @@ export async function runSync (
       'no server URL — set SDS_SERVER_URL or use --server', ExitCodes.UsageError
     )
   }
+  if (! /^wss?:\/\//.test(ServerURL)) {
+    throw new SDS_CommandError(
+      `invalid server URL '${ServerURL}' — must start with 'ws://' or 'wss://'`,
+      ExitCodes.UsageError
+    )
+  }
   if (Token == null) {
     throw new SDS_CommandError(
       'no client token — set SDS_TOKEN or use --token', ExitCodes.UsageError
@@ -251,5 +257,42 @@ export function resolveEntryId (IdOrAlias:string):string {
     case 'root':  return RootId
     case 'trash': return TrashId
     default:      return IdOrAlias
+  }
+}
+
+//----------------------------------------------------------------------------//
+//                              parseIntOption                                //
+//----------------------------------------------------------------------------//
+
+/**** parseIntOption — parses an integer CLI option; throws UsageError on NaN ****/
+
+export function parseIntOption (Raw:string, FlagName:string):number {
+  const Value = parseInt(Raw, 10)
+  if (isNaN(Value)) {
+    throw new SDS_CommandError(
+      `invalid value for ${FlagName}: '${Raw}' — expected an integer`,
+      ExitCodes.UsageError
+    )
+  }
+  return Value
+}
+
+//----------------------------------------------------------------------------//
+//                              readFileSafely                                //
+//----------------------------------------------------------------------------//
+
+/**** readFileSafely — wraps fs.readFile; maps ENOENT to SDS_CommandError(NotFound) ****/
+
+export async function readFileSafely (FilePath:string):Promise<Buffer> {
+  try {
+    return await fs.readFile(FilePath)
+  } catch (Signal:unknown) {
+    if ((Signal as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw new SDS_CommandError(
+        `file not found: '${FilePath}'`,
+        ExitCodes.NotFound
+      )
+    }
+    throw Signal
   }
 }

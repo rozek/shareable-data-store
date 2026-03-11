@@ -23,7 +23,7 @@ describe('trash commands (TR)', () => {
     DataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-tr-'))
     // seed the store with a fresh item (creates the DB)
     await runCLI([
-      '--store', 'test', '--data-dir', DataDir, 'item', 'create', '--label', 'seed',
+      '--store', 'test', '--data-dir', DataDir, 'entry', 'create', '--label', 'seed',
     ])
   })
 
@@ -41,7 +41,7 @@ describe('trash commands (TR)', () => {
 
   it('TR-02: trash list shows deleted entries', async () => {
     const Create = await runCLI([
-      '--store', 'test', '--data-dir', DataDir, 'item', 'create', '--label', 'deleteme',
+      '--store', 'test', '--data-dir', DataDir, 'entry', 'create', '--label', 'deleteme',
     ])
     const Id = Create.Stdout.trim()
 
@@ -72,7 +72,7 @@ describe('trash commands (TR)', () => {
   it('TR-04: purge-expired with very large TTL removes nothing', async () => {
     // delete an item and then purge with 100-year TTL
     const Create = await runCLI([
-      '--store', 'test', '--data-dir', DataDir, 'item', 'create', '--label', 'recent',
+      '--store', 'test', '--data-dir', DataDir, 'entry', 'create', '--label', 'recent',
     ])
     const Id = Create.Stdout.trim()
     await runCLI(['--store', 'test', '--data-dir', DataDir, 'entry', 'delete', Id])
@@ -93,18 +93,38 @@ describe('trash commands (TR)', () => {
     expect(Entries.some((e) => e.id === Id)).toBe(true)
   })
 
-  it('TR-05: purge-expired with TTL 0 removes all trash entries', async () => {
+  it('TR-05: purge-expired with --ttl 0 exits with UsageError (code 2)', async () => {
     const Result = await runCLI([
-      '--store', 'test', '--data-dir', DataDir, '--format', 'json',
+      '--store', 'test', '--data-dir', DataDir,
       'trash', 'purge-expired', '--ttl', '0',
     ])
-    expect(Result.ExitCode).toBe(0)
-    const Json = JSON.parse(Result.Stdout)
-    expect(Json.purged).toBeGreaterThan(0)
+    expect(Result.ExitCode).toBe(2)
+    expect(Result.Stderr).toMatch(/--ttl/i)
+  })
 
-    const List = await runCLI([
-      '--store', 'test', '--data-dir', DataDir, 'trash', 'list',
+  it('TR-06: --ttl with a non-integer value exits with UsageError (code 2)', async () => {
+    const Result = await runCLI([
+      '--store', 'test', '--data-dir', DataDir,
+      'trash', 'purge-expired', '--ttl', 'abc',
     ])
-    expect(List.Stdout).toMatch(/empty/)
+    expect(Result.ExitCode).toBe(2)
+  })
+
+  it('TR-07: trash list --only with an invalid value exits with UsageError (code 2)', async () => {
+    const Result = await runCLI([
+      '--store', 'test', '--data-dir', DataDir,
+      'trash', 'list', '--only', 'foobar',
+    ])
+    expect(Result.ExitCode).toBe(2)
+    expect(Result.Stderr).toMatch(/--only/i)
+  })
+
+  it('TR-08: purge-expired with --ttl -1 exits with UsageError (code 2)', async () => {
+    const Result = await runCLI([
+      '--store', 'test', '--data-dir', DataDir,
+      'trash', 'purge-expired', '--ttl', '-1',
+    ])
+    expect(Result.ExitCode).toBe(2)
+    expect(Result.Stderr).toMatch(/--ttl/i)
   })
 })

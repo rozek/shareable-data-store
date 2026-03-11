@@ -23,7 +23,7 @@ describe('tree show (TW)', () => {
     DataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-tw-'))
     // seed a store (empty of user items)
     await runCLI([
-      '--store', 'test', '--data-dir', DataDir, 'item', 'create', '--label', 'seed',
+      '--store', 'test', '--data-dir', DataDir, 'entry', 'create', '--label', 'seed',
     ])
   })
 
@@ -52,7 +52,7 @@ describe('tree show (TW)', () => {
     const DataDir2 = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-tw3-'))
     try {
       const Create = await runCLI([
-        '--store', 'test', '--data-dir', DataDir2, 'item', 'create', '--label', 'only-item',
+        '--store', 'test', '--data-dir', DataDir2, 'entry', 'create', '--label', 'only-item',
       ])
       const Id = Create.Stdout.trim()
 
@@ -71,12 +71,12 @@ describe('tree show (TW)', () => {
     const DataDir3 = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-tw4-'))
     try {
       const Outer = await runCLI([
-        '--store', 'test', '--data-dir', DataDir3, 'item', 'create', '--label', 'outer',
+        '--store', 'test', '--data-dir', DataDir3, 'entry', 'create', '--label', 'outer',
       ])
       const OuterId = Outer.Stdout.trim()
       const Inner = await runCLI([
         '--store', 'test', '--data-dir', DataDir3,
-        'item', 'create', '--label', 'inner', '--container', OuterId,
+        'entry', 'create', '--label', 'inner', '--container', OuterId,
       ])
       const InnerId = Inner.Stdout.trim()
 
@@ -98,6 +98,46 @@ describe('tree show (TW)', () => {
       expect(AllIds).not.toContain(InnerId)
     } finally {
       await fs.rm(DataDir3, { recursive:true, force:true })
+    }
+  })
+
+  it('TW-05: --depth with a non-integer value exits with UsageError (code 2)', async () => {
+    const Result = await runCLI([
+      '--store', 'test', '--data-dir', DataDir,
+      'tree', 'show', '--depth', 'abc',
+    ])
+    expect(Result.ExitCode).toBe(2)
+  })
+
+  it('TW-07: --depth 0 returns an empty root array in JSON (no children shown)', async () => {
+    const DataDir4 = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-tw7-'))
+    try {
+      await runCLI([
+        '--store', 'test', '--data-dir', DataDir4, 'entry', 'create', '--label', 'item',
+      ])
+      const Result = await runCLI([
+        '--store', 'test', '--data-dir', DataDir4, '--format', 'json',
+        'tree', 'show', '--depth', '0',
+      ])
+      expect(Result.ExitCode).toBe(0)
+      const Json = JSON.parse(Result.Stdout)
+      expect(Array.isArray(Json.root)).toBe(true)
+      expect(Json.root).toHaveLength(0)
+    } finally {
+      await fs.rm(DataDir4, { recursive:true, force:true })
+    }
+  })
+
+  it('TW-06: tree show on a non-existent store exits with NotFound (code 3)', async () => {
+    const EmptyDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-tw06-'))
+    try {
+      const Result = await runCLI([
+        '--store', 'nosuchstore', '--data-dir', EmptyDir,
+        'tree', 'show',
+      ])
+      expect(Result.ExitCode).toBe(3)
+    } finally {
+      await fs.rm(EmptyDir, { recursive:true, force:true })
     }
   })
 })

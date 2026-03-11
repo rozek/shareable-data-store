@@ -4,7 +4,7 @@
 *                                                                              *
 *******************************************************************************/
 
-// shared entry operations: get, move, delete, restore, purge
+// entry operations: create, get, list, update, move, delete, restore, purge
 
 import type { Command }    from 'commander'
 import type { SDS_Entry }  from '@rozek/sds-core'
@@ -12,12 +12,13 @@ import type { SDS_Item }   from '@rozek/sds-core'
 import { RootId, TrashId } from '@rozek/sds-core'
 
 import { resolveConfig, type SDSConfig }  from '../Config.js'
-import { printResult, printLine } from '../Output.js'
+import { printResult, printLine, formatItemLine, type ItemDisplayOptions } from '../Output.js'
 import {
   SDS_CommandError, loadContext, closeContext, resolveEntryId,
+  parseIntOption, readFileSafely,
 } from '../StoreAccess.js'
 import { ExitCodes } from '../ExitCodes.js'
-import { extractInfoEntries } from '../InfoParser.js'
+import { extractInfoEntries, applyInfoToEntry } from '../InfoParser.js'
 
 //----------------------------------------------------------------------------//
 //                           registerEntryCommands                            //
@@ -27,12 +28,32 @@ import { extractInfoEntries } from '../InfoParser.js'
 
 export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void {
   const EntryCmd = Program.command('entry')
-    .description('operations shared by items and links')
+    .description('operations on entries (items and links)')
+
+/**** entry create ****/
+
+  EntryCmd.command('create')
+    .description('create a new item (default) or link (with --target)')
+    .option('--target <itemId>',    'link target — creates a link instead of an item')
+    .option('--container <itemId>', 'container item (default: root)')
+    .option('--at <index>',         'insertion index (default: append)')
+    .option('--label <label>',      'initial label')
+    .option('--mime <type>',        'MIME type (default: text/plain, items only)')
+    .option('--value <string>',     'initial text value (items only)')
+    .option('--file <path>',        'read initial value from file (items only)')
+    .option('--info <json>',        'initial info map as JSON object')
+    .option('--info.<key>',         'set a single info entry, e.g. --info.author')
+    .action(async (Options, SubCommand) => {
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
+      const { InfoEntries }  = extractInfoEntries(ExtraArgv)
+      await cmdEntryCreate(Config, Options, InfoEntries)
+    })
 
 /**** entry get ****/
 
   EntryCmd.command('get <id>')
     .description('display all or selected fields of an entry')
+    .option('--kind',           'include entry kind (item or link)')
     .option('--label',          'include label')
     .option('--mime',           'include MIME type (items only)')
     .option('--value',          'include value (items only)')
@@ -44,6 +65,41 @@ export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void
       const { InfoEntries }  = extractInfoEntries(ExtraArgv)
       const InfoKey          = Object.keys(InfoEntries)[0]
       await cmdEntryGet(Config, Id, Options, InfoKey)
+    })
+
+/**** entry list ****/
+
+  EntryCmd.command('list <id>')
+    .description('list entries in a container item (only IDs by default)')
+    .option('--recursive',        'traverse inner containers recursively')
+    .option('--depth <n>',        'maximum recursion depth')
+    .option('--only <kind>',      'filter by kind: items | links')
+    .option('--label',            'include label')
+    .option('--mime',             'include MIME type (items only)')
+    .option('--value',            'include value (items only)')
+    .option('--info',             'include info map')
+    .option('--info.<key>',       'include only the named info entry, e.g. --info.author')
+    .action(async (Id:string, Options, SubCommand) => {
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
+      const { InfoEntries }  = extractInfoEntries(ExtraArgv)
+      const InfoKey          = Object.keys(InfoEntries)[0]
+      await cmdEntryList(Config, Id, Options, InfoKey)
+    })
+
+/**** entry update ****/
+
+  EntryCmd.command('update <id>')
+    .description('update entry properties (works on both items and links)')
+    .option('--label <label>',  'new label (items and links)')
+    .option('--mime <type>',    'new MIME type (items only)')
+    .option('--value <string>', 'new text value (items only)')
+    .option('--file <path>',    'read new value from file (items only)')
+    .option('--info <json>',    'merge info map from JSON object')
+    .option('--info.<key>',     'set a single info entry, e.g. --info.author')
+    .action(async (Id:string, Options, SubCommand) => {
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
+      const { InfoEntries }  = extractInfoEntries(ExtraArgv)
+      await cmdEntryUpdate(Config, Id, Options, InfoEntries)
     })
 
 /**** entry move ****/
@@ -91,11 +147,148 @@ export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void
 //                           command implementations                          //
 //----------------------------------------------------------------------------//
 
+/**** cmdEntryCreate ****/
+
+async function cmdEntryCreate (
+  Config:SDSConfig,
+  Options:{
+    target?:string; container?:string; at?:string;
+    label?:string; mime?:string; value?:string; file?:string; info?:string
+  },
+  InfoEntries:Record<string,unknown>
+):Promise<void> {
+  // mutual exclusion: --value and --file cannot both be specified
+  if (Options.value != null && Options.file != null) {
+    throw new SDS_CommandError(
+      `'--value' and '--file' are mutually exclusive — specify at most one`,
+      ExitCodes.UsageError
+    )
+  }
+
+  if (Options.target != null) {
+
+    // validate: item-only options cannot be combined with --target
+    if (Options.mime != null) {
+      throw new SDS_CommandError(
+        `'--mime' is not supported when creating a link — only items have a MIME type`,
+        ExitCodes.UsageError
+      )
+    }
+    if (Options.value != null) {
+      throw new SDS_CommandError(
+        `'--value' is not supported when creating a link — only items have a value`,
+        ExitCodes.UsageError
+      )
+    }
+    if (Options.file != null) {
+      throw new SDS_CommandError(
+        `'--file' is not supported when creating a link — only items have a value`,
+        ExitCodes.UsageError
+      )
+    }
+
+    // create LINK — store must already exist (target must be reachable)
+    const Context = await loadContext(Config)
+    try {
+      const TargetId    = resolveEntryId(Options.target)
+      const ContainerId = resolveEntryId(Options.container ?? RootId)
+      const AtIndex     = Options.at != null ? parseIntOption(Options.at, '--at') : undefined
+      if (AtIndex != null && AtIndex < 0) {
+        throw new SDS_CommandError(
+          `'--at' must be a non-negative integer — got ${AtIndex}`, ExitCodes.UsageError
+        )
+      }
+
+      const Target    = Context.Store.EntryWithId(TargetId) as SDS_Item | undefined
+      const Container = Context.Store.EntryWithId(ContainerId) as SDS_Item | undefined
+
+      if ((Target == null) || (! Target.isItem)) {
+        throw new SDS_CommandError(
+          `target '${TargetId}' not found or is not an item`, ExitCodes.NotFound
+        )
+      }
+      if ((Container == null) || (! Container.isItem)) {
+        throw new SDS_CommandError(
+          `container '${ContainerId}' not found or is not an item`, ExitCodes.NotFound
+        )
+      }
+
+      const Link = Context.Store.newLinkAt(Target, Container, AtIndex)
+
+      if (Options.label != null) { Link.Label = Options.label }
+      applyInfoToEntry(
+        Context.Store._InfoProxyOf(Link.Id) as Record<string,unknown>,
+        Options.info ?? null,
+        InfoEntries
+      )
+
+      if (Config.Format === 'json') {
+        printResult(Config, { id:Link.Id, created:true, kind:'link', target:TargetId })
+      } else {
+        printLine(Link.Id)
+      }
+    } finally {
+      await closeContext(Context)
+    }
+
+  } else {
+
+    // create ITEM — auto-creates store if needed
+    const Context = await loadContext(Config, true)
+    try {
+      const ContainerId = resolveEntryId(Options.container ?? RootId)
+      const Container   = Context.Store.EntryWithId(ContainerId) as SDS_Item | undefined
+      if ((Container == null) || (! Container.isItem)) {
+        throw new SDS_CommandError(
+          `container '${ContainerId}' not found or is not an item`, ExitCodes.NotFound
+        )
+      }
+
+      const AtIndex  = Options.at != null ? parseIntOption(Options.at, '--at') : undefined
+      if (AtIndex != null && AtIndex < 0) {
+        throw new SDS_CommandError(
+          `'--at' must be a non-negative integer — got ${AtIndex}`, ExitCodes.UsageError
+        )
+      }
+      const MIMEType = Options.mime ?? 'text/plain'
+      const Item     = Context.Store.newItemAt(MIMEType, Container, AtIndex)
+
+      if (Options.label != null) { Item.Label = Options.label }
+
+      switch (true) {
+        case (Options.file != null): {
+          const FileData = await readFileSafely(Options.file!)
+          const isBinary = ! MIMEType.startsWith('text/')
+          Item.writeValue(isBinary ? new Uint8Array(FileData) : FileData.toString('utf8'))
+          break
+        }
+        case (Options.value != null): {
+          Item.writeValue(Options.value!)
+          break
+        }
+      }
+
+      applyInfoToEntry(Item.Info, Options.info ?? null, InfoEntries)
+
+      if (Config.Format === 'json') {
+        printResult(Config, { id:Item.Id, created:true, kind:'item' })
+      } else {
+        printLine(Item.Id)
+      }
+    } finally {
+      await closeContext(Context)
+    }
+  }
+}
+
 /**** cmdEntryGet ****/
 
 async function cmdEntryGet (
   Config:SDSConfig, RawId:string,
-  Options:{ label?:boolean; mime?:boolean; value?:boolean; info?:boolean; target?:boolean },
+  Options:{
+    kind?:boolean; label?:boolean; mime?:boolean;
+    value?:boolean; info?:boolean; target?:boolean
+  },
   InfoKey:string | undefined
 ):Promise<void> {
   const Context = await loadContext(Config)
@@ -106,7 +299,10 @@ async function cmdEntryGet (
       throw new SDS_CommandError(`entry '${Id}' not found`, ExitCodes.NotFound)
     }
 
-    const ShowAll  = ! (Options.label || Options.mime || Options.value || Options.info || Options.target || (InfoKey != null))
+    const ShowAll = ! (
+      Options.kind || Options.label || Options.mime ||
+      Options.value || Options.info || Options.target || (InfoKey != null)
+    )
     const Display:DisplayOptions = ShowAll ? 'all' : { ...Options, InfoKey }
 
     if (Config.Format === 'json') {
@@ -119,6 +315,102 @@ async function cmdEntryGet (
   }
 }
 
+/**** cmdEntryList ****/
+
+async function cmdEntryList (
+  Config:SDSConfig, RawId:string,
+  Options:{ recursive?:boolean; depth?:string; only?:string; label?:boolean; mime?:boolean; value?:boolean; info?:boolean },
+  InfoKey:string | undefined
+):Promise<void> {
+  const OnlyKind = Options.only?.toLowerCase()
+  if (OnlyKind != null && ! ['item', 'items', 'link', 'links'].includes(OnlyKind)) {
+    throw new SDS_CommandError(
+      `'--only' accepts 'items' or 'links' — got '${Options.only}'`,
+      ExitCodes.UsageError
+    )
+  }
+
+  const Context = await loadContext(Config)
+  try {
+    const Id   = resolveEntryId(RawId)
+    const Item = Context.Store.EntryWithId(Id) as SDS_Item | undefined
+    if ((Item == null) || (! Item.isItem)) {
+      throw new SDS_CommandError(
+        `container '${Id}' not found or is not an item`, ExitCodes.NotFound
+      )
+    }
+
+    const MaxDepth = Options.depth != null ? parseIntOption(Options.depth, '--depth') : Infinity
+    const DisplayOptions:ItemDisplayOptions = {
+      showLabel: Options.label,
+      showMIME:  Options.mime,
+      showValue: Options.value,
+      showInfo:  Options.info,
+      InfoKey,
+    }
+
+    const Entries:unknown[] = []
+    walkEntries(Context.Store, Id, Options.recursive ?? false, MaxDepth, 0, OnlyKind, DisplayOptions, Entries, Config)
+
+    if (Config.Format === 'json') {
+      printResult(Config, Entries)
+    } else {
+      for (const Line of Entries as string[]) { printLine(Line) }
+    }
+  } finally {
+    await closeContext(Context)
+  }
+}
+
+/**** walkEntries — recursive DFS for entry list ****/
+
+function walkEntries (
+  Store:import('@rozek/sds-core').SDS_DataStore,
+  ItemId:string,
+  Recursive:boolean, MaxDepth:number, Depth:number,
+  OnlyKind:string | undefined,
+  Options:ItemDisplayOptions,
+  Out:unknown[],
+  Config:SDSConfig
+):void {
+  for (const Entry of Store._innerEntriesOf(ItemId)) {
+    const Kind = Entry.isItem ? 'item' : 'link'
+    if ((OnlyKind == null) || (OnlyKind === Kind+'s') || (OnlyKind === Kind)) {
+      if (Config.Format === 'json') {
+        const Obj:Record<string,unknown> = { id:Entry.Id, kind:Kind }
+        if (Options.showLabel) { Obj['label'] = Entry.Label }
+        if (Entry.isItem) {
+          if (Options.showMIME)  { Obj['mime']  = Store._TypeOf(Entry.Id) }
+          if (Options.showValue) { Obj['value'] = Store._currentValueOf(Entry.Id) ?? null }
+        }
+        switch (true) {
+          case (Options.InfoKey != null): {
+            Obj['info.'+Options.InfoKey!] = Store._InfoProxyOf(Entry.Id)[Options.InfoKey!] ?? null
+            break
+          }
+          case (Options.showInfo): {
+            Obj['info'] = { ...Store._InfoProxyOf(Entry.Id) }
+            break
+          }
+        }
+        Out.push(Obj)
+      } else {
+        Out.push(formatItemLine(
+          Entry.Id,
+          Options.showLabel ? Entry.Label : '',
+          (Options.showMIME && Entry.isItem) ? Store._TypeOf(Entry.Id) : '',
+          (Options.showValue && Entry.isItem) ? Store._currentValueOf(Entry.Id) : undefined,
+          (Options.showInfo || (Options.InfoKey != null)) ? Store._InfoProxyOf(Entry.Id) as Record<string,unknown> : {},
+          Options
+        ))
+      }
+    }
+    if (Recursive && Entry.isItem && (Depth < MaxDepth)) {
+      walkEntries(Store, Entry.Id, Recursive, MaxDepth, Depth+1, OnlyKind, Options, Out, Config)
+    }
+  }
+}
+
 /**** cmdEntryMove ****/
 
 async function cmdEntryMove (
@@ -128,7 +420,12 @@ async function cmdEntryMove (
   try {
     const Id       = resolveEntryId(RawId)
     const TargetId = resolveEntryId(RawTarget)
-    const AtIndex  = AtStr != null ? parseInt(AtStr, 10) : undefined
+    const AtIndex  = AtStr != null ? parseIntOption(AtStr, '--at') : undefined
+    if (AtIndex != null && AtIndex < 0) {
+      throw new SDS_CommandError(
+        `'--at' must be a non-negative integer — got ${AtIndex}`, ExitCodes.UsageError
+      )
+    }
 
     const Entry  = Context.Store.EntryWithId(Id)
     const Target = Context.Store.EntryWithId(TargetId) as SDS_Item | undefined
@@ -196,7 +493,12 @@ async function cmdEntryRestore (
   try {
     const Id       = resolveEntryId(RawId)
     const TargetId = resolveEntryId(RawTarget ?? RootId)
-    const AtIndex  = AtStr != null ? parseInt(AtStr, 10) : undefined
+    const AtIndex  = AtStr != null ? parseIntOption(AtStr, '--at') : undefined
+    if (AtIndex != null && AtIndex < 0) {
+      throw new SDS_CommandError(
+        `'--at' must be a non-negative integer — got ${AtIndex}`, ExitCodes.UsageError
+      )
+    }
 
     const Entry  = Context.Store.EntryWithId(Id)
     const Target = Context.Store.EntryWithId(TargetId) as SDS_Item | undefined
@@ -262,12 +564,93 @@ async function cmdEntryPurge (Config:SDSConfig, RawId:string):Promise<void> {
   }
 }
 
+/**** cmdEntryUpdate ****/
+
+async function cmdEntryUpdate (
+  Config:SDSConfig, RawId:string,
+  Options:{ label?:string; mime?:string; value?:string; file?:string; info?:string },
+  InfoEntries:Record<string,unknown>
+):Promise<void> {
+  const Context = await loadContext(Config)
+  try {
+    const Id    = resolveEntryId(RawId)
+    const Entry = Context.Store.EntryWithId(Id)
+    if (Entry == null) {
+      throw new SDS_CommandError(`entry '${Id}' not found`, ExitCodes.NotFound)
+    }
+
+    // item-only fields: give a meaningful error when used on a link
+    if (Entry.isLink) {
+      if (Options.mime != null) {
+        throw new SDS_CommandError(
+          `'--mime' is not supported for links — only items have a MIME type`,
+          ExitCodes.UsageError
+        )
+      }
+      if (Options.value != null) {
+        throw new SDS_CommandError(
+          `'--value' is not supported for links — only items have a value`,
+          ExitCodes.UsageError
+        )
+      }
+      if (Options.file != null) {
+        throw new SDS_CommandError(
+          `'--file' is not supported for links — only items have a value`,
+          ExitCodes.UsageError
+        )
+      }
+    }
+
+    if (Options.label != null) { (Entry as SDS_Item).Label = Options.label }
+
+    if (Entry.isItem) {
+      // mutual exclusion: --value and --file cannot both be specified
+      if (Options.value != null && Options.file != null) {
+        throw new SDS_CommandError(
+          `'--value' and '--file' are mutually exclusive — specify at most one`,
+          ExitCodes.UsageError
+        )
+      }
+
+      const Item = Entry as SDS_Item
+      if (Options.mime != null) { Item.Type = Options.mime }
+      switch (true) {
+        case (Options.file != null): {
+          const FileData = await readFileSafely(Options.file!)
+          const isBinary = ! Item.Type.startsWith('text/')
+          Item.writeValue(isBinary ? new Uint8Array(FileData) : FileData.toString('utf8'))
+          break
+        }
+        case (Options.value != null): {
+          Item.writeValue(Options.value!)
+          break
+        }
+      }
+    }
+
+    applyInfoToEntry(
+      Context.Store._InfoProxyOf(Id) as Record<string,unknown>,
+      Options.info ?? null,
+      InfoEntries
+    )
+
+    if (Config.Format === 'json') {
+      printResult(Config, { id:Id, updated:true })
+    } else {
+      printLine(`updated '${Id}'`)
+    }
+  } finally {
+    await closeContext(Context)
+  }
+}
+
 //----------------------------------------------------------------------------//
 //                              helper utilities                              //
 //----------------------------------------------------------------------------//
 
 type DisplayOptions = 'all' | {
-  label?:boolean; mime?:boolean; value?:boolean; info?:boolean; target?:boolean; InfoKey?:string
+  kind?:boolean; label?:boolean; mime?:boolean; value?:boolean;
+  info?:boolean; target?:boolean; InfoKey?:string
 }
 
 /**** entryToJSON ****/
@@ -276,8 +659,9 @@ function entryToJSON (
   Entry:SDS_Entry, Store:import('@rozek/sds-core').SDS_DataStore, Options:DisplayOptions
 ):Record<string,unknown> {
   const ShowAll = Options === 'all'
-  const Result:Record<string,unknown> = { id:Entry.Id, kind:Entry.isItem ? 'item' : 'link' }
+  const Result:Record<string,unknown> = { id:Entry.Id }
 
+  if (ShowAll || (Options as any).kind)   { Result['kind']  = Entry.isItem ? 'item' : 'link' }
   if (ShowAll || (Options as any).label)  { Result['label'] = Entry.Label }
   if (Entry.isItem) {
     const Item = Entry as SDS_Item
@@ -310,7 +694,9 @@ function printEntryText (
 ):void {
   const ShowAll = Options === 'all'
   printLine(`id:    ${Entry.Id}`)
-  printLine(`kind:  ${Entry.isItem ? 'item' : 'link'}`)
+  if (ShowAll || (Options as any).kind) {
+    printLine(`kind:  ${Entry.isItem ? 'item' : 'link'}`)
+  }
 
   if (ShowAll || (Options as any).label) { printLine(`label: ${Entry.Label}`) }
 

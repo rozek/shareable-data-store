@@ -22,7 +22,7 @@ describe('REPL (RP)', () => {
   beforeAll(async () => {
     DataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-rp-'))
     await runCLI([
-      '--store', 'test', '--data-dir', DataDir, 'item', 'create', '--label', 'seed',
+      '--store', 'test', '--data-dir', DataDir, 'entry', 'create', '--label', 'seed',
     ])
   })
 
@@ -79,5 +79,55 @@ describe('REPL (RP)', () => {
     expect(Result.ExitCode).toBe(0)
     expect(Result.Stderr).toBe('')
     expect(Result.Stdout).toMatch(/store:/)   // text output from store info
+  })
+
+  it('RP-06: REPL continues after a failing command', async () => {
+    // a non-existent entry causes an error; the REPL must not exit
+    // and the subsequent store info command must still succeed
+    const Result = await runCLI(
+      ['--store', 'test', '--data-dir', DataDir, 'shell'],
+      {},
+      'entry get 00000000-0000-0000-0000-000000000099\nstore info\nexit\n',
+    )
+    expect(Result.ExitCode).toBe(0)
+    expect(Result.Stdout).toMatch(/store:/)   // store info succeeded after the failing entry get
+  })
+
+  it('RP-07: unknown command does not exit the REPL', async () => {
+    // typing an unrecognised command must not kill the session
+    const Result = await runCLI(
+      ['--store', 'test', '--data-dir', DataDir, 'shell'],
+      {},
+      'not-a-command\nstore info\nexit\n',
+    )
+    expect(Result.ExitCode).toBe(0)
+    expect(Result.Stdout).toMatch(/store:/)   // store info succeeded after the unknown command
+  })
+
+  it('RP-09: a failing command in the REPL writes the error to stderr, not stdout', async () => {
+    const Result = await runCLI(
+      ['--store', 'test', '--data-dir', DataDir, 'shell'],
+      {},
+      'entry get 00000000-0000-0000-0000-000000000099\nexit\n',
+    )
+    expect(Result.ExitCode).toBe(0)
+    // error must appear on stderr
+    expect(Result.Stderr).toMatch(/not found|00000000-0000-0000-0000-000000000099/i)
+    // stdout must NOT contain the error message
+    expect(Result.Stdout).not.toMatch(/not found/i)
+  })
+
+  it('RP-08: "help" inside the REPL does not exit the session', async () => {
+    // help shows available commands but must not kill the session;
+    // the subsequent store info command must still succeed
+    const Result = await runCLI(
+      ['--store', 'test', '--data-dir', DataDir, 'shell'],
+      {},
+      'help\nstore info\nexit\n',
+    )
+    expect(Result.ExitCode).toBe(0)
+    expect(Result.Stdout).toMatch(/store:/)   // store info succeeded after help
+    // "shell" must not appear in the REPL's help output
+    expect(Result.Stdout).not.toMatch(/\bshell\b/)
   })
 })

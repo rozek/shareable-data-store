@@ -124,6 +124,11 @@ export class SDS_WebSocketProvider
 /**** connect ****/
 
   async connect (URL:string, Options:SDS_ConnectionOptions):Promise<void> {
+    if (! /^wss?:\/\//.test(URL)) {
+      throw new TypeError(
+        `SDS WebSocket: invalid server URL '${URL}' — expected ws:// or wss://`
+      )
+    }
     this.#URL     = URL
     this.#Options = Options
     return this.#doConnect()
@@ -133,8 +138,9 @@ export class SDS_WebSocketProvider
 
   #doConnect ():Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const WsURL = `${this.#URL}?token=${encodeURIComponent(this.#Options!.Token)}`
-      const WS    = new WebSocket(WsURL)
+      const BaseURL = this.#URL.replace(/\/+$/, '')
+      const WsURL   = `${BaseURL}/ws/${this.StoreId}?token=${encodeURIComponent(this.#Options!.Token)}`
+      const WS      = new WebSocket(WsURL)
       WS.binaryType = 'arraybuffer'
       this.#WS = WS
 

@@ -10,9 +10,21 @@
 import os   from 'node:os'
 import path from 'node:path'
 
+import { ExitCodes } from './ExitCodes.js'
+
 //----------------------------------------------------------------------------//
 //                                 SDSConfig                                  //
 //----------------------------------------------------------------------------//
+
+/**** SDS_ConfigError — thrown by resolveConfig for invalid global option values ****/
+
+export class SDS_ConfigError extends Error {
+  readonly ExitCode:number
+  constructor (message:string, exitCode:number = ExitCodes.UsageError) {
+    super(message)
+    this.ExitCode = exitCode
+  }
+}
 
 export interface SDSConfig {
   ServerURL?:  string                       // WebSocket server base URL
@@ -35,14 +47,22 @@ export function resolveConfig (Options:Record<string,unknown>):SDSConfig {
   const AdminToken = (Options['adminToken'] ?? process.env['SDS_ADMIN_TOKEN']) as string | undefined
 
   const rawFormat  = ((Options['format']   ?? 'text') as string).toLowerCase()
-  const Format     = (rawFormat === 'json' ? 'json' : 'text') as 'text' | 'json'
+  if (rawFormat !== 'text' && rawFormat !== 'json') {
+    throw new SDS_ConfigError(
+      `'--format' accepts 'text' or 'json' — got '${Options['format']}'`,
+      ExitCodes.UsageError
+    )
+  }
+  const Format = rawFormat as 'text' | 'json'
 
   const rawOnError = ((Options['onError']  ?? 'stop') as string).toLowerCase()
-  const OnError    = (
-    rawOnError === 'continue' ? 'continue'
-    : rawOnError === 'ask'    ? 'ask'
-    : 'stop'
-  ) as 'stop' | 'continue' | 'ask'
+  if (rawOnError !== 'stop' && rawOnError !== 'continue' && rawOnError !== 'ask') {
+    throw new SDS_ConfigError(
+      `'--on-error' accepts 'stop', 'continue', or 'ask' — got '${Options['onError']}'`,
+      ExitCodes.UsageError
+    )
+  }
+  const OnError = rawOnError as 'stop' | 'continue' | 'ask'
 
   return { ServerURL, DataDir, StoreId, Token, AdminToken, Format, OnError }
 }

@@ -21,16 +21,20 @@ export async function startREPL (
 ):Promise<void> {
   const isTTY = process.stdin.isTTY
 
+  // bold prompt makes user input stand out visually; ANSI codes are stripped
+  // automatically by readline when computing the visible cursor position
+  const Prompt = isTTY ? '\x1b[1msds>\x1b[0m ' : 'sds> '
+
   const REPLInterface = readline.createInterface({
     input:    process.stdin,
     output:   process.stdout,
     terminal: isTTY,
-    prompt:   'sds> ',
+    prompt:   Prompt,
   })
 
   if (isTTY) {
     process.stdout.write(
-      'SDS interactive shell — type "help" for commands, "exit" to quit\n'
+      'SDS interactive shell — type "help [command]" for help, "exit" to quit\n'
     )
     REPLInterface.prompt()
   }

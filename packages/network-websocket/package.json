@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-network-websocket",
   "description": "WebSocket sync + presence provider for shareable-data-store",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {

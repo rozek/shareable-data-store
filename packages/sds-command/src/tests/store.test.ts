@@ -23,7 +23,7 @@ describe('store info (SI)', () => {
     DataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-si-'))
     // create a store by adding one item
     await runCLI(
-      ['--store', 'test', '--data-dir', DataDir, 'item', 'create', '--label', 'seed'],
+      ['--store', 'test', '--data-dir', DataDir, 'entry', 'create', '--label', 'seed'],
     )
   })
 
@@ -78,7 +78,7 @@ describe('store destroy (SD)', () => {
   beforeAll(async () => {
     DataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-sd-'))
     await runCLI(
-      ['--store', 'destroyme', '--data-dir', DataDir, 'item', 'create', '--label', 'tmp'],
+      ['--store', 'destroyme', '--data-dir', DataDir, 'entry', 'create', '--label', 'tmp'],
     )
   })
 
@@ -119,7 +119,7 @@ describe('store export / import (SE)', () => {
     // populate with a few items
     for (const Label of ['alpha', 'beta', 'gamma']) {
       await runCLI([
-        '--store', 'src', '--data-dir', DataDir, 'item', 'create', '--label', Label,
+        '--store', 'src', '--data-dir', DataDir, 'entry', 'create', '--label', Label,
       ])
     }
   })
@@ -189,5 +189,25 @@ describe('store export / import (SE)', () => {
       'store', 'import', '--input', path.join(DataDir, 'nonexistent.json'),
     ])
     expect(Result.ExitCode).toBe(3)
+  })
+
+  it('SE-04: export with an invalid --encoding value exits with UsageError (code 2)', async () => {
+    const Result = await runCLI([
+      '--store', 'src', '--data-dir', DataDir,
+      'store', 'export', '--encoding', 'foobar',
+    ])
+    expect(Result.ExitCode).toBe(2)
+    expect(Result.Stderr).toMatch(/--encoding/i)
+  })
+
+  it('SE-05: importing a file with malformed JSON exits with UsageError (code 2)', async () => {
+    const BadFile = path.join(DataDir, 'bad.json')
+    await fs.writeFile(BadFile, '{ this is not valid JSON }')
+    const Result = await runCLI([
+      '--store', 'src', '--data-dir', DataDir,
+      'store', 'import', '--input', BadFile,
+    ])
+    expect(Result.ExitCode).toBe(2)
+    expect(Result.Stderr).toMatch(/valid json/i)
   })
 })

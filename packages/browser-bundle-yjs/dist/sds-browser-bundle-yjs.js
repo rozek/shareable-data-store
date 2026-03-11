@@ -10723,6 +10723,10 @@ class gg {
   }
   /**** connect ****/
   async connect(e, t) {
+    if (!/^wss?:\/\//.test(e))
+      throw new TypeError(
+        `SDS WebSocket: invalid server URL '${e}' — expected ws:// or wss://`
+      );
     return x(this, zs, e), x(this, Bn, t), d(this, J, Xi).call(this);
   }
   /**** disconnect ****/
@@ -10791,15 +10795,15 @@ class gg {
 vt = new WeakMap(), kt = new WeakMap(), zs = new WeakMap(), Bn = new WeakMap(), on = new WeakMap(), Kn = new WeakMap(), an = new WeakMap(), Pn = new WeakMap(), Fn = new WeakMap(), Zn = new WeakMap(), Hs = new WeakMap(), J = new WeakSet(), /**** #doConnect ****/
 Xi = function() {
   return new Promise((e, t) => {
-    const s = `${l(this, zs)}?token=${encodeURIComponent(l(this, Bn).Token)}`, r = new WebSocket(s);
-    r.binaryType = "arraybuffer", x(this, kt, r), d(this, J, Cs).call(this, "connecting"), r.onopen = () => {
+    const r = `${l(this, zs).replace(/\/+$/, "")}/ws/${this.StoreId}?token=${encodeURIComponent(l(this, Bn).Token)}`, i = new WebSocket(r);
+    i.binaryType = "arraybuffer", x(this, kt, i), d(this, J, Cs).call(this, "connecting"), i.onopen = () => {
       d(this, J, Cs).call(this, "connected"), e();
-    }, r.onerror = (i) => {
+    }, i.onerror = (o) => {
       l(this, vt) === "connecting" && t(new Error("WebSocket connection failed"));
-    }, r.onclose = () => {
+    }, i.onclose = () => {
       x(this, kt, void 0), l(this, vt) !== "disconnected" && (d(this, J, Cs).call(this, "reconnecting"), d(this, J, xl).call(this));
-    }, r.onmessage = (i) => {
-      d(this, J, Cl).call(this, new Uint8Array(i.data));
+    }, i.onmessage = (o) => {
+      d(this, J, Cl).call(this, new Uint8Array(o.data));
     };
   });
 }, //----------------------------------------------------------------------------//

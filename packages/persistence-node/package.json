@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-persistence-node",
   "description": "SQLite persistence provider for shareable-data-store (Node.js)",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {

@@ -16,7 +16,7 @@ import { resolveConfig, DBPathFor, type SDSConfig }  from '../Config.js'
 import { printResult, printLine } from '../Output.js'
 import {
   SDS_CommandError, loadContext, closeContext,
-  runSync, StoreExists, destroyStore,
+  runSync, StoreExists, destroyStore, parseIntOption, readFileSafely,
 } from '../StoreAccess.js'
 import { ExitCodes } from '../ExitCodes.js'
 
@@ -55,7 +55,7 @@ export function registerStoreCommands (Program:Command):void {
     .option('--timeout <ms>', 'milliseconds to wait after connecting', '5000')
     .action(async (Options, SubCommand) => {
       const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
-      await cmdStoreSync(Config, parseInt(Options.timeout, 10))
+      await cmdStoreSync(Config, parseIntOption(Options.timeout, '--timeout'))
     })
 
 /**** store destroy ****/
@@ -173,7 +173,7 @@ async function cmdStorePing (Config:SDSConfig):Promise<void> {
 /**** cmdStoreSync ****/
 
 async function cmdStoreSync (Config:SDSConfig, TimeoutMs:number):Promise<void> {
-  const Result = await runSync(Config, isNaN(TimeoutMs) ? 5000 : TimeoutMs)
+  const Result = await runSync(Config, TimeoutMs)
   if (Config.Format === 'json') {
     printResult(Config, {
       storeId:   Result.StoreId,
@@ -203,15 +203,23 @@ async function cmdStoreDestroy (Config:SDSConfig):Promise<void> {
 async function cmdStoreExport (
   Config:SDSConfig, Format:string, OutputFile:string | undefined
 ):Promise<void> {
+  const NormalizedFormat = Format.toLowerCase()
+  if (NormalizedFormat !== 'json' && NormalizedFormat !== 'binary') {
+    throw new SDS_CommandError(
+      `'--encoding' accepts 'json' or 'binary' — got '${Format}'`,
+      ExitCodes.UsageError
+    )
+  }
+
   const Context = await loadContext(Config)
   try {
-    const isBinary = Format.toLowerCase() === 'binary'
+    const isBinary = NormalizedFormat === 'binary'
     const Data     = isBinary ? Context.Store.asBinary() : JSON.stringify(Context.Store.asJSON(), null, 2)
 
     if (OutputFile != null) {
       await fs.writeFile(OutputFile, isBinary ? (Data as Uint8Array) : (Data as string)+'\n')
       if (Config.Format === 'json') {
-        printResult(Config, { exported:true, file:OutputFile, format:Format })
+        printResult(Config, { exported:true, file:OutputFile, format:NormalizedFormat })
       } else {
         printLine(`exported to '${OutputFile}'`)
       }
@@ -231,15 +239,7 @@ async function cmdStoreExport (
 /**** cmdStoreImport ****/
 
 async function cmdStoreImport (Config:SDSConfig, InputFile:string):Promise<void> {
-  let rawData:Buffer
-  try {
-    rawData = await fs.readFile(InputFile)
-  } catch (Signal) {
-    throw new SDS_CommandError(
-      `cannot read '${InputFile}': ${(Signal as Error).message}`,
-      ExitCodes.NotFound
-    )
-  }
+  const rawData = await readFileSafely(InputFile)
 
   // detect encoding: JSON starts with '{' or '[' after optional BOM/whitespace
   const Text   = rawData.toString('utf8').trimStart()
@@ -249,7 +249,16 @@ async function cmdStoreImport (Config:SDSConfig, InputFile:string):Promise<void>
   const Context = await loadContext(Config, true)
   try {
     if (isJSON) {
-      mergeEntriesFromJSON(Context.Store as unknown as SDS_DataStore, JSON.parse(Text))
+      let Parsed:unknown
+      try {
+        Parsed = JSON.parse(Text)
+      } catch {
+        throw new SDS_CommandError(
+          `'${InputFile}' does not contain valid JSON`,
+          ExitCodes.UsageError
+        )
+      }
+      mergeEntriesFromJSON(Context.Store as unknown as SDS_DataStore, Parsed)
     } else {
       // binary: gzip'd CRDT model — reconstruct a temp store and copy user entries
       const TmpStore = SDS_DataStore.fromBinary(new Uint8Array(rawData))

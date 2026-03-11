@@ -7,7 +7,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import os   from 'node:os'
 import path from 'node:path'
-import { resolveConfig, DBPathFor } from '../Config.js'
+import { resolveConfig, DBPathFor, SDS_ConfigError } from '../Config.js'
 
 describe('resolveConfig', () => {
   const originalENV = { ...process.env }
@@ -57,13 +57,19 @@ describe('resolveConfig', () => {
   it('normalises the format option', () => {
     expect(resolveConfig({ format:'JSON' }).Format).toBe('json')
     expect(resolveConfig({ format:'TEXT' }).Format).toBe('text')
-    expect(resolveConfig({ format:'unknown' }).Format).toBe('text')
+  })
+
+  it('rejects an invalid --format value with SDS_ConfigError', () => {
+    expect(() => resolveConfig({ format:'unknown' })).toThrow(SDS_ConfigError)
   })
 
   it('normalises the onError option', () => {
     expect(resolveConfig({ onError:'continue' }).OnError).toBe('continue')
     expect(resolveConfig({ onError:'ask' }).OnError).toBe('ask')
-    expect(resolveConfig({ onError:'unknown' }).OnError).toBe('stop')
+  })
+
+  it('rejects an invalid --on-error value with SDS_ConfigError', () => {
+    expect(() => resolveConfig({ onError:'unknown' })).toThrow(SDS_ConfigError)
   })
 })
 

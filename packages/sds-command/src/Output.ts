@@ -93,29 +93,6 @@ export function formatItemLine (
   return Parts.join('  ')
 }
 
-/**** formatLinkLine — one-line text representation of a link entry ****/
-
-export function formatLinkLine (
-  Id:string, Label:string, TargetId:string,
-  Info:Record<string,unknown>,
-  Options:{ showLabel?:boolean; showTarget?:boolean; showInfo?:boolean; InfoKey?:string }
-):string {
-  const Parts:string[] = [ Id ]
-
-  if (Options.showLabel)  { Parts.push(Label !== '' ? Label : '(no label)') }
-  if (Options.showTarget) { Parts.push(`→ ${TargetId}`) }
-
-  switch (true) {
-    case (Options.InfoKey != null):
-      Parts.push(JSON.stringify(Info[Options.InfoKey!] ?? null))
-      break
-    case (Options.showInfo):
-      Parts.push(JSON.stringify(Info))
-      break
-  }
-
-  return Parts.join('  ')
-}
 
 //----------------------------------------------------------------------------//
 //                               Tree rendering                               //

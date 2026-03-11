@@ -11,7 +11,7 @@ import { RootId }       from '@rozek/sds-core'
 
 import { resolveConfig, type SDSConfig }  from '../Config.js'
 import { printResult, printLine, TreeLines, type TreeNode } from '../Output.js'
-import { loadContext, closeContext } from '../StoreAccess.js'
+import { loadContext, closeContext, parseIntOption } from '../StoreAccess.js'
 
 //----------------------------------------------------------------------------//
 //                            registerTreeCommands                            //
@@ -30,7 +30,7 @@ export function registerTreeCommands (Program:Command):void {
     .option('--depth <n>', 'maximum display depth (default: unlimited)')
     .action(async (Options, SubCommand) => {
       const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
-      const MaxDepth = Options.depth != null ? parseInt(Options.depth, 10) : Infinity
+      const MaxDepth = Options.depth != null ? parseIntOption(Options.depth, '--depth') : Infinity
       await cmdTreeShow(Config, MaxDepth)
     })
 }

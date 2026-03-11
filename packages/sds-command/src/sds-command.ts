@@ -9,7 +9,7 @@
 
 import { Command } from 'commander'
 
-import { resolveConfig }     from './Config.js'
+import { resolveConfig, SDS_ConfigError } from './Config.js'
 import { printError }        from './Output.js'
 import { ExitCodes }         from './ExitCodes.js'
 import { SDS_CommandError }  from './StoreAccess.js'
@@ -22,8 +22,6 @@ import pkg from '../package.json'
 import { registerTokenCommands } from './commands/TokenCmd.js'
 import { registerStoreCommands } from './commands/StoreCmd.js'
 import { registerEntryCommands } from './commands/EntryCmd.js'
-import { registerItemCommands }  from './commands/ItemCmd.js'
-import { registerLinkCommands }  from './commands/LinkCmd.js'
 import { registerTrashCommands } from './commands/TrashCmd.js'
 import { registerTreeCommands }  from './commands/TreeCmd.js'
 
@@ -33,12 +31,20 @@ import { registerTreeCommands }  from './commands/TreeCmd.js'
 
 /**** buildProgram — constructs a fully configured commander Command ****/
 
-function buildProgram (ExtraArgv:string[]):Command {
+// isSubContext = true  → REPL / script runner: skip `shell` command and the
+//                        root action so that process.exit() can never be called
+//                        from within those contexts
+// isSubContext = false → full top-level CLI (default)
+
+function buildProgram (ExtraArgv:string[], isSubContext:boolean = false):Command {
   const Program = new Command('sds')
     Program
       .description('shareable-data-store CLI')
       .version(pkg.version, '--version', 'print version')
       .allowUnknownOption(false)
+      // suppress Commander's own error writing — we handle it ourselves so that
+      // the error message always appears before any help text
+      .configureOutput({ writeErr: () => {} })
 
       // global options — available on every sub-command via optsWithGlobals()
       .option('--server <url>',       'WebSocket server URL (env: SDS_SERVER_URL)')
@@ -52,35 +58,54 @@ function buildProgram (ExtraArgv:string[]):Command {
   registerTokenCommands(Program)
   registerStoreCommands(Program)
   registerEntryCommands(Program, ExtraArgv)
-  registerItemCommands(Program, ExtraArgv)
-  registerLinkCommands(Program, ExtraArgv)
   registerTrashCommands(Program)
   registerTreeCommands(Program)
 
+  // `shell` and the root action are only available at the top-level CLI.
+  // In REPL / script sub-executions (isSubContext = true) they are omitted so
+  // that (a) the help output does not offer a `shell` sub-shell, and (b) no
+  // process.exit() call can ever escape from within executeTokens.
+  if (! isSubContext) {
+
 /**** shell — interactive REPL ****/
 
-  Program.command('shell')
-    .description('start an interactive REPL')
-    .action(async (_Options, SubCommand) => {
-      const Config = resolveConfig(SubCommand.optsWithGlobals())
-      await startREPL((Tokens) => executeTokens(Tokens, Config))
-    })
+    Program.command('shell')
+      .description('start an interactive REPL')
+      .action(async (_Options, SubCommand) => {
+        const Config = resolveConfig(SubCommand.optsWithGlobals())
+        await startREPL((Tokens) => executeTokens(Tokens, Config))
+      })
 
-  // root action: --script runner, or help when no sub-command is given
-  Program
-    .option('--script <file>', 'run commands from file (use - for stdin)')
-    .action(async (Options) => {
-      const Config = resolveConfig(Options)
-      if (Options.script != null) {
-        const Code = await runScript(Config, Options.script, executeTokens)
-        process.exit(Code)
-      } else {
-        process.stdout.write(Program.helpInformation())
-        process.exit(ExitCodes.OK)
-      }
-    })
+    Program
+      .option('--script <file>', 'run commands from file (use - for stdin)')
+      .action(async (Options) => {
+        const Config = resolveConfig(Options)
+        if (Options.script != null) {
+          const Code = await runScript(Config, Options.script, executeTokens)
+          process.exit(Code)
+        } else {
+          process.stdout.write(Program.helpInformation())
+          process.exit(ExitCodes.OK)
+        }
+      })
+
+  }
 
   return Program
+}
+
+//----------------------------------------------------------------------------//
+//                            applyExitOverride                               //
+//----------------------------------------------------------------------------//
+
+/**** applyExitOverride — recursively arms exitOverride and silences writeErr ****/
+
+function applyExitOverride (Cmd:Command):void {
+  Cmd.exitOverride()
+  Cmd.configureOutput({ writeErr: () => {} })
+  for (const SubCmd of Cmd.commands) {
+    applyExitOverride(SubCmd)
+  }
 }
 
 //----------------------------------------------------------------------------//
@@ -119,9 +144,10 @@ async function executeTokens (
   const Program = buildProgram(
     Object.entries(InfoEntries).flatMap(([Key, Value]) => [
       `--info.${Key}`, JSON.stringify(Value),
-    ])
+    ]),
+    true  // isSubContext: skip shell + root action so process.exit() can never fire
   )
-  Program.exitOverride()
+  applyExitOverride(Program)
 
   try {
     await Program.parseAsync(['node', 'sds', ...GlobalTokens, ...CleanArgv])
@@ -147,6 +173,11 @@ async function executeTokens (
     ) {
       process.stderr.write(`sds: ${CommanderError.message}\n`)
       return ExitCodes.UsageError
+    }
+
+    if (Signal instanceof SDS_ConfigError) {
+      process.stderr.write(`sds: ${Signal.message}\n`)
+      return Signal.ExitCode
     }
 
     if (Signal instanceof SDS_CommandError) {
@@ -178,7 +209,7 @@ async function main ():Promise<void> {
   ])
 
   const Program = buildProgram(ExtraArgv)
-  Program.exitOverride()
+  applyExitOverride(Program)
 
   try {
     await Program.parseAsync(['node', 'sds', ...CleanArgv])
@@ -196,8 +227,15 @@ async function main ():Promise<void> {
       (CommanderError.code === 'commander.missingArgument') ||
       (CommanderError.code === 'commander.missingMandatoryOptionValue')
     ) {
-      process.stderr.write(`sds: ${CommanderError.message}\n`)
+      // error message first, then help — so the mistake is visible at the top
+      process.stderr.write(`sds: ${CommanderError.message}\n\n`)
+      process.stderr.write(Program.helpInformation())
       process.exit(ExitCodes.UsageError)
+    }
+
+    if (Signal instanceof SDS_ConfigError) {
+      process.stderr.write(`sds: ${Signal.message}\n`)
+      process.exit(Signal.ExitCode)
     }
 
     if (Signal instanceof SDS_CommandError) {

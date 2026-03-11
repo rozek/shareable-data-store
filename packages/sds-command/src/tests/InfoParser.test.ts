@@ -90,8 +90,20 @@ describe('applyInfoToEntry', () => {
     expect(() => applyInfoToEntry({}, 'not-json', {})).toThrow()
   })
 
-  it('throws when --info is not a JSON object', () => {
+  it('throws when --info is not a JSON object (array)', () => {
     expect(() => applyInfoToEntry({}, '[1,2,3]', {})).toThrow()
+  })
+
+  it('throws when --info is not a JSON object (null)', () => {
+    expect(() => applyInfoToEntry({}, 'null', {})).toThrow()
+  })
+
+  it('throws when --info is not a JSON object (string)', () => {
+    expect(() => applyInfoToEntry({}, '"hello"', {})).toThrow()
+  })
+
+  it('throws when --info is not a JSON object (number)', () => {
+    expect(() => applyInfoToEntry({}, '42', {})).toThrow()
   })
 
   it('throws when --info JSON contains a key with a hyphen', () => {

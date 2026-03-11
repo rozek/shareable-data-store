@@ -63,6 +63,12 @@ async function issueToken (
       ExitCodes.UsageError
     )
   }
+  if (! /^wss?:\/\//.test(ServerURL)) {
+    throw new SDS_CommandError(
+      `invalid server URL '${ServerURL}' — must start with 'ws://' or 'wss://'`,
+      ExitCodes.UsageError
+    )
+  }
   if (! ValidScopes.has(Options.scope)) {
     throw new SDS_CommandError(
       `invalid scope '${Options.scope}' — must be read, write, or admin`,
@@ -76,7 +82,9 @@ async function issueToken (
     )
   }
 
-  const URL = ServerURL.replace(/\/+$/, '') + '/api/token'
+  // convert WebSocket scheme to HTTP for the REST call
+  const HttpBase = ServerURL.replace(/^wss:\/\//, 'https://').replace(/^ws:\/\//, 'http://')
+  const URL = HttpBase.replace(/\/+$/, '') + '/api/token'
   let Response:Response
   try {
     Response = await fetch(URL, {

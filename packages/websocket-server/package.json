@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-websocket-server",
   "description": "WebSocket server for shareable-data-store (Hono, JWT auth, multi-store)",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
