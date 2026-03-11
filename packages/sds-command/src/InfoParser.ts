@@ -11,6 +11,27 @@ import { SDS_CommandError } from './StoreAccess.js'
 import { ExitCodes }        from './ExitCodes.js'
 
 //----------------------------------------------------------------------------//
+//                              isValidInfoKey                                //
+//----------------------------------------------------------------------------//
+
+// valid info keys must be valid JavaScript identifiers — this is required
+// because the key is embedded in the option name (--info.<key>) and any
+// spaces or special characters would prevent correct parsing
+
+const ValidInfoKeyPattern = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
+
+/**** assertValidInfoKey ****/
+
+function assertValidInfoKey (Key:string):void {
+  if (! ValidInfoKeyPattern.test(Key)) {
+    throw new SDS_CommandError(
+      `invalid info key ${JSON.stringify(Key)} — keys must be valid JavaScript identifiers`,
+      ExitCodes.UsageError
+    )
+  }
+}
+
+//----------------------------------------------------------------------------//
 //                              extractInfoEntries                            //
 //----------------------------------------------------------------------------//
 
@@ -32,6 +53,7 @@ export function extractInfoEntries (Argv:readonly string[]):{
       const EqualsAt = Arg.indexOf('=')
       const Key      = Arg.slice(7, EqualsAt)
       const rawValue = Arg.slice(EqualsAt+1)
+      assertValidInfoKey(Key)
       InfoEntries[Key] = parseInfoValue(rawValue)
       ArgIdx++
       continue
@@ -40,6 +62,7 @@ export function extractInfoEntries (Argv:readonly string[]):{
     // --info.key value  (value as next arg)
     if (Arg.startsWith('--info.') && (! Arg.includes('='))) {
       const Key     = Arg.slice(7)
+      assertValidInfoKey(Key)
       const nextArg = Argv[ArgIdx+1]
       if ((nextArg != null) && (! nextArg.startsWith('--'))) {
         InfoEntries[Key] = parseInfoValue(nextArg)
@@ -96,11 +119,12 @@ export function applyInfoToEntry (
       )
     }
     for (const [Key, Value] of Object.entries(parsedValue as Record<string,unknown>)) {
+      assertValidInfoKey(Key)
       InfoProxy[Key] = Value
     }
   }
 
-  // --info.xxx: set individual keys
+  // --info.key: set individual keys (already validated in extractInfoEntries)
   for (const [Key, Value] of Object.entries(InfoEntries)) {
     InfoProxy[Key] = Value
   }

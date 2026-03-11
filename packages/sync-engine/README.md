@@ -4,6 +4,17 @@ The orchestration layer of the **shareable-data-store** (SDS) family. `SDS_SyncE
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Node.js 22+** | required when using this package in a Node.js project or build toolchain. Download from [nodejs.org](https://nodejs.org). |
+| **Modern browser** | required when using this package in a web application. Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+
+This package is isomorphic — it contains no native code, no WebAssembly, and no browser-specific APIs. It has no runtime dependencies beyond `@rozek/sds-core`.
+
+---
+
 ## Installation
 
 ```bash
@@ -26,11 +37,11 @@ While the network connection is in `'disconnected'` or `'reconnecting'` state, o
 
 Every local mutation's patch bytes are accumulated. When the total crosses **512 KB**, the engine writes a new snapshot and prunes all patches up to that point. A final checkpoint is also written on `stop()` if there are any un-checkpointed patches.
 
-### Large-Value Transfer
+### Large-value transfer
 
 When a data's value changes to a reference kind (`'literal-reference'` or `'binary-reference'`), the engine sends the blob to the network provider. When the store receives a patch referencing an unknown blob hash, the engine requests the blob from the network provider.
 
-### Presence Heartbeat
+### Presence heartbeat
 
 The engine periodically re-broadcasts the local presence state so that remote peers can detect stale entries (timeout controlled by `PresenceTimeoutMs`).
 
@@ -40,7 +51,7 @@ When running in a browser or Tauri context, the engine optionally uses a `Broadc
 
 ---
 
-## API Reference
+## API reference
 
 ### `SDS_SyncEngine`
 
@@ -105,7 +116,7 @@ All providers are optional. You can use any combination — for example persiste
 
 ## Usage
 
-### Persistence only — offline-capable local Store
+### Persistence only — offline-capable local store
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core'
@@ -113,7 +124,7 @@ import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
 import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 
 const DataStore   = SDS_DataStore.fromScratch()
-const Persistence = new SDS_DesktopPersistenceProvider('./data', 'my-store')
+const Persistence = new SDS_DesktopPersistenceProvider('./data/sds.db', 'my-store')
 
 const engine = new SDS_SyncEngine(DataStore, { PersistenceProvider:Persistence })
 await engine.start()
@@ -124,7 +135,7 @@ data.Label = 'This data survives restarts'
 await engine.stop()  // writes checkpoint, closes DB
 ```
 
-### Full Stack — Persistence + WebSocket + Presence
+### Full stack — persistence + WebSocket + presence
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core'
@@ -151,7 +162,7 @@ SyncEngine.onConnectionChange((ConnectionState) => {
 })
 ```
 
-### Presence — show Collaborators
+### Presence — show collaborators
 
 ```typescript
 // announce yourself

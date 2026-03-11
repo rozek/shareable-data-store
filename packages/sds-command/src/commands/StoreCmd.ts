@@ -10,10 +10,9 @@ import fs              from 'node:fs/promises'
 import type { Command } from 'commander'
 
 import { SDS_DataStore }  from '@rozek/sds-core-jj'
-import { RootId, TrashId } from '@rozek/sds-core'
+import { RootId, TrashId, LostAndFoundId } from '@rozek/sds-core'
 
-import type { SDSConfig }  from '../Config.js'
-import { DBPathFor }       from '../Config.js'
+import { resolveConfig, DBPathFor, type SDSConfig }  from '../Config.js'
 import { printResult, printLine } from '../Output.js'
 import {
   SDS_CommandError, loadContext, closeContext,
@@ -36,7 +35,7 @@ export function registerStoreCommands (Program:Command):void {
   StoreCmd.command('info')
     .description('show local store metadata (existence, entry count, DB path)')
     .action(async (_Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdStoreInfo(Config)
     })
 
@@ -45,7 +44,7 @@ export function registerStoreCommands (Program:Command):void {
   StoreCmd.command('ping')
     .description('check connectivity to the WebSocket server')
     .action(async (_Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdStorePing(Config)
     })
 
@@ -55,7 +54,7 @@ export function registerStoreCommands (Program:Command):void {
     .description('connect to server, exchange CRDT patches, and disconnect')
     .option('--timeout <ms>', 'milliseconds to wait after connecting', '5000')
     .action(async (Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdStoreSync(Config, parseInt(Options.timeout, 10))
     })
 
@@ -64,7 +63,7 @@ export function registerStoreCommands (Program:Command):void {
   StoreCmd.command('destroy')
     .description('permanently delete the local store database')
     .action(async (_Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdStoreDestroy(Config)
     })
 
@@ -72,11 +71,11 @@ export function registerStoreCommands (Program:Command):void {
 
   StoreCmd.command('export')
     .description('export the current store snapshot')
-    .option('--format <fmt>',   'export format: json | binary', 'json')
+    .option('--encoding <enc>', 'serialisation encoding: json | binary', 'json')
     .option('--output <file>',  'destination file (default: stdout)')
     .action(async (Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
-      await cmdStoreExport(Config, Options.format, Options.output)
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
+      await cmdStoreExport(Config, Options.encoding, Options.output)
     })
 
 /**** store import ****/
@@ -85,7 +84,7 @@ export function registerStoreCommands (Program:Command):void {
     .description('CRDT-merge a snapshot file into the local store')
     .requiredOption('--input <file>', 'source file to import')
     .action(async (Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdStoreImport(Config, Options.input)
     })
 }
@@ -242,7 +241,7 @@ async function cmdStoreImport (Config:SDSConfig, InputFile:string):Promise<void>
     )
   }
 
-  // detect format: JSON starts with '{' or '[' after optional BOM/whitespace
+  // detect encoding: JSON starts with '{' or '[' after optional BOM/whitespace
   const Text   = rawData.toString('utf8').trimStart()
   const isJSON = Text.startsWith('{') || Text.startsWith('[')
 
@@ -250,10 +249,15 @@ async function cmdStoreImport (Config:SDSConfig, InputFile:string):Promise<void>
   const Context = await loadContext(Config, true)
   try {
     if (isJSON) {
-      const Parsed = JSON.parse(Text)
-      Context.Store.newEntryFromJSONat(Parsed, Context.Store.RootItem)
+      mergeEntriesFromJSON(Context.Store as unknown as SDS_DataStore, JSON.parse(Text))
     } else {
-      Context.Store.newEntryFromBinaryAt(new Uint8Array(rawData), Context.Store.RootItem)
+      // binary: gzip'd CRDT model — reconstruct a temp store and copy user entries
+      const TmpStore = SDS_DataStore.fromBinary(new Uint8Array(rawData))
+      try {
+        mergeEntriesFromJSON(Context.Store as unknown as SDS_DataStore, TmpStore.asJSON())
+      } finally {
+        TmpStore.dispose()
+      }
     }
     if (Config.Format === 'json') {
       printResult(Config, { imported:true, file:InputFile })
@@ -262,6 +266,23 @@ async function cmdStoreImport (Config:SDSConfig, InputFile:string):Promise<void>
     }
   } finally {
     await closeContext(Context)
+  }
+}
+
+/**** mergeEntriesFromJSON — copy non-system inner entries from a root JSON export ****/
+
+function mergeEntriesFromJSON (
+  Store:SDS_DataStore, RootJSON:unknown
+):void {
+  const Root = RootJSON as Record<string,unknown>
+  const SystemIds = new Set([ RootId, TrashId, LostAndFoundId ])
+  const InnerEntries = Root['innerEntries'] as Array<Record<string,unknown>> | undefined
+  if (InnerEntries == null) { return }
+
+  for (const Entry of InnerEntries) {
+    if (! SystemIds.has(Entry['Id'] as string)) {
+      Store.newEntryFromJSONat(Entry, Store.RootItem)
+    }
   }
 }
 

@@ -6,6 +6,17 @@ WebRTC peer-to-peer network and presence provider for the **shareable-data-store
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Modern browser** | requires `RTCPeerConnection` and `RTCDataChannel` (WebRTC). Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+| **SDS WebSocket server** | A running `@rozek/sds-websocket-server` instance is required for WebRTC signalling. Once a peer-to-peer data channel is established, the relay is no longer involved in data transfer. |
+
+This package targets **browsers only** — Node.js does not provide a native WebRTC implementation.
+
+---
+
 ## Installation
 
 ```bash
@@ -38,7 +49,7 @@ The same binary frame format as `SDS_WebSocketProvider` is used over the data ch
 
 ---
 
-## API Reference
+## API reference
 
 ### `SDS_WebRTCProvider`
 

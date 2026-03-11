@@ -69,16 +69,22 @@ export async function loadContext (
   let Store:SDS_DataStore
   try {
     const Snapshot = await Persistence.loadSnapshot()
-    if (Snapshot != null) {
-      Store = SDS_DataStore.fromBinary(Snapshot)
-    } else if (allowCreate) {
-      Store = SDS_DataStore.fromScratch()
-    } else {
-      await Persistence.close()
-      throw new SDS_CommandError(
-        `store '${StoreId}' not found in '${Config.DataDir}'`,
-        ExitCodes.NotFound
-      )
+    switch (true) {
+      case (Snapshot != null): {
+        Store = SDS_DataStore.fromBinary(Snapshot!)
+        break
+      }
+      case (allowCreate): {
+        Store = SDS_DataStore.fromScratch()
+        break
+      }
+      default: {
+        await Persistence.close()
+        throw new SDS_CommandError(
+          `store '${StoreId}' not found in '${Config.DataDir}'`,
+          ExitCodes.NotFound
+        )
+      }
     }
   } catch (Signal) {
     if (Signal instanceof SDS_CommandError) { throw Signal }

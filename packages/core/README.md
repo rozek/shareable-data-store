@@ -12,6 +12,17 @@ This package contains everything that is common to **all** SDS CRDT backends: th
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Node.js 22+** | required when using this package in a Node.js project or build toolchain. Download from [nodejs.org](https://nodejs.org). |
+| **Modern browser** | required when using this package in a web application. Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+
+This package is isomorphic — it contains no native code, no WebAssembly, and no browser-specific APIs.
+
+---
+
 ## Installation
 
 ```bash
@@ -28,7 +39,7 @@ Application code typically depends on a backend package directly and does not ne
 
 `SDS_DataStore` is a CRDT-based tree of items. All mutations are tracked as compact binary patches that can be exchanged with remote peers and applied in any order without conflicts.
 
-### Entries: Items and Links
+### Entries: items and links
 
 There are two kinds of entries in the tree:
 
@@ -62,7 +73,7 @@ Every mutation (or batch of mutations in a `transact()` block) produces a `SDS_C
 
 ---
 
-## API Reference
+## API reference
 
 ### `SDS_DataStore`
 

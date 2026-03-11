@@ -4,7 +4,7 @@
 
 ## Goal
 
-Verify that `SDS_DesktopPersistenceProvider` reliably persists and restores snapshots, patches, and large value blobs via SQLite (`better-sqlite3`).
+Verify that `SDS_DesktopPersistenceProvider` reliably persists and restores snapshots, patches, and large value blobs via SQLite (`node:sqlite`).
 
 ---
 
@@ -25,7 +25,7 @@ Verify that `SDS_DesktopPersistenceProvider` reliably persists and restores snap
 ## Test Environment
 
 - **Runtime:** Node.js 22+
-- **Database:** in-memory or temp-file SQLite via `better-sqlite3`
+- **Database:** in-memory or temp-file SQLite via `node:sqlite`
 - **Test framework:** Vitest 2
 
 ---

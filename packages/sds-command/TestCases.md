@@ -31,14 +31,16 @@
 
 | # | Description | Expected |
 |---|---|---|
-| IP-01 | argv without `--info.xxx` tokens | `CleanArgv` unchanged, `InfoEntries:{}` |
+| IP-01 | argv without `--info.<key>` tokens | `CleanArgv` unchanged, `InfoEntries:{}` |
 | IP-02 | `['--info.color', '"red"', 'store', 'info']` | `CleanArgv:['store','info']`, `InfoEntries:{color:'red'}` |
-| IP-03 | multiple `--info.xxx` pairs | all extracted; none remain in `CleanArgv` |
+| IP-03 | multiple `--info.<key>` pairs | all extracted; none remain in `CleanArgv` |
 | IP-04 | numeric JSON value | parsed as number, not string |
 | IP-05 | `applyInfoToEntry` with valid JSON object | all keys merged into info proxy |
 | IP-06 | `applyInfoToEntry` with `InfoEntries` values | keys set on info proxy |
 | IP-07 | `applyInfoToEntry` with `null` for both args | info proxy unchanged |
 | IP-08 | `applyInfoToEntry` with malformed JSON string | throws `SDS_CommandError` with `UsageError` code |
+| IP-09 | `--info.my-key value` (hyphen in key) | throws `SDS_CommandError` with `UsageError` code |
+| IP-10 | `applyInfoToEntry` with JSON object containing key `"my-key"` | throws `SDS_CommandError` with `UsageError` code |
 
 ## SI — Store Info (`store info`)
 
@@ -61,7 +63,7 @@
 | # | Description | Expected |
 |---|---|---|
 | SE-01 | JSON export then import into new store | imported store has same entry count |
-| SE-02 | binary export (`--format binary`) | file is non-text; binary import round-trips correctly |
+| SE-02 | binary export (`--encoding binary`) | file starts with gzip magic bytes; binary import round-trips correctly |
 | SE-03 | import from non-existent file | exits with `NotFound` (code 3) |
 
 ## EG — Entry Get (`entry get`)
@@ -78,7 +80,7 @@
 
 | # | Description | Expected |
 |---|---|---|
-| EM-01 | move item to valid container | success; `entry get` shows new parent |
+| EM-01 | move item to valid container | success; `entry get` shows new container |
 | EM-02 | move root or trash entry | exits with `Forbidden` (code 6) |
 | EM-03 | move to non-existent target | exits with `NotFound` (code 3) |
 | EM-04 | delete item | entry appears in `trash list` |
@@ -95,14 +97,14 @@
 | IC-02 | `--mime` and `--label` set | stored correctly in `item get` output |
 | IC-03 | `--value` set | value returned by `item get --value` |
 | IC-04 | `--file` set | file content stored as item value |
-| IC-05 | `--info.xxx` value | visible in `item get --info` |
+| IC-05 | `--info.<key>` value | visible in `item get --info` |
 | IC-06 | non-existent container | exits with `NotFound` (code 3) |
 
 ## IL — Item List (`item list`)
 
 | # | Description | Expected |
 |---|---|---|
-| IL-01 | list direct children | returns only immediate entries |
+| IL-01 | list direct inner entries | returns only immediate entries |
 | IL-02 | `--recursive` | traverses nested containers |
 | IL-03 | `--only items` | excludes links |
 | IL-04 | `--only links` | excludes items |
@@ -113,7 +115,7 @@
 | # | Description | Expected |
 |---|---|---|
 | IG-01 | no field flags | all fields in output |
-| IG-02 | `--info.xxx` | only specified key in output |
+| IG-02 | `--info.<key>` | only specified key in output |
 | IG-03 | link UUID passed to `item get` | exits with `NotFound` (code 3) |
 
 ## IU — Item Update (`item update`)
@@ -150,7 +152,14 @@
 | TW-01 | empty store (text) | output contains `root/` and `(empty)` |
 | TW-02 | empty store (json) | `{ root: [] }` |
 | TW-03 | one item in root | one node beneath root |
-| TW-04 | `--depth 1` | only direct children of root; no deeper nodes |
+| TW-04 | `--depth 1` | only direct inner entries of root; no deeper nodes |
+
+## CL — CLI default behaviour
+
+| # | Description | Expected |
+|---|---|---|
+| CL-01 | `sds` with no arguments | prints help text and exits with code 0 |
+| CL-02 | `sds shell` | opens interactive REPL |
 
 ## RP — REPL (`startREPL`)
 

@@ -93,10 +93,11 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 
 ### 1. `extractInfoEntries`
 
-- **TC-6.1** — An argv without `--info.xxx` tokens returns `CleanArgv` unchanged and `InfoEntries` as `{}`
+- **TC-6.1** — An argv without `--info.<key>` tokens returns `CleanArgv` unchanged and `InfoEntries` as `{}`
 - **TC-6.2** — `['--info.color', '"red"', 'store', 'info']` returns `CleanArgv:['store','info']` and `InfoEntries:{color:'red'}`
-- **TC-6.3** — Multiple `--info.xxx` pairs are all extracted; none remain in `CleanArgv`
+- **TC-6.3** — Multiple `--info.<key>` pairs are all extracted; none remain in `CleanArgv`
 - **TC-6.4** — A numeric JSON value is parsed as a number, not a string
+- **TC-6.5** — A key that is not a valid JavaScript identifier (e.g. `--info.my-key`) throws a `SDS_CommandError` with `UsageError` code
 
 ### 2. `applyInfoToEntry`
 
@@ -104,6 +105,7 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-7.2** — Passing `InfoEntries` with typed values sets those keys on the info proxy
 - **TC-7.3** — `null` for both `--info` and `InfoEntries` leaves the info proxy unchanged
 - **TC-7.4** — A malformed JSON string for `--info` throws a `SDS_CommandError` with `UsageError` code
+- **TC-7.5** — A JSON object supplied via `--info` whose keys contain non-identifier characters (e.g. `"my-key"`) throws a `SDS_CommandError` with `UsageError` code
 
 ---
 
@@ -123,7 +125,7 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 ### 3. `store export` / `store import`
 
 - **TC-10.1** — Export to a file then import into a new store: the imported store has the same entry count as the original
-- **TC-10.2** — Binary export (`--format binary`) produces a non-text file; binary import round-trips correctly
+- **TC-10.2** — Binary export (`--encoding binary`) produces a gzip file (magic bytes `0x1f 0x8b`); binary import round-trips correctly
 - **TC-10.3** — Import of a non-existent file exits with `NotFound`
 
 ---
@@ -135,7 +137,7 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-11.1** — Fetching the well-known alias `root` returns a valid entry
 - **TC-11.2** — Fetching a non-existent ID exits with `NotFound`
 - **TC-11.3** — With no field flags all fields are included; with `--label` only the label field is included
-- **TC-11.4** — `--info.xxx` returns only the specified info key (e.g. `--info.mykey` emits `info.mykey: …`)
+- **TC-11.4** — `--info.<key>` returns only the specified info key (e.g. `--info.mykey` emits `info.mykey: …`)
 
 ### 2. `entry move`
 
@@ -160,12 +162,12 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-14.1** — Creates a new item and prints its UUID; the UUID is valid in a subsequent `item get`
 - **TC-14.2** — `--mime` and `--label` are stored correctly
 - **TC-14.3** — `--value` sets the item's string value; `--file` reads it from disk
-- **TC-14.4** — `--info.xxx` values are stored in the item's info map
+- **TC-14.4** — `--info.<key>` values are stored in the item's info map
 - **TC-14.5** — Creating in a non-existent container exits with `NotFound`
 
 ### 2. `item list`
 
-- **TC-15.1** — Lists direct children of the given container
+- **TC-15.1** — Lists direct inner entries of the given container
 - **TC-15.2** — `--recursive` traverses nested containers
 - **TC-15.3** — `--only items` excludes links; `--only links` excludes items
 - **TC-15.4** — `--depth 1` limits recursion to one level
@@ -173,7 +175,7 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 ### 3. `item get`
 
 - **TC-16.1** — Returns all fields when no filter flags are given
-- **TC-16.2** — `--info.xxx` returns only the specified info key
+- **TC-16.2** — `--info.<key>` returns only the specified info key
 - **TC-16.3** — Fetching a link ID via `item get` exits with `NotFound`
 
 ### 4. `item update`
@@ -220,21 +222,26 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 
 ### 1. `tree show`
 
-- **TC-23.1** — An empty store produces output containing only the `root/` header (text) or an empty `root` children array (JSON)
+- **TC-23.1** — An empty store produces output containing only the `root/` header (text) or an empty `root` inner-entries array (JSON)
 - **TC-23.2** — A store with one item produces exactly one tree node beneath root
-- **TC-23.3** — `--depth 1` limits the output to direct children of root
+- **TC-23.3** — `--depth 1` limits the output to direct inner entries of root
 
 ---
 
-## Part X — REPL and Script Runner
+## Part X — CLI Default Behaviour, REPL, and Script Runner
 
-### 1. REPL
+### 1. Default behaviour
+
+- **TC-26.1** — `sds` with no arguments prints help text to stdout and exits with code 0
+- **TC-26.2** — `sds shell` opens the interactive REPL
+
+### 2. REPL
 
 - **TC-24.1** — Blank lines are ignored
 - **TC-24.2** — Lines starting with `#` are ignored
 - **TC-24.3** — `exit` and `quit` close the session
 
-### 2. Script runner — `--on-error` modes
+### 3. Script runner — `--on-error` modes
 
 - **TC-25.1** — `stop` (default): stops after the first failing command and returns its exit code
 - **TC-25.2** — `continue`: continues after errors; returns the last non-zero exit code

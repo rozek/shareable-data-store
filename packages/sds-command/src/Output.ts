@@ -65,7 +65,7 @@ export interface ItemDisplayOptions {
   showMIME?:  boolean
   showValue?: boolean
   showInfo?:  boolean
-  InfoKey?:   string   // specific info key via --info.xxx
+  InfoKey?:   string   // specific info key via --info.<key>
 }
 
 /**** formatItemLine — one-line text representation of an item entry ****/

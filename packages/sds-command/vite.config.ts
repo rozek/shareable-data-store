@@ -26,10 +26,9 @@ export default defineConfig({
         '@rozek/sds-network-websocket',
         '@rozek/sds-persistence-node',
         '@rozek/sds-sync-engine',
-        'better-sqlite3',
       ],
       output: {
-        banner: '#!/usr/bin/env node',
+        banner: '#!/usr/bin/env -S node --no-warnings',
       },
     },
   },

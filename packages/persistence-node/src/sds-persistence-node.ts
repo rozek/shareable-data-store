@@ -5,7 +5,7 @@
 *******************************************************************************/
 
 // SQLite-backed SDS_PersistenceProvider for Node.js (and Electron).
-// Uses better-sqlite3 for synchronous, high-performance access.
+// Uses the built-in node:sqlite module (requires Node.js >= 22.5).
 //
 // Database schema (auto-created on first open):
 //
@@ -26,7 +26,7 @@
 //     ref_count INTEGER NOT NULL DEFAULT 0
 //   );
 
-import Database from 'better-sqlite3'
+import { DatabaseSync } from 'node:sqlite'
 import type { SDS_PersistenceProvider, SDS_PatchSeqNumber } from '@rozek/sds-core'
 
 //----------------------------------------------------------------------------//
@@ -34,16 +34,16 @@ import type { SDS_PersistenceProvider, SDS_PatchSeqNumber } from '@rozek/sds-cor
 //----------------------------------------------------------------------------//
 
 export class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
-  #DB:     Database.Database
+  #DB:     DatabaseSync
   #StoreId:string
 
 /**** constructor ****/
 
   constructor (DbPath:string, StoreId:string) {
     this.#StoreId = StoreId
-    this.#DB      = new Database(DbPath)
-    this.#DB.pragma('journal_mode = WAL')
-    this.#DB.pragma('synchronous = NORMAL')
+    this.#DB      = new DatabaseSync(DbPath)
+    this.#DB.exec('PRAGMA journal_mode = WAL')
+    this.#DB.exec('PRAGMA synchronous = NORMAL')
     this.#initSchema()
   }
 
@@ -79,8 +79,8 @@ export class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
   async loadSnapshot ():Promise<Uint8Array | undefined> {
     const Row = this.#DB
       .prepare('SELECT data FROM snapshots WHERE store_id = ?')
-      .get(this.#StoreId) as { data:Buffer } | undefined
-    return Row != null ? new Uint8Array(Row.data) : undefined
+      .get(this.#StoreId) as { data:Uint8Array } | undefined
+    return Row?.data
   }
 
 /**** saveSnapshot ****/
@@ -91,7 +91,7 @@ export class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
         'INSERT INTO snapshots (store_id, data, clock) VALUES (?,?,?) ' +
         'ON CONFLICT(store_id) DO UPDATE SET data=excluded.data, clock=excluded.clock'
       )
-      .run(this.#StoreId, Buffer.from(Data), Date.now())
+      .run(this.#StoreId, Data, Date.now())
   }
 
 /**** loadPatchesSince ****/
@@ -99,8 +99,8 @@ export class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
   async loadPatchesSince (SeqNumber:SDS_PatchSeqNumber):Promise<Uint8Array[]> {
     const Rows = this.#DB
       .prepare('SELECT data FROM patches WHERE store_id = ? AND clock > ? ORDER BY clock ASC')
-      .all(this.#StoreId, SeqNumber) as { data:Buffer }[]
-    return Rows.map((Row) => new Uint8Array(Row.data))
+      .all(this.#StoreId, SeqNumber) as { data:Uint8Array }[]
+    return Rows.map((Row) => Row.data)
   }
 
 /**** appendPatch ****/
@@ -110,7 +110,7 @@ export class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
       .prepare(
         'INSERT OR IGNORE INTO patches (store_id, clock, data) VALUES (?,?,?)'
       )
-      .run(this.#StoreId, SeqNumber, Buffer.from(Patch))
+      .run(this.#StoreId, SeqNumber, Patch)
   }
 
 /**** prunePatches ****/
@@ -126,8 +126,8 @@ export class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
   async loadValue (ValueHash:string):Promise<Uint8Array | undefined> {
     const Row = this.#DB
       .prepare('SELECT data FROM blobs WHERE hash = ?')
-      .get(ValueHash) as { data:Buffer } | undefined
-    return Row != null ? new Uint8Array(Row.data) : undefined
+      .get(ValueHash) as { data:Uint8Array } | undefined
+    return Row?.data
   }
 
 /**** saveValue ****/
@@ -138,7 +138,7 @@ export class SDS_DesktopPersistenceProvider implements SDS_PersistenceProvider {
         'INSERT INTO blobs (hash, data, ref_count) VALUES (?,?,1) ' +
         'ON CONFLICT(hash) DO UPDATE SET ref_count = ref_count + 1'
       )
-      .run(ValueHash, Buffer.from(Data))
+      .run(ValueHash, Data)
   }
 
 /**** releaseValue ****/

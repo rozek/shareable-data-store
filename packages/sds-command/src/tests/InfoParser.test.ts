@@ -48,6 +48,29 @@ describe('extractInfoEntries', () => {
     expect(CleanArgv).toEqual(['--mime', 'text/plain'])
     expect(InfoEntries).toEqual({ a:1, b:'hello' })
   })
+
+  it('accepts valid JavaScript identifier keys', () => {
+    const { InfoEntries } = extractInfoEntries(
+      ['--info._private', 'x', '--info.$ref', 'y', '--info.count1', 'z']
+    )
+    expect(InfoEntries).toEqual({ _private:'x', $ref:'y', count1:'z' })
+  })
+
+  it('throws on a key with a hyphen (--info.my-key)', () => {
+    expect(() => extractInfoEntries(['--info.my-key', 'val'])).toThrow()
+  })
+
+  it('throws on a key starting with a digit (--info.1st)', () => {
+    expect(() => extractInfoEntries(['--info.1st', 'val'])).toThrow()
+  })
+
+  it('throws on a key with an embedded dot (--info.a.b=v)', () => {
+    expect(() => extractInfoEntries(['--info.a.b=val'])).toThrow()
+  })
+
+  it('throws on an empty key (--info.=v)', () => {
+    expect(() => extractInfoEntries(['--info.=val'])).toThrow()
+  })
 })
 
 describe('applyInfoToEntry', () => {
@@ -69,5 +92,19 @@ describe('applyInfoToEntry', () => {
 
   it('throws when --info is not a JSON object', () => {
     expect(() => applyInfoToEntry({}, '[1,2,3]', {})).toThrow()
+  })
+
+  it('throws when --info JSON contains a key with a hyphen', () => {
+    expect(() => applyInfoToEntry({}, '{"my-key":1}', {})).toThrow()
+  })
+
+  it('throws when --info JSON contains a key starting with a digit', () => {
+    expect(() => applyInfoToEntry({}, '{"1st":"value"}', {})).toThrow()
+  })
+
+  it('accepts valid JavaScript identifier keys in --info JSON', () => {
+    const Proxy:Record<string,unknown> = {}
+    applyInfoToEntry(Proxy, '{"_private":1,"$ref":"y","count1":true}', {})
+    expect(Proxy).toMatchObject({ _private:1, $ref:'y', count1:true })
   })
 })

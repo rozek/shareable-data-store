@@ -8,7 +8,7 @@
 // requires an admin token (SDS_ADMIN_TOKEN or --admin-token)
 
 import type { Command }    from 'commander'
-import type { SDSConfig }  from '../Config.js'
+import { resolveConfig, type SDSConfig }  from '../Config.js'
 import { printResult, printError } from '../Output.js'
 import { SDS_CommandError } from '../StoreAccess.js'
 import { ExitCodes }       from '../ExitCodes.js'
@@ -31,7 +31,7 @@ export function registerTokenCommands (Program:Command):void {
     .requiredOption('--scope <scope>',  'token scope: read | write | admin')
     .option('--exp <duration>',         'expiry duration, e.g. 24h or 7d', '24h')
     .action(async (Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await issueToken(Config, Options)
     })
 }

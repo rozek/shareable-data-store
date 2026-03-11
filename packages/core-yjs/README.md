@@ -4,6 +4,17 @@ The **Y.js CRDT backend** for [shareable-data-store](../../README.md). Provides 
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Node.js 22+** | required when using this package in a Node.js project or build toolchain. Download from [nodejs.org](https://nodejs.org). |
+| **Modern browser** | required when using this package in a web application. Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+
+This package is isomorphic. All runtime dependencies (`yjs`, `fflate`, `fractional-indexing`, `zod`) are bundled — no additional installs required.
+
+---
+
 ## When to use this package
 
 Choose `@rozek/sds-core-yjs` when:

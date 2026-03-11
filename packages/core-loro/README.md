@@ -4,6 +4,17 @@ The **Loro CRDT backend** for [shareable-data-store](../../README.md). Provides 
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Node.js 22+** | required when using this package in a Node.js project or build toolchain. Download from [nodejs.org](https://nodejs.org). |
+| **Modern browser** | requires WebAssembly support. Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+
+This package is isomorphic. The Loro CRDT engine (`loro-crdt`) ships as a WebAssembly module and is bundled as a direct dependency — no separate install required.
+
+---
+
 ## When to use this package
 
 Choose `@rozek/sds-core-loro` when:
@@ -144,11 +155,11 @@ The Loro backend uses a `#TransactDepth` counter for nested transaction support.
 
 ---
 
-## Data Model
+## Data model
 
 Inside the single `Loro` document, the complete data store lives in `doc.getMap('Entries')` — a `LoroMap<string, LoroMap<any>>` mapping entry UUIDs to their data:
 
-| Field | Type | Description |
+| field | type | description |
 | --- | --- | --- |
 | `Kind` | `string` | `'item'` or `'link'` |
 | `outerItemId` | `string` | UUID of outer data; `''` for the root data |

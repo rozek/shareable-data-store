@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-browser-bundle-yjs",
   "description": "Self-contained browser bundle for shareable-data-store \u2014 Y.js CRDT backend, single-file ESM",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "keywords": [
     "crdt",
     "items",

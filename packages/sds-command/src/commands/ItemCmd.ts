@@ -6,11 +6,12 @@
 
 // item-specific operations: list, get, create, update
 
+import fs               from 'node:fs/promises'
 import type { Command }   from 'commander'
 import type { SDS_Item }  from '@rozek/sds-core'
 import { RootId }         from '@rozek/sds-core'
 
-import type { SDSConfig }  from '../Config.js'
+import { resolveConfig, type SDSConfig }  from '../Config.js'
 import { printResult, printLine, formatItemLine, type ItemDisplayOptions } from '../Output.js'
 import {
   SDS_CommandError, loadContext, closeContext, resolveEntryId,
@@ -39,8 +40,9 @@ export function registerItemCommands (Program:Command, ExtraArgv:string[]):void 
     .option('--mime',             'include MIME type')
     .option('--value',            'include value')
     .option('--info',             'include info map')
+    .option('--info.<key>',       'include only the named info entry, e.g. --info.author')
     .action(async (Id:string, Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       const { InfoEntries }  = extractInfoEntries(ExtraArgv)
       const InfoKey          = Object.keys(InfoEntries)[0]
       await cmdItemList(Config, Id, Options, InfoKey)
@@ -50,12 +52,13 @@ export function registerItemCommands (Program:Command, ExtraArgv:string[]):void 
 
   ItemCmd.command('get <id>')
     .description('display item details')
-    .option('--label',  'include label')
-    .option('--mime',   'include MIME type')
-    .option('--value',  'include value')
-    .option('--info',   'include info map')
+    .option('--label',    'include label')
+    .option('--mime',     'include MIME type')
+    .option('--value',    'include value')
+    .option('--info',     'include info map')
+    .option('--info.<key>', 'include only the named info entry, e.g. --info.author')
     .action(async (Id:string, Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       const { InfoEntries }  = extractInfoEntries(ExtraArgv)
       const InfoKey          = Object.keys(InfoEntries)[0]
       await cmdItemGet(Config, Id, Options, InfoKey)
@@ -73,7 +76,7 @@ export function registerItemCommands (Program:Command, ExtraArgv:string[]):void 
     .option('--file <path>',       'read initial value from file')
     .option('--info <json>',       'info map as JSON object')
     .action(async (Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       const { InfoEntries }  = extractInfoEntries(ExtraArgv)
       await cmdItemCreate(Config, Options, InfoEntries)
     })
@@ -88,7 +91,7 @@ export function registerItemCommands (Program:Command, ExtraArgv:string[]):void 
     .option('--file <path>',    'read new value from file')
     .option('--info <json>',    'merge info map from JSON object')
     .action(async (Id:string, Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       const { InfoEntries }  = extractInfoEntries(ExtraArgv)
       await cmdItemUpdate(Config, Id, Options, InfoEntries)
     })
@@ -159,10 +162,15 @@ function walkItems (
           if (Options.showMIME)  { Obj['mime']  = Store._TypeOf(Entry.Id) }
           if (Options.showValue) { Obj['value'] = Store._currentValueOf(Entry.Id) ?? null }
         }
-        if (Options.InfoKey != null) {
-          Obj['info.'+Options.InfoKey] = Store._InfoProxyOf(Entry.Id)[Options.InfoKey] ?? null
-        } else if (Options.showInfo) {
-          Obj['info'] = { ...Store._InfoProxyOf(Entry.Id) }
+        switch (true) {
+          case (Options.InfoKey != null): {
+            Obj['info.'+Options.InfoKey!] = Store._InfoProxyOf(Entry.Id)[Options.InfoKey!] ?? null
+            break
+          }
+          case (Options.showInfo): {
+            Obj['info'] = { ...Store._InfoProxyOf(Entry.Id) }
+            break
+          }
         }
         Out.push(Obj)
       } else {
@@ -204,10 +212,15 @@ async function cmdItemGet (
       if (ShowAll || Options.label) { Obj['label'] = Item.Label }
       if (ShowAll || Options.mime)  { Obj['mime']  = Item.Type }
       if (ShowAll || Options.value) { Obj['value'] = Context.Store._currentValueOf(Id) ?? null }
-      if (InfoKey != null) {
-        Obj['info.'+InfoKey] = Context.Store._InfoProxyOf(Id)[InfoKey] ?? null
-      } else if (ShowAll || Options.info) {
-        Obj['info'] = { ...Context.Store._InfoProxyOf(Id) }
+      switch (true) {
+        case (InfoKey != null): {
+          Obj['info.'+InfoKey!] = Context.Store._InfoProxyOf(Id)[InfoKey!] ?? null
+          break
+        }
+        case (ShowAll || Options.info): {
+          Obj['info'] = { ...Context.Store._InfoProxyOf(Id) }
+          break
+        }
       }
       printResult(Config, Obj)
     } else {
@@ -218,11 +231,16 @@ async function cmdItemGet (
         const Value = Context.Store._currentValueOf(Id)
         printLine(`value: ${Value != null ? String(Value) : '(none)'}`)
       }
-      if (InfoKey != null) {
-        const Value = Context.Store._InfoProxyOf(Id)[InfoKey]
-        printLine(`info.${InfoKey}: ${JSON.stringify(Value ?? null)}`)
-      } else if (ShowAll || Options.info) {
-        printLine(`info:  ${JSON.stringify(Context.Store._InfoProxyOf(Id))}`)
+      switch (true) {
+        case (InfoKey != null): {
+          const Value = Context.Store._InfoProxyOf(Id)[InfoKey!]
+          printLine(`info.${InfoKey}: ${JSON.stringify(Value ?? null)}`)
+          break
+        }
+        case (ShowAll || Options.info): {
+          printLine(`info:  ${JSON.stringify(Context.Store._InfoProxyOf(Id))}`)
+          break
+        }
       }
     }
   } finally {
@@ -231,8 +249,6 @@ async function cmdItemGet (
 }
 
 /**** cmdItemCreate ****/
-
-import fs from 'node:fs/promises'
 
 async function cmdItemCreate (
   Config:SDSConfig,
@@ -255,12 +271,17 @@ async function cmdItemCreate (
 
     if (Options.label != null) { Item.Label = Options.label }
 
-    if (Options.file != null) {
-      const FileData = await fs.readFile(Options.file)
-      const isBinary = ! MIMEType.startsWith('text/')
-      Item.writeValue(isBinary ? new Uint8Array(FileData) : FileData.toString('utf8'))
-    } else if (Options.value != null) {
-      Item.writeValue(Options.value)
+    switch (true) {
+      case (Options.file != null): {
+        const FileData = await fs.readFile(Options.file!)
+        const isBinary = ! MIMEType.startsWith('text/')
+        Item.writeValue(isBinary ? new Uint8Array(FileData) : FileData.toString('utf8'))
+        break
+      }
+      case (Options.value != null): {
+        Item.writeValue(Options.value!)
+        break
+      }
     }
 
     applyInfoToEntry(Item.Info, Options.info ?? null, InfoEntries)
@@ -293,12 +314,17 @@ async function cmdItemUpdate (
     if (Options.label != null) { Item.Label = Options.label }
     if (Options.mime  != null) { Item.Type  = Options.mime }
 
-    if (Options.file != null) {
-      const FileData = await fs.readFile(Options.file)
-      const isBinary = ! Item.Type.startsWith('text/')
-      Item.writeValue(isBinary ? new Uint8Array(FileData) : FileData.toString('utf8'))
-    } else if (Options.value != null) {
-      Item.writeValue(Options.value)
+    switch (true) {
+      case (Options.file != null): {
+        const FileData = await fs.readFile(Options.file!)
+        const isBinary = ! Item.Type.startsWith('text/')
+        Item.writeValue(isBinary ? new Uint8Array(FileData) : FileData.toString('utf8'))
+        break
+      }
+      case (Options.value != null): {
+        Item.writeValue(Options.value!)
+        break
+      }
     }
 
     applyInfoToEntry(Item.Info, Options.info ?? null, InfoEntries)

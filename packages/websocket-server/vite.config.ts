@@ -26,7 +26,6 @@ export default defineConfig({
         '@hono/node-ws',
         'jose',
         '@rozek/sds-persistence-node',
-        'better-sqlite3',
       ],
     },
   },

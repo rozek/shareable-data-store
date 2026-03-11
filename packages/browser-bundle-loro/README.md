@@ -16,6 +16,18 @@ All other npm dependencies (`fflate`, `fractional-indexing`, `zod`) are inlined 
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Modern browser** | requires ES module support and WebAssembly (for `loro-crdt`). Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+| **`loro-crdt`** | Peer dependency — must be provided separately (cannot be bundled due to its WebAssembly payload). See [Setup: `loro-crdt` external dependency](#setup-loro-crdt-external-dependency) below. |
+| **Web server** | The bundle file must be served over HTTP/HTTPS — `file://` URLs do not support ES modules. |
+
+This package targets **browsers only**. All SDS and third-party dependencies except `loro-crdt` (`fflate`, `fractional-indexing`, `zod`) are inlined.
+
+---
+
 ## Why a bundle?
 
 Every `import` statement in a browser application potentially loads code from a third-party server. `@rozek/sds-browser-bundle-loro` bundles the entire SDS infrastructure layer into a single auditable file that you serve from your own server. Only `loro-crdt` remains external due to its WebAssembly payload.
@@ -28,7 +40,7 @@ Bundle size: ≈ 163 KB raw / ≈ 36 KB gzip (excluding `loro-crdt`).
 
 Because Loro uses WebAssembly, `loro-crdt` must be loaded separately. You have two options:
 
-### Option A — Self-hosted (recommended for GDPR compliance)
+### Option A — self-hosted (recommended for GDPR compliance)
 
 Download `loro-crdt` from npm and serve it from your own infrastructure:
 
@@ -255,7 +267,7 @@ pnpm --filter @rozek/sds-browser-bundle-loro build
 
 The output is written to `packages/browser-bundle-loro/dist/`:
 
-| File | Description |
+| file | description |
 | --- | --- |
 | `sds-browser-bundle-loro.js` | ESM file (≈ 163 KB raw, ≈ 36 KB gzip); `loro-crdt` external |
 | `sds-browser-bundle-loro.d.ts` | Rolled-up TypeScript declarations |

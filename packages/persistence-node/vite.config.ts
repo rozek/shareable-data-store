@@ -18,7 +18,7 @@ export default defineConfig({
     outDir: 'dist',
     target: 'node22',
     rollupOptions: {
-      external: [/^node:/, '@rozek/sds-core', 'better-sqlite3'],
+      external: [/^node:/, '@rozek/sds-core'],
     },
   },
   plugins: [ dts({ rollupTypes:true }) ],

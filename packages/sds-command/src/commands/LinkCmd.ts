@@ -10,7 +10,7 @@ import type { Command }   from 'commander'
 import type { SDS_Item }  from '@rozek/sds-core'
 import { RootId }         from '@rozek/sds-core'
 
-import type { SDSConfig }  from '../Config.js'
+import { resolveConfig, type SDSConfig }  from '../Config.js'
 import { printResult, printLine, formatLinkLine } from '../Output.js'
 import {
   SDS_CommandError, loadContext, closeContext, resolveEntryId,
@@ -32,11 +32,12 @@ export function registerLinkCommands (Program:Command, ExtraArgv:string[]):void 
 
   LinkCmd.command('get <id>')
     .description('display link details')
-    .option('--label',    'include label')
-    .option('--target',   'include target item ID')
-    .option('--info',     'include info map')
+    .option('--label',      'include label')
+    .option('--target',     'include target item ID')
+    .option('--info',       'include info map')
+    .option('--info.<key>', 'include only the named info entry, e.g. --info.author')
     .action(async (Id:string, Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       const { InfoEntries }  = extractInfoEntries(ExtraArgv)
       const InfoKey          = Object.keys(InfoEntries)[0]
       await cmdLinkGet(Config, Id, Options, InfoKey)
@@ -50,7 +51,7 @@ export function registerLinkCommands (Program:Command, ExtraArgv:string[]):void 
     .option('--container <itemId>',        'container item (default: root)')
     .option('--at <index>',               'insertion index (default: append)')
     .action(async (Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdLinkCreate(Config, Options)
     })
 }
@@ -81,10 +82,15 @@ async function cmdLinkGet (
       const Obj:Record<string,unknown> = { id:Id, kind:'link' }
       if (ShowAll || Options.label)  { Obj['label']  = Entry.Label }
       if (ShowAll || Options.target) { Obj['target'] = TargetId }
-      if (InfoKey != null) {
-        Obj['info.'+InfoKey] = Context.Store._InfoProxyOf(Id)[InfoKey] ?? null
-      } else if (ShowAll || Options.info) {
-        Obj['info'] = { ...Context.Store._InfoProxyOf(Id) }
+      switch (true) {
+        case (InfoKey != null): {
+          Obj['info.'+InfoKey!] = Context.Store._InfoProxyOf(Id)[InfoKey!] ?? null
+          break
+        }
+        case (ShowAll || Options.info): {
+          Obj['info'] = { ...Context.Store._InfoProxyOf(Id) }
+          break
+        }
       }
       printResult(Config, Obj)
     } else {
@@ -92,11 +98,16 @@ async function cmdLinkGet (
       printLine(`kind:   link`)
       if (ShowAll || Options.label)  { printLine(`label:  ${Entry.Label}`) }
       if (ShowAll || Options.target) { printLine(`target: ${TargetId}`) }
-      if (InfoKey != null) {
-        const Value = Context.Store._InfoProxyOf(Id)[InfoKey]
-        printLine(`info.${InfoKey}: ${JSON.stringify(Value ?? null)}`)
-      } else if (ShowAll || Options.info) {
-        printLine(`info:   ${JSON.stringify(Context.Store._InfoProxyOf(Id))}`)
+      switch (true) {
+        case (InfoKey != null): {
+          const Value = Context.Store._InfoProxyOf(Id)[InfoKey!]
+          printLine(`info.${InfoKey}: ${JSON.stringify(Value ?? null)}`)
+          break
+        }
+        case (ShowAll || Options.info): {
+          printLine(`info:   ${JSON.stringify(Context.Store._InfoProxyOf(Id))}`)
+          break
+        }
       }
     }
   } finally {

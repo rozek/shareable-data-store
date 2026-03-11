@@ -14,6 +14,17 @@ All npm dependencies (`yjs`, `fflate`, `fractional-indexing`, `zod`) are inlined
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Modern browser** | requires ES module support (`<script type="module">`). Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+| **Web server** | The bundle file must be served over HTTP/HTTPS — `file://` URLs do not support ES modules. |
+
+This package targets **browsers only**. All SDS and third-party dependencies (`yjs`, `fflate`, `fractional-indexing`, `zod`) are inlined — no CDN requests at runtime.
+
+---
+
 ## Why a bundle?
 
 Every `import` statement in a browser application potentially loads code from a third-party server. With the standard per-package installation approach that means separate network requests to your own server for the SDS packages, plus requests to CDNs or npm mirrors for `yjs`, `fflate`, etc.
@@ -232,7 +243,7 @@ pnpm --filter @rozek/sds-browser-bundle-yjs build
 
 The output is written to `packages/browser-bundle-yjs/dist/`:
 
-| File | Description |
+| file | description |
 | --- | --- |
 | `sds-browser-bundle-yjs.js` | Single ESM file (≈ 332 KB raw, ≈ 74 KB gzip) |
 | `sds-browser-bundle-yjs.d.ts` | Rolled-up TypeScript declarations |

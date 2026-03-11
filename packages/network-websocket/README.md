@@ -6,6 +6,18 @@ Works in **browsers** (native WebSocket API) and **Node.js 22+** (built-in WebSo
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Node.js 22+** | required when using this package server-side. Node.js 22 ships a built-in WebSocket client — no polyfill needed. Download from [nodejs.org](https://nodejs.org). |
+| **Modern browser** | required when using this package client-side. Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+| **SDS WebSocket server** | The remote end must run `@rozek/sds-websocket-server` (or a compatible relay) to exchange CRDT patches and presence state. |
+
+This package is isomorphic — it uses the native `WebSocket` API available in both environments.
+
+---
+
 ## Installation
 
 ```bash
@@ -38,7 +50,7 @@ When the WebSocket closes unexpectedly the provider transitions to `'reconnectin
 
 ---
 
-## API Reference
+## API reference
 
 ### `SDS_WebSocketProvider`
 

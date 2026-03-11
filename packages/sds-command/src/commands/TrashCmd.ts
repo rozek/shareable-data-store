@@ -9,7 +9,7 @@
 import type { Command }  from 'commander'
 import { TrashId }       from '@rozek/sds-core'
 
-import type { SDSConfig }  from '../Config.js'
+import { resolveConfig, type SDSConfig }  from '../Config.js'
 import { printResult, printLine } from '../Output.js'
 import { loadContext, closeContext } from '../StoreAccess.js'
 
@@ -31,7 +31,7 @@ export function registerTrashCommands (Program:Command):void {
     .description('list all entries currently in the trash')
     .option('--only <kind>', 'filter by kind: items | links')
     .action(async (Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdTrashList(Config, Options.only)
     })
 
@@ -40,7 +40,7 @@ export function registerTrashCommands (Program:Command):void {
   TrashCmd.command('purge-all')
     .description('permanently delete every entry in the trash')
     .action(async (_Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdTrashPurgeAll(Config)
     })
 
@@ -50,7 +50,7 @@ export function registerTrashCommands (Program:Command):void {
     .description('permanently delete trash entries older than --ttl milliseconds')
     .option('--ttl <ms>', 'TTL in milliseconds (default: 30 days)', String(DefaultTrashTTLms))
     .action(async (Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdTrashPurgeExpired(Config, parseInt(Options.ttl, 10))
     })
 }

@@ -30,9 +30,9 @@ export function tokenizeLine (Line:string):string[] {
       }
 
       // single-quoted string — no escapes inside
-      case (Character === "'"): {
+      case (Character === '\''): {
         CharAt++
-        while ((CharAt < Line.length) && (Line[CharAt] !== "'")) {
+        while ((CharAt < Line.length) && (Line[CharAt] !== '\'')) {
           TokenBuffer += Line[CharAt]
           CharAt++
         }

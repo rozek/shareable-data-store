@@ -14,6 +14,17 @@ All npm dependencies (`json-joy`, `fflate`, `fractional-indexing`, `zod`) are in
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Modern browser** | requires ES module support (`<script type="module">`). Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+| **Web server** | The bundle file must be served over HTTP/HTTPS — `file://` URLs do not support ES modules. |
+
+This package targets **browsers only**. All SDS and third-party dependencies (`json-joy`, `fflate`, `fractional-indexing`, `zod`) are inlined — no CDN requests at runtime.
+
+---
+
 ## Why a bundle?
 
 Every `import` statement in a browser application potentially loads code from a third-party server. With the standard per-package installation approach that means separate network requests to your own server for the SDS packages, plus requests to CDNs or npm mirrors for `json-joy`, `fflate`, etc.
@@ -232,7 +243,7 @@ pnpm --filter @rozek/sds-browser-bundle-jj build
 
 The output is written to `packages/browser-bundle-jj/dist/`:
 
-| File | Description |
+| file | description |
 | --- | --- |
 | `sds-browser-bundle-jj.js` | Single ESM file (≈ 439 KB raw, ≈ 100 KB gzip) |
 | `sds-browser-bundle-jj.d.ts` | Rolled-up TypeScript declarations |

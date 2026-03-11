@@ -52,7 +52,7 @@ Both variants use the same `docker-compose.yml` with Caddy as a TLS-terminating 
 - ports 80 and 443 reachable from the internet
 - DNS A/AAAA records for all domains pointing to this server
 
-### Setup A1 — Docker + Caddy + Pre-built Image (recommended)
+### Setup A1 — Docker + Caddy + pre-built image (recommended)
 
 The Docker image is built automatically by CI and pushed to the GitHub Container Registry (GHCR) on every change. The server only pulls and runs it — no `docker build`, no `node-gyp`, no RAM spike.
 
@@ -96,14 +96,9 @@ docker compose up -d
 
 ---
 
-### Setup A2 — Docker + Caddy + Build on Server
+### Setup A2 — Docker + Caddy + build on server
 
-Use this only if your server has more than 1 GB RAM and you prefer to build the image locally. Building compiles `better-sqlite3` from source via `node-gyp`, which requires build tools and temporarily uses significant RAM.
-
-**Required build tools** (only if `better-sqlite3` has no pre-built binary for your platform — see data in step 4):
-
-- Debian / Ubuntu: `apt-get install -y make g++ python3`
-- RHEL / Rocky / AlmaLinux: `dnf install -y make gcc gcc-c++ python3`
+Use this only if you prefer to build the Docker image locally from source rather than pulling the pre-built image. No native add-on compilation is required — `node:sqlite` is a built-in Node.js module.
 
 ```bash
 # 1. clone the repository
@@ -118,10 +113,6 @@ cp .env.example .env
 $EDITOR .env          # set SDS_JWT_SECRET, SDS_DOMAIN, ACME_EMAIL
 
 # 4. build the package tarball
-#    pnpm install fetches a pre-built binary for better-sqlite3 where available.
-#    If no pre-built binary matches your platform/Node.js version, it falls back
-#    to compiling from source (build tools above must be installed in that case).
-#    Build tools are NOT needed in relay-only mode (no SDS_PERSIST_DIR).
 #    (corepack is included in Node.js 22 and activates pnpm automatically)
 cd /opt/shareable-data-store
 corepack enable
@@ -170,16 +161,16 @@ These variants run the server directly with Node.js — without Docker, without 
 
 All three variants use the same minimal `server.mjs` entry point. The differences are in how packages are obtained and whether persistence is enabled.
 
-### Setup B1 — Bare Node.js + Relay-only
+### Setup B1 — Bare Node.js + relay-only
 
-No persistence, no `better-sqlite3`, no compilation. Works on any server regardless of available RAM.
+No persistence, no SQLite, no compilation. Works on any server with Node.js 22.5+.
 
 ```bash
 # 1. create the working directory
 mkdir -p /opt/sds-websocket-server && cd /opt/sds-websocket-server
 
-# 2. install server and dependencies — skip optional native addons
-npm install --no-optional @rozek/sds-websocket-server @hono/node-server @hono/node-ws hono jose
+# 2. install server and dependencies
+npm install @rozek/sds-websocket-server @hono/node-server @hono/node-ws hono jose
 
 # 3. create the entry point
 cat > server.mjs << 'EOF'
@@ -206,17 +197,17 @@ For a permanent setup, write the variables to `/etc/sds-websocket-server.env` an
 
 ---
 
-### Setup B2 — Bare Node.js + SQLite Persistence + Pre-built Binary
+### Setup B2 — Bare Node.js + SQLite persistence
 
-`better-sqlite3` ships pre-built binaries for Linux x64/arm64, Node.js 18–22. Setting `npm_config_build_from_source=false` explicitly forbids fallback compilation, so the install fails with a clear error rather than silently running `node-gyp` and exhausting RAM.
+SQLite persistence is provided by `node:sqlite`, a built-in Node.js module (available since Node.js 22.5). No native add-on compilation or pre-built binary is required.
 
 ```bash
 # 1. create the working directory
 mkdir -p /opt/sds-websocket-server && cd /opt/sds-websocket-server
 
-# 2. install server, persistence, and SQLite — pre-built binary only, no compilation fallback
-npm_config_build_from_source=false npm install \
-  @rozek/sds-websocket-server @rozek/sds-persistence-node better-sqlite3 \
+# 2. install server and persistence — no native add-ons needed
+npm install \
+  @rozek/sds-websocket-server @rozek/sds-persistence-node \
   @hono/node-server @hono/node-ws hono jose
 
 # 3. create the entry point
@@ -242,11 +233,9 @@ export SDS_PERSIST_DIR=/var/lib/sds-websocket-server/stores       # enables SQLi
 node server.mjs
 ```
 
-If no pre-built binary matches your platform, the install fails immediately with a clear error — upgrade Node.js to a supported version (18–22) or use Setup B3 instead.
-
 ---
 
-### Setup B3 — Bare Node.js + SQLite Persistence + Tarball
+### Setup B3 — Bare Node.js + SQLite persistence + tarball
 
 Build on a development machine or in CI (where RAM is plentiful), ship only the resulting tarball to the server. No compilation on the server whatsoever.
 
@@ -266,8 +255,8 @@ scp /tmp/sds-pack/rozek-sds-websocket-server-*.tgz user@server:/opt/sds-websocke
 # 1. create the working directory
 mkdir -p /opt/sds-websocket-server && cd /opt/sds-websocket-server
 
-# 2. install from the tarball — no compilation whatsoever
-npm install --no-optional ./rozek-sds-websocket-server-*.tgz \
+# 2. install from the tarball — no compilation needed
+npm install ./rozek-sds-websocket-server-*.tgz \
   @hono/node-server @hono/node-ws hono jose
 
 # 3. create the entry point
@@ -294,7 +283,7 @@ node server.mjs
 
 ---
 
-## Directory Structure After Setup (Docker Variants)
+## Directory structure after setup (Docker variants)
 
 ```
 /opt/sds-websocket-server/
@@ -328,7 +317,7 @@ cp .env.example .env
 
 Key variables:
 
-| Variable | Required | Description |
+| variable | required | description |
 | --- | --- | --- |
 | `SDS_JWT_SECRET` | **yes** | HS256 signing secret — at least 32 random bytes, base64url-encoded |
 | `SDS_ISSUER` | no | validated as the `iss` claim in JWTs |
@@ -337,7 +326,7 @@ Key variables:
 | `SDS_PERSIST_DIR` | no | enable SQLite persistence. Must match the container-side mount path from `docker-compose.yml` — with the default configuration use `/data/stores`. Without Docker any writable directory path on the host works. |
 | *(custom)* | no | add one variable per additional service subdomain (e.g. `WIKI_DOMAIN=wiki.example.com`) and reference it in the Caddyfile. |
 | `SDS_DOMAIN` | **yes** (Docker) | subdomain for the SDS server — Caddy requests a TLS certificate for it automatically |
-| `ACME_EMAIL` | **yes** (Docker) | EMail address for Let's Encrypt notifications (shared across all subdomains) |
+| `ACME_EMAIL` | **yes** (Docker) | email address for Let's Encrypt notifications (shared across all subdomains) |
 
 Generate a strong `SDS_JWT_SECRET`:
 
@@ -383,7 +372,7 @@ curl -s -X POST "https://${SDS_DOMAIN}/api/token" \
 
 Available `scope` values:
 
-| Scope | Can read | Can write | Can issue tokens |
+| scope | can read | can write | can issue tokens |
 | --- | --- | --- | --- |
 | `read` | ✅ | ❌ | ❌ |
 | `write` | ✅ | ✅ | ❌ |

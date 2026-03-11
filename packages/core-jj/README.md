@@ -4,6 +4,18 @@ The **json-joy CRDT backend** for [shareable-data-store](../../README.md). Provi
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Node.js 22+** | required when using this package in a Node.js project or build toolchain. Download from [nodejs.org](https://nodejs.org). |
+| **Modern browser** | required when using this package in a web application. Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
+| **`json-joy` ≥ 17** | Peer dependency — install separately: `pnpm add json-joy`. |
+
+This package is isomorphic. All other runtime dependencies (`fflate`, `fractional-indexing`, `zod`) are bundled.
+
+---
+
 ## When to use this package
 
 Choose `@rozek/sds-core-jj` when:

@@ -1,14 +1,14 @@
-import e from "better-sqlite3";
-class E {
-  #a;
+import { DatabaseSync as e } from "node:sqlite";
+class c {
   #s;
+  #a;
   /**** constructor ****/
-  constructor(a, s) {
-    this.#s = s, this.#a = new e(a), this.#a.pragma("journal_mode = WAL"), this.#a.pragma("synchronous = NORMAL"), this.#t();
+  constructor(s, a) {
+    this.#a = a, this.#s = new e(s), this.#s.exec("PRAGMA journal_mode = WAL"), this.#s.exec("PRAGMA synchronous = NORMAL"), this.#t();
   }
   /**** #initSchema ****/
   #t() {
-    this.#a.exec(`
+    this.#s.exec(`
       CREATE TABLE IF NOT EXISTS snapshots (
         store_id  TEXT    PRIMARY KEY,
         data      BLOB    NOT NULL,
@@ -32,49 +32,47 @@ class E {
   //----------------------------------------------------------------------------//
   /**** loadSnapshot ****/
   async loadSnapshot() {
-    const a = this.#a.prepare("SELECT data FROM snapshots WHERE store_id = ?").get(this.#s);
-    return a != null ? new Uint8Array(a.data) : void 0;
+    return this.#s.prepare("SELECT data FROM snapshots WHERE store_id = ?").get(this.#a)?.data;
   }
   /**** saveSnapshot ****/
-  async saveSnapshot(a) {
-    this.#a.prepare(
+  async saveSnapshot(s) {
+    this.#s.prepare(
       "INSERT INTO snapshots (store_id, data, clock) VALUES (?,?,?) ON CONFLICT(store_id) DO UPDATE SET data=excluded.data, clock=excluded.clock"
-    ).run(this.#s, Buffer.from(a), Date.now());
+    ).run(this.#a, s, Date.now());
   }
   /**** loadPatchesSince ****/
-  async loadPatchesSince(a) {
-    return this.#a.prepare("SELECT data FROM patches WHERE store_id = ? AND clock > ? ORDER BY clock ASC").all(this.#s, a).map((t) => new Uint8Array(t.data));
+  async loadPatchesSince(s) {
+    return this.#s.prepare("SELECT data FROM patches WHERE store_id = ? AND clock > ? ORDER BY clock ASC").all(this.#a, s).map((t) => t.data);
   }
   /**** appendPatch ****/
-  async appendPatch(a, s) {
-    this.#a.prepare(
+  async appendPatch(s, a) {
+    this.#s.prepare(
       "INSERT OR IGNORE INTO patches (store_id, clock, data) VALUES (?,?,?)"
-    ).run(this.#s, s, Buffer.from(a));
+    ).run(this.#a, a, s);
   }
   /**** prunePatches ****/
-  async prunePatches(a) {
-    this.#a.prepare("DELETE FROM patches WHERE store_id = ? AND clock < ?").run(this.#s, a);
+  async prunePatches(s) {
+    this.#s.prepare("DELETE FROM patches WHERE store_id = ? AND clock < ?").run(this.#a, s);
   }
   /**** loadValue ****/
-  async loadValue(a) {
-    const s = this.#a.prepare("SELECT data FROM blobs WHERE hash = ?").get(a);
-    return s != null ? new Uint8Array(s.data) : void 0;
+  async loadValue(s) {
+    return this.#s.prepare("SELECT data FROM blobs WHERE hash = ?").get(s)?.data;
   }
   /**** saveValue ****/
-  async saveValue(a, s) {
-    this.#a.prepare(
+  async saveValue(s, a) {
+    this.#s.prepare(
       "INSERT INTO blobs (hash, data, ref_count) VALUES (?,?,1) ON CONFLICT(hash) DO UPDATE SET ref_count = ref_count + 1"
-    ).run(a, Buffer.from(s));
+    ).run(s, a);
   }
   /**** releaseValue ****/
-  async releaseValue(a) {
-    this.#a.prepare("UPDATE blobs SET ref_count = ref_count - 1 WHERE hash = ?").run(a), this.#a.prepare("DELETE FROM blobs WHERE hash = ? AND ref_count <= 0").run(a);
+  async releaseValue(s) {
+    this.#s.prepare("UPDATE blobs SET ref_count = ref_count - 1 WHERE hash = ?").run(s), this.#s.prepare("DELETE FROM blobs WHERE hash = ? AND ref_count <= 0").run(s);
   }
   /**** close ****/
   async close() {
-    this.#a.close();
+    this.#s.close();
   }
 }
 export {
-  E as SDS_DesktopPersistenceProvider
+  c as SDS_DesktopPersistenceProvider
 };

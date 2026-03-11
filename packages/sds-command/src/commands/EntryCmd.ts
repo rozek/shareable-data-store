@@ -11,7 +11,7 @@ import type { SDS_Entry }  from '@rozek/sds-core'
 import type { SDS_Item }   from '@rozek/sds-core'
 import { RootId, TrashId } from '@rozek/sds-core'
 
-import type { SDSConfig }  from '../Config.js'
+import { resolveConfig, type SDSConfig }  from '../Config.js'
 import { printResult, printLine } from '../Output.js'
 import {
   SDS_CommandError, loadContext, closeContext, resolveEntryId,
@@ -37,10 +37,10 @@ export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void
     .option('--mime',           'include MIME type (items only)')
     .option('--value',          'include value (items only)')
     .option('--info',           'include full info map')
-    .option('--info.xxx <key>', 'include a specific info key (see --info.key)')
+    .option('--info.<key>',     'include only the named info entry, e.g. --info.author')
     .option('--target',         'include link target ID (links only)')
     .action(async (Id:string, Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       const { InfoEntries }  = extractInfoEntries(ExtraArgv)
       const InfoKey          = Object.keys(InfoEntries)[0]
       await cmdEntryGet(Config, Id, Options, InfoKey)
@@ -53,7 +53,7 @@ export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void
     .requiredOption('--to <targetId>', 'destination container item ID')
     .option('--at <index>',            'insertion index (default: append)')
     .action(async (Id:string, Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdEntryMove(Config, Id, Options.to, Options.at)
     })
 
@@ -62,7 +62,7 @@ export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void
   EntryCmd.command('delete <id>')
     .description('soft-delete: move entry to the trash')
     .action(async (Id:string, _Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdEntryDelete(Config, Id)
     })
 
@@ -73,7 +73,7 @@ export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void
     .option('--to <targetId>', 'destination container item ID (default: root)')
     .option('--at <index>',    'insertion index (default: append)')
     .action(async (Id:string, Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdEntryRestore(Config, Id, Options.to, Options.at)
     })
 
@@ -82,7 +82,7 @@ export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void
   EntryCmd.command('purge <id>')
     .description('permanently delete an entry (must be in the trash)')
     .action(async (Id:string, _Options, SubCommand) => {
-      const Config:SDSConfig = SubCommand.optsWithGlobals()
+      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
       await cmdEntryPurge(Config, Id)
     })
 }
@@ -289,10 +289,15 @@ function entryToJSON (
     if (ShowAll || (Options as any).target) { Result['target'] = TargetId }
   }
   const InfoKey = (Options as any).InfoKey as string | undefined
-  if (InfoKey != null) {
-    Result['info.'+InfoKey] = Store._InfoProxyOf(Entry.Id)[InfoKey] ?? null
-  } else if (ShowAll || (Options as any).info) {
-    Result['info'] = { ...Store._InfoProxyOf(Entry.Id) }
+  switch (true) {
+    case (InfoKey != null): {
+      Result['info.'+InfoKey!] = Store._InfoProxyOf(Entry.Id)[InfoKey!] ?? null
+      break
+    }
+    case (ShowAll || (Options as any).info): {
+      Result['info'] = { ...Store._InfoProxyOf(Entry.Id) }
+      break
+    }
   }
 
   return Result
@@ -322,11 +327,16 @@ function printEntryText (
     if (ShowAll || (Options as any).target) { printLine(`target: ${TargetId}`) }
   }
   const InfoKey = (Options as any).InfoKey as string | undefined
-  if (InfoKey != null) {
-    const Value = Store._InfoProxyOf(Entry.Id)[InfoKey]
-    printLine(`info.${InfoKey}: ${JSON.stringify(Value ?? null)}`)
-  } else if (ShowAll || (Options as any).info) {
-    const Info = Store._InfoProxyOf(Entry.Id)
-    printLine(`info:  ${JSON.stringify(Info)}`)
+  switch (true) {
+    case (InfoKey != null): {
+      const Value = Store._InfoProxyOf(Entry.Id)[InfoKey!]
+      printLine(`info.${InfoKey}: ${JSON.stringify(Value ?? null)}`)
+      break
+    }
+    case (ShowAll || (Options as any).info): {
+      const Info = Store._InfoProxyOf(Entry.Id)
+      printLine(`info:  ${JSON.stringify(Info)}`)
+      break
+    }
   }
 }

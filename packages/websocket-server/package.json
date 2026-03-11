@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-websocket-server",
   "description": "WebSocket server for shareable-data-store (Hono, JWT auth, multi-store)",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
@@ -51,12 +51,8 @@
       "optional": true
     }
   },
-  "optionalDependencies": {
-    "better-sqlite3": "^9.0.0"
-  },
   "devDependencies": {
     "@rozek/sds-persistence-node": "workspace:*",
-    "@types/better-sqlite3": "^7.6.0",
     "@types/node": "^25.3.3",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",
@@ -65,5 +61,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=22.5"
   }
 }

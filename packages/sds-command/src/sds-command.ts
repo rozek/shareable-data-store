@@ -60,13 +60,13 @@ function buildProgram (ExtraArgv:string[]):Command {
 /**** shell — interactive REPL ****/
 
   Program.command('shell')
-    .description('start an interactive REPL (also started when sds is called with no arguments)')
+    .description('start an interactive REPL')
     .action(async (_Options, SubCommand) => {
       const Config = resolveConfig(SubCommand.optsWithGlobals())
       await startREPL((Tokens) => executeTokens(Tokens, Config))
     })
 
-  // root action: --script runner or REPL when no sub-command is given
+  // root action: --script runner, or help when no sub-command is given
   Program
     .option('--script <file>', 'run commands from file (use - for stdin)')
     .action(async (Options) => {
@@ -75,7 +75,8 @@ function buildProgram (ExtraArgv:string[]):Command {
         const Code = await runScript(Config, Options.script, executeTokens)
         process.exit(Code)
       } else {
-        await startREPL((Tokens) => executeTokens(Tokens, Config))
+        process.stdout.write(Program.helpInformation())
+        process.exit(ExitCodes.OK)
       }
     })
 
@@ -93,7 +94,7 @@ async function executeTokens (
 ):Promise<number> {
   if (Tokens.length === 0) { return ExitCodes.OK }
 
-  // extract --info.xxx options before handing off to commander
+  // extract --info.<key> options before handing off to commander
   const { CleanArgv, InfoEntries } = extractInfoEntries(Tokens)
 
   const Program = buildProgram(
@@ -149,7 +150,7 @@ async function executeTokens (
 /**** main — CLI entry point ****/
 
 async function main ():Promise<void> {
-  // strip --info.xxx options before commander sees them; keep them for
+  // strip --info.<key> options before commander sees them; keep them for
   // later injection into sub-command handlers via buildProgram(ExtraArgv)
   const { CleanArgv, InfoEntries } = extractInfoEntries(process.argv.slice(2))
 

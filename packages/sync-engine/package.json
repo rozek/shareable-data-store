@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-sync-engine",
   "description": "Coordinates persistence, network and presence for shareable-data-store",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
@@ -46,5 +46,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

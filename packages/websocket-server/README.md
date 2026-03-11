@@ -9,9 +9,21 @@ The relay server for the **shareable-data-store** (SDS) family. A [Hono](https:/
 - provides a WebRTC signalling relay
 - issues short-lived access tokens via an admin API
 
-Runs on Node.js 18+ using `@hono/node-server`.
+Runs on Node.js 22.5+ using `@hono/node-server`.
 
 You may install the server locally or deploy it using a Docker image (refer to [DEPLOYMENT.md](./DEPLOYMENT.md))
+
+---
+
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Node.js 22.5+** | required. Download from [nodejs.org](https://nodejs.org). |
+
+This package targets **Node.js only**. In relay-only mode (no persistence) there are no runtime dependencies beyond `@hono/node-server`.
+
+When SQLite persistence is enabled (`PersistDir` / `SDS_PERSIST_DIR` is set), the server uses `@rozek/sds-persistence-node`, which relies on the built-in `node:sqlite` module — no native C++ addon or build toolchain is required.
 
 ---
 
@@ -23,13 +35,13 @@ You may install the server locally or deploy it using a Docker image (refer to [
 pnpm add @rozek/sds-websocket-server
 ```
 
-**With SQLite persistence** (requires `better-sqlite3`, a native addon that is compiled on install or fetched as a pre-built binary):
+**With SQLite persistence:**
 
 ```bash
-pnpm add @rozek/sds-websocket-server @rozek/sds-persistence-node better-sqlite3
+pnpm add @rozek/sds-websocket-server @rozek/sds-persistence-node
 ```
 
-`@rozek/sds-persistence-node` is an optional peer dependency: the server loads it lazily only when `PersistDir` / `SDS_PERSIST_DIR` is set. In relay-only mode neither package needs to be installed.
+`@rozek/sds-persistence-node` is an optional peer dependency: the server loads it lazily only when `PersistDir` / `SDS_PERSIST_DIR` is set. In relay-only mode it does not need to be installed.
 
 ---
 
@@ -59,7 +71,7 @@ node server.js
 
 ---
 
-## API Reference
+## API reference
 
 ### `createSDSServer`
 
@@ -85,7 +97,7 @@ Options take priority over environment variables.
 
 #### Environment variables
 
-| Variable | Default | Description |
+| variable | default | description |
 | --- | --- | --- |
 | `SDS_JWT_SECRET` | *(required)* | HMAC-SHA256 signing secret — must be at least 32 characters |
 | `SDS_ISSUER` | *(none)* | expected JWT `iss` claim; omit to skip issuer validation |
@@ -117,7 +129,7 @@ wss://my-server.example.com/ws/my-store?token=<jwt>
 
 **JWT claims:**
 
-| Claim | Required | Description |
+| claim | required | description |
 | --- | --- | --- |
 | `sub` | yes | subject (user identifier) |
 | `aud` | yes | must match `:StoreId` |
@@ -126,7 +138,7 @@ wss://my-server.example.com/ws/my-store?token=<jwt>
 
 **Scope enforcement:**
 
-| Scope | May receive patches | May send patches/values |
+| scope | may receive patches | may send patches/values |
 | --- | --- | --- |
 | `read` | ✓ | ✗ |
 | `write` | ✓ | ✓ |
@@ -170,7 +182,7 @@ Content-Type: application/json
 }
 ```
 
-| Field | Required | Description |
+| field | required | description |
 | --- | --- | --- |
 | `sub` | yes | subject (user identifier) |
 | `scope` | yes | `'read'`, `'write'`, or `'admin'` |
@@ -188,7 +200,7 @@ The issued token automatically inherits the store ID (`aud` claim) from the admi
 
 ---
 
-### Internal Helpers (exported for Testing)
+### Internal helpers (exported for testing)
 
 ```typescript
 // per-store client registry
@@ -214,7 +226,7 @@ interface LiveClient {
 
 ## Examples
 
-### Self-contained Server with Token Issuance
+### Self-contained server with token issuance
 
 ```typescript
 import { createSDSServer } from '@rozek/sds-websocket-server'
@@ -222,15 +234,15 @@ import { serve }           from '@hono/node-server'
 
 const Secret = 'super-secret-key-at-least-32-chars!!'
 
-const { app:App } = createSDSServer({ JWTSecret:secret, Port:3000 })
+const { app:App } = createSDSServer({ JWTSecret:Secret, Port:3000 })
 
-serve({ fetch:App.fetch, Port:3000 })
+serve({ fetch:App.fetch, port:3000 })
 
 // clients connect to wss://host/ws/<storeId>?token=<jwt>
 // admins issue tokens via POST /api/token (authenticated with an admin JWT)
 ```
 
-### Issuing a Token programmatically (e.g. from your Auth Server)
+### Issuing a token programmatically (e.g. from your auth server)
 
 ```typescript
 import { SignJWT } from 'jose'
@@ -247,7 +259,7 @@ const Token = await new SignJWT({ sub:'alice', aud:'my-store', scope:'write' })
 // wss://host/ws/my-store?token=<Token>
 ```
 
-### Behind a Reverse Proxy (Caddy / nginx)
+### Behind a reverse proxy (Caddy / nginx)
 
 The server binds to `127.0.0.1:3000` by default. Point your reverse proxy at that address and handle TLS termination there:
 
@@ -270,22 +282,22 @@ It covers four ready-to-use setups:
 
 - **A1 (recommended):** Docker + Caddy + pre-built image from GHCR — no compilation, automatic TLS, works on servers with as little as 1 GB RAM
 - **A2:** Docker + Caddy + build on server — for teams that prefer to build the image locally
-- **B1:** bare Node.js, relay-only — smallest possible footprint, no native addons
-- **B2 / B3:** bare Node.js + SQLite persistence via pre-built binary or tarball
+- **B1:** bare Node.js, relay-only — smallest possible footprint, no dependencies beyond Hono
+- **B2 / B3:** bare Node.js + SQLite persistence via the built-in `node:sqlite` module — no native addon required
 
 ---
 
-## Wire Protocol
+## Wire protocol
 
 The server is protocol-agnostic: it forwards raw binary frames without inspecting the payload (except for the one-byte type prefix used for scope enforcement). The frame format is defined by `@rozek/sds-network-websocket`:
 
-| Byte | Name | Description |
+| byte | name | description |
 | --- | --- | --- |
-| `0x01` | PATCH | Dropped for read-scope senders |
-| `0x02` | VALUE | Dropped for read-scope senders |
-| `0x03` | REQ_VALUE | Allowed for all scopes |
-| `0x04` | PRESENCE | Allowed for all scopes |
-| `0x05` | VALUE_CHUNK | Dropped for read-scope senders |
+| `0x01` | PATCH | dropped for read-scope senders |
+| `0x02` | VALUE | dropped for read-scope senders |
+| `0x03` | REQ_VALUE | allowed for all scopes |
+| `0x04` | PRESENCE | allowed for all scopes |
+| `0x05` | VALUE_CHUNK | dropped for read-scope senders |
 
 ---
 

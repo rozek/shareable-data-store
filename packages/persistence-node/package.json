@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-persistence-node",
   "description": "SQLite persistence provider for shareable-data-store (Node.js)",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
@@ -34,13 +34,11 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@rozek/sds-core": "workspace:*",
-    "better-sqlite3": ">=9"
+    "@rozek/sds-core": "workspace:*"
   },
   "devDependencies": {
     "@rozek/sds-core": "workspace:*",
-    "@types/better-sqlite3": "^7.6.0",
-    "better-sqlite3": "^9.0.0",
+    "@types/node": "^22.0.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0",
@@ -48,5 +46,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=22.5"
   }
 }

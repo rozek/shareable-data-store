@@ -4,6 +4,16 @@ IndexedDB persistence provider for the **shareable-data-store** (SDS) family. St
 
 ---
 
+## Prerequisites
+
+| requirement | details |
+| --- | --- |
+| **Modern browser** | requires IndexedDB support. Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. Also works in Electron renderer processes. |
+
+This package targets **browsers only** and is not intended for use in a Node.js context. It has no dependencies beyond `@rozek/sds-core` and the browser's built-in IndexedDB API.
+
+---
+
 ## Installation
 
 ```bash
@@ -30,7 +40,7 @@ On startup `SDS_SyncEngine` calls `loadSnapshot()` to restore the last checkpoin
 
 ---
 
-## API Reference
+## API reference
 
 ### `SDS_BrowserPersistenceProvider`
 
@@ -40,14 +50,14 @@ import { SDS_BrowserPersistenceProvider } from '@rozek/sds-persistence-browser'
 class SDS_BrowserPersistenceProvider implements SDS_PersistenceProvider {
   constructor(StoreId:string)
 
-  loadSnapshot():Promise<Uint8Array | null>
+  loadSnapshot():Promise<Uint8Array | undefined>
   saveSnapshot(Data:Uint8Array):Promise<void>
 
   loadPatchesSince(Clock:number):Promise<Uint8Array[]>
   appendPatch(Patch:Uint8Array, Clock:number):Promise<void>
   prunePatches(beforeClock:number):Promise<void>
 
-  loadValue(ValueHash:string):Promise<Uint8Array | null>
+  loadValue(ValueHash:string):Promise<Uint8Array | undefined>
   saveValue(ValueHash:string, Data:Uint8Array):Promise<void>
   releaseValue(ValueHash:string):Promise<void>
 
@@ -55,7 +65,7 @@ class SDS_BrowserPersistenceProvider implements SDS_PersistenceProvider {
 }
 ```
 
-| Parameter | Description |
+| parameter | description |
 |---|---|
 | `StoreId` | Logical store name; determines the IndexedDB database name (`sds:<StoreId>`) |
 
