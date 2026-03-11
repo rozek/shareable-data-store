@@ -39,11 +39,10 @@ describe('script runner (SR)', () => {
       'store info',                                       // would succeed
     ].join('\n'))
 
-    // env vars propagate the store context into each script-line execution
-    const Result = await runCLI(
-      ['--store', 'test', '--data-dir', DataDir, '--on-error', 'stop', '--script', ScriptFile],
-      { SDS_STORE_ID:'test', SDS_DATA_DIR:DataDir },
-    )
+    // global options from the outer invocation are forwarded to each script line
+    const Result = await runCLI([
+      '--store', 'test', '--data-dir', DataDir, '--on-error', 'stop', '--script', ScriptFile,
+    ])
     // exits with the first command's exit code (3 = NotFound)
     expect(Result.ExitCode).toBe(3)
   })
@@ -55,11 +54,10 @@ describe('script runner (SR)', () => {
       'item get 00000000-0000-0000-0000-000000000098',   // also fails: NotFound (3)
     ].join('\n'))
 
-    // env vars propagate the store context into each script-line execution
-    const Result = await runCLI(
-      ['--store', 'test', '--data-dir', DataDir, '--on-error', 'continue', '--script', ScriptFile],
-      { SDS_STORE_ID:'test', SDS_DATA_DIR:DataDir },
-    )
+    // global options from the outer invocation are forwarded to each script line
+    const Result = await runCLI([
+      '--store', 'test', '--data-dir', DataDir, '--on-error', 'continue', '--script', ScriptFile,
+    ])
     // ran both commands; returned last non-zero exit code
     expect(Result.ExitCode).toBe(3)
   })
@@ -70,5 +68,18 @@ describe('script runner (SR)', () => {
       '--script', path.join(DataDir, 'does-not-exist.sds'),
     ])
     expect(Result.ExitCode).toBe(3)
+  })
+
+  it('SR-04: global options from outer invocation are available in each script line', async () => {
+    // script line has no --store/--data-dir; they must be inherited from the outer call
+    const ScriptFile = path.join(DataDir, 'inherit.sds')
+    await fs.writeFile(ScriptFile, 'store info\n')
+
+    const Result = await runCLI([
+      '--store', 'test', '--data-dir', DataDir, '--script', ScriptFile,
+    ])
+    expect(Result.ExitCode).toBe(0)
+    expect(Result.Stderr).toBe('')
+    expect(Result.Stdout).toMatch(/store:/)   // text output confirms store was found
   })
 })

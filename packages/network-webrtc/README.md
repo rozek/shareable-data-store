@@ -178,4 +178,4 @@ The relay server must expose a `/signal/:storeId` WebSocket endpoint. `@rozek/sd
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

@@ -169,6 +169,7 @@
 | RP-02 | `# comment` line | ignored; no command executed |
 | RP-03 | `exit` | session closes |
 | RP-04 | `quit` | session closes |
+| RP-05 | global options on `sds shell` start | available in every subsequent command (no "no store ID" error) |
 
 ## SR — Script Runner (`runScript`)
 
@@ -177,3 +178,4 @@
 | SR-01 | `--on-error stop` with failing command | stops immediately; returns failing exit code |
 | SR-02 | `--on-error continue` with failing command | continues; returns last non-zero exit code |
 | SR-03 | non-existent script file | exits with `NotFound` (code 3) |
+| SR-04 | global options on `sds --script` start | available in every script line (no "no store ID" error) |

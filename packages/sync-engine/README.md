@@ -204,4 +204,4 @@ await SyncEngine.reconnect()
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

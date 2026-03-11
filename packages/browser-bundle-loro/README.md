@@ -276,4 +276,4 @@ The output is written to `packages/browser-bundle-loro/dist/`:
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

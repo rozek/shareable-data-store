@@ -240,12 +240,14 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-24.1** — Blank lines are ignored
 - **TC-24.2** — Lines starting with `#` are ignored
 - **TC-24.3** — `exit` and `quit` close the session
+- **TC-24.4** — Global options given at `sds shell` start (e.g. `--store`, `--data-dir`) are inherited by every command in the session
 
 ### 3. Script runner — `--on-error` modes
 
 - **TC-25.1** — `stop` (default): stops after the first failing command and returns its exit code
 - **TC-25.2** — `continue`: continues after errors; returns the last non-zero exit code
 - **TC-25.3** — A script file that does not exist causes an immediate error
+- **TC-25.4** — Global options given at `sds --script` start (e.g. `--store`, `--data-dir`) are inherited by every script line
 
 ---
 

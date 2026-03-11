@@ -479,4 +479,4 @@ for (const record of largeImport) {
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

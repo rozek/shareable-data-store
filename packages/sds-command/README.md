@@ -208,7 +208,7 @@ sds --script <file>
 sds --script -        (read from stdin)
 ```
 
-Reads commands from a file or stdin, executing them one per line (same syntax as the REPL). Error handling follows `--on-error`: `stop` aborts on the first error (default), `continue` keeps going, `ask` prompts interactively (TTY only).
+Reads commands from a file or stdin, executing them one per line (same syntax as the REPL). Error handling follows `--on-error`: `stop` aborts on the first error (default), `continue` keeps going, `ask` prompts interactively (TTY only). Global options set at invocation time (e.g. `sds --store mystore --script file.sds`) apply to every command in the script — individual lines do not need to repeat them.
 
 ---
 
@@ -352,4 +352,4 @@ sds> exit
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

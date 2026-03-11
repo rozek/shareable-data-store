@@ -179,4 +179,4 @@ Network.onRemoteState((PeerId,PeerState) => {
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

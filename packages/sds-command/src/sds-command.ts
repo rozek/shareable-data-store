@@ -87,6 +87,21 @@ function buildProgram (ExtraArgv:string[]):Command {
 //                             executeTokens                                  //
 //----------------------------------------------------------------------------//
 
+/**** configToGlobalTokens — rebuilds global CLI tokens from a resolved Config ****/
+
+function configToGlobalTokens (
+  Config:import('./Config.js').SDSConfig
+):string[] {
+  const Tokens:string[] = []
+  if (Config.ServerURL   != null) { Tokens.push('--server',      Config.ServerURL) }
+  if (Config.StoreId     != null) { Tokens.push('--store',       Config.StoreId) }
+  if (Config.Token       != null) { Tokens.push('--token',       Config.Token) }
+  if (Config.AdminToken  != null) { Tokens.push('--admin-token', Config.AdminToken) }
+  Tokens.push('--data-dir', Config.DataDir)
+  if (Config.Format !== 'text')   { Tokens.push('--format', Config.Format) }
+  return Tokens
+}
+
 /**** executeTokens — parses and executes a token array as an sds command ****/
 
 async function executeTokens (
@@ -97,6 +112,10 @@ async function executeTokens (
   // extract --info.<key> options before handing off to commander
   const { CleanArgv, InfoEntries } = extractInfoEntries(Tokens)
 
+  // prepend global options from Config so that REPL/script lines inherit
+  // the same store, data-dir, token, etc. as the outer invocation
+  const GlobalTokens = (Config != null) ? configToGlobalTokens(Config) : []
+
   const Program = buildProgram(
     Object.entries(InfoEntries).flatMap(([Key, Value]) => [
       `--info.${Key}`, JSON.stringify(Value),
@@ -105,7 +124,7 @@ async function executeTokens (
   Program.exitOverride()
 
   try {
-    await Program.parseAsync(['node', 'sds', ...CleanArgv])
+    await Program.parseAsync(['node', 'sds', ...GlobalTokens, ...CleanArgv])
     return ExitCodes.OK
   } catch (Signal:unknown) {
     const CommanderError = Signal as { code?:string; message:string; exitCode?:number }

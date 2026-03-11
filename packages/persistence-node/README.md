@@ -157,4 +157,4 @@ CREATE TABLE IF NOT EXISTS blobs (
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

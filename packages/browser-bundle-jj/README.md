@@ -252,4 +252,4 @@ The output is written to `packages/browser-bundle-jj/dist/`:
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

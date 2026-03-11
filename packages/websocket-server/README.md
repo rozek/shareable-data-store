@@ -303,4 +303,4 @@ The server is protocol-agnostic: it forwards raw binary frames without inspectin
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

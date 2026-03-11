@@ -141,4 +141,4 @@ Output is written to `packages/core-jj/dist/`.
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

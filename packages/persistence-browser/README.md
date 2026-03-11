@@ -131,4 +131,4 @@ const tasksPersistence = new SDS_BrowserPersistenceProvider('tasks')
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

@@ -162,4 +162,4 @@ Output is written to `packages/core-yjs/dist/`.
 
 ## License
 
-MIT © Andreas Rozek
+[MIT License](../../LICENSE.md) © Andreas Rozek

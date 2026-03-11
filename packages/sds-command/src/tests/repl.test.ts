@@ -67,4 +67,17 @@ describe('REPL (RP)', () => {
     )
     expect(Result.ExitCode).toBe(0)
   })
+
+  it('RP-05: global options from shell startup apply to every command in the session', async () => {
+    // store info requires --store and --data-dir; they must be inherited from the
+    // outer `sds --store test --data-dir DataDir shell` invocation
+    const Result = await runCLI(
+      ['--store', 'test', '--data-dir', DataDir, 'shell'],
+      {},
+      'store info\nexit\n',
+    )
+    expect(Result.ExitCode).toBe(0)
+    expect(Result.Stderr).toBe('')
+    expect(Result.Stdout).toMatch(/store:/)   // text output from store info
+  })
 })
