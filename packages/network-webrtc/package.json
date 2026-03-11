@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-network-webrtc",
   "description": "WebRTC sync + presence provider for shareable-data-store (browser)",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {

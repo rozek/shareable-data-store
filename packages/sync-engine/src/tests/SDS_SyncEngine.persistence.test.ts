@@ -106,7 +106,7 @@ describe('SDS_SyncEngine — Persistence', () => {
     await Engine.stop()
   })
 
-  it('SP-04: stop() calls prunePatches if AccumulatedBytes > 0 (stop-time checkpoint)', async () => {
+  it('SP-04: stop() always writes a stop-time checkpoint (local changes present)', async () => {
     const Store   = SDS_DataStore.fromScratch()
     const Persist = makeMockPersistence()
 
@@ -118,15 +118,75 @@ describe('SDS_SyncEngine — Persistence', () => {
 
     await new Promise((r) => setTimeout(r, 10))
 
-    // appendPatch must have been called (so AccumulatedBytes > 0)
+    // appendPatch must have been called
     expect(Persist.appendPatch).toHaveBeenCalled()
 
-    // stop() should trigger the checkpoint because AccumulatedBytes > 0
+    // stop() always triggers the checkpoint
     await Engine.stop()
 
     expect(Persist.saveSnapshot).toHaveBeenCalled()
     expect(Persist.prunePatches).toHaveBeenCalled()
     expect(Persist.close).toHaveBeenCalled()
+  })
+
+  it('SP-05: stop() writes checkpoint even when only remote patches were received (AccumulatedBytes stays 0)', async () => {
+    // simulates the "new machine" bootstrap scenario:
+    // store sync receives remote patches from the server but produces no local
+    // changes — AccumulatedBytes stays 0; stop() must still persist the state
+    // so that subsequent commands (tree show, entry list, …) can open the store
+
+    // build a remote patch from a separate store instance
+    const SourceStore   = SDS_DataStore.fromScratch()
+    const InitialBinary = SourceStore.asBinary()
+    const Item          = SourceStore.newItemAt(undefined, SourceStore.RootItem)
+    Item.Label          = 'remote-item'
+    const RemotePatch   = SourceStore.exportPatch()
+
+    // target store starts from the same initial binary (no local snapshot yet)
+    const TargetStore = SDS_DataStore.fromBinary(InitialBinary)
+    const Persist     = makeMockPersistence()
+
+    const handlers: Function[] = []
+    const MockNetwork = {
+      StoreId: 'test',
+      get ConnectionState () { return 'disconnected' as const },
+      connect:            () => Promise.resolve(),
+      disconnect:         () => {},
+      sendPatch:          () => {},
+      sendValue:          () => {},
+      requestValue:       () => {},
+      onPatch:            (cb: Function) => { handlers.push(cb); return () => {} },
+      onValue:            () => () => {},
+      onConnectionChange: () => () => {},
+      sendLocalState:     () => {},
+      onRemoteState:      () => () => {},
+      get PeerSet ()      { return new Map() },
+    }
+
+    const Engine = new SDS_SyncEngine(TargetStore, {
+      PersistenceProvider: Persist,
+      NetworkProvider:     MockNetwork as any,
+    })
+    await Engine.start()
+
+    // deliver the remote patch — this changes the store but NOT AccumulatedBytes
+    handlers.forEach((h) => h(RemotePatch))
+    await new Promise((r) => setTimeout(r, 10))
+
+    // no local patches were appended
+    expect(Persist.appendPatch).not.toHaveBeenCalled()
+
+    // stop() must still checkpoint so the remote state is persisted
+    await Engine.stop()
+
+    expect(Persist.saveSnapshot).toHaveBeenCalled()
+    expect(Persist.prunePatches).toHaveBeenCalled()
+    expect(Persist.close).toHaveBeenCalled()
+
+    // the persisted snapshot must contain the remote item
+    const SnapshotArg = Persist.saveSnapshot.mock.calls[0][0] as Uint8Array
+    const RestoredStore = SDS_DataStore.fromBinary(SnapshotArg)
+    expect(RestoredStore.EntryWithId(Item.Id)?.Label).toBe('remote-item')
   })
 
 })

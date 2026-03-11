@@ -274,6 +274,20 @@ sds store sync --timeout 10000
 
 The local SQLite file in `~/.sds/team-wiki.db` is updated on every write, so work continues safely while offline. `store sync` merges changes in both directions whenever a connection is available.
 
+**Setting up on a new machine:** if the store already exists on the server and you want to fetch its full current state, run `store sync` first — before any `entry` or `tree` commands. `store sync` bootstraps the local SQLite file from scratch when it does not yet exist:
+
+```bash
+export SDS_SERVER_URL=ws://my-sds-server.example.com
+export SDS_STORE_ID=team-wiki
+export SDS_TOKEN=eyJhbGci...
+
+# download the full store from the server (creates the local SQLite file)
+sds store sync
+
+# the local store is now populated — all commands work offline from here
+sds tree show
+```
+
 ---
 
 ### Issuing client tokens

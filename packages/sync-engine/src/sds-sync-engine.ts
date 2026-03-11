@@ -167,7 +167,10 @@ export class SDS_SyncEngine {
 
     this.#Network?.disconnect()
 
-    if (this.#Persistence != undefined && this.#AccumulatedBytes > 0) {
+    // always persist the current store state on stop — even if no local patches
+    // were produced (e.g. the first sync on a new machine only receives remote
+    // patches, which leave #AccumulatedBytes at 0 but do change the store)
+    if (this.#Persistence != undefined) {
       await this.#writeCheckpoint()
     }
     await this.#Persistence?.close()
@@ -267,7 +270,9 @@ export class SDS_SyncEngine {
     // is stored separately so that only the patches written after the snapshot need replaying.
     if (Snapshot != undefined) {
       // Snapshot was already baked into this.#Store before construction — nothing to do here.
-      // We read #SnapshotSeq from persistence so loadPatchesSince() starts at the right point.
+      // #SnapshotSeq stays 0; loadPatchesSince(0) returns exactly the residual patches
+      // because writeCheckpoint() always prunes all patches before the snapshot seq,
+      // leaving only those written after the last checkpoint.
     }
     const Patches = await this.#Persistence.loadPatchesSince(this.#SnapshotSeq)
     for (const PatchBytes of Patches) {

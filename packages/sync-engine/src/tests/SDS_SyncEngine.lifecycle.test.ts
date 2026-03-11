@@ -81,18 +81,16 @@ describe('SDS_SyncEngine — Lifecycle', () => {
     expect(Network.disconnect).toHaveBeenCalled()
   })
 
-  it('SL-04: stop() writes checkpoint if accumulated bytes > 0', async () => {
+  it('SL-04: stop() always writes a checkpoint and closes persistence', async () => {
     const Store   = SDS_DataStore.fromScratch()
     const Persist = makeMockPersistence()
     const Engine  = new SDS_SyncEngine(Store, {
       PersistenceProvider: Persist,
     })
     await Engine.start()
-    // Force a change to accumulate bytes
-    Store.newItemAt(undefined, Store.RootItem)
+    // No local changes — AccumulatedBytes stays 0; stop() must still checkpoint
     await Engine.stop()
-    // saveSnapshot should have been called either during accumulation or at stop
-    // (depends on threshold; just verify no exception)
+    expect(Persist.saveSnapshot).toHaveBeenCalled()
     expect(Persist.close).toHaveBeenCalled()
   })
 

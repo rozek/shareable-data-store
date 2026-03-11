@@ -7,7 +7,7 @@
 | SL-01 | construct without options succeeds | instance created, no exception |
 | SL-02 | start() with no providers succeeds (no-op) | resolves without error |
 | SL-03 | stop() closes persistence and disconnects network | persistence.close() + network.disconnect() called |
-| SL-04 | stop() writes checkpoint if accumulated bytes > 0 | persistence.close() called; no exception |
+| SL-04 | stop() always writes a checkpoint and closes persistence (even with no local changes) | saveSnapshot() + close() called |
 
 ## SP — Persistence
 
@@ -16,7 +16,8 @@
 | SP-01 | start() calls loadPatchesSince and applies patches to store | `loadPatchesSince` called; patched data is accessible by Id and Label in the target store |
 | SP-02 | internal store change calls appendPatch with patch + clock | appendPatch() called once |
 | SP-03 | accumulated bytes ≥ threshold triggers writeCheckpoint | saveSnapshot() + prunePatches() called |
-| SP-04 | stop() calls prunePatches if AccumulatedBytes > 0 | prunePatches() called |
+| SP-04 | stop() always writes a stop-time checkpoint when local changes are present | saveSnapshot() + prunePatches() + close() called |
+| SP-05 | stop() writes checkpoint even when only remote patches were received (AccumulatedBytes stays 0) | saveSnapshot() called; restored snapshot contains the remote item |
 
 ## SN — Network
 

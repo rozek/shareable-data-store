@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-browser-bundle-jj",
   "description": "Self-contained browser bundle for shareable-data-store \u2014 json-joy CRDT backend, single-file ESM",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "keywords": [
     "crdt",
     "items",

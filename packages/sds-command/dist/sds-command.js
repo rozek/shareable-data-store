@@ -466,7 +466,7 @@ async function ce() {
     });
   }) : !1;
 }
-const le = "0.0.8", de = {
+const le = "0.0.9", de = {
   version: le
 };
 function ue(e) {

@@ -51,9 +51,9 @@ Verify that `SDS_SyncEngine` correctly coordinates `SDS_DataStore` with persiste
 
 - **TC-1.3.1** — After `start()` and `stop()`, `persistence.close()` and `network.disconnect()` have each been called exactly once
 
-#### 1.4 Stop with accumulated changes
+#### 1.4 Stop always checkpoints
 
-- **TC-1.4.1** — After making a store change and calling `stop()`, `persistence.close()` is called (stop-time checkpoint completes without error)
+- **TC-1.4.1** — After `stop()` with no local changes (AccumulatedBytes stays 0), `persistence.saveSnapshot()` and `persistence.close()` are still called
 
 ---
 
@@ -82,6 +82,7 @@ Verify that `SDS_SyncEngine` correctly coordinates `SDS_DataStore` with persiste
 #### 4.1 Checkpoint on stop
 
 - **TC-4.1.1** — After a small store change (below the in-flight threshold), `stop()` triggers `saveSnapshot`, `prunePatches`, and `close()`
+- **TC-4.1.2** — After only remote patches are applied (no local changes, AccumulatedBytes stays 0), `stop()` still triggers `saveSnapshot`; the resulting snapshot binary contains the remotely patched data (regression test for bootstrap-on-new-machine bug)
 
 ---
 

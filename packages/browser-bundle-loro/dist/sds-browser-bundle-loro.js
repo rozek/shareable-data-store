@@ -21,7 +21,7 @@ class R extends Error {
     this.code = t, this.name = "SDS_Error";
   }
 }
-const ae = "00000000-0000-4000-8000-000000000000", $ = "00000000-0000-4000-8000-000000000001", ge = "00000000-0000-4000-8000-000000000002", Nt = "text/plain", di = 131072, ui = 2048, hi = 5e3, Br = 1024, jr = 256, Zr = 1024, Kr = 1048576, fi = 200;
+const ae = "00000000-0000-4000-8000-000000000000", $ = "00000000-0000-4000-8000-000000000001", ge = "00000000-0000-4000-8000-000000000002", At = "text/plain", di = 131072, ui = 2048, hi = 5e3, Br = 1024, jr = 256, Zr = 1024, Kr = 1048576, fi = 200;
 function mi(i) {
   const e = globalThis.Buffer;
   if (e != null)
@@ -35,7 +35,7 @@ function bs(i) {
   const e = globalThis.Buffer;
   return e != null ? new Uint8Array(e.from(i, "base64")) : Uint8Array.from(atob(i), (t) => t.charCodeAt(0));
 }
-var Fe, Zt, ws;
+var Fe, jt, ws;
 let gi = (ws = class {
   constructor() {
     //----------------------------------------------------------------------------//
@@ -47,7 +47,7 @@ let gi = (ws = class {
     y(this, Fe, /* @__PURE__ */ new Map());
     // optional async loader injected by SDS_SyncEngine so that _readValueOf can
     // transparently fetch blobs from the persistence layer on demand.
-    y(this, Zt);
+    y(this, jt);
   }
   /**** _BLOBhash — FNV-1a 32-bit content hash used as blob identity key ****/
   static _BLOBhash(e) {
@@ -63,7 +63,7 @@ let gi = (ws = class {
   /**** _getValueBlobAsync — look up a blob; fall back to the persistence loader ****/
   async _getValueBlobAsync(e) {
     let t = o(this, Fe).get(e);
-    return t == null && o(this, Zt) != null && (t = await o(this, Zt).call(this, e), t != null && o(this, Fe).set(e, t)), t;
+    return t == null && o(this, jt) != null && (t = await o(this, jt).call(this, e), t != null && o(this, Fe).set(e, t)), t;
   }
   /**** storeValueBlob — public entry point for SyncEngine ****/
   storeValueBlob(e, t) {
@@ -79,7 +79,7 @@ let gi = (ws = class {
   }
   /**** setValueBlobLoader — called by SDS_SyncEngine to enable lazy persistence loading ****/
   setValueBlobLoader(e) {
-    b(this, Zt, e);
+    b(this, jt, e);
   }
   //----------------------------------------------------------------------------//
   //                                   Import                                   //
@@ -161,7 +161,7 @@ let gi = (ws = class {
     }
     return l.innerEntries = Array.from(this._innerEntriesOf(e)).map((u) => this._EntryAsJSON(u.Id)), l;
   }
-}, Fe = new WeakMap(), Zt = new WeakMap(), ws);
+}, Fe = new WeakMap(), jt = new WeakMap(), ws);
 var E;
 (function(i) {
   i.assertEqual = (r) => {
@@ -1734,12 +1734,12 @@ je.create = (i, e) => new je({
   typeName: S.ZodArray,
   ...I(e)
 });
-function Vt(i) {
+function Nt(i) {
   if (i instanceof H) {
     const e = {};
     for (const t in i.shape) {
       const n = i.shape[t];
-      e[t] = ft.create(Vt(n));
+      e[t] = ft.create(Nt(n));
     }
     return new H({
       ...i._def,
@@ -1747,8 +1747,8 @@ function Vt(i) {
     });
   } else return i instanceof je ? new je({
     ...i._def,
-    type: Vt(i.element)
-  }) : i instanceof ft ? ft.create(Vt(i.unwrap())) : i instanceof cn ? cn.create(Vt(i.unwrap())) : i instanceof Ct ? Ct.create(i.items.map((e) => Vt(e))) : i;
+    type: Nt(i.element)
+  }) : i instanceof ft ? ft.create(Nt(i.unwrap())) : i instanceof cn ? cn.create(Nt(i.unwrap())) : i instanceof Ot ? Ot.create(i.items.map((e) => Nt(e))) : i;
 }
 class H extends C {
   constructor() {
@@ -1984,7 +1984,7 @@ class H extends C {
    * @deprecated
    */
   deepPartial() {
-    return Vt(this);
+    return Nt(this);
   }
   partial(e) {
     const t = {};
@@ -2175,7 +2175,7 @@ Hn.create = (i, e, t) => new Hn({
   typeName: S.ZodIntersection,
   ...I(t)
 });
-class Ct extends C {
+class Ot extends C {
   _parse(e) {
     const { status: t, ctx: n } = this._processInputParams(e);
     if (n.parsedType !== v.array)
@@ -2209,16 +2209,16 @@ class Ct extends C {
     return this._def.items;
   }
   rest(e) {
-    return new Ct({
+    return new Ot({
       ...this._def,
       rest: e
     });
   }
 }
-Ct.create = (i, e) => {
+Ot.create = (i, e) => {
   if (!Array.isArray(i))
     throw new Error("You must pass an array of schemas to z.tuple([ ... ])");
-  return new Ct({
+  return new Ot({
     items: i,
     typeName: S.ZodTuple,
     rest: null,
@@ -2786,7 +2786,7 @@ gt.create;
 je.create;
 const Hi = Fn.create;
 Hn.create;
-Ct.create;
+Ot.create;
 an.create;
 Wn.create;
 ft.create;
@@ -3166,8 +3166,8 @@ var na = /* @__PURE__ */ Ze(yt, 9, 0), ra = /* @__PURE__ */ Ze(yt, 9, 1), sa = /
   var u = function(dn) {
     var un = t.length;
     if (dn > un) {
-      var At = new ee(Math.max(un * 2, dn));
-      At.set(t), t = At;
+      var Lt = new ee(Math.max(un * 2, dn));
+      Lt.set(t), t = Lt;
     }
   }, f = e.f || 0, g = e.p || 0, w = e.b || 0, V = e.l, W = e.d, B = e.m, oe = e.n, Se = r * 8;
   do {
@@ -3231,11 +3231,11 @@ var na = /* @__PURE__ */ Ze(yt, 9, 0), ra = /* @__PURE__ */ Ze(yt, 9, 1), sa = /
           var z = fe - 257, Z = Gn[z];
           me = ke(i, g, (1 << Z) - 1) + Ls[z], g += Z;
         }
-        var Ne = W[sr(i, g) & be], Et = Ne >> 4;
+        var Ne = W[sr(i, g) & be], Ct = Ne >> 4;
         Ne || Te(3), g += Ne & 15;
-        var Y = ta[Et];
-        if (Et > 3) {
-          var Z = Qn[Et];
+        var Y = ta[Ct];
+        if (Ct > 3) {
+          var Z = Qn[Ct];
           Y += sr(i, g) & (1 << Z) - 1, g += Z;
         }
         if (g > Se) {
@@ -3243,13 +3243,13 @@ var na = /* @__PURE__ */ Ze(yt, 9, 0), ra = /* @__PURE__ */ Ze(yt, 9, 1), sa = /
           break;
         }
         c && u(w + 131072);
-        var Lt = w + me;
+        var Et = w + me;
         if (w < Y) {
-          var Bn = s - Y, jn = Math.min(Y, Lt);
+          var Bn = s - Y, jn = Math.min(Y, Et);
           for (Bn + w < 0 && Te(3); w < jn; ++w)
             t[w] = n[Bn + w];
         }
-        for (; w < Lt; ++w)
+        for (; w < Et; ++w)
           t[w] = t[w - Y];
       }
     }
@@ -3403,9 +3403,9 @@ var na = /* @__PURE__ */ Ze(yt, 9, 0), ra = /* @__PURE__ */ Ze(yt, 9, 1), sa = /
               if (Z > le) {
                 if (le = Z, Y = be, Z > Ke)
                   break;
-                for (var Ne = Math.min(be, Z - 2), Et = 0, j = 0; j < Ne; ++j) {
-                  var Lt = k - be + j & 32767, Bn = B[Lt], jn = Lt - Bn & 32767;
-                  jn > Et && (Et = jn, ce = Lt);
+                for (var Ne = Math.min(be, Z - 2), Ct = 0, j = 0; j < Ne; ++j) {
+                  var Et = k - be + j & 32767, Bn = B[Et], jn = Et - Bn & 32767;
+                  jn > Ct && (Ct = jn, ce = Et);
                 }
               }
             }
@@ -3424,8 +3424,8 @@ var na = /* @__PURE__ */ Ze(yt, 9, 0), ra = /* @__PURE__ */ Ze(yt, 9, 1), sa = /
     f = os(i, l, u, se, te, ie, A, G, ne, k - ne, f), u || (s.r = f & 7 | l[f / 8 | 0] << 3, f -= 7, s.h = oe, s.p = B, s.i = k, s.w = z);
   } else {
     for (var k = s.w || 0; k < a + u; k += 65535) {
-      var At = k + 65535;
-      At >= a && (l[f / 8 | 0] = u, At = a), f = Vs(l, f + 1, i.subarray(k, At));
+      var Lt = k + 65535;
+      Lt >= a && (l[f / 8 | 0] = u, Lt = a), f = Vs(l, f + 1, i.subarray(k, Lt));
     }
     s.i = a;
   }
@@ -3495,7 +3495,7 @@ try {
 } catch {
 }
 const Ms = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-function jt(i, e, t) {
+function Bt(i, e, t) {
   const n = t[0];
   if (e != null && i >= e)
     throw new Error(i + " >= " + e);
@@ -3506,14 +3506,14 @@ function jt(i, e, t) {
     for (; (i[a] || n) === e[a]; )
       a++;
     if (a > 0)
-      return e.slice(0, a) + jt(i.slice(a), e.slice(a), t);
+      return e.slice(0, a) + Bt(i.slice(a), e.slice(a), t);
   }
   const r = i ? t.indexOf(i[0]) : 0, s = e != null ? t.indexOf(e[0]) : t.length;
   if (s - r > 1) {
     const a = Math.round(0.5 * (r + s));
     return t[a];
   } else
-    return e && e.length > 1 ? e.slice(0, 1) : t[r] + jt(i.slice(1), null, t);
+    return e && e.length > 1 ? e.slice(0, 1) : t[r] + Bt(i.slice(1), null, t);
 }
 function Ps(i) {
   if (i.length !== Ds(i[0]))
@@ -3583,7 +3583,7 @@ function ze(i, e, t = Ms) {
       return "a" + t[0];
     const l = vn(e), u = e.slice(l.length);
     if (l === "A" + t[0].repeat(26))
-      return l + jt("", u, t);
+      return l + Bt("", u, t);
     if (l < e)
       return l;
     const f = _a(l, t);
@@ -3593,15 +3593,15 @@ function ze(i, e, t = Ms) {
   }
   if (e == null) {
     const l = vn(i), u = i.slice(l.length), f = us(l, t);
-    return f ?? l + jt(u, null, t);
+    return f ?? l + Bt(u, null, t);
   }
   const n = vn(i), r = i.slice(n.length), s = vn(e), a = e.slice(s.length);
   if (n === s)
-    return n + jt(r, a, t);
+    return n + Bt(r, a, t);
   const c = us(n, t);
   if (c == null)
     throw new Error("cannot increment any more");
-  return c < e ? c : n + jt(r, null, t);
+  return c < e ? c : n + Bt(r, null, t);
 }
 function wr(i, e, t, n = Ms) {
   if (t === 0)
@@ -3632,7 +3632,7 @@ function Bs(i, e, t, n) {
   for (const [l, u] of Object.entries(i.Info ?? {}))
     c.set(l, u);
   if (i.Kind === "item") {
-    const l = i, u = l.Type === Nt ? "" : l.Type ?? "";
+    const l = i, u = l.Type === At ? "" : l.Type ?? "";
     switch (s.set("MIMEType", u), !0) {
       case (l.ValueKind === "literal" && l.Value !== void 0): {
         s.set("ValueKind", "literal");
@@ -3656,7 +3656,7 @@ function Bs(i, e, t, n) {
     s.set("TargetId", l.TargetId ?? "");
   }
 }
-var Re, de, En, Kt, He, _t, pe, st, it, Me, Pe, Jn, $t, at, wt, h, O, Rt, _n, nt, $n, br, js, Zs, ye, pt, Mt, wn, Pt, bn, Dt, Ks, xr, $s, Sr, kr, T, Us, Ir, Tr, zs;
+var Re, de, En, Zt, He, _t, pe, st, it, Me, Pe, Jn, Kt, at, wt, h, O, Vt, _n, nt, $n, br, js, Zs, ye, pt, Rt, wn, Mt, bn, Pt, Ks, xr, $s, Sr, kr, T, Us, Ir, Tr, zs;
 const vt = class vt extends gi {
   //----------------------------------------------------------------------------//
   //                               Construction                                 //
@@ -3669,7 +3669,7 @@ const vt = class vt extends gi {
     y(this, Re);
     y(this, de);
     y(this, En);
-    y(this, Kt);
+    y(this, Zt);
     y(this, He, null);
     y(this, _t, /* @__PURE__ */ new Set());
     // reverse index: outerItemId → Set<entryId>
@@ -3684,13 +3684,13 @@ const vt = class vt extends gi {
     y(this, Pe, /* @__PURE__ */ new Map());
     y(this, Jn, hi);
     // transaction nesting
-    y(this, $t, 0);
+    y(this, Kt, 0);
     // ChangeSet accumulator inside a transaction
     y(this, at, {});
     // suppress index updates / change tracking when applying remote patches
     y(this, wt, !1);
-    b(this, Re, t), b(this, de, t.getMap("Entries")), b(this, En, (n == null ? void 0 : n.LiteralSizeLimit) ?? di), b(this, Kt, (n == null ? void 0 : n.TrashTTLms) ?? 2592e6), d(this, h, js).call(this);
-    const r = (n == null ? void 0 : n.TrashCheckIntervalMs) ?? Math.min(Math.floor(o(this, Kt) / 4), 36e5);
+    b(this, Re, t), b(this, de, t.getMap("Entries")), b(this, En, (n == null ? void 0 : n.LiteralSizeLimit) ?? di), b(this, Zt, (n == null ? void 0 : n.TrashTTLms) ?? 2592e6), d(this, h, js).call(this);
+    const r = (n == null ? void 0 : n.TrashCheckIntervalMs) ?? Math.min(Math.floor(o(this, Zt) / 4), 36e5);
     b(this, He, setInterval(
       () => {
         this.purgeExpiredTrashEntries();
@@ -3744,9 +3744,9 @@ const vt = class vt extends gi {
   /**** newItemAt — create a new item of given type as inner entry of outerItem ****/
   newItemAt(t, n, r) {
     if (n == null) throw new R("invalid-argument", "outerItem must not be missing");
-    const s = t ?? Nt;
-    mr(s), gn(r), d(this, h, Rt).call(this, n.Id);
-    const a = crypto.randomUUID(), c = d(this, h, Pt).call(this, n.Id, r), l = s === Nt ? "" : s;
+    const s = t ?? At;
+    mr(s), gn(r), d(this, h, Vt).call(this, n.Id);
+    const a = crypto.randomUUID(), c = d(this, h, Mt).call(this, n.Id, r), l = s === At ? "" : s;
     return this.transact(() => {
       const u = o(this, de).setContainer(a, new N());
       u.set("Kind", "item"), u.set("outerItemId", n.Id), u.set("OrderKey", c), u.setContainer("Label", new F()), u.setContainer("Info", new N()), u.set("MIMEType", l), u.set("ValueKind", "none"), d(this, h, ye).call(this, n.Id, a), d(this, h, T).call(this, n.Id, "innerEntryList"), d(this, h, T).call(this, a, "outerItem");
@@ -3756,11 +3756,11 @@ const vt = class vt extends gi {
   newLinkAt(t, n, r) {
     if (t == null) throw new R("invalid-argument", "Target must not be missing");
     if (n == null) throw new R("invalid-argument", "outerItem must not be missing");
-    gn(r), d(this, h, Rt).call(this, t.Id), d(this, h, Rt).call(this, n.Id);
-    const s = crypto.randomUUID(), a = d(this, h, Pt).call(this, n.Id, r);
+    gn(r), d(this, h, Vt).call(this, t.Id), d(this, h, Vt).call(this, n.Id);
+    const s = crypto.randomUUID(), a = d(this, h, Mt).call(this, n.Id, r);
     return this.transact(() => {
       const c = o(this, de).setContainer(s, new N());
-      c.set("Kind", "link"), c.set("outerItemId", n.Id), c.set("OrderKey", a), c.setContainer("Label", new F()), c.setContainer("Info", new N()), c.set("TargetId", t.Id), d(this, h, ye).call(this, n.Id, s), d(this, h, Mt).call(this, t.Id, s), d(this, h, T).call(this, n.Id, "innerEntryList"), d(this, h, T).call(this, s, "outerItem");
+      c.set("Kind", "link"), c.set("outerItemId", n.Id), c.set("OrderKey", a), c.setContainer("Label", new F()), c.setContainer("Info", new N()), c.set("TargetId", t.Id), d(this, h, ye).call(this, n.Id, s), d(this, h, Rt).call(this, t.Id, s), d(this, h, T).call(this, n.Id, "innerEntryList"), d(this, h, T).call(this, s, "outerItem");
     }), d(this, h, $n).call(this, s);
   }
   //----------------------------------------------------------------------------//
@@ -3769,13 +3769,13 @@ const vt = class vt extends gi {
   /**** deserializeItemInto — import item subtree; always remaps all IDs ****/
   deserializeItemInto(t, n, r) {
     if (n == null) throw new R("invalid-argument", "outerItem must not be missing");
-    gn(r), d(this, h, Rt).call(this, n.Id);
+    gn(r), d(this, h, Vt).call(this, n.Id);
     const s = t;
     if (s == null || s.Kind !== "item")
       throw new R("invalid-argument", "Serialisation must be an SDS_ItemJSON object");
     const a = /* @__PURE__ */ new Map();
     d(this, h, Ir).call(this, s, a);
-    const c = d(this, h, Pt).call(this, n.Id, r), l = a.get(s.Id);
+    const c = d(this, h, Mt).call(this, n.Id, r), l = a.get(s.Id);
     return this.transact(() => {
       d(this, h, Tr).call(this, s, n.Id, c, a), d(this, h, T).call(this, n.Id, "innerEntryList");
     }), d(this, h, nt).call(this, l);
@@ -3783,11 +3783,11 @@ const vt = class vt extends gi {
   /**** deserializeLinkInto — import link; always assigns a new Id ****/
   deserializeLinkInto(t, n, r) {
     if (n == null) throw new R("invalid-argument", "outerItem must not be missing");
-    gn(r), d(this, h, Rt).call(this, n.Id);
+    gn(r), d(this, h, Vt).call(this, n.Id);
     const s = t;
     if (s == null || s.Kind !== "link")
       throw new R("invalid-argument", "Serialisation must be an SDS_LinkJSON object");
-    const a = crypto.randomUUID(), c = d(this, h, Pt).call(this, n.Id, r);
+    const a = crypto.randomUUID(), c = d(this, h, Mt).call(this, n.Id, r);
     return this.transact(() => {
       const l = o(this, de).setContainer(a, new N());
       l.set("Kind", "link"), l.set("outerItemId", n.Id), l.set("OrderKey", c);
@@ -3796,7 +3796,7 @@ const vt = class vt extends gi {
       const f = l.setContainer("Info", new N());
       for (const [g, w] of Object.entries(s.Info ?? {}))
         f.set(g, w);
-      l.set("TargetId", s.TargetId ?? ""), d(this, h, ye).call(this, n.Id, a), s.TargetId && d(this, h, Mt).call(this, s.TargetId, a), d(this, h, T).call(this, n.Id, "innerEntryList");
+      l.set("TargetId", s.TargetId ?? ""), d(this, h, ye).call(this, n.Id, a), s.TargetId && d(this, h, Rt).call(this, s.TargetId, a), d(this, h, T).call(this, n.Id, "innerEntryList");
     }), d(this, h, $n).call(this, a);
   }
   //----------------------------------------------------------------------------//
@@ -3808,7 +3808,7 @@ const vt = class vt extends gi {
         "move-would-cycle",
         "cannot move an entry into one of its own descendants"
       );
-    const s = this._outerItemIdOf(t.Id), a = d(this, h, Pt).call(this, n.Id, r);
+    const s = this._outerItemIdOf(t.Id), a = d(this, h, Mt).call(this, n.Id, r);
     this.transact(() => {
       const c = d(this, h, O).call(this, t.Id);
       if (c.set("outerItemId", n.Id), c.set("OrderKey", a), s === $ && n.Id !== $) {
@@ -3820,7 +3820,7 @@ const vt = class vt extends gi {
   }
   /**** _rebalanceInnerEntriesOf — backend-specific raw rebalance; caller must hold a transaction ****/
   _rebalanceInnerEntriesOf(t) {
-    const n = d(this, h, Dt).call(this, t);
+    const n = d(this, h, Pt).call(this, t);
     if (n.length === 0)
       return;
     const r = wr(null, null, n.length);
@@ -3862,7 +3862,7 @@ const vt = class vt extends gi {
   //----------------------------------------------------------------------------//
   /**** purgeExpiredTrashEntries — auto-purge trash entries older than TTL ****/
   purgeExpiredTrashEntries(t) {
-    const n = t ?? o(this, Kt);
+    const n = t ?? o(this, Zt);
     if (n == null)
       return 0;
     const r = Date.now(), s = Array.from(o(this, pe).get($) ?? /* @__PURE__ */ new Set());
@@ -3889,11 +3889,11 @@ const vt = class vt extends gi {
   //----------------------------------------------------------------------------//
   /**** transact — execute operations within a batch transaction ****/
   transact(t) {
-    Zn(this, $t)._++;
+    Zn(this, Kt)._++;
     try {
       t();
     } finally {
-      if (Zn(this, $t)._--, o(this, $t) === 0) {
+      if (Zn(this, Kt)._--, o(this, Kt) === 0) {
         o(this, wt) || o(this, Re).commit();
         const n = { ...o(this, at) };
         b(this, at, {});
@@ -4011,12 +4011,12 @@ const vt = class vt extends gi {
   /**** _TypeOf — get entry MIME type ****/
   _TypeOf(t) {
     const n = d(this, h, O).call(this, t), r = (n == null ? void 0 : n.get("MIMEType")) ?? "";
-    return r === "" ? Nt : r;
+    return r === "" ? At : r;
   }
   /**** _setTypeOf — set entry MIME type ****/
   _setTypeOf(t, n) {
     mr(n);
-    const r = n === Nt ? "" : n;
+    const r = n === At ? "" : n;
     this.transact(() => {
       var s;
       (s = d(this, h, O).call(this, t)) == null || s.set("MIMEType", r), d(this, h, T).call(this, t, "Type");
@@ -4179,7 +4179,7 @@ const vt = class vt extends gi {
   }
   /**** _innerEntriesOf — get inner entries as proxy-wrapped array ****/
   _innerEntriesOf(t) {
-    const n = this, r = d(this, h, Dt).call(this, t);
+    const n = this, r = d(this, h, Pt).call(this, t);
     return new Proxy([], {
       get(s, a) {
         var c;
@@ -4231,7 +4231,7 @@ const vt = class vt extends gi {
     }
   }
 };
-Re = new WeakMap(), de = new WeakMap(), En = new WeakMap(), Kt = new WeakMap(), He = new WeakMap(), _t = new WeakMap(), pe = new WeakMap(), st = new WeakMap(), it = new WeakMap(), Me = new WeakMap(), Pe = new WeakMap(), Jn = new WeakMap(), $t = new WeakMap(), at = new WeakMap(), wt = new WeakMap(), h = new WeakSet(), //----------------------------------------------------------------------------//
+Re = new WeakMap(), de = new WeakMap(), En = new WeakMap(), Zt = new WeakMap(), He = new WeakMap(), _t = new WeakMap(), pe = new WeakMap(), st = new WeakMap(), it = new WeakMap(), Me = new WeakMap(), Pe = new WeakMap(), Jn = new WeakMap(), Kt = new WeakMap(), at = new WeakMap(), wt = new WeakMap(), h = new WeakSet(), //----------------------------------------------------------------------------//
 //                              Internal helpers                              //
 //----------------------------------------------------------------------------//
 /**** #getEntryMap — returns the LoroMap for a given entry Id ****/
@@ -4240,7 +4240,7 @@ O = function(t) {
   if (n instanceof N && !(n.get("outerItemId") === "" && t !== ae))
     return n;
 }, /**** #requireItemExists — throw if data does not exist ****/
-Rt = function(t) {
+Vt = function(t) {
   const n = d(this, h, O).call(this, t);
   if (n == null || n.get("Kind") !== "item")
     throw new R("invalid-argument", `item '${t}' does not exist`);
@@ -4277,7 +4277,7 @@ js = function() {
     const s = r.outerItemId;
     if (s && d(this, h, ye).call(this, s, n), r.Kind === "link") {
       const a = r.TargetId;
-      a && d(this, h, Mt).call(this, a, n);
+      a && d(this, h, Rt).call(this, a, n);
     }
   }
 }, /**** #updateIndicesFromView — incremental diff used after remote patches ****/
@@ -4289,7 +4289,7 @@ Zs = function() {
     switch (l !== u && (u != null && (d(this, h, pt).call(this, u, a), d(this, h, T).call(this, u, "innerEntryList")), l != null && (d(this, h, ye).call(this, l, a), d(this, h, T).call(this, l, "innerEntryList")), d(this, h, T).call(this, a, "outerItem")), !0) {
       case c.Kind === "link": {
         const f = c.TargetId, g = o(this, Me).get(a);
-        f !== g && (g != null && d(this, h, wn).call(this, g, a), f != null && d(this, h, Mt).call(this, f, a));
+        f !== g && (g != null && d(this, h, wn).call(this, g, a), f != null && d(this, h, Rt).call(this, f, a));
         break;
       }
       case o(this, Me).has(a):
@@ -4313,7 +4313,7 @@ pt = function(t, n) {
   var r;
   (r = o(this, pe).get(t)) == null || r.delete(n), o(this, st).delete(n);
 }, /**** #addToLinkTargetIndex — add link to target and forward indices ****/
-Mt = function(t, n) {
+Rt = function(t, n) {
   let r = o(this, it).get(t);
   r == null && (r = /* @__PURE__ */ new Set(), o(this, it).set(t, r)), r.add(n), o(this, Me).set(n, t);
 }, /**** #removeFromLinkTargetIndex — remove link from indices ****/
@@ -4321,7 +4321,7 @@ wn = function(t, n) {
   var r;
   (r = o(this, it).get(t)) == null || r.delete(n), o(this, Me).delete(n);
 }, /**** #OrderKeyAt — generate fractional order key for insertion position ****/
-Pt = function(t, n) {
+Mt = function(t, n) {
   const r = (c) => {
     if (c.length === 0 || n == null) {
       const u = c.length > 0 ? c[c.length - 1].OrderKey : null;
@@ -4333,15 +4333,15 @@ Pt = function(t, n) {
       l < c.length ? c[l].OrderKey : null
     );
   };
-  let s = d(this, h, Dt).call(this, t);
+  let s = d(this, h, Pt).call(this, t);
   const a = r(s);
-  return a.length <= fi ? a : (this._rebalanceInnerEntriesOf(t), r(d(this, h, Dt).call(this, t)));
+  return a.length <= fi ? a : (this._rebalanceInnerEntriesOf(t), r(d(this, h, Pt).call(this, t)));
 }, /**** #lastOrderKeyOf — get the last order key for an entry's children ****/
 bn = function(t) {
-  const n = d(this, h, Dt).call(this, t);
+  const n = d(this, h, Pt).call(this, t);
   return n.length > 0 ? n[n.length - 1].OrderKey : null;
 }, /**** #sortedInnerEntriesOf — get sorted inner entries by order key ****/
-Dt = function(t) {
+Pt = function(t) {
   const n = o(this, pe).get(t) ?? /* @__PURE__ */ new Set(), r = [];
   for (const s of n) {
     const a = d(this, h, O).call(this, s);
@@ -4445,7 +4445,7 @@ Tr = function(t, n, r, s) {
   for (const [f, g] of Object.entries(t.Info ?? {}))
     u.set(f, g);
   if (t.Kind === "item") {
-    const f = t, g = f.Type === Nt ? "" : f.Type ?? "";
+    const f = t, g = f.Type === At ? "" : f.Type ?? "";
     switch (c.set("MIMEType", g), !0) {
       case (f.ValueKind === "literal" && f.Value !== void 0): {
         c.set("ValueKind", "literal");
@@ -4467,7 +4467,7 @@ Tr = function(t, n, r, s) {
     });
   } else {
     const f = t, g = s.has(f.TargetId) ? s.get(f.TargetId) : f.TargetId;
-    c.set("TargetId", g ?? ""), d(this, h, ye).call(this, n, a), g && d(this, h, Mt).call(this, g, a);
+    c.set("TargetId", g ?? ""), d(this, h, ye).call(this, n, a), g && d(this, h, Rt).call(this, g, a);
   }
 }, /**** #isDescendantOf — check if one entry is a descendant of another ****/
 zs = function(t, n) {
@@ -4501,7 +4501,7 @@ function vs(i) {
 function _s(i) {
   return Array.from(i).map((e) => e.toString(16).padStart(2, "0")).join("");
 }
-var We, Je, Ln, Ut, bt, zt, xt, Ft, Ht, Wt, An, K, Or, Bt, xn, Fs, Hs, Ws;
+var We, Je, Ln, $t, bt, Ut, xt, zt, Ft, Ht, An, K, Or, Dt, xn, Fs, Hs, Ws;
 class Ia {
   /**** constructor ****/
   constructor(e) {
@@ -4510,14 +4510,14 @@ class Ia {
     y(this, We, "disconnected");
     y(this, Je);
     y(this, Ln, "");
-    y(this, Ut);
+    y(this, $t);
     y(this, bt);
-    y(this, zt, /* @__PURE__ */ new Set());
+    y(this, Ut, /* @__PURE__ */ new Set());
     y(this, xt, /* @__PURE__ */ new Set());
+    y(this, zt, /* @__PURE__ */ new Set());
     y(this, Ft, /* @__PURE__ */ new Set());
-    y(this, Ht, /* @__PURE__ */ new Set());
     // incoming value chunk reassembly: hash → chunks array
-    y(this, Wt, /* @__PURE__ */ new Map());
+    y(this, Ht, /* @__PURE__ */ new Map());
     // presence peer set (remote peers)
     y(this, An, /* @__PURE__ */ new Map());
     this.StoreId = e;
@@ -4535,7 +4535,7 @@ class Ia {
       throw new TypeError(
         `SDS WebSocket: invalid server URL '${e}' — expected ws:// or wss://`
       );
-    return b(this, Ln, e), b(this, Ut, t), d(this, K, Or).call(this);
+    return b(this, Ln, e), b(this, $t, t), d(this, K, Or).call(this);
   }
   /**** disconnect ****/
   disconnect() {
@@ -4544,29 +4544,29 @@ class Ia {
   }
   /**** sendPatch ****/
   sendPatch(e) {
-    d(this, K, Bt).call(this, yn(fs, e));
+    d(this, K, Dt).call(this, yn(fs, e));
   }
   /**** sendValue ****/
   sendValue(e, t) {
     const n = vs(e);
     if (t.byteLength <= Kn)
-      d(this, K, Bt).call(this, yn(ms, ar(n, t)));
+      d(this, K, Dt).call(this, yn(ms, ar(n, t)));
     else {
       const r = Math.ceil(t.byteLength / Kn);
       for (let s = 0; s < r; s++) {
         const a = s * Kn, c = t.slice(a, a + Kn), l = new Uint8Array(Ve + 8);
-        l.set(n, 0), new DataView(l.buffer).setUint32(Ve, s, !1), new DataView(l.buffer).setUint32(Ve + 4, r, !1), d(this, K, Bt).call(this, yn(ps, ar(l, c)));
+        l.set(n, 0), new DataView(l.buffer).setUint32(Ve, s, !1), new DataView(l.buffer).setUint32(Ve + 4, r, !1), d(this, K, Dt).call(this, yn(ps, ar(l, c)));
       }
     }
   }
   /**** requestValue ****/
   requestValue(e) {
-    d(this, K, Bt).call(this, yn(gs, vs(e)));
+    d(this, K, Dt).call(this, yn(gs, vs(e)));
   }
   /**** onPatch ****/
   onPatch(e) {
-    return o(this, zt).add(e), () => {
-      o(this, zt).delete(e);
+    return o(this, Ut).add(e), () => {
+      o(this, Ut).delete(e);
     };
   }
   /**** onValue ****/
@@ -4577,8 +4577,8 @@ class Ia {
   }
   /**** onConnectionChange ****/
   onConnectionChange(e) {
-    return o(this, Ft).add(e), () => {
-      o(this, Ft).delete(e);
+    return o(this, zt).add(e), () => {
+      o(this, zt).delete(e);
     };
   }
   //----------------------------------------------------------------------------//
@@ -4587,12 +4587,12 @@ class Ia {
   /**** sendLocalState ****/
   sendLocalState(e) {
     const t = new TextEncoder().encode(JSON.stringify(e));
-    d(this, K, Bt).call(this, yn(ys, t));
+    d(this, K, Dt).call(this, yn(ys, t));
   }
   /**** onRemoteState ****/
   onRemoteState(e) {
-    return o(this, Ht).add(e), () => {
-      o(this, Ht).delete(e);
+    return o(this, Ft).add(e), () => {
+      o(this, Ft).delete(e);
     };
   }
   /**** PeerSet ****/
@@ -4600,10 +4600,10 @@ class Ia {
     return o(this, An);
   }
 }
-We = new WeakMap(), Je = new WeakMap(), Ln = new WeakMap(), Ut = new WeakMap(), bt = new WeakMap(), zt = new WeakMap(), xt = new WeakMap(), Ft = new WeakMap(), Ht = new WeakMap(), Wt = new WeakMap(), An = new WeakMap(), K = new WeakSet(), /**** #doConnect ****/
+We = new WeakMap(), Je = new WeakMap(), Ln = new WeakMap(), $t = new WeakMap(), bt = new WeakMap(), Ut = new WeakMap(), xt = new WeakMap(), zt = new WeakMap(), Ft = new WeakMap(), Ht = new WeakMap(), An = new WeakMap(), K = new WeakSet(), /**** #doConnect ****/
 Or = function() {
   return new Promise((e, t) => {
-    const r = `${o(this, Ln).replace(/\/+$/, "")}/ws/${this.StoreId}?token=${encodeURIComponent(o(this, Ut).Token)}`, s = new WebSocket(r);
+    const r = `${o(this, Ln).replace(/\/+$/, "")}/ws/${this.StoreId}?token=${encodeURIComponent(o(this, $t).Token)}`, s = new WebSocket(r);
     s.binaryType = "arraybuffer", b(this, Je, s), d(this, K, xn).call(this, "connecting"), s.onopen = () => {
       d(this, K, xn).call(this, "connected"), e();
     }, s.onerror = (a) => {
@@ -4618,14 +4618,14 @@ Or = function() {
 //                                  Private                                   //
 //----------------------------------------------------------------------------//
 /**** #send ****/
-Bt = function(e) {
+Dt = function(e) {
   var t;
   ((t = o(this, Je)) == null ? void 0 : t.readyState) === WebSocket.OPEN && o(this, Je).send(e);
 }, /**** #setState ****/
 xn = function(e) {
   if (o(this, We) !== e) {
     b(this, We, e);
-    for (const t of o(this, Ft))
+    for (const t of o(this, zt))
       try {
         t(e);
       } catch {
@@ -4634,7 +4634,7 @@ xn = function(e) {
 }, /**** #scheduleReconnect ****/
 Fs = function() {
   var t;
-  const e = ((t = o(this, Ut)) == null ? void 0 : t.reconnectDelayMs) ?? 2e3;
+  const e = ((t = o(this, $t)) == null ? void 0 : t.reconnectDelayMs) ?? 2e3;
   b(this, bt, setTimeout(() => {
     o(this, We) === "reconnecting" && d(this, K, Or).call(this).catch(() => {
     });
@@ -4649,7 +4649,7 @@ Ws = function(e) {
   const t = e[0], n = e.slice(1);
   switch (t) {
     case fs: {
-      for (const r of o(this, zt))
+      for (const r of o(this, Ut))
         try {
           r(n);
         } catch {
@@ -4675,7 +4675,7 @@ Ws = function(e) {
         if (typeof r.PeerId != "string")
           break;
         r.lastSeen = Date.now(), o(this, An).set(r.PeerId, r);
-        for (const s of o(this, Ht))
+        for (const s of o(this, Ft))
           try {
             s(r.PeerId, r);
           } catch {
@@ -4688,12 +4688,12 @@ Ws = function(e) {
       if (n.byteLength < Ve + 8)
         return;
       const r = _s(n.slice(0, Ve)), s = new DataView(n.buffer, n.byteOffset + Ve, 8), a = s.getUint32(0, !1), c = s.getUint32(4, !1), l = n.slice(Ve + 8);
-      let u = o(this, Wt).get(r);
-      if (u == null && (u = { total: c, chunks: /* @__PURE__ */ new Map() }, o(this, Wt).set(r, u)), u.chunks.set(a, l), u.chunks.size === u.total) {
+      let u = o(this, Ht).get(r);
+      if (u == null && (u = { total: c, chunks: /* @__PURE__ */ new Map() }, o(this, Ht).set(r, u)), u.chunks.set(a, l), u.chunks.size === u.total) {
         const f = ar(
           ...Array.from({ length: u.total }, (g, w) => u.chunks.get(w))
         );
-        o(this, Wt).delete(r);
+        o(this, Ht).delete(r);
         for (const g of o(this, xt))
           try {
             g(r, f);
@@ -4704,7 +4704,7 @@ Ws = function(e) {
     }
   }
 };
-var Nn, Oe, re, ot, De, Ce, ct, Jt, qt, Gt, St, Qt, ve, L, Sn, kn, Js, qs, Gs, Cr, Er, Qs, Lr, Ys;
+var Nn, Oe, re, ot, De, Ce, ct, Wt, Jt, qt, St, Gt, ve, L, Sn, kn, Js, qs, Gs, Cr, Er, Qs, Lr, Ys;
 class Ta {
   /**** Constructor ****/
   constructor(e, t = {}) {
@@ -4721,12 +4721,12 @@ class Ta {
     /**** Connection state ****/
     y(this, ct, "disconnected");
     /**** Event Handlers ****/
+    y(this, Wt, /* @__PURE__ */ new Set());
     y(this, Jt, /* @__PURE__ */ new Set());
     y(this, qt, /* @__PURE__ */ new Set());
-    y(this, Gt, /* @__PURE__ */ new Set());
     y(this, St, /* @__PURE__ */ new Set());
     /**** Presence Peer Set ****/
-    y(this, Qt, /* @__PURE__ */ new Map());
+    y(this, Gt, /* @__PURE__ */ new Map());
     /**** Fallback Mode ****/
     y(this, ve, !1);
     this.StoreId = e, b(this, Nn, t), b(this, re, t.Fallback ?? void 0);
@@ -4826,20 +4826,20 @@ class Ta {
   }
   /**** onPatch ****/
   onPatch(e) {
-    return o(this, Jt).add(e), o(this, ve) && o(this, re) != null ? o(this, re).onPatch(e) : () => {
-      o(this, Jt).delete(e);
+    return o(this, Wt).add(e), o(this, ve) && o(this, re) != null ? o(this, re).onPatch(e) : () => {
+      o(this, Wt).delete(e);
     };
   }
   /**** onValue ****/
   onValue(e) {
-    return o(this, qt).add(e), o(this, ve) && o(this, re) != null ? o(this, re).onValue(e) : () => {
-      o(this, qt).delete(e);
+    return o(this, Jt).add(e), o(this, ve) && o(this, re) != null ? o(this, re).onValue(e) : () => {
+      o(this, Jt).delete(e);
     };
   }
   /**** onConnectionChange ****/
   onConnectionChange(e) {
-    return o(this, Gt).add(e), () => {
-      o(this, Gt).delete(e);
+    return o(this, qt).add(e), () => {
+      o(this, qt).delete(e);
     };
   }
   //----------------------------------------------------------------------------//
@@ -4869,17 +4869,17 @@ class Ta {
   }
   /**** PeerSet ****/
   get PeerSet() {
-    return o(this, Qt);
+    return o(this, Gt);
   }
 }
-Nn = new WeakMap(), Oe = new WeakMap(), re = new WeakMap(), ot = new WeakMap(), De = new WeakMap(), Ce = new WeakMap(), ct = new WeakMap(), Jt = new WeakMap(), qt = new WeakMap(), Gt = new WeakMap(), St = new WeakMap(), Qt = new WeakMap(), ve = new WeakMap(), L = new WeakSet(), //----------------------------------------------------------------------------//
+Nn = new WeakMap(), Oe = new WeakMap(), re = new WeakMap(), ot = new WeakMap(), De = new WeakMap(), Ce = new WeakMap(), ct = new WeakMap(), Wt = new WeakMap(), Jt = new WeakMap(), qt = new WeakMap(), St = new WeakMap(), Gt = new WeakMap(), ve = new WeakMap(), L = new WeakSet(), //----------------------------------------------------------------------------//
 //                                  Private                                   //
 //----------------------------------------------------------------------------//
 /**** #setState — updates the connection state and notifies all registered handlers ****/
 Sn = function(e) {
   if (o(this, ct) !== e) {
     b(this, ct, e);
-    for (const t of o(this, Gt))
+    for (const t of o(this, qt))
       try {
         t(e);
       } catch {
@@ -4944,7 +4944,7 @@ Cr = function(e) {
     d(this, L, Er).call(this, r.channel, e), o(this, Ce).set(e, r.channel);
   }, n.onconnectionstatechange = () => {
     if (n.connectionState === "failed" || n.connectionState === "closed") {
-      o(this, De).delete(e), o(this, Ce).delete(e), o(this, Qt).delete(e);
+      o(this, De).delete(e), o(this, Ce).delete(e), o(this, Gt).delete(e);
       for (const r of o(this, St))
         try {
           r(e, void 0);
@@ -4965,7 +4965,7 @@ Qs = function(e, t) {
   const n = e[0], r = e.slice(1);
   switch (n) {
     case 1: {
-      for (const s of o(this, Jt))
+      for (const s of o(this, Wt))
         try {
           s(r);
         } catch {
@@ -4976,7 +4976,7 @@ Qs = function(e, t) {
       if (r.byteLength < 32)
         return;
       const s = d(this, L, Ys).call(this, r.slice(0, 32)), a = r.slice(32);
-      for (const c of o(this, qt))
+      for (const c of o(this, Jt))
         try {
           c(s, a);
         } catch {
@@ -4988,7 +4988,7 @@ Qs = function(e, t) {
         const s = JSON.parse(new TextDecoder().decode(r));
         if (typeof s.PeerId != "string")
           break;
-        s.lastSeen = Date.now(), o(this, Qt).set(s.PeerId, s);
+        s.lastSeen = Date.now(), o(this, Gt).set(s.PeerId, s);
         for (const a of o(this, St))
           try {
             a(s.PeerId, s);
@@ -5146,7 +5146,7 @@ qe = new WeakMap(), Ee = new WeakMap(), Vn = new WeakMap(), Le = new WeakSet(), 
   });
 };
 const ba = 512 * 1024;
-var X, U, P, lt, Yt, Xt, Rn, Mn, kt, en, dt, tn, It, Tt, Ot, Ge, ut, Ae, Pn, nn, Qe, Be, M, Xs, ei, ti, ni, ri, Ar, si, Nr, ii, ai, Vr;
+var X, U, P, lt, Qt, Yt, Rn, Mn, Xt, en, dt, tn, kt, It, Tt, Ge, ut, Ae, Pn, nn, Qe, Be, M, Xs, ei, ti, ni, ri, Ar, si, Nr, ii, ai, Vr;
 class Ca {
   //----------------------------------------------------------------------------//
   //                                Constructor                                 //
@@ -5157,13 +5157,13 @@ class Ca {
     y(this, U);
     y(this, P);
     y(this, lt);
-    y(this, Yt);
+    y(this, Qt);
     hn(this, "PeerId", crypto.randomUUID());
-    y(this, Xt);
+    y(this, Yt);
     y(this, Rn);
     y(this, Mn, []);
     // outgoing patch queue (patches created while disconnected)
-    y(this, kt, 0);
+    y(this, Xt, 0);
     // accumulated patch bytes since last checkpoint
     y(this, en, 0);
     // sequence number of the last saved snapshot
@@ -5175,10 +5175,10 @@ class Ca {
     // each local mutation.  Backend-agnostic: the DataStore owns the format.
     y(this, tn, new Uint8Array(0));
     // heartbeat timer
+    y(this, kt);
     y(this, It);
-    y(this, Tt);
     // presence peer tracking
-    y(this, Ot, /* @__PURE__ */ new Map());
+    y(this, Tt, /* @__PURE__ */ new Map());
     y(this, Ge, /* @__PURE__ */ new Map());
     y(this, ut, /* @__PURE__ */ new Set());
     // BroadcastChannel (optional, browser/tauri only)
@@ -5191,7 +5191,7 @@ class Ca {
     // tracks entryId → blob hash for all entries whose value is in a *-reference kind;
     // used to call releaseValue() when the entry's value changes or the entry is purged
     y(this, Be, /* @__PURE__ */ new Map());
-    b(this, X, e), b(this, U, t.PersistenceProvider ?? void 0), b(this, P, t.NetworkProvider ?? void 0), b(this, lt, t.PresenceProvider ?? t.NetworkProvider ?? void 0), b(this, Yt, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && o(this, P) != null && b(this, Ae, new BroadcastChannel(`sds:${o(this, P).StoreId}`));
+    b(this, X, e), b(this, U, t.PersistenceProvider ?? void 0), b(this, P, t.NetworkProvider ?? void 0), b(this, lt, t.PresenceProvider ?? t.NetworkProvider ?? void 0), b(this, Qt, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && o(this, P) != null && b(this, Ae, new BroadcastChannel(`sds:${o(this, P).StoreId}`));
   }
   //----------------------------------------------------------------------------//
   //                                 Lifecycle                                  //
@@ -5213,7 +5213,7 @@ class Ca {
   /**** stop ****/
   async stop() {
     var e, t, n;
-    o(this, It) != null && (clearInterval(o(this, It)), b(this, It, void 0));
+    o(this, kt) != null && (clearInterval(o(this, kt)), b(this, kt, void 0));
     for (const r of o(this, Ge).values())
       clearTimeout(r);
     o(this, Ge).clear();
@@ -5222,7 +5222,7 @@ class Ca {
         r();
       } catch {
       }
-    b(this, Qe, []), (e = o(this, Ae)) == null || e.close(), b(this, Ae, void 0), (t = o(this, P)) == null || t.disconnect(), o(this, U) != null && o(this, kt) > 0 && await d(this, M, Ar).call(this), await ((n = o(this, U)) == null ? void 0 : n.close());
+    b(this, Qe, []), (e = o(this, Ae)) == null || e.close(), b(this, Ae, void 0), (t = o(this, P)) == null || t.disconnect(), o(this, U) != null && await d(this, M, Ar).call(this), await ((n = o(this, U)) == null ? void 0 : n.close());
   }
   //----------------------------------------------------------------------------//
   //                             Network Connection                             //
@@ -5231,7 +5231,7 @@ class Ca {
   async connectTo(e, t) {
     if (o(this, P) == null)
       throw new R("no-network-provider", "no NetworkProvider configured");
-    b(this, Xt, e), b(this, Rn, t), await o(this, P).connect(e, t);
+    b(this, Yt, e), b(this, Rn, t), await o(this, P).connect(e, t);
   }
   /**** disconnect ****/
   disconnect() {
@@ -5243,12 +5243,12 @@ class Ca {
   async reconnect() {
     if (o(this, P) == null)
       throw new R("no-network-provider", "no NetworkProvider configured");
-    if (o(this, Xt) == null)
+    if (o(this, Yt) == null)
       throw new R(
         "not-yet-connected",
         "connectTo() has not been called yet; cannot reconnect"
       );
-    await o(this, P).connect(o(this, Xt), o(this, Rn));
+    await o(this, P).connect(o(this, Yt), o(this, Rn));
   }
   /**** ConnectionState ****/
   get ConnectionState() {
@@ -5266,7 +5266,7 @@ class Ca {
   /**** setPresenceTo ****/
   setPresenceTo(e) {
     var n, r;
-    b(this, Tt, e);
+    b(this, It, e);
     const t = { ...e, PeerId: this.PeerId };
     (n = o(this, lt)) == null || n.sendLocalState(e), (r = o(this, Ae)) == null || r.postMessage({ type: "presence", payload: e });
     for (const s of o(this, ut))
@@ -5278,7 +5278,7 @@ class Ca {
   }
   /**** PeerSet (remote peers only) ****/
   get PeerSet() {
-    return o(this, Ot);
+    return o(this, Tt);
   }
   /**** onPresenceChange ****/
   onPresenceChange(e) {
@@ -5287,7 +5287,7 @@ class Ca {
     };
   }
 }
-X = new WeakMap(), U = new WeakMap(), P = new WeakMap(), lt = new WeakMap(), Yt = new WeakMap(), Xt = new WeakMap(), Rn = new WeakMap(), Mn = new WeakMap(), kt = new WeakMap(), en = new WeakMap(), dt = new WeakMap(), tn = new WeakMap(), It = new WeakMap(), Tt = new WeakMap(), Ot = new WeakMap(), Ge = new WeakMap(), ut = new WeakMap(), Ae = new WeakMap(), Pn = new WeakMap(), nn = new WeakMap(), Qe = new WeakMap(), Be = new WeakMap(), M = new WeakSet(), Xs = async function() {
+X = new WeakMap(), U = new WeakMap(), P = new WeakMap(), lt = new WeakMap(), Qt = new WeakMap(), Yt = new WeakMap(), Rn = new WeakMap(), Mn = new WeakMap(), Xt = new WeakMap(), en = new WeakMap(), dt = new WeakMap(), tn = new WeakMap(), kt = new WeakMap(), It = new WeakMap(), Tt = new WeakMap(), Ge = new WeakMap(), ut = new WeakMap(), Ae = new WeakMap(), Pn = new WeakMap(), nn = new WeakMap(), Qe = new WeakMap(), Be = new WeakMap(), M = new WeakSet(), Xs = async function() {
   if (o(this, U) == null)
     return;
   await o(this, U).loadSnapshot();
@@ -5314,7 +5314,7 @@ ei = function() {
     Zn(this, dt)._++;
     const s = o(this, X).exportPatch(r);
     b(this, tn, o(this, X).currentCursor), s.byteLength !== 0 && (o(this, U) != null && (o(this, U).appendPatch(s, o(this, dt)).catch(() => {
-    }), b(this, kt, o(this, kt) + s.byteLength), o(this, kt) >= ba && d(this, M, Ar).call(this).catch(() => {
+    }), b(this, Xt, o(this, Xt) + s.byteLength), o(this, Xt) >= ba && d(this, M, Ar).call(this).catch(() => {
     })), ((a = o(this, P)) == null ? void 0 : a.ConnectionState) === "connected" ? (o(this, P).sendPatch(s), (c = o(this, Ae)) == null || c.postMessage({ type: "patch", payload: s })) : o(this, Mn).push(s), d(this, M, Nr).call(this, n, "send").catch(() => {
     }));
   });
@@ -5344,10 +5344,10 @@ ti = function() {
   }
 }, /**** #wirePresenceHeartbeat — starts a periodic timer to re-broadcast local presence state ****/
 ni = function() {
-  const e = o(this, Yt) / 4;
-  b(this, It, setInterval(() => {
+  const e = o(this, Qt) / 4;
+  b(this, kt, setInterval(() => {
     var t, n;
-    o(this, Tt) != null && ((t = o(this, lt)) == null || t.sendLocalState(o(this, Tt)), (n = o(this, Ae)) == null || n.postMessage({ type: "presence", payload: o(this, Tt) }));
+    o(this, It) != null && ((t = o(this, lt)) == null || t.sendLocalState(o(this, It)), (n = o(this, Ae)) == null || n.postMessage({ type: "presence", payload: o(this, It) }));
   }, e));
 }, /**** #wireBroadcastChannel — wires the BroadcastChannel for cross-tab patch and presence relay ****/
 ri = function() {
@@ -5368,7 +5368,7 @@ ri = function() {
     }
   });
 }, Ar = async function() {
-  o(this, U) != null && (await o(this, U).saveSnapshot(o(this, X).asBinary()), await o(this, U).prunePatches(o(this, dt)), b(this, en, o(this, dt)), b(this, kt, 0));
+  o(this, U) != null && (await o(this, U).saveSnapshot(o(this, X).asBinary()), await o(this, U).prunePatches(o(this, dt)), b(this, en, o(this, dt)), b(this, Xt, 0));
 }, //----------------------------------------------------------------------------//
 //                            Offline Queue Flush                             //
 //----------------------------------------------------------------------------//
@@ -5415,7 +5415,7 @@ ii = function(e, t) {
     return;
   }
   const n = { ...t, _lastSeen: Date.now() };
-  o(this, Ot).set(e, n), d(this, M, ai).call(this, e);
+  o(this, Tt).set(e, n), d(this, M, ai).call(this, e);
   for (const r of o(this, ut))
     try {
       r(e, t, "remote");
@@ -5430,14 +5430,14 @@ ai = function(e) {
     () => {
       d(this, M, Vr).call(this, e);
     },
-    o(this, Yt)
+    o(this, Qt)
   );
   o(this, Ge).set(e, n);
 }, /**** #removePeer — removes a peer from the peer set and notifies presence change handlers ****/
 Vr = function(e) {
-  if (!o(this, Ot).has(e))
+  if (!o(this, Tt).has(e))
     return;
-  o(this, Ot).delete(e);
+  o(this, Tt).delete(e);
   const t = o(this, Ge).get(e);
   t != null && (clearTimeout(t), o(this, Ge).delete(e));
   for (const n of o(this, ut))
