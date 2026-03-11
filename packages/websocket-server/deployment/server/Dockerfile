@@ -15,6 +15,11 @@ RUN npm install --omit=dev --legacy-peer-deps
 # entry point
 COPY server.mjs ./
 
+# create the persistence directory and hand it to the node user before
+# switching to it; Docker uses this ownership as the template for an empty
+# named volume on first mount, so the node process can write SQLite files
+RUN mkdir -p /data/stores && chown -R node:node /data/stores
+
 # run as a non-root user
 USER node
 
