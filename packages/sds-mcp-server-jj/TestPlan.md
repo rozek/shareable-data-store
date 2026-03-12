@@ -112,7 +112,7 @@ This package contains the **full integration test suite** for the MCP server too
 
 - **EC-01** through **EC-13** — Create items and links, store metadata, validate constraints, InfoDelete no-op (see TestCases.md)
 - **EG-01** through **EG-09** — Retrieve entries by ID and alias, field selection (see TestCases.md)
-- **EL-01** through **EL-11** — List entries with recursion, filtering, field projection (see TestCases.md)
+- **EL-01** through **EL-11** (incl. **EL-08**) — List entries with recursion, filtering, field projection, invalid `only` value (see TestCases.md)
 - **EU-01** through **EU-12** — Update label, value, MIME type, info merge, info-key deletion, invalid identifier, combined Info+InfoDelete, delete-wins conflict (see TestCases.md)
 - **EV-01** through **EV-07** — Move entries, cycle detection, alias resolution (see TestCases.md)
 - **ED-01** through **ED-09** — Delete, restore, purge lifecycle (see TestCases.md)
@@ -141,7 +141,7 @@ This package contains the **full integration test suite** for the MCP server too
 
 ## Part VII — Batch Tool
 
-- **BA-01** through **BA-08** — Sequential execution, `onError` modes, disallowed tools, `StoreId`/`PersistenceDir` inheritance
+- **BA-01** through **BA-10** — Sequential execution, `onError` modes, disallowed tools (`sds_store_destroy`, `sds_token_issue`, `sds_store_ping`), sync-within-batch resilience, export/import round-trip, `StoreId`/`PersistenceDir` inheritance
 
 ---
 

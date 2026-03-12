@@ -12,7 +12,7 @@ import { Command } from 'commander'
 import { resolveConfig, SDS_ConfigError } from './Config.js'
 import { printError }        from './Output.js'
 import { ExitCodes }         from './ExitCodes.js'
-import { SDS_CommandError, setStoreFactory } from './StoreAccess.js'
+import { SDS_CommandError, setStoreFactory, type SDS_StoreFactory } from './StoreAccess.js'
 import { extractInfoEntries } from './InfoParser.js'
 import { startREPL }         from './REPL.js'
 import { runScript }         from './ScriptRunner.js'
@@ -216,13 +216,16 @@ async function executeTokens (
 /**** main — CLI entry point ****/
 
 async function main ():Promise<void> {
-  // strip --info.<key> options before commander sees them; keep them for
-  // later injection into sub-command handlers via buildProgram(ExtraArgv)
-  const { CleanArgv, InfoEntries } = extractInfoEntries(process.argv.slice(2))
+  // strip --info.<key> and --info-delete.<key> options before commander sees them;
+  // keep them for later injection into sub-command handlers via buildProgram(ExtraArgv)
+  const { CleanArgv, InfoEntries, InfoDeleteKeys } = extractInfoEntries(process.argv.slice(2))
 
-  const ExtraArgv = Object.entries(InfoEntries).flatMap(([Key, Value]) => [
-    `--info.${Key}`, JSON.stringify(Value),
-  ])
+  const ExtraArgv = [
+    ...Object.entries(InfoEntries).flatMap(([Key, Value]) => [
+      `--info.${Key}`, JSON.stringify(Value),
+    ]),
+    ...InfoDeleteKeys.map((Key) => `--info-delete.${Key}`),
+  ]
 
   const Program = buildProgram(ExtraArgv)
   applyExitOverride(Program)

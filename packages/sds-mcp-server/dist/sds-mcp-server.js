@@ -1,13 +1,13 @@
 #!/usr/bin/env -S node --no-warnings
 import { Server as ye } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport as fe } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { ListToolsRequestSchema as he, CallToolRequestSchema as we } from "@modelcontextprotocol/sdk/types.js";
+import { ListToolsRequestSchema as we, CallToolRequestSchema as he } from "@modelcontextprotocol/sdk/types.js";
 import Ie from "node:os";
 import A from "node:path";
 import _ from "node:fs/promises";
 import { LostAndFoundId as L, TrashId as E, RootId as x } from "@rozek/sds-core";
-import { SDS_DesktopPersistenceProvider as V } from "@rozek/sds-persistence-node";
-import { SDS_SyncEngine as $ } from "@rozek/sds-sync-engine";
+import { SDS_DesktopPersistenceProvider as $ } from "@rozek/sds-persistence-node";
+import { SDS_SyncEngine as U } from "@rozek/sds-sync-engine";
 import { SDS_WebSocketProvider as me } from "@rozek/sds-network-websocket";
 class i extends Error {
   constructor(t) {
@@ -17,26 +17,26 @@ class i extends Error {
 function Se(e) {
   return { content: [{ type: "text", text: JSON.stringify(e) }] };
 }
-function j(e) {
+function O(e) {
   return { content: [{ type: "text", text: e }], isError: !0 };
 }
-let k = {};
+let D = {};
 function ge(e) {
-  k = e;
+  D = e;
 }
 function y(e) {
   return {
-    StoreId: e.StoreId ?? k.StoreId ?? process.env.SDS_STORE_ID,
+    StoreId: e.StoreId ?? D.StoreId ?? process.env.SDS_STORE_ID,
     PersistenceDir: be(e.PersistenceDir),
-    ServerURL: e.ServerURL ?? k.ServerURL ?? process.env.SDS_SERVER_URL,
-    Token: e.Token ?? k.Token ?? process.env.SDS_TOKEN,
-    AdminToken: e.AdminToken ?? k.AdminToken ?? process.env.SDS_ADMIN_TOKEN
+    ServerURL: e.ServerURL ?? D.ServerURL ?? process.env.SDS_SERVER_URL,
+    Token: e.Token ?? D.Token ?? process.env.SDS_TOKEN,
+    AdminToken: e.AdminToken ?? D.AdminToken ?? process.env.SDS_ADMIN_TOKEN
   };
 }
 function be(e) {
-  return e ?? k.PersistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? A.join(Ie.homedir(), ".sds");
+  return e ?? D.PersistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? A.join(Ie.homedir(), ".sds");
 }
-function D(e, t) {
+function k(e, t) {
   const n = t.replace(/[^a-zA-Z0-9_-]/g, "_");
   return A.join(e.PersistenceDir, `${n}.db`);
 }
@@ -47,12 +47,12 @@ function Te(e) {
 function _e(e) {
   return v.fromBinary(e);
 }
-async function h(e, t = !1) {
+async function w(e, t = !1) {
   const n = e.StoreId;
   if (n == null)
     throw new i("StoreId is required");
   await _.mkdir(e.PersistenceDir, { recursive: !0 });
-  const o = D(e, n), r = new V(o, n);
+  const o = k(e, n), r = new $(o, n);
   let s;
   try {
     const a = await r.loadSnapshot();
@@ -76,48 +76,57 @@ async function h(e, t = !1) {
       `failed to open store '${n}': ${a.message}`
     ));
   }
-  const d = new $(s, { PersistenceProvider: r });
+  const d = new U(s, { PersistenceProvider: r });
   return await d.start(), { Store: s, Persistence: r, Engine: d };
 }
 async function I(e) {
   await e.Engine.stop();
 }
 class ve {
-  #t;
   #n;
-  #e;
-  #r;
   #o;
+  #e;
+  #t;
+  #r;
   constructor(t, n, o, r, s) {
-    this.#t = t, this.#n = n, this.#e = o, this.#r = r, this.#o = s;
+    this.#n = t, this.#o = n, this.#e = o, this.#t = r, this.#r = s;
   }
   get Store() {
-    return this.#t;
-  }
-  get Persistence() {
     return this.#n;
   }
+  get Persistence() {
+    return this.#o;
+  }
   get StoreId() {
-    return this.#r;
+    return this.#t;
   }
   get PersistenceDir() {
-    return this.#o;
+    return this.#r;
   }
   /**** syncWith — flushes, syncs with server, then reloads the store ****/
   async syncWith(t, n, o = 5e3) {
+    const r = k({ PersistenceDir: this.#r }, this.#t);
     await this.#e.stop();
-    const r = {
-      StoreId: this.#r,
-      PersistenceDir: this.#o,
+    const s = {
+      StoreId: this.#t,
+      PersistenceDir: this.#r,
       ServerURL: t,
       Token: n
     };
-    await q(r, o);
-    const s = await this.#n.loadSnapshot();
-    this.#t = s != null ? v.fromBinary(s) : v.fromScratch(), this.#e = new $(
-      this.#t,
-      { PersistenceProvider: this.#n }
-    ), await this.#e.start();
+    let d = null;
+    try {
+      await q(s, o);
+    } catch (l) {
+      d = l;
+    }
+    const a = new $(r, this.#t);
+    this.#o = a;
+    const c = await a.loadSnapshot();
+    if (this.#n = c != null ? v.fromBinary(c) : v.fromScratch(), this.#e = new U(
+      this.#n,
+      { PersistenceProvider: a }
+    ), await this.#e.start(), d != null)
+      throw d;
   }
   /**** close — flushes and closes the batch session ****/
   async close() {
@@ -125,7 +134,7 @@ class ve {
   }
 }
 async function Ee(e, t = !1) {
-  const n = await h(e, t);
+  const n = await w(e, t);
   return new ve(
     n.Store,
     n.Persistence,
@@ -147,13 +156,13 @@ async function q(e, t = 5e3) {
   if (r == null)
     throw new i("Token is required");
   await _.mkdir(e.PersistenceDir, { recursive: !0 });
-  const s = D(e, n), d = new V(s, n), a = await d.loadSnapshot(), c = a != null ? v.fromBinary(a) : v.fromScratch(), l = new me(n), u = new $(c, {
+  const s = k(e, n), d = new $(s, n), a = await d.loadSnapshot(), c = a != null ? v.fromBinary(a) : v.fromScratch(), l = new me(n), u = new U(c, {
     PersistenceProvider: d,
     NetworkProvider: l
   });
   await u.start();
   let p = !1, f;
-  const w = new Promise((S) => {
+  const h = new Promise((S) => {
     f = S;
   }), b = u.onConnectionChange((S) => {
     S === "connected" && (p = !0, setTimeout(f, t)), S === "disconnected" && f();
@@ -165,7 +174,7 @@ async function q(e, t = 5e3) {
     const S = await d.loadPatchesSince(0);
     for (const T of S)
       l.sendPatch(T);
-    await w;
+    await h;
   } catch (S) {
     throw new i(
       `could not connect to '${o}': ${S.message}`
@@ -179,7 +188,7 @@ async function ke(e) {
   const t = e.StoreId;
   if (t == null)
     return !1;
-  const n = D(e, t);
+  const n = k(e, t);
   try {
     return await _.access(n), !0;
   } catch {
@@ -190,7 +199,7 @@ async function De(e) {
   const t = e.StoreId;
   if (t == null)
     throw new i("StoreId is required");
-  const n = D(e, t);
+  const n = k(e, t);
   try {
     await _.unlink(n), await _.unlink(n + "-wal").catch(() => {
     }), await _.unlink(n + "-shm").catch(() => {
@@ -328,9 +337,9 @@ const xe = [
     const t = y(e), n = e.TimeoutMs ?? 5e3;
     if (typeof n != "number" || n <= 0 || !Number.isInteger(n))
       throw new i(`'TimeoutMs' must be a positive integer — got ${n}`);
-    return qe(t, n);
+    return Ue(t, n);
   },
-  sds_store_destroy: async (e) => Ue(y(e)),
+  sds_store_destroy: async (e) => qe(y(e)),
   sds_store_export: async (e) => {
     const t = y(e), n = (e.Encoding ?? "json").toLowerCase(), o = e.OutputFile;
     if (n !== "json" && n !== "binary")
@@ -351,7 +360,7 @@ const xe = [
     StoreId: e.StoreId,
     exists: !0,
     EntryCount: W(e.Store),
-    DBPath: D({ PersistenceDir: e.PersistenceDir }, e.StoreId)
+    DBPath: k({ PersistenceDir: e.PersistenceDir }, e.StoreId)
   }),
   sds_store_sync: async (e, t) => {
     const n = t.ServerURL, o = t.Token, r = t.TimeoutMs ?? 5e3;
@@ -386,13 +395,13 @@ async function Ce(e) {
     throw new i("StoreId is required");
   if (!await ke(e))
     return { StoreId: t, exists: !1 };
-  const o = await h(e);
+  const o = await w(e);
   try {
     return {
       StoreId: t,
       exists: !0,
       EntryCount: W(o.Store),
-      DBPath: D(e, t)
+      DBPath: k(e, t)
     };
   } finally {
     await I(o);
@@ -404,6 +413,10 @@ async function $e(e) {
     throw new i("ServerURL is required");
   if (n == null)
     throw new i("Token is required");
+  if (!/^wss?:\/\//.test(t))
+    throw new i(
+      `invalid ServerURL '${t}' — must start with 'ws://' or 'wss://'`
+    );
   try {
     const o = await q(e, 1e3);
     return { Server: o.ServerURL, StoreId: o.StoreId, reachable: !0 };
@@ -413,20 +426,20 @@ async function $e(e) {
     throw o;
   }
 }
-async function qe(e, t) {
+async function Ue(e, t) {
   const n = await q(e, t);
   return { StoreId: n.StoreId, Server: n.ServerURL, synced: n.Connected };
 }
-async function Ue(e) {
+async function qe(e) {
   const t = e.StoreId;
   if (t == null)
     throw new i("StoreId is required");
   return await De(e), { StoreId: t, destroyed: !0 };
 }
 async function Be(e, t, n) {
-  const o = await h(e);
+  const o = await w(e);
   try {
-    return K(o.Store, t, n);
+    return await K(o.Store, t, n);
   } finally {
     await I(o);
   }
@@ -445,9 +458,9 @@ async function K(e, t, n) {
   return o ? { exported: !0, Format: "binary", DataBase64: Buffer.from(r).toString("base64") } : { exported: !0, Format: "json", Data: r };
 }
 async function Me(e, t, n, o) {
-  const r = await h(e, !0);
+  const r = await w(e, !0);
   try {
-    return H(r.Store, t, n, o);
+    return await H(r.Store, t, n, o);
   } finally {
     await I(r);
   }
@@ -464,7 +477,7 @@ async function H(e, t, n, o) {
         t != null ? `'${t}' does not contain valid JSON` : "InputBase64 does not contain valid JSON"
       );
     }
-    O(e, c);
+    F(e, c);
   } else {
     let a;
     try {
@@ -475,7 +488,7 @@ async function H(e, t, n, o) {
       );
     }
     try {
-      O(e, a.asJSON());
+      F(e, a.asJSON());
     } finally {
       a.dispose();
     }
@@ -491,7 +504,7 @@ function J(e) {
   if (n && e.InputEncoding == null)
     throw new i("InputEncoding is required when InputBase64 is used");
 }
-function O(e, t) {
+function F(e, t) {
   const n = /* @__PURE__ */ new Set([x, E, L]), r = t.innerEntries;
   if (r != null)
     for (const s of r)
@@ -640,18 +653,18 @@ const je = [
 ], Oe = {
   sds_entry_create: async (e) => {
     const t = y(e);
-    return z(t.StoreId, t, e);
+    return P(t.StoreId, t, e);
   },
   sds_entry_get: async (e) => {
-    const t = y(e), n = await h(t);
+    const t = y(e), n = await w(t);
     try {
-      return P(n.Store, e);
+      return z(n.Store, e);
     } finally {
       await I(n);
     }
   },
   sds_entry_list: async (e) => {
-    const t = y(e), n = await h(t);
+    const t = y(e), n = await w(t);
     try {
       return Z(n.Store, e);
     } finally {
@@ -659,7 +672,7 @@ const je = [
     }
   },
   sds_entry_update: async (e) => {
-    const t = y(e), n = await h(t);
+    const t = y(e), n = await w(t);
     try {
       return await G(n.Store, e);
     } finally {
@@ -667,7 +680,7 @@ const je = [
     }
   },
   sds_entry_move: async (e) => {
-    const t = y(e), n = await h(t);
+    const t = y(e), n = await w(t);
     try {
       return Q(n.Store, e);
     } finally {
@@ -675,7 +688,7 @@ const je = [
     }
   },
   sds_entry_delete: async (e) => {
-    const t = y(e), n = await h(t);
+    const t = y(e), n = await w(t);
     try {
       return X(n.Store, e);
     } finally {
@@ -683,7 +696,7 @@ const je = [
     }
   },
   sds_entry_restore: async (e) => {
-    const t = y(e), n = await h(t);
+    const t = y(e), n = await w(t);
     try {
       return Y(n.Store, e);
     } finally {
@@ -691,7 +704,7 @@ const je = [
     }
   },
   sds_entry_purge: async (e) => {
-    const t = y(e), n = await h(t);
+    const t = y(e), n = await w(t);
     try {
       return ee(n.Store, e);
     } finally {
@@ -699,8 +712,8 @@ const je = [
     }
   }
 }, Fe = {
-  sds_entry_create: async (e, t) => z(e.StoreId, { StoreId: e.StoreId, PersistenceDir: e.PersistenceDir }, t, e.Store),
-  sds_entry_get: async (e, t) => P(e.Store, t),
+  sds_entry_create: async (e, t) => P(e.StoreId, { StoreId: e.StoreId, PersistenceDir: e.PersistenceDir }, t, e.Store),
+  sds_entry_get: async (e, t) => z(e.Store, t),
   sds_entry_list: async (e, t) => Z(e.Store, t),
   sds_entry_update: async (e, t) => G(e.Store, t),
   sds_entry_move: async (e, t) => Q(e.Store, t),
@@ -708,7 +721,7 @@ const je = [
   sds_entry_restore: async (e, t) => Y(e.Store, t),
   sds_entry_purge: async (e, t) => ee(e.Store, t)
 };
-async function z(e, t, n, o) {
+async function P(e, t, n, o) {
   te(n);
   const r = n.Target != null;
   if (r) {
@@ -726,7 +739,7 @@ async function z(e, t, n, o) {
   if (s)
     a = o;
   else {
-    const l = await h(d, !r);
+    const l = await w(d, !r);
     a = l.Store, c = l;
   }
   try {
@@ -735,20 +748,20 @@ async function z(e, t, n, o) {
       throw new i(`container '${l}' not found or is not an item`);
     const p = n.at != null ? R(n.at, "at") : void 0;
     if (r) {
-      const f = g(n.Target), w = a.EntryWithId(f);
-      if (w == null || !w.isItem)
+      const f = g(n.Target), h = a.EntryWithId(f);
+      if (h == null || !h.isItem)
         throw new i(`target '${f}' not found or is not an item`);
-      const b = a.newLinkAt(w, u, p);
+      const b = a.newLinkAt(h, u, p);
       return n.Label != null && (b.Label = n.Label), C(a._InfoProxyOf(b.Id), n), { Id: b.Id, created: !0, Kind: "link", Target: f };
     } else {
-      const f = n.MIMEType ?? "text/plain", w = a.newItemAt(f, u, p);
-      return n.Label != null && (w.Label = n.Label), await ne(a, w.Id, n), C(w.Info, n), { Id: w.Id, created: !0, Kind: "item" };
+      const f = n.MIMEType ?? "text/plain", h = a.newItemAt(f, u, p);
+      return n.Label != null && (h.Label = n.Label), await ne(a, h.Id, n), C(h.Info, n), { Id: h.Id, created: !0, Kind: "item" };
     }
   } finally {
     !s && c != null && await c.Engine.stop();
   }
 }
-function P(e, t) {
+function z(e, t) {
   const n = t.Id;
   if (n == null)
     throw new i("Id is required");
@@ -787,32 +800,32 @@ function Z(e, t) {
   const s = t.recursive ?? !1, d = t.Depth != null ? R(t.Depth, "Depth") : 1 / 0, a = t.only?.toLowerCase();
   if (a != null && !["items", "links"].includes(a))
     throw new i(`'only' must be 'items' or 'links' — got '${t.only}'`);
-  const c = t.Fields?.map((w) => w.toLowerCase()), l = t.InfoKeys, u = /* @__PURE__ */ new Set([E, L]), p = [];
-  function f(w, b) {
-    for (const m of e._innerEntriesOf(w)) {
+  const c = t.Fields?.map((h) => h.toLowerCase()), l = t.InfoKeys, u = /* @__PURE__ */ new Set([E, L]), p = [];
+  function f(h, b) {
+    for (const m of e._innerEntriesOf(h)) {
       if (u.has(m.Id))
         continue;
       const S = m.isItem ? "item" : "link";
       if (a == null || a === S + "s") {
         const T = { Id: m.Id, Kind: S };
         c?.includes("label") && (T.Label = m.Label), m.isItem && (c?.includes("mimetype") && (T.MIMEType = e._TypeOf(m.Id)), c?.includes("value") && (T.Value = e._currentValueOf(m.Id) ?? null));
-        const U = e._InfoProxyOf(m.Id);
+        const B = e._InfoProxyOf(m.Id);
         switch (!0) {
           case l != null: {
-            const B = {};
-            for (const M of l)
-              B[M] = U[M] ?? null;
-            T.Info = B;
+            const M = {};
+            for (const j of l)
+              M[j] = B[j] ?? null;
+            T.Info = M;
             break;
           }
           case c?.includes("info"): {
-            T.Info = { ...U };
+            T.Info = { ...B };
             break;
           }
         }
         p.push(T);
       }
-      s && m.isItem && b < d && f(m.Id, b + 1);
+      s && m.isItem && b + 1 < d && f(m.Id, b + 1);
     }
   }
   return f(o, 0), p;
@@ -896,9 +909,9 @@ function ee(e, t) {
     throw new i(`entry '${o}' is not in the trash — delete it first`);
   return r.purge(), { Id: o, purged: !0 };
 }
-const Ae = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
-function F(e) {
-  if (!Ae.test(e))
+const Ve = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+function V(e) {
+  if (!Ve.test(e))
     throw new i(
       `invalid info key ${JSON.stringify(e)} — keys must be valid JavaScript identifiers`
     );
@@ -925,8 +938,8 @@ async function ne(e, t, n) {
       break;
     }
     case n.ValueBase64 != null: {
-      const r = Buffer.from(n.ValueBase64, "base64");
-      o.writeValue(new Uint8Array(r));
+      const r = Buffer.from(n.ValueBase64, "base64"), s = !o.Type.startsWith("text/");
+      o.writeValue(s ? new Uint8Array(r) : r.toString("utf8"));
       break;
     }
     case n.Value != null: {
@@ -941,7 +954,7 @@ function C(e, t) {
     if (typeof n != "object" || Array.isArray(n))
       throw new i(`'Info' must be a plain object — got ${Array.isArray(n) ? "array" : typeof n}`);
     for (const [r, s] of Object.entries(n))
-      F(r), e[r] = s;
+      V(r), e[r] = s;
   }
   if (o != null) {
     if (!Array.isArray(o))
@@ -949,11 +962,11 @@ function C(e, t) {
     for (const r of o) {
       if (typeof r != "string")
         throw new i(`'InfoDelete' entries must be strings — got ${typeof r}`);
-      F(r), e[r] = void 0;
+      V(r), delete e[r];
     }
   }
 }
-const Ve = 720 * 60 * 60 * 1e3, Ne = [
+const Ae = 720 * 60 * 60 * 1e3, Ne = [
   /**** sds_trash_list ****/
   {
     name: "sds_trash_list",
@@ -997,7 +1010,7 @@ const Ve = 720 * 60 * 60 * 1e3, Ne = [
   }
 ], We = {
   sds_trash_list: async (e) => {
-    const t = y(e), n = await h(t);
+    const t = y(e), n = await w(t);
     try {
       return re(n.Store, e);
     } finally {
@@ -1005,7 +1018,7 @@ const Ve = 720 * 60 * 60 * 1e3, Ne = [
     }
   },
   sds_trash_purge_all: async (e) => {
-    const t = y(e), n = await h(t);
+    const t = y(e), n = await w(t);
     try {
       return oe(n.Store);
     } finally {
@@ -1013,7 +1026,7 @@ const Ve = 720 * 60 * 60 * 1e3, Ne = [
     }
   },
   sds_trash_purge_expired: async (e) => {
-    const t = y(e), n = se(e), o = await h(t);
+    const t = y(e), n = se(e), o = await w(t);
     try {
       return ie(o.Store, n);
     } finally {
@@ -1058,7 +1071,7 @@ function ie(e, t) {
   return { purged: e.purgeExpiredTrashEntries(t), TTLms: t };
 }
 function se(e) {
-  const t = e.TTLms ?? Ve;
+  const t = e.TTLms ?? Ae;
   if (typeof t != "number" || !Number.isInteger(t) || t <= 0)
     throw new i(`'TTLms' must be a positive integer — got ${t}`);
   return t;
@@ -1080,14 +1093,14 @@ const He = [
   }
 ], Je = {
   sds_tree_show: async (e) => {
-    const t = y(e), n = de(e), o = await h(t);
+    const t = y(e), n = de(e), o = await w(t);
     try {
       return ae(o.Store, n);
     } finally {
       await I(o);
     }
   }
-}, ze = {
+}, Pe = {
   sds_tree_show: async (e, t) => {
     const n = de(t);
     return ae(e.Store, n);
@@ -1096,13 +1109,13 @@ const He = [
 function ae(e, t) {
   return { Root: ce(e, x, t, 0) };
 }
-const Pe = /* @__PURE__ */ new Set([E, L]);
+const ze = /* @__PURE__ */ new Set([E, L]);
 function ce(e, t, n, o) {
   if (o >= n)
     return [];
   const r = [];
   for (const s of e._innerEntriesOf(t))
-    if (!Pe.has(s.Id))
+    if (!ze.has(s.Id))
       if (s.isLink) {
         const d = e._TargetOf(s.Id).Id;
         r.push({ Id: s.Id, Kind: "link", Label: s.Label, TargetId: d });
@@ -1196,7 +1209,7 @@ const Ze = [
   ...Re,
   ...Fe,
   ...Ke,
-  ...ze
+  ...Pe
 }, Ye = new Set(Object.keys(le)), et = [
   /**** sds_batch ****/
   {
@@ -1283,21 +1296,28 @@ function ot() {
     { name: ue, version: pe },
     { capabilities: { tools: {} } }
   );
-  return e.setRequestHandler(he, async () => ({
+  return e.setRequestHandler(we, async () => ({
     tools: nt
-  })), e.setRequestHandler(we, async (t) => {
+  })), e.setRequestHandler(he, async (t) => {
     const { name: n, arguments: o = {} } = t.params, r = rt[n];
     if (r == null)
-      return j(`unknown tool: '${n}'`);
+      return O(`unknown tool: '${n}'`);
     try {
       const s = await r(o);
       return Se(s);
     } catch (s) {
-      return j(s.message ?? String(s));
+      return O(s.message ?? String(s));
     }
   }), e;
 }
-function it(e) {
+const it = /* @__PURE__ */ new Set([
+  "--store",
+  "--persistence-dir",
+  "--server",
+  "--token",
+  "--admin-token"
+]);
+function st(e) {
   const t = {};
   for (let n = 0; n < e.length; n++)
     switch (e[n]) {
@@ -1316,17 +1336,22 @@ function it(e) {
       case "--admin-token":
         t.AdminToken = e[++n];
         break;
+      default:
+        e[n]?.startsWith("--") && !it.has(e[n]) && process.stderr.write(
+          `sds-mcp-server: unknown argument '${e[n]}' — known flags: --store, --persistence-dir, --server, --token, --admin-token
+`
+        );
     }
   return t;
 }
-async function st() {
-  ge(it(process.argv.slice(2)));
+async function at() {
+  ge(st(process.argv.slice(2)));
   const e = ot(), t = new fe();
   await e.connect(t);
 }
-async function It(e, t = "sds-mcp-server", n = "0.0.0") {
-  return ue = t, pe = n, Te(e), st();
+async function mt(e, t = "sds-mcp-server", n = "0.0.0") {
+  return ue = t, pe = n, Te(e), at();
 }
 export {
-  It as runMCPServer
+  mt as runMCPServer
 };

@@ -146,7 +146,9 @@ export class BatchSession {
   async syncWith (
     ServerURL:string, Token:string, TimeoutMs:number = 5000
   ):Promise<void> {
-    // flush all pending changes to disk, then disconnect from engine
+    const DbPath = DBPathFor({ PersistenceDir:this.#persistenceDir }, this.#storeId)
+
+    // flush all pending changes to disk — stop() also closes the DB connection
     await this.#engine.stop()
 
     const SyncConfig:MCPConfig = {
@@ -155,18 +157,32 @@ export class BatchSession {
       ServerURL,
       Token,
     }
-    await runSync(SyncConfig, TimeoutMs)
 
-    // reload the updated state from disk
-    const Snapshot = await this.#persistence.loadSnapshot()
+    // capture sync error so we can always restore the session to a working state
+    let SyncError:unknown = null
+    try {
+      await runSync(SyncConfig, TimeoutMs)
+    } catch (innerSignal) {
+      SyncError = innerSignal
+    }
+
+    // reopen the DB (stop() closed it) and reload the store — whether sync
+    // succeeded or failed, the session must remain in a usable state
+    const FreshPersistence = new SDS_DesktopPersistenceProvider(DbPath, this.#storeId)
+    this.#persistence = FreshPersistence
+
+    const Snapshot = await FreshPersistence.loadSnapshot()
     this.#store = Snapshot != null
       ? Factory.fromBinary(Snapshot)
       : Factory.fromScratch()
 
     this.#engine = new SDS_SyncEngine(
-      this.#store, { PersistenceProvider:this.#persistence }
+      this.#store, { PersistenceProvider:FreshPersistence }
     )
     await this.#engine.start()
+
+    // now propagate the sync error (session is back to a working state)
+    if (SyncError != null) { throw SyncError as Error }
   }
 
   /**** close — flushes and closes the batch session ****/

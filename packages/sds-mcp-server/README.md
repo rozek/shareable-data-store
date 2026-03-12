@@ -1,87 +1,47 @@
 # @rozek/sds-mcp-server
 
-MCP (Model Context Protocol) server for the **shareable-data-store** (SDS) family. Exposes all SDS store and entry operations as MCP tools so that AI agents can manage CRDT stores, entries, items, links, tokens, and batch workflows through the standard MCP tool-calling interface.
+Shared toolkit for the **shareable-data-store** (SDS) MCP server family. Provides all tool definitions, handlers, and server infrastructure that backend-specific packages wire together with a concrete CRDT store factory.
+
+> **This package is a library — it is not directly runnable.**
+> Install a backend-specific wrapper such as [`@rozek/sds-mcp-server-jj`](../sds-mcp-server-jj/README.md) to get a ready-to-use MCP server binary. The `-jj` package uses this library internally and exposes the `sds-mcp-server-jj` executable.
 
 ---
 
-## Prerequisites
+## For end users
 
-| requirement | details |
-| --- | --- |
-| **Node.js 22.5+** | required to run `sds-mcp-server`. Download from [nodejs.org](https://nodejs.org). |
-| **MCP client** | any host that speaks the Model Context Protocol (Claude Desktop, custom agent, etc.) |
-| **SDS server** | only required for network operations (`sds_store_sync`, `sds_store_ping`, `sds_token_issue`). All local read/write tools work entirely offline against the SQLite file. |
-| **JWT tokens** | server operations need a client token (scope `read` or `write`) or an admin token (scope `admin`). Tokens are issued by the server's `POST /api/token` endpoint via `sds_token_issue`. |
-
-SQLite support is built directly into Node.js since version 22.5 via the `node:sqlite` module — no separate database driver, no native C++ addon, and no build toolchain is needed. The server binary therefore runs with **Node.js as its only dependency**.
-
-> **Note on stability:** `node:sqlite` is classified as *Stability 1 — Experimental* in the Node.js 22 and 24 documentation. In practice the API has been stable since its introduction. The server suppresses the associated runtime warning automatically.
-
----
-
-## Installation
+If you want to use the SDS MCP server in Claude Desktop or another MCP host, install and configure the backend package:
 
 ```bash
-pnpm add @rozek/sds-mcp-server
+npm add @rozek/sds-mcp-server-jj
 ```
 
-Requires Node.js 22.5+. After installation the `sds-mcp-server` binary is available in the project's `node_modules/.bin/` directory.
+Full installation, configuration, and usage instructions are in the [`@rozek/sds-mcp-server-jj` README](../sds-mcp-server-jj/README.md).
 
 ---
 
-## Running without Installation
+## For package authors
 
-The package includes a `bin` entry, so it can be started directly via `npx` — no prior installation required:
+To create a new SDS MCP server backed by a different CRDT engine, add this package as a dependency and call `runMCPServer` with your store factory:
 
-```bash
-npx @rozek/sds-mcp-server
-```
+```typescript
+import { runMCPServer } from '@rozek/sds-mcp-server'
+import type { SDS_StoreFactory } from '@rozek/sds-mcp-server'
 
-This is the recommended way to configure MCP hosts that manage servers themselves. Register the server in your MCP host configuration using `npx` as the command:
-
-**Claude Desktop (`claude_desktop_config.json`):**
-
-```json
-{
-  "mcpServers": {
-    "sds": {
-      "command": "npx",
-      "args": [ "-y", "@rozek/sds-mcp-server" ]
-    }
-  }
+const Factory: SDS_StoreFactory = {
+  fromScratch: ()     => MyStore.fromScratch(),
+  fromBinary:  (data) => MyStore.fromBinary(data),
 }
+
+runMCPServer(Factory, 'sds-mcp-server-myengine', '1.0.0')
 ```
 
-The `-y` flag skips the confirmation prompt when `npx` downloads the package. Remove it if you prefer to confirm each download.
-
-> **Note on Node.js version:** `npx` uses whatever `node` is on your `PATH`. Make sure it is version 22.5 or later before adding the server to a host configuration.
-
----
-
-## Configuration (installed package)
-
-If you have installed `@rozek/sds-mcp-server` locally or globally, register the built binary directly in your MCP host configuration:
-
-**Claude Desktop (`claude_desktop_config.json`):**
-
-```json
-{
-  "mcpServers": {
-    "sds": {
-      "command": "node",
-      "args": [ "/path/to/node_modules/@rozek/sds-mcp-server/dist/sds-mcp-server.js" ]
-    }
-  }
-}
-```
-
-The server communicates over **stdio** — no port, no HTTP server, no daemon is required.
+Add a `bin` entry to your `package.json` pointing at the compiled output, and your package becomes a standalone, runnable MCP server.
 
 ### Server-level defaults
 
-You can pre-configure default values for `StoreId`, `PersistenceDir`, `ServerURL`, `Token`, and `AdminToken` so that individual tool calls do not need to repeat them. There are two ways to do this — they can be combined freely, and **tool parameters always take precedence** over both.
+Servers built on this library inherit the following CLI arguments and environment variables. **Tool parameters always take precedence** over both.
 
-**CLI arguments** (passed in the `args` array of the MCP host config):
+**CLI arguments:**
 
 | argument | applies to |
 | --- | --- |
@@ -91,7 +51,7 @@ You can pre-configure default values for `StoreId`, `PersistenceDir`, `ServerURL
 | `--token <jwt>` | default client `Token` for sync tools |
 | `--admin-token <jwt>` | default `AdminToken` for `sds_token_issue` |
 
-**Environment variables** (set in the `env` block of the MCP host config, or in the shell):
+**Environment variables:**
 
 | variable | applies to |
 | --- | --- |
@@ -102,40 +62,6 @@ You can pre-configure default values for `StoreId`, `PersistenceDir`, `ServerURL
 | `SDS_ADMIN_TOKEN` | default `AdminToken` for `sds_token_issue` |
 
 **Precedence** (highest to lowest): tool parameter → CLI argument → environment variable → built-in default (`~/.sds` for `PersistenceDir`).
-
-**Example — fixed store and data directory via CLI args:**
-
-```json
-{
-  "mcpServers": {
-    "sds": {
-      "command": "node",
-      "args": [
-        "/path/to/node_modules/@rozek/sds-mcp-server/dist/sds-mcp-server.js",
-        "--store",    "my-notes",
-        "--persistence-dir", "/home/alice/.my-sds-data"
-      ]
-    }
-  }
-}
-```
-
-**Example — sync server and token via environment variables:**
-
-```json
-{
-  "mcpServers": {
-    "sds": {
-      "command": "node",
-      "args": [ "/path/to/.../sds-mcp-server.js" ],
-      "env": {
-        "SDS_SERVER_URL":  "wss://sync.example.com",
-        "SDS_TOKEN":       "eyJhbGci..."
-      }
-    }
-  }
-}
-```
 
 ---
 

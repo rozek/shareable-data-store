@@ -180,6 +180,73 @@ describe('sds_batch (BA)', () => {
     expect(Result.isError).toBe(true)
   })
 
+  it('BA-09: sds_store_ping in Commands (disallowed) → isError: true before any execution', async () => {
+    const Result = await callTool(MCPClient, 'sds_batch', {
+      StoreId:  'ba-test',
+      PersistenceDir,
+      Commands: [
+        {
+          Tool:   'sds_store_ping',
+          Params: { ServerURL:'ws://localhost', Token:'tok' },
+        },
+      ],
+    })
+    expect(Result.isError).toBe(true)
+  })
+
+  it('BA-10: batch sds_store_export (JSON, no file) + sds_store_import (base64) into new store → both ok: true; EntryCount matches', async () => {
+    // first populate a source store
+    await callTool(MCPClient, 'sds_entry_create', {
+      StoreId: 'ba10-src',
+      PersistenceDir,
+      Label:   'ba10-item-1',
+    })
+    await callTool(MCPClient, 'sds_entry_create', {
+      StoreId: 'ba10-src',
+      PersistenceDir,
+      Label:   'ba10-item-2',
+    })
+
+    // export from source store in a batch, then import into a new store in the same batch
+    const ExportResult = await callTool(MCPClient, 'sds_batch', {
+      StoreId:  'ba10-src',
+      PersistenceDir,
+      Commands: [
+        {
+          Tool:   'sds_store_export',
+          Params: { Encoding:'json' },
+        },
+      ],
+    })
+    expect(ExportResult.isError).toBe(false)
+    const ExportResults = (ExportResult.Result as Record<string,unknown>)['Results'] as Array<Record<string,unknown>>
+    expect(ExportResults[0]?.['ok']).toBe(true)
+    const ExportData   = (ExportResults[0]?.['Result'] as Record<string,unknown>)['Data'] as string
+    const DataBase64   = Buffer.from(ExportData).toString('base64')
+
+    // import the base64-encoded JSON snapshot into a fresh target store
+    const ImportResult = await callTool(MCPClient, 'sds_batch', {
+      StoreId:  'ba10-dst',
+      PersistenceDir,
+      Commands: [
+        {
+          Tool:   'sds_store_import',
+          Params: { InputBase64:DataBase64, InputEncoding:'json' },
+        },
+        {
+          Tool:   'sds_store_info',
+          Params: {},
+        },
+      ],
+    })
+    expect(ImportResult.isError).toBe(false)
+    const ImportResults = (ImportResult.Result as Record<string,unknown>)['Results'] as Array<Record<string,unknown>>
+    expect(ImportResults[0]?.['ok']).toBe(true)
+    expect(ImportResults[1]?.['ok']).toBe(true)
+    const DstEntryCount = (ImportResults[1]?.['Result'] as Record<string,unknown>)['EntryCount'] as number
+    expect(DstEntryCount).toBe(2)
+  })
+
   it('BA-07: StoreId + PersistenceDir at batch level → commands without them use the correct store', async () => {
     const BatchResult = await callTool(MCPClient, 'sds_batch', {
       StoreId:  'ba07-store',

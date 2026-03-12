@@ -99,15 +99,27 @@ function buildServer ():Server {
 
 /**** parseArgs — extracts server-level defaults from process.argv ****/
 
+const KnownFlags = new Set([
+  '--store', '--persistence-dir', '--server', '--token', '--admin-token',
+])
+
 function parseArgs (Argv:string[]):Partial<MCPConfig> {
   const Defaults:Partial<MCPConfig> = {}
   for (let i = 0; i < Argv.length; i++) {
     switch (Argv[i]) {
-      case '--store':       Defaults.StoreId    = Argv[++i]; break
-      case '--persistence-dir':    Defaults.PersistenceDir    = Argv[++i]; break
-      case '--server':      Defaults.ServerURL  = Argv[++i]; break
-      case '--token':       Defaults.Token      = Argv[++i]; break
-      case '--admin-token': Defaults.AdminToken = Argv[++i]; break
+      case '--store':           Defaults.StoreId        = Argv[++i]; break
+      case '--persistence-dir': Defaults.PersistenceDir = Argv[++i]; break
+      case '--server':          Defaults.ServerURL       = Argv[++i]; break
+      case '--token':           Defaults.Token           = Argv[++i]; break
+      case '--admin-token':     Defaults.AdminToken      = Argv[++i]; break
+      default: {
+        if (Argv[i]?.startsWith('--') && ! KnownFlags.has(Argv[i]!)) {
+          process.stderr.write(
+            `sds-mcp-server: unknown argument '${Argv[i]}' — ` +
+            `known flags: --store, --persistence-dir, --server, --token, --admin-token\n`
+          )
+        }
+      }
     }
   }
   return Defaults

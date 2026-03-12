@@ -477,7 +477,7 @@ function coreEntryList (
 
         Out.push(Obj)
       }
-      if (Recursive && Entry.isItem && (Depth < MaxDepth)) {
+      if (Recursive && Entry.isItem && (Depth+1 < MaxDepth)) {
         walkEntries(Entry.Id, Depth+1)
       }
     }
@@ -674,8 +674,9 @@ async function applyValueParams (
       break
     }
     case (Params['ValueBase64'] != null): {
-      const Decoded = Buffer.from(Params['ValueBase64'] as string, 'base64')
-      Item.writeValue(new Uint8Array(Decoded))
+      const Decoded  = Buffer.from(Params['ValueBase64'] as string, 'base64')
+      const isBinary = ! Item.Type.startsWith('text/')
+      Item.writeValue(isBinary ? new Uint8Array(Decoded) : Decoded.toString('utf8'))
       break
     }
     case (Params['Value'] != null): {
@@ -712,7 +713,7 @@ function applyInfoParams (
         throw new MCP_ToolError(`'InfoDelete' entries must be strings — got ${typeof Key}`)
       }
       assertValidInfoKey(Key)
-      InfoProxy[Key] = undefined
+      delete InfoProxy[Key]
     }
   }
 }

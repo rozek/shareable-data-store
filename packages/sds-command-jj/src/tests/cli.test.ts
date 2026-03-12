@@ -47,7 +47,7 @@ describe('CLI default behaviour (CL)', () => {
   it('CL-06: "help entry" shows entry subcommand help (not top-level help)', async () => {
     const Result = await runCLI(['help', 'entry'])
     expect(Result.ExitCode).toBe(0)
-    expect(Result.Stdout).toMatch(/sds entry/)        // entry-specific usage line
+    expect(Result.Stdout).toMatch(/sds\S* entry/)     // entry-specific usage line
     expect(Result.Stdout).toMatch(/create/)           // at least one entry subcommand listed
     expect(Result.Stderr).not.toMatch(/error/)
   })

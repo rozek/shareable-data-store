@@ -354,7 +354,7 @@ function C(e, n, t, o = []) {
   for (const [r, s] of Object.entries(t))
     e[r] = s;
   for (const r of o)
-    e[r] = void 0;
+    delete e[r];
 }
 function Z(e) {
   const n = [];
@@ -1258,24 +1258,27 @@ async function V(e, n) {
   }
 }
 async function ze() {
-  const { CleanArgv: e, InfoEntries: n } = N(process.argv.slice(2)), t = Object.entries(n).flatMap(([r, s]) => [
-    `--info.${r}`,
-    JSON.stringify(s)
-  ]), o = O(t);
-  G(o);
+  const { CleanArgv: e, InfoEntries: n, InfoDeleteKeys: t } = N(process.argv.slice(2)), o = [
+    ...Object.entries(n).flatMap(([s, i]) => [
+      `--info.${s}`,
+      JSON.stringify(i)
+    ]),
+    ...t.map((s) => `--info-delete.${s}`)
+  ], r = O(o);
+  G(r);
   try {
-    await o.parseAsync(["node", E, ...e]);
-  } catch (r) {
-    const s = r;
-    if ((s.code === "commander.help" || s.code === "commander.helpDisplayed" || s.code === "commander.version") && process.exit(c.OK), (s.code === "commander.unknownCommand" || s.code === "commander.unknownOption" || s.code === "commander.missingArgument" || s.code === "commander.missingMandatoryOptionValue") && (process.stderr.write(`${E}: ${s.message}
+    await r.parseAsync(["node", E, ...e]);
+  } catch (s) {
+    const i = s;
+    if ((i.code === "commander.help" || i.code === "commander.helpDisplayed" || i.code === "commander.version") && process.exit(c.OK), (i.code === "commander.unknownCommand" || i.code === "commander.unknownOption" || i.code === "commander.missingArgument" || i.code === "commander.missingMandatoryOptionValue") && (process.stderr.write(`${E}: ${i.message}
 
-`), process.stderr.write(o.helpInformation()), process.exit(c.UsageError)), r instanceof R && (process.stderr.write(`${E}: ${r.message}
-`), process.exit(r.ExitCode)), r instanceof l) {
-      const a = w({});
-      P(a, r.message, r.ExitCode), process.exit(r.ExitCode);
+`), process.stderr.write(r.helpInformation()), process.exit(c.UsageError)), s instanceof R && (process.stderr.write(`${E}: ${s.message}
+`), process.exit(s.ExitCode)), s instanceof l) {
+      const d = w({});
+      P(d, s.message, s.ExitCode), process.exit(s.ExitCode);
     }
-    const i = w({});
-    P(i, r.message ?? String(r)), process.exit(c.GeneralError);
+    const a = w({});
+    P(a, s.message ?? String(s)), process.exit(c.GeneralError);
   }
 }
 async function ot(e, n = "sds", t = "0.0.0") {

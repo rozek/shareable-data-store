@@ -144,6 +144,6 @@ export function applyInfoToEntry (
 
   // --info-delete.key: remove individual keys (already validated in extractInfoEntries)
   for (const Key of InfoDeleteKeys) {
-    InfoProxy[Key] = undefined
+    delete InfoProxy[Key]
   }
 }

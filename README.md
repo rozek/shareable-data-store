@@ -2,6 +2,8 @@
 
 A CRDT-based, offline-capable, real-time-syncable **tree-of-data** library for Browser and Node.js.
 
+## work-in-progress - please ignore for the moment
+
 Data Items are organised in a hierarchy (with optional links between them), can carry arbitrary typed values (text, binary, large blobs), and synchronise across devices and users without conflicts — even when peers are offline for extended periods. The library is split into small, composable packages so you can use only what you need.
 
 The CRDT engine is **pluggable**: choose from three ready-made backends or write your own: [Y.js](https://yjs.dev/), [Loro CRDT](https://loro.dev/) or [JSON JOY](https://jsonjoy.com/).
@@ -64,7 +66,7 @@ All three backend packages expose an **identical public API**. Import from which
 | `@rozek/sds-sidecar-loro` | `sds-sidecar-loro` | Loro |
 | `@rozek/sds-sidecar-yjs` | `sds-sidecar-yjs` | Y.js |
 
-Each wrapper is a thin ~40-line entry point that wires the corresponding `@rozek/sds-core-*` backend into the generic library. Install only the package matching your chosen CRDT backend.
+Each wrapper is a thin \~40-line entry point that wires the corresponding `@rozek/sds-core-*` backend into the generic library. Install only the package matching your chosen CRDT backend.
 
 ---
 

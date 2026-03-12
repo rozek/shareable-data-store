@@ -102,6 +102,7 @@ All tools are called via the MCP protocol through `StdioClientTransport`. Every 
 | EL-05 | `recursive: true`, `Depth: 1` | nested children of top-level items not included |
 | EL-06 | `Fields: ["Label"]` | every entry has a `Label` field |
 | EL-07 | `InfoKeys: ["tag"]` | every entry has an `Info` object with only the `tag` key |
+| EL-08 | `only: "foobar"` (invalid value) | `isError: true`; message contains `'only'` |
 | EL-09 | link ID as container | `isError: true` |
 | EL-10 | `Id: "root"` output | Trash ID absent from result array |
 | EL-11 | `Id: "lost-and-found"` | alias resolves; `isError: false`; result is an array |
@@ -206,6 +207,8 @@ All tools are called via the MCP protocol through `StdioClientTransport`. Every 
 | BA-06 | sync step with unreachable server, `onError: "continue"` | sync step `ok: false`; subsequent create step `ok: true` |
 | BA-07 | `StoreId` + `PersistenceDir` at batch level | commands without them use the correct store |
 | BA-08 | `sds_token_issue` in Commands (disallowed) | `isError: true` |
+| BA-09 | `sds_store_ping` in Commands (disallowed) | `isError: true` before any execution |
+| BA-10 | batch `sds_store_export` (JSON, no file) + `sds_store_import` (base64) into new store | both steps `ok: true`; imported store `EntryCount` equals exported |
 
 ## CF — Config Defaults
 

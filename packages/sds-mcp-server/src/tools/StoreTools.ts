@@ -260,6 +260,12 @@ async function toolStorePing (Config:ReturnType<typeof configFrom>):Promise<obje
   if (ServerURL == null) { throw new MCP_ToolError('ServerURL is required') }
   if (Token     == null) { throw new MCP_ToolError('Token is required') }
 
+  if (! /^wss?:\/\//.test(ServerURL)) {
+    throw new MCP_ToolError(
+      `invalid ServerURL '${ServerURL}' — must start with 'ws://' or 'wss://'`
+    )
+  }
+
   try {
     const Result = await runSync(Config, 1000)
     return { Server:Result.ServerURL, StoreId:Result.StoreId, reachable:true }
@@ -297,7 +303,7 @@ async function toolStoreExport (
 ):Promise<object> {
   const Context = await loadContext(Config)
   try {
-    return coreStoreExport(Context.Store, Encoding, OutputFile)
+    return await coreStoreExport(Context.Store, Encoding, OutputFile)
   } finally {
     await closeContext(Context)
   }
@@ -339,7 +345,7 @@ async function toolStoreImport (
 ):Promise<object> {
   const Context = await loadContext(Config, true)
   try {
-    return coreStoreImport(Context.Store, InputFile, InputBase64, InputEncoding)
+    return await coreStoreImport(Context.Store, InputFile, InputBase64, InputEncoding)
   } finally {
     await closeContext(Context)
   }

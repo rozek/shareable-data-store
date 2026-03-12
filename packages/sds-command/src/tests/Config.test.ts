@@ -69,12 +69,12 @@ describe('resolveConfig / DBPathFor', () => {
   })
 
   it('CF-07: DBPathFor combines PersistenceDir and store ID into a .db path', () => {
-    const Config = resolveConfig({ dataDir:'/tmp/sds' })
+    const Config = resolveConfig({ persistenceDir:'/tmp/sds' })
     expect(DBPathFor(Config, 'valid-id_123')).toBe('/tmp/sds/valid-id_123.db')
   })
 
   it('CF-08: DBPathFor replaces chars outside [a-zA-Z0-9_-] in the store ID with _', () => {
-    const Config = resolveConfig({ dataDir:'/tmp/sds' })
+    const Config = resolveConfig({ persistenceDir:'/tmp/sds' })
     expect(DBPathFor(Config, 'my/store')).toBe('/tmp/sds/my_store.db')
     expect(DBPathFor(Config, 'test store')).toBe('/tmp/sds/test_store.db')
   })
