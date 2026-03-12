@@ -10,7 +10,7 @@ The **json-joy CRDT backend** for [shareable-data-store](../../README.md). Provi
 | --- | --- |
 | **Node.js 22+** | required when using this package in a Node.js project or build toolchain. Download from [nodejs.org](https://nodejs.org). |
 | **Modern browser** | required when using this package in a web application. Any evergreen browser is supported: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+. |
-| **`json-joy` ≥ 17** | Peer dependency — install separately: `pnpm add json-joy`. |
+| `json-joy` **≥ 17** | peer dependency — install separately: `pnpm add json-joy`. |
 
 This package is isomorphic. All other runtime dependencies (`fflate`, `fractional-indexing`, `zod`) are bundled.
 
@@ -20,9 +20,9 @@ This package is isomorphic. All other runtime dependencies (`fflate`, `fractiona
 
 Choose `@rozek/sds-core-jj` when:
 
-- You want the mature, well-tested json-joy CRDT backend.
-- You need the canonical-snapshot guarantee — every `fromScratch()` call starts from the same internal CRDT node-Id space, so cross-peer patches are always compatible even without prior snapshot exchange.
-- You need json-joy-specific serialisation interoperability (the binary format is stable and gzip-compressed).
+- you want the mature, well-tested json-joy CRDT backend.
+- you need the canonical-snapshot guarantee — every `fromScratch()` call starts from the same internal CRDT node-Id space, so cross-peer patches are always compatible even without prior snapshot exchange.
+- you need json-joy-specific serialisation interoperability (the binary format is stable and gzip-compressed).
 
 Choose one of the alternative backend packages when you need a different CRDT library or want to migrate an existing store.
 
@@ -32,7 +32,8 @@ Choose one of the alternative backend packages when you need a different CRDT li
 
 ```bash
 pnpm add @rozek/sds-core-jj
-# json-joy is a peer dependency:
+# peer dependencies:
+pnpm add @rozek/sds-core
 pnpm add json-joy
 ```
 
@@ -40,7 +41,7 @@ pnpm add json-joy
 
 ## API
 
-The public API — `SDS_DataStore`, `SDS_Item`, `SDS_Link`, `SDS_Entry`, `SDS_Error`, and all provider interfaces — is identical across all backends and is fully documented in the [`@rozek/sds-core` README](../core/README.md).
+The public API — `SDS_DataStore`, `SDS_Item`, `SDS_Link`, `SDS_Entry`, `SDS_Error`, and all provider interfaces — is identical across all backends and is fully documented in the `@rozek/sds-core`[ README](../core/README.md).
 
 ---
 

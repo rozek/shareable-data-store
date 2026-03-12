@@ -11,9 +11,10 @@ The CRDT engine is **pluggable**: choose from three ready-made backends or write
 Next steps:
 
 - \[x\] CLI Interface - access your stores from the command line
-- \[ \] MCP Server - access your stores from any MCP-capable AI
+- \[x\] MCP Server - access your stores from any MCP-capable AI
+- \[x\] Sidecar - tracks Store changes and persists them, triggers WebHooks on specific changes
 - \[ \] Applications - some concrete applications (e.g., a shareable notebook similar Obsidian or Notion)
-- \[ \] (not yet to be revealed)
+- \[ \] (an AI-driven “HyperCard on steroids”, backed by SDS and generating WebApps for SDS)
 
 ---
 
@@ -45,7 +46,25 @@ All three backend packages expose an **identical public API**. Import from which
 | `@rozek/sds-network-webrtc` | WebRTC peer-to-peer sync + presence provider (browser) |
 | `@rozek/sds-sync-engine` | orchestrates persistence, network, and presence |
 | `@rozek/sds-websocket-server` | Hono-based relay server: JWT auth, signalling, token issuance |
-| `@rozek/sds-command` | CLI tool: one-shot commands, interactive REPL, batch scripts |
+| `@rozek/sds-command` | generic CLI library: one-shot commands, interactive REPL, batch scripts — wire in a backend via `runCommand()` |
+| `@rozek/sds-mcp-server` | generic MCP server library: access and manipulate stores from any MCP-capable AI — wire in a backend via `runMCPServer()` |
+| `@rozek/sds-sidecar` | generic sidecar library: tracks store changes, persists them, fires WebHooks — wire in a backend via `runSidecar()` |
+
+### Backend-specific Tools (ready-to-run executables)
+
+| package | binary | CRDT backend |
+| --- | --- | --- |
+| `@rozek/sds-command-jj` | `sds-jj` | json-joy |
+| `@rozek/sds-command-loro` | `sds-loro` | Loro |
+| `@rozek/sds-command-yjs` | `sds-yjs` | Y.js |
+| `@rozek/sds-mcp-server-jj` | `sds-mcp-server-jj` | json-joy |
+| `@rozek/sds-mcp-server-loro` | `sds-mcp-server-loro` | Loro |
+| `@rozek/sds-mcp-server-yjs` | `sds-mcp-server-yjs` | Y.js |
+| `@rozek/sds-sidecar-jj` | `sds-sidecar-jj` | json-joy |
+| `@rozek/sds-sidecar-loro` | `sds-sidecar-loro` | Loro |
+| `@rozek/sds-sidecar-yjs` | `sds-sidecar-yjs` | Y.js |
+
+Each wrapper is a thin ~40-line entry point that wires the corresponding `@rozek/sds-core-*` backend into the generic library. Install only the package matching your chosen CRDT backend.
 
 ---
 
@@ -63,6 +82,8 @@ All three backend packages expose an **identical public API**. Import from which
          ▲ CRDT patches                          │ WebSocket / WebRTC
          │                                       ▼
          └──────────────────── SDS WebSocket Server ◄── other peers
+                                                    (Browser PWA, Node.js app,
+                                                     sds-sidecar, sds-mcp-server, …)
 ```
 
 `SDS_DataStore` is the source of truth. It holds a tree of items and links stored as a conflict-free replicated data type (CRDT). `SDS_SyncEngine` wires it to any combination of:

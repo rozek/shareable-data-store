@@ -9,7 +9,7 @@
 *******************************************************************************/
 
 // Loro-specific classes (full implementations)
-export { SDS_Error }                from './error/SDS_Error.js'
+export { SDS_Error }                from '@rozek/sds-core'
 export { SDS_Entry }                from './store/SDS_Entry.js'
 export { SDS_Item }                 from './store/SDS_Item.js'
 export { SDS_Link }                 from './store/SDS_Link.js'

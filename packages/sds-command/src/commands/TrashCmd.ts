@@ -71,7 +71,7 @@ export function registerTrashCommands (Program:Command):void {
 
 async function cmdTrashList (Config:SDSConfig, OnlyKind:string | undefined):Promise<void> {
   const NormalizedKind = OnlyKind?.toLowerCase()
-  if (NormalizedKind != null && ! ['item', 'items', 'link', 'links'].includes(NormalizedKind)) {
+  if ((NormalizedKind != null) && (! ['item', 'items', 'link', 'links'].includes(NormalizedKind))) {
     throw new SDS_CommandError(
       `'--only' accepts 'items' or 'links' — got '${OnlyKind}'`,
       ExitCodes.UsageError

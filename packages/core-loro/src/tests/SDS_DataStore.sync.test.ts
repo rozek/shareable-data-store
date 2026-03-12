@@ -154,17 +154,6 @@ describe('SDS_DataStore — Sync', () => {
       ?.has('outerItem')).toBeFalsy()
   })
 
-  it('EV-10: Origin is external after applyRemotePatch', () => {
-    const Store1   = SDS_DataStore.fromScratch()
-    const Store2   = SDS_DataStore.fromBinary(Store1.asBinary())
-    Store1.newItemAt(undefined, Store1.RootItem)
-    const Patch    = Store1.exportPatch()
-    const Handler  = vi.fn()
-    Store2.onChangeInvoke(Handler)
-    Store2.applyRemotePatch(Patch)
-    expect(Handler.mock.calls[0][0]).toBe('external')
-  })
-
   it('SY-09: dangling link target rescued to LostAndFound after remote peer purges it', () => {
     const StoreA            = SDS_DataStore.fromScratch()
     const Target            = StoreA.newItemAt(undefined, StoreA.RootItem)
@@ -188,5 +177,16 @@ describe('SDS_DataStore — Sync', () => {
     expect(() => Store.applyRemotePatch(new Uint8Array(0))).not.toThrow()
     const After  = Array.from(Store.RootItem.innerEntryList).map(e => e.Id)
     expect(After).toEqual(Before)
+  })
+
+  it('EV-10: Origin is external after applyRemotePatch', () => {
+    const Store1   = SDS_DataStore.fromScratch()
+    const Store2   = SDS_DataStore.fromBinary(Store1.asBinary())
+    Store1.newItemAt(undefined, Store1.RootItem)
+    const Patch    = Store1.exportPatch()
+    const Handler  = vi.fn()
+    Store2.onChangeInvoke(Handler)
+    Store2.applyRemotePatch(Patch)
+    expect(Handler.mock.calls[0][0]).toBe('external')
   })
 })

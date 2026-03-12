@@ -103,7 +103,7 @@ After setting up the import map as shown above:
   })
 
   await SyncEngine.start()
-  await SyncEngine.connectTo('wss://my-relay.example.com/sync', { Token:'<jwt>' })
+  await SyncEngine.connectTo('wss://my-relay.example.com', { Token:'<jwt>' })
 
   // ── work with items ────────────────────────────────────────────
 
@@ -214,7 +214,7 @@ const SyncEngine = new SDS_SyncEngine(DataStore, {
 })
 
 await SyncEngine.start()
-await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
+await SyncEngine.connectTo('wss://relay.example.com', { Token:'<jwt>' })
 ```
 
 ### Peer-to-peer collaboration over WebRTC (with WebSocket fallback)
@@ -240,7 +240,7 @@ const SyncEngine = new SDS_SyncEngine(DataStore, {
 })
 
 await SyncEngine.start()
-await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
+await SyncEngine.connectTo('wss://relay.example.com', { Token:'<jwt>' })
 ```
 
 ### Automatic trash expiry

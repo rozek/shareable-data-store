@@ -5,13 +5,20 @@
 *******************************************************************************/
 
 import { createRequire }  from 'module'
+import { fileURLToPath }  from 'url'
+import path               from 'path'
 import { defineConfig }   from 'vitest/config'
 
-// Resolve json-joy to its real filesystem path (bypassing the pnpm symlink).
-// This is needed because sds-core-jj is used as the test DataStore backend,
-// which transitively pulls in json-joy.
-const _require   = createRequire(import.meta.url)
-const jsonJoyDir = _require.resolve('json-joy/lib/index.js')
+// Resolve json-joy via sds-core-jj's dist file as the CJS require() base.
+// pnpm hoists json-joy under sds-core-jj's node_modules, not this package's,
+// so createRequire(import.meta.url) cannot find it. We construct a createRequire()
+// anchored to sds-core-jj's own dist file to reach json-joy from there.
+const __dirname  = path.dirname(fileURLToPath(import.meta.url))
+const coreJJMain = path.join(
+  __dirname, 'node_modules', '@rozek', 'sds-core-jj', 'dist', 'sds-core-jj.js'
+)
+const _coreJJReq = createRequire(coreJJMain)
+const jsonJoyDir = _coreJJReq.resolve('json-joy/lib/index.js')
   .replace(/\/lib\/index\.js$/, '')
 
 export default defineConfig({

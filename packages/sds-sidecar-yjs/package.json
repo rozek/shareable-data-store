@@ -1,0 +1,64 @@
+{
+  "name": "@rozek/sds-sidecar-yjs",
+  "description": "sidecar daemon for shareable-data-store (Y.js CRDT backend)",
+  "version": "0.0.1",
+  "author": "Andreas Rozek",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
+    "directory": "packages/sds-sidecar-yjs"
+  },
+  "bugs": {
+    "url": "https://github.com/rozek/shareable-data-store/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "crdt",
+    "yjs",
+    "sidecar",
+    "webhook",
+    "sync",
+    "shareable-data-store"
+  ],
+  "type": "module",
+  "main": "./dist/sds-sidecar-yjs.js",
+  "module": "./dist/sds-sidecar-yjs.js",
+  "types": "./dist/sds-sidecar-yjs.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/sds-sidecar-yjs.js",
+      "types":  "./dist/sds-sidecar-yjs.d.ts"
+    }
+  },
+  "bin": {
+    "sds-sidecar-yjs": "./dist/sds-sidecar-yjs.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev":       "vite build --watch",
+    "build":     "vite build",
+    "test":      "vitest",
+    "test:run":  "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rozek/sds-core-yjs": "workspace:*",
+    "@rozek/sds-sidecar":  "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node":     "^22.0.0",
+    "typescript":      "^5.7.2",
+    "vite":            "^6.0.0",
+    "vite-plugin-dts": "^4.0.0",
+    "vitest":          "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}

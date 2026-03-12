@@ -125,12 +125,17 @@ export class SDS_SyncEngine {
 /**** start ****/
 
   async start ():Promise<void> {
-    // wire lazy persistence loading so _readValueOf can fetch blobs on demand
+    // wire lazy persistence loading so _readValueOf can fetch blobs on demand.
+    // the Persistence reference is captured at wiring time; the lambda uses
+    // optional chaining so it remains safe if stop() clears #Persistence later.
     if (this.#Persistence != undefined) {
-      this.#Store.setValueBlobLoader(
-        (Hash) => this.#Persistence!.loadValue(Hash)
-      )
+      const Persistence = this.#Persistence
+      this.#Store.setValueBlobLoader((Hash) => Persistence.loadValue(Hash))
     }
+    // note: providers are wired AFTER #loadAndRestore intentionally.
+    // restore patches are applied without triggering re-persistence or
+    // re-broadcast — they were already in the persistence layer and the
+    // network is not yet connected at this point.
     await this.#loadAndRestore()
     this.#wireStoreToProviders()
     this.#wireNetworkToStore()
@@ -140,7 +145,9 @@ export class SDS_SyncEngine {
       this.#Network.onConnectionChange((State) => {
         this.#ConnectionState = State
         for (const Handler of this.#ConnectionChangeHandlers) {
-          try { Handler(State) } catch (_Signal) {}
+          try { Handler(State) } catch (Signal) {
+            console.error('[SDS] connection-change handler threw:', (Signal as Error).message ?? Signal)
+          }
         }
         if (State === 'connected') {
           this.#flushOfflineQueue()
@@ -234,7 +241,7 @@ export class SDS_SyncEngine {
     this.#LastLocalState = State
     const full = { ...State, PeerId:this.PeerId } as SDS_RemotePresenceState
     this.#Presence?.sendLocalState(State)
-    this.#BC?.postMessage({ type:'presence', payload:State })
+    this.#BC?.postMessage({ type:'presence', payload:full, senderId:this.PeerId })
     for (const Handler of this.#PresenceChangeHandlers) {
       try { Handler(this.PeerId, full, 'local') } catch (Signal) { console.error('SDS: presence handler failed', Signal) }
     }
@@ -296,7 +303,9 @@ export class SDS_SyncEngine {
     const unsub = this.#Store.onChangeInvoke((Origin, ChangeSet) => {
       if (Origin === 'external') {
         // incoming remote patch: request any blobs we don't have yet
-        this.#handleValueChanges(ChangeSet, 'request').catch(() => {})
+        this.#handleValueChanges(ChangeSet, 'request').catch((Signal) => {
+          console.error('[SDS] value-request failed:', (Signal as Error).message ?? Signal)
+        })
         return
       }
 
@@ -313,23 +322,30 @@ export class SDS_SyncEngine {
       // persist
       if (this.#Persistence != undefined) {
         this.#Persistence.appendPatch(PatchLog, this.#PatchSeq)
-          .catch(() => {})
+          .catch((Signal) => {
+            console.error('[SDS] appendPatch failed:', (Signal as Error).message ?? Signal)
+          })
         this.#AccumulatedBytes += PatchLog.byteLength
         if (this.#AccumulatedBytes >= CheckpointThreshold) {
-          this.#writeCheckpoint().catch(() => {})
+          this.#writeCheckpoint().catch((Signal) => {
+            console.error('[SDS] checkpoint failed:', (Signal as Error).message ?? Signal)
+          })
         }
       }
 
-      // send over network
+      // send over network; include senderId so cross-tab BC receivers can
+      // identify and skip their own patches (avoids redundant re-application)
       if (this.#Network?.ConnectionState === 'connected') {
         this.#Network.sendPatch(PatchLog)
-        this.#BC?.postMessage({ type:'patch', payload:PatchLog })
+        this.#BC?.postMessage({ type:'patch', payload:PatchLog, senderId:this.PeerId })
       } else {
         this.#OfflineQueue.push(PatchLog)
       }
 
       // detect value changes and transfer blobs
-      this.#handleValueChanges(ChangeSet, 'send').catch(() => {})
+      this.#handleValueChanges(ChangeSet, 'send').catch((Signal) => {
+        console.error('[SDS] value-send failed:', (Signal as Error).message ?? Signal)
+      })
     })
     this.#Unsubs.push(unsub)
   }
@@ -368,7 +384,8 @@ export class SDS_SyncEngine {
     this.#HeartbeatTimer = setInterval(() => {
       if (this.#LastLocalState != undefined) {
         this.#Presence?.sendLocalState(this.#LastLocalState)
-        this.#BC?.postMessage({ type:'presence', payload:this.#LastLocalState })
+        const fullState = { ...this.#LastLocalState, PeerId:this.PeerId } as SDS_RemotePresenceState
+        this.#BC?.postMessage({ type:'presence', payload:fullState, senderId:this.PeerId })
       }
     }, IntervalMs)
   }
@@ -378,13 +395,25 @@ export class SDS_SyncEngine {
   #wireBroadcastChannel ():void {
     if (this.#BC == undefined) { return }
     this.#BC.onmessage = (BroadcastEvent) => {
-      const Msg = BroadcastEvent.data as { type:string; payload:any }
+      const Msg = BroadcastEvent.data as { type:string; payload:any; senderId?:string }
+      // skip messages originating from this very engine instance — BroadcastChannel
+      // does not echo to the sender itself, but a senderId guard makes intent explicit
+      // and guards against any future same-context relay scenarios.
+      if (Msg.senderId === this.PeerId) { return }
       switch (true) {
         case (Msg.type === 'patch'):
-          try { this.#Store.applyRemotePatch(Msg.payload as Uint8Array) } catch (Signal) { console.error('SDS: failed to apply remote patch from BroadcastChannel', Signal) }
+          try {
+            this.#Store.applyRemotePatch(Msg.payload as Uint8Array)
+          } catch (Signal) {
+            console.error('[SDS] failed to apply BC patch:', (Signal as Error).message ?? Signal)
+          }
           break
         case (Msg.type === 'presence'):
-          this.#Presence?.sendLocalState(Msg.payload as SDS_LocalPresenceState)
+          // treat as incoming remote presence — do NOT re-send as local state
+          this.#handleRemotePresence(
+            (Msg.payload as SDS_LocalPresenceState).PeerId ?? Msg.senderId ?? 'unknown',
+            Msg.payload as SDS_RemotePresenceState
+          )
           break
       }
     }
@@ -394,13 +423,18 @@ export class SDS_SyncEngine {
 //                                 Checkpoint                                 //
 //----------------------------------------------------------------------------//
 
-/**** #writeCheckpoint — saves a snapshot and prunes all patches up to the current seq ****/
+/**** #writeCheckpoint — saves a snapshot and prunes patches (network engines only) ****/
 
   async #writeCheckpoint ():Promise<void> {
     if (this.#Persistence == undefined) { return }
     await this.#Persistence.saveSnapshot(this.#Store.asBinary())
-    await this.#Persistence.prunePatches(this.#PatchSeq)
-    this.#SnapshotSeq     = this.#PatchSeq
+    // only prune residual patches if this engine has a NetworkProvider —
+    // offline-only engines keep patches in SQLite so that a future
+    // 'store sync' run can upload them to the server
+    if (this.#Network != null) {
+      await this.#Persistence.prunePatches(this.#PatchSeq)
+      this.#SnapshotSeq = this.#PatchSeq
+    }
     this.#AccumulatedBytes = 0
   }
 

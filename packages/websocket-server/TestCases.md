@@ -5,6 +5,7 @@
 | # | Description | Expected |
 |---|---|---|
 | SA-01 | missing token → HTTP upgrade rejected | HTTP status ≥ 400 |
+| SA-02 | valid JWT with correct `aud` → WebSocket upgrade accepted | HTTP 101 (connection upgraded) |
 | SA-03 | valid JWT but `aud` ≠ storeId → HTTP upgrade rejected | HTTP status ≥ 400 |
 | SA-04 | expired JWT → HTTP upgrade rejected | HTTP status ≥ 400 |
 
@@ -26,13 +27,3 @@
 | ST-03 | POST /api/token with admin token + valid body → returns JWT | HTTP 200 + `{ token }` string |
 | ST-04 | issued token is a valid JWT verifiable with same secret; carries correct `sub`, `aud`, `scope` | JWT verifies; claims match request body |
 
-## SP — Persistence
-
-| # | Description | Expected |
-|---|---|---|
-| SP-01 | `persistPatch([10,20,30])` → `replayTo()` sends one `0x01` frame with payload `[10,20,30]` | 1 frame received; type byte `0x01`; payload matches |
-| SP-02 | `persistValue(hash+data)` → `replayTo()` sends one `0x02` frame with that payload | 1 frame received; type byte `0x02`; payload matches |
-| SP-03 | `persistPatch()` then `persistValue()` → `replayTo()` sends only the `0x02` frame (patch pruned) | 1 frame received; type byte `0x02` |
-| SP-04 | `persistValue()` then `persistPatch()` → `replayTo()` sends `0x02` followed by `0x01` | 2 frames; first `0x02`, second `0x01` with correct payload |
-| SP-05 | two VALUE_CHUNK frames (0/2, 1/2) → `handleChunk()` assembles; `replayTo()` sends one `0x02` frame with assembled data | 1 frame; type `0x02`; data is the concatenation of both chunks |
-| SP-06 | `persistPatch()`, `close()`, new `LiveStore` with same DB → `replayTo()` returns the patch | 1 frame; type `0x01`; payload matches original patch |

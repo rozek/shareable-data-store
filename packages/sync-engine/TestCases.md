@@ -15,9 +15,10 @@
 |---|---|---|
 | SP-01 | start() calls loadPatchesSince and applies patches to store | `loadPatchesSince` called; patched data is accessible by Id and Label in the target store |
 | SP-02 | internal store change calls appendPatch with patch + clock | appendPatch() called once |
-| SP-03 | accumulated bytes ≥ threshold triggers writeCheckpoint | saveSnapshot() + prunePatches() called |
-| SP-04 | stop() always writes a stop-time checkpoint when local changes are present | saveSnapshot() + prunePatches() + close() called |
-| SP-05 | stop() writes checkpoint even when only remote patches were received (AccumulatedBytes stays 0) | saveSnapshot() called; restored snapshot contains the remote item |
+| SP-03 | accumulated bytes ≥ threshold triggers writeCheckpoint (offline engine: snapshot saved, patches kept) | saveSnapshot() called; prunePatches() NOT called |
+| SP-04 | stop() writes checkpoint for offline engine; patches are NOT pruned (must survive for future sync) | saveSnapshot() called; prunePatches() NOT called; close() called |
+| SP-05 | stop() writes checkpoint even when only remote patches were received (AccumulatedBytes stays 0); network engine prunes | saveSnapshot() + prunePatches() + close() called; snapshot contains remote item |
+| SP-06 | network engines prune patches on checkpoint; offline engines preserve patches for future sync | offline: prunePatches() not called; network: prunePatches() called |
 
 ## SN — Network
 

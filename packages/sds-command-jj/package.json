@@ -1,0 +1,63 @@
+{
+  "name": "@rozek/sds-command-jj",
+  "description": "CLI tool for shareable-data-store (json-joy CRDT backend)",
+  "version": "0.0.10",
+  "keywords": [
+    "crdt",
+    "json-joy",
+    "cli",
+    "repl",
+    "shareable-data-store"
+  ],
+  "author": "Andreas Rozek",
+  "homepage": "https://github.com/rozek/shareable-data-store#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rozek/shareable-data-store.git",
+    "directory": "packages/sds-command-jj"
+  },
+  "bugs": {
+    "url": "https://github.com/rozek/shareable-data-store/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "type": "module",
+  "main": "./dist/sds-command-jj.js",
+  "module": "./dist/sds-command-jj.js",
+  "types": "./dist/sds-command-jj.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/sds-command-jj.js",
+      "types":  "./dist/sds-command-jj.d.ts"
+    }
+  },
+  "bin": {
+    "sds-jj": "./dist/sds-command-jj.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev":       "vite build --watch",
+    "build":     "vite build",
+    "test":      "vitest",
+    "test:run":  "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rozek/sds-command":  "workspace:*",
+    "@rozek/sds-core-jj":  "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node":     "^22.0.0",
+    "typescript":      "^5.7.2",
+    "vite":            "^6.0.0",
+    "vite-plugin-dts": "^4.0.0",
+    "vitest":          "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

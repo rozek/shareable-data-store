@@ -158,6 +158,8 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 - **TC-4.4.1** — `newItemAt()` with an empty MIME type throws an `SDS_Error` with `Code` `'invalid-argument'`
 - **TC-4.4.2** — `newLinkAt()` with a non-existent target entry throws
 - **TC-4.4.3** — `newLinkAt()` with a link (not an item) as target throws an `SDS_Error` with `Code` `'invalid-argument'`
+- **TC-4.4.4** — `newItemAt()` with a MIMEType exceeding `maxMIMETypeLength` throws an `SDS_Error` with `Code` `'invalid-argument'`
+- **TC-4.4.5** — `item.Type` setter with a MIMEType exceeding `maxMIMETypeLength` throws an `SDS_Error` with `Code` `'invalid-argument'`
 
 ---
 
@@ -171,6 +173,11 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 - **TC-5.1.2** — Setting `data.Label = value` persists and returns `value` via the getter
 - **TC-5.1.3** — A `Label` change fires a ChangeSet that includes the `'Label'` key for the affected entry
 
+#### 1.2 Input validation
+
+- **TC-5.1.4** — Assigning a non-string value to `Label` throws an `SDS_Error` with `Code` `'invalid-argument'`
+- **TC-5.1.5** — Assigning a string exceeding `maxLabelLength` characters to `Label` throws an `SDS_Error` with `Code` `'invalid-argument'`
+
 ### 2. Info proxy
 
 #### 2.1 Read, write, delete, and change events
@@ -180,6 +187,19 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 - **TC-5.2.3** — Setting an Info key fires a ChangeSet that includes `'Info.tag'` for the affected entry
 - **TC-5.2.4** — Deleting an Info key removes it from the Info object
 - **TC-5.2.5** — Deleting an Info key fires a ChangeSet that includes `'Info.tag'` for the affected entry
+- **TC-5.2.6** — Deleting the last Info key leaves the proxy returning `{}` and writing a new key afterwards succeeds
+- **TC-5.2.7** — Assigning `undefined` to an Info key removes that key from the proxy
+
+#### 2.2 Key validation
+
+- **TC-5.2.8** — An Info key exceeding `maxInfoKeyLength` characters throws an `SDS_Error` with `Code` `'invalid-argument'`
+- **TC-5.2.9** — An empty Info key (`''`) throws an `SDS_Error` with `Code` `'invalid-argument'`
+
+#### 2.3 Value validation and size limit enforcement
+
+- **TC-5.2.10** — An Info value whose UTF-8 JSON representation is exactly `maxInfoValueSize` (262 144) bytes is accepted without error
+- **TC-5.2.11** — An Info value whose UTF-8 JSON representation exceeds `maxInfoValueSize` bytes throws an `SDS_Error` with `Code` `'invalid-argument'`
+- **TC-5.2.12** — A non-JSON-serialisable Info value (e.g. a function) throws an `SDS_Error` with `Code` `'invalid-argument'`
 
 ---
 
@@ -322,6 +342,10 @@ Backend-specific initialisation details (e.g. canonical empty snapshots) are tes
 #### 4.3 Auto-purge timer
 
 - **TC-9.4.7** — When `TrashTTLms` and `TrashCheckIntervalMs` are configured, the auto-purge timer fires at the specified interval and calls `purgeExpiredTrashEntries` automatically
+
+#### 4.4 Cleanup on restore from TrashItem
+
+- **TC-9.4.8** — When an entry is moved out of `TrashItem` via `moveEntryTo`, the `Info._trashedAt` field is removed so that the entry no longer carries a trash timestamp
 
 ### 5. Lifecycle
 

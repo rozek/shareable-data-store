@@ -5,9 +5,10 @@ The relay server for the **shareable-data-store** (SDS) family. A [Hono](https:/
 - authenticates clients with JWT (HS256)
 - relays CRDT patches between connected peers
 - enforces scope-based access control (read / write / admin)
-- optionally persists patches and snapshots to per-store SQLite databases so late-joining clients can catch up without needing another peer online
 - provides a WebRTC signalling relay
 - issues short-lived access tokens via an admin API
+
+The server is **relay-only**: it holds no store state between connections. Use a [`@rozek/sds-sidecar-*`](../sds-sidecar-jj/README.md) daemon alongside the relay to keep a persistent local copy of any store.
 
 Runs on Node.js 22.5+ using `@hono/node-server`.
 
@@ -21,27 +22,15 @@ You may install the server locally or deploy it using a Docker image (refer to [
 | --- | --- |
 | **Node.js 22.5+** | required. Download from [nodejs.org](https://nodejs.org). |
 
-This package targets **Node.js only**. In relay-only mode (no persistence) there are no runtime dependencies beyond `@hono/node-server`.
-
-When SQLite persistence is enabled (`PersistDir` / `SDS_PERSIST_DIR` is set), the server uses `@rozek/sds-persistence-node`, which relies on the built-in `node:sqlite` module — no native C++ addon or build toolchain is required.
+There are no runtime dependencies beyond `@hono/node-server`.
 
 ---
 
 ## Installation
 
-**Relay-only mode** (no persistence — default):
-
 ```bash
 pnpm add @rozek/sds-websocket-server
 ```
-
-**With SQLite persistence:**
-
-```bash
-pnpm add @rozek/sds-websocket-server @rozek/sds-persistence-node
-```
-
-`@rozek/sds-persistence-node` is an optional peer dependency: the server loads it lazily only when `PersistDir` / `SDS_PERSIST_DIR` is set. In relay-only mode it does not need to be installed.
 
 ---
 
@@ -51,14 +40,12 @@ pnpm add @rozek/sds-websocket-server @rozek/sds-persistence-node
 
 ```typescript
 import { createSDSServer } from '@rozek/sds-websocket-server'
-import { serve }           from '@hono/node-server'
 
-const { app:App } = createSDSServer({ JWTSecret:'your-secret-at-least-32-chars' })
-
-serve({ fetch:App.fetch, port:3000 }, () => {
-  console.log('SDS server listening on http://localhost:3000')
-})
+const { start } = createSDSServer({ JWTSecret:'your-secret-at-least-32-chars', Port:3000 })
+start()
 ```
+
+> **Important:** Always use the `start()` helper rather than calling `@hono/node-server`'s `serve()` directly. `start()` also calls `injectWebSocket()` internally, which is required for WebSocket upgrades to work. Skipping `injectWebSocket()` will cause all WebSocket connections to silently fail.
 
 ### With environment variables
 
@@ -76,20 +63,19 @@ node server.js
 ### `createSDSServer`
 
 ```typescript
-function createSDSServer (Options?:Partial<SDS_ServerOptions>):{ app:Hono }
+function createSDSServer (Options?:Partial<SDS_ServerOptions>):{ app:Hono, start:() => void }
 ```
 
-Returns the configured Hono application. Pass `app.fetch` to `@hono/node-server`'s `serve()`.
+Returns the configured Hono application and a convenience `start()` function. Pass `app.fetch` to `@hono/node-server`'s `serve()`, or call `start()` to let the server bind to the configured `Port` and `Host` automatically.
 
 #### `SDS_ServerOptions`
 
 ```typescript
 interface SDS_ServerOptions {
-  JWTSecret:   string  // HMAC-SHA256 signing secret (required, min 32 chars recommended)
-  Issuer?:     string  // JWT iss claim to validate (optional)
-  Port?:       number  // TCP port (default: 3000; also read from SDS_PORT)
-  Host?:       string  // bind address (default: 127.0.0.1; also read from SDS_HOST)
-  PersistDir?: string  // directory for per-store SQLite databases; omit for relay-only mode
+  JWTSecret: string  // HMAC-SHA256 signing secret (required, min 32 chars)
+  Issuer?:   string  // JWT iss claim to validate (optional)
+  Port?:     number  // TCP port (default: 3000; also read from SDS_PORT)
+  Host?:     string  // bind address (default: 127.0.0.1; also read from SDS_HOST)
 }
 ```
 
@@ -103,15 +89,6 @@ Options take priority over environment variables.
 | `SDS_ISSUER` | *(none)* | expected JWT `iss` claim; omit to skip issuer validation |
 | `SDS_PORT` | `3000` | TCP port the server listens on |
 | `SDS_HOST` | `127.0.0.1` | bind address (`0.0.0.0` to listen on all interfaces) |
-| `SDS_PERSIST_DIR` | *(none)* | directory for per-store SQLite databases; omit for relay-only mode |
-
-When `PersistDir` (or the `SDS_PERSIST_DIR` environment variable) is set, the server opens one SQLite database per store in that directory and:
-
-- replays the stored snapshot and all subsequent patches to every newly connecting client
-- persists every incoming PATCH frame
-- persists every incoming VALUE frame (or reassembled VALUE_CHUNK sequence) as a new snapshot, then prunes the now-superseded patches
-
-In relay-only mode (no `PersistDir`) the server holds no state between connections.
 
 ---
 
@@ -135,6 +112,15 @@ wss://my-server.example.com/ws/my-store?token=<jwt>
 | `aud` | yes | must match `:StoreId` |
 | `scope` | yes | `'read'`, `'write'`, or `'admin'` |
 | `exp` | recommended | expiry timestamp |
+
+**JWT error handling:**
+
+| condition | behaviour |
+| --- | --- |
+| Missing, malformed, expired, or otherwise invalid token | WebSocket upgrade is accepted; connection is immediately closed with code **4001** (`Unauthorized`) |
+| Valid token but `aud` does not match `:StoreId` | WebSocket upgrade is accepted; connection is immediately closed with code **4003** (`Forbidden`) |
+
+The upgrade is always accepted before the close is sent because Hono's WebSocket adapter requires an `onOpen` handler to issue the close frame — the HTTP-level handshake completes first in every case.
 
 **Scope enforcement:**
 
@@ -160,7 +146,9 @@ Relays JSON signalling messages (SDP offers/answers, ICE candidates) between pee
 wss://my-server.example.com/signal/my-store?token=<jwt>
 ```
 
-Messages are JSON objects with a `to` field. The server forwards each message only to the peer identified by `to`.
+**JWT error handling:** identical to the sync endpoint — invalid or mismatched token closes the connection with code **4001** or **4003** respectively.
+
+Messages can be binary or text. The server broadcasts each message to all other peers connected to the same `:StoreId` — targeted delivery is not enforced by the server; clients use the message content (e.g. a `to` field) to decide which messages to act on.
 
 ---
 
@@ -196,7 +184,14 @@ The issued token automatically inherits the store ID (`aud` claim) from the admi
 { "token":"<signed-jwt>" }
 ```
 
-**Errors:** `401` if no or invalid `Authorization` header; `403` if the token scope is not `'admin'`.
+**Errors:**
+
+| status | body | condition |
+| --- | --- | --- |
+| `400` | `{ "error": "invalid JSON body" }` | request body cannot be parsed as JSON |
+| `401` | `{ "error": "missing token" }` | no `Authorization` header |
+| `401` | `{ "error": "invalid token" }` | token is malformed, expired, has wrong signature, etc. |
+| `403` | `{ "error": "admin scope required" }` | token is valid but `scope` is not `'admin'` |
 
 ---
 
@@ -224,19 +219,42 @@ interface LiveClient {
 
 ---
 
+## Persistent sync peer
+
+The relay server itself holds no store state. To keep a persistent local copy and fire webhooks on changes, run a `@rozek/sds-sidecar-*` daemon alongside the relay:
+
+```bash
+# json-joy backend
+sds-sidecar-jj wss://relay.example.com my-store \
+  --token "$SDS_TOKEN" \
+  --on change
+
+# Loro backend
+sds-sidecar-loro wss://relay.example.com my-store \
+  --token "$SDS_TOKEN" \
+  --on change
+
+# Y.js backend
+sds-sidecar-yjs wss://relay.example.com my-store \
+  --token "$SDS_TOKEN" \
+  --on change
+```
+
+All clients connected to the same relay — including the sidecar — must use the **same CRDT backend**. Mixing backends causes silent data corruption.
+
+---
+
 ## Examples
 
 ### Self-contained server with token issuance
 
 ```typescript
 import { createSDSServer } from '@rozek/sds-websocket-server'
-import { serve }           from '@hono/node-server'
 
 const Secret = 'super-secret-key-at-least-32-chars!!'
 
-const { app:App } = createSDSServer({ JWTSecret:Secret, Port:3000 })
-
-serve({ fetch:App.fetch, port:3000 })
+const { start } = createSDSServer({ JWTSecret:Secret, Port:3000 })
+start()
 
 // clients connect to wss://host/ws/<storeId>?token=<jwt>
 // admins issue tokens via POST /api/token (authenticated with an admin JWT)
@@ -276,14 +294,7 @@ my-server.example.com {
 
 ## Deployment
 
-For production use — Docker + Caddy, bare Node.js (relay-only or with SQLite persistence), backup and restore, operations, and security hardening — refer to [DEPLOYMENT.md](./DEPLOYMENT.md).
-
-It covers four ready-to-use setups:
-
-- **A1 (recommended):** Docker + Caddy + pre-built image from GHCR — no compilation, automatic TLS, works on servers with as little as 1 GB RAM
-- **A2:** Docker + Caddy + build on server — for teams that prefer to build the image locally
-- **B1:** bare Node.js, relay-only — smallest possible footprint, no dependencies beyond Hono
-- **B2 / B3:** bare Node.js + SQLite persistence via the built-in `node:sqlite` module — no native addon required
+For production use — Docker + Caddy, bare Node.js, security hardening — refer to [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 ---
 

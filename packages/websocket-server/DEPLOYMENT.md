@@ -19,11 +19,11 @@ Internet
 ┌─────────────────────────┐
 │  sds-websocket-server   │  – JWT auth, patch relay, WebRTC signalling
 │  port 3000 (internal)   │  – POST /api/token
-│                         │  – optional SQLite persistence (SDS_PERSIST_DIR)
+│                         │  – optional SQLite persistence (SDS_PERSISTENCE_DIR)
 └─────────────────────────┘
 ```
 
-The SDS server acts as a **relay server** by default: clients synchronise their CRDT state with each other through it. When `SDS_PERSIST_DIR` is set the server additionally persists patches and snapshots to a per-store SQLite database, so late-joining clients can catch up without needing another peer to be online. TLS is handled entirely by Caddy.
+The SDS server acts as a **relay server** by default: clients synchronise their CRDT state with each other through it. When `SDS_PERSISTENCE_DIR` is set the server additionally persists patches and snapshots to a per-store SQLite database, so late-joining clients can catch up without needing another peer to be online. TLS is handled entirely by Caddy.
 
 ---
 
@@ -198,7 +198,7 @@ export SDS_JWT_SECRET=<paste-generated-secret-here>   # required
 export SDS_PORT=3000                                  # default: 3000
 export SDS_HOST=127.0.0.1                             # listen on loopback only
 export SDS_ISSUER=https://my-server.example.com       # optional
-# SDS_PERSIST_DIR is intentionally omitted — relay-only mode
+# SDS_PERSISTENCE_DIR is intentionally omitted — relay-only mode
 
 node server.mjs
 ```
@@ -238,7 +238,7 @@ export SDS_JWT_SECRET=<paste-generated-secret-here>
 export SDS_PORT=3000
 export SDS_HOST=127.0.0.1
 export SDS_ISSUER=https://my-server.example.com                   # optional
-export SDS_PERSIST_DIR=/var/lib/sds-websocket-server/stores       # enables SQLite persistence
+export SDS_PERSISTENCE_DIR=/var/lib/sds-websocket-server/stores       # enables SQLite persistence
 
 node server.mjs
 ```
@@ -289,8 +289,8 @@ export SDS_JWT_SECRET=<paste-generated-secret-here>
 export SDS_PORT=3000
 export SDS_HOST=127.0.0.1
 export SDS_ISSUER=https://my-server.example.com   # optional
-# add SDS_PERSIST_DIR if you want SQLite persistence:
-# export SDS_PERSIST_DIR=/var/lib/sds-websocket-server/stores
+# add SDS_PERSISTENCE_DIR if you want SQLite persistence:
+# export SDS_PERSISTENCE_DIR=/var/lib/sds-websocket-server/stores
 
 node server.mjs
 ```
@@ -338,7 +338,7 @@ Key variables:
 | `SDS_ISSUER` | no | validated as the `iss` claim in JWTs |
 | `SDS_HOST` | no | bind address inside the container (default: `0.0.0.0`) |
 | `SDS_PORT` | no | port inside the container (default: `3000`) |
-| `SDS_PERSIST_DIR` | no | enable SQLite persistence. Must match the container-side mount path from `docker-compose.yml` — with the default configuration use `/data/stores`. Without Docker any writable directory path on the host works. |
+| `SDS_PERSISTENCE_DIR` | no | enable SQLite persistence. Must match the container-side mount path from `docker-compose.yml` — with the default configuration use `/data/stores`. Without Docker any writable directory path on the host works. |
 | *(custom)* | no | add one variable per additional service subdomain (e.g. `WIKI_DOMAIN=wiki.example.com`) and reference it in the Caddyfile. |
 | `SDS_DOMAIN` | **yes** (Docker) | subdomain for the SDS server — Caddy requests a TLS certificate for it automatically |
 | `ACME_EMAIL` | **yes** (Docker) | email address for Let's Encrypt notifications (shared across all subdomains) |
@@ -408,12 +408,11 @@ const Store   = SDS_DataStore.fromScratch()
 const Token   = '<jwt-token-with-write-scope>'
 const StoreId = 'my-store-42'
 
-const NetworkProvider = new SDS_WebSocketProvider({
-  url:`wss://${SDS_DOMAIN}/ws/${StoreId}?token=${Token}`,
-})
+const NetworkProvider = new SDS_WebSocketProvider(StoreId)
 
 const SyncEngine = new SDS_SyncEngine(Store, { NetworkProvider })
 await SyncEngine.start()
+await SyncEngine.connectTo(`wss://${SDS_DOMAIN}`, { Token })
 ```
 
 ---
@@ -447,7 +446,7 @@ docker run --rm \
   -v $(pwd):/backup \
   alpine tar czf /backup/caddy_data.tar.gz /data
 
-# SQLite stores (only needed when SDS_PERSIST_DIR is set)
+# SQLite stores (only needed when SDS_PERSISTENCE_DIR is set)
 docker run --rm \
   -v sds_stores:/data \
   -v $(pwd):/backup \
@@ -502,5 +501,5 @@ echo | openssl s_client \
 - the SDS server is **not** intended for direct internet exposure — `SDS_HOST=0.0.0.0` applies only within the Docker network; Caddy is the sole publicly reachable service.
 - In multi-tenant setups each store should have its own `aud` claim and separate admin tokens.
 - TLS certificates are stored in the named Docker volume `caddy_data` — back it up regularly (see Backup & Restore above).
-- when `SDS_PERSIST_DIR` is set, back up the named Docker volume `sds_stores` regularly — it contains the authoritative CRDT state for all stores (see Backup & Restore above).
-- in relay-only mode (no `SDS_PERSIST_DIR`) the server holds no persistent state; a restart is safe at any time.
+- when `SDS_PERSISTENCE_DIR` is set, back up the named Docker volume `sds_stores` regularly — it contains the authoritative CRDT state for all stores (see Backup & Restore above).
+- in relay-only mode (no `SDS_PERSISTENCE_DIR`) the server holds no persistent state; a restart is safe at any time.

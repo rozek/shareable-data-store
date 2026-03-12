@@ -76,6 +76,22 @@ describe('SDS_WebSocketProvider — Frame Protocol', () => {
     expect(Sent[0].byteLength).toBe(1+32+2)
   })
 
+  it('WF-03: sendValue (> 1 MB) sends multiple VALUE_CHUNK (0x05) frames', async () => {
+    await connect()
+    const Hash     = 'd'.repeat(64)               // 32 hex bytes
+    const Data     = new Uint8Array(1024*1024 + 1) // 1 byte over the 1 MB threshold → 2 chunks
+    Data.fill(0xab)
+    Provider.sendValue(Hash, Data)
+    // every frame must be type 0x05
+    expect(Sent.length).toBeGreaterThan(1)
+    for (const Frame of Sent) {
+      expect(Frame[0]).toBe(0x05)
+    }
+    // total-chunks field (bytes 37-40) of each frame must equal Sent.length
+    const TotalChunks = new DataView(Sent[0].buffer, Sent[0].byteOffset).getUint32(1+32+4, false)
+    expect(TotalChunks).toBe(Sent.length)
+  })
+
   it('WF-04: requestValue sends 0x03 frame with 32-byte hash', async () => {
     await connect()
     Provider.requestValue('b'.repeat(64))
@@ -91,15 +107,6 @@ describe('SDS_WebSocketProvider — Frame Protocol', () => {
     expect(Sent[0][0]).toBe(0x04)
     const JSON_ = new TextDecoder().decode(Sent[0].slice(1))
     expect(JSON.parse(JSON_)).toMatchObject({ UserName:'alice' })
-  })
-
-  it('WF-07: sendLocalState with custom field includes custom data in JSON payload', async () => {
-    await connect()
-    Provider.sendLocalState({ UserName:'alice', custom:{ score:42 } })
-    expect(Sent).toHaveLength(1)
-    expect(Sent[0][0]).toBe(0x04)
-    const JSON_ = new TextDecoder().decode(Sent[0].slice(1))
-    expect(JSON.parse(JSON_)).toMatchObject({ custom:{ score:42 } })
   })
 
   it('WF-06: incoming VALUE_CHUNK frames are reassembled before firing onValue', async () => {
@@ -131,6 +138,15 @@ describe('SDS_WebSocketProvider — Frame Protocol', () => {
     const [hash, assembled] = onValue.mock.calls[0]
     expect(hash).toBe(HashHex)
     expect(Array.from(assembled)).toEqual([1, 2, 3, 4])
+  })
+
+  it('WF-07: sendLocalState with custom field includes custom data in JSON payload', async () => {
+    await connect()
+    Provider.sendLocalState({ UserName:'alice', custom:{ score:42 } })
+    expect(Sent).toHaveLength(1)
+    expect(Sent[0][0]).toBe(0x04)
+    const JSON_ = new TextDecoder().decode(Sent[0].slice(1))
+    expect(JSON.parse(JSON_)).toMatchObject({ custom:{ score:42 } })
   })
 
 })

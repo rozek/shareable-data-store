@@ -22,6 +22,8 @@ This package is isomorphic — it uses the native `WebSocket` API available in b
 
 ```bash
 pnpm add @rozek/sds-network-websocket
+# @rozek/sds-core is a peer dependency:
+pnpm add @rozek/sds-core
 ```
 
 ---
@@ -42,7 +44,7 @@ All messages are binary frames with a one-byte type prefix:
 | `0x04` | PRESENCE | bidirectional | UTF-8 JSON of `SDS_PresenceState` |
 | `0x05` | VALUE_CHUNK | bidirectional | hash + chunk-index + total-chunks + chunk bytes |
 
-Values larger than 1 MB are split into `VALUE_CHUNK` frames automatically and reassembled on the receiving end before the `onValue` callback fires.
+Values larger than 1 MB (1,048,576 bytes) are split into `VALUE_CHUNK` frames of at most 1 MB each and reassembled on the receiving end before the `onValue` callback fires. The `total-chunks` field in every chunk frame indicates how many frames form the complete value.
 
 ### Auto-reconnect
 
@@ -80,7 +82,7 @@ class SDS_WebSocketProvider implements SDS_NetworkProvider, SDS_PresenceProvider
 
   sendLocalState (State:SDS_LocalPresenceState):void
   onRemoteState (
-    Callback:(PeerId:string, State:SDS_RemotePresenceState | null) => void
+    Callback:(PeerId:string, State:SDS_RemotePresenceState | undefined) => void
   ):() => void
   readonly PeerSet:ReadonlyMap<string, SDS_RemotePresenceState>
 }

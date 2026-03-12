@@ -73,18 +73,6 @@ describe('SDS_SyncEngine — Presence', () => {
     await Engine.stop()
   })
 
-  it('SS-05: setPresenceTo with custom field passes custom data to sendLocalState', async () => {
-    const Store    = SDS_DataStore.fromScratch()
-    const Presence = makeMockPresence()
-    const Engine   = new SDS_SyncEngine(Store, { PresenceProvider:Presence as any })
-    await Engine.start()
-    Engine.setPresenceTo({ UserName:'alice', custom:{ score:42 } })
-    expect(Presence.sendLocalState).toHaveBeenCalledWith(
-      expect.objectContaining({ custom:{ score:42 } })
-    )
-    await Engine.stop()
-  })
-
   it('SS-04: peer timeout fires onPresenceChange with undefined state', async () => {
     vi.useFakeTimers()
     const Store    = SDS_DataStore.fromScratch()
@@ -101,6 +89,18 @@ describe('SDS_SyncEngine — Presence', () => {
     vi.advanceTimersByTime(1100)
     expect(Handler).toHaveBeenCalledWith('peer-y', undefined, 'remote')
     vi.useRealTimers()
+    await Engine.stop()
+  })
+
+  it('SS-05: setPresenceTo with custom field passes custom data to sendLocalState', async () => {
+    const Store    = SDS_DataStore.fromScratch()
+    const Presence = makeMockPresence()
+    const Engine   = new SDS_SyncEngine(Store, { PresenceProvider:Presence as any })
+    await Engine.start()
+    Engine.setPresenceTo({ UserName:'alice', custom:{ score:42 } })
+    expect(Presence.sendLocalState).toHaveBeenCalledWith(
+      expect.objectContaining({ custom:{ score:42 } })
+    )
     await Engine.stop()
   })
 

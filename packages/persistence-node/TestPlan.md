@@ -47,7 +47,7 @@ Verify that `SDS_DesktopPersistenceProvider` reliably persists and restores snap
 
 #### 1.1 Empty database behaviour
 
-- **TC-2.1.1** — `loadSnapshot()` returns `null` when no snapshot has been saved
+- **TC-2.1.1** — `loadSnapshot()` returns `undefined` when no snapshot has been saved
 
 #### 1.2 Save and load
 
@@ -90,7 +90,7 @@ Verify that `SDS_DesktopPersistenceProvider` reliably persists and restores snap
 
 #### 1.1 Empty database behaviour
 
-- **TC-4.1.1** — `loadValue(hash)` returns `null` for an unknown hash
+- **TC-4.1.1** — `loadValue(hash)` returns `undefined` for an unknown hash
 
 #### 1.2 Save and load
 

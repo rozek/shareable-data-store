@@ -12,18 +12,26 @@ import { Command } from 'commander'
 import { resolveConfig, SDS_ConfigError } from './Config.js'
 import { printError }        from './Output.js'
 import { ExitCodes }         from './ExitCodes.js'
-import { SDS_CommandError }  from './StoreAccess.js'
+import { SDS_CommandError, setStoreFactory } from './StoreAccess.js'
 import { extractInfoEntries } from './InfoParser.js'
 import { startREPL }         from './REPL.js'
 import { runScript }         from './ScriptRunner.js'
 
-import pkg from '../package.json'
+export type { SDS_StoreFactory } from './StoreAccess.js'
 
 import { registerTokenCommands } from './commands/TokenCmd.js'
 import { registerStoreCommands } from './commands/StoreCmd.js'
 import { registerEntryCommands } from './commands/EntryCmd.js'
 import { registerTrashCommands } from './commands/TrashCmd.js'
 import { registerTreeCommands }  from './commands/TreeCmd.js'
+
+//----------------------------------------------------------------------------//
+//                          module-level command name                         //
+//----------------------------------------------------------------------------//
+
+// set once by runCommand(); used throughout for error messages and program name
+let _CommandName = 'sds'
+let _Version     = '0.0.0'
 
 //----------------------------------------------------------------------------//
 //                             buildProgram                                   //
@@ -37,10 +45,10 @@ import { registerTreeCommands }  from './commands/TreeCmd.js'
 // isSubContext = false → full top-level CLI (default)
 
 function buildProgram (ExtraArgv:string[], isSubContext:boolean = false):Command {
-  const Program = new Command('sds')
+  const Program = new Command(_CommandName)
     Program
       .description('shareable-data-store CLI')
-      .version(pkg.version, '--version', 'print version')
+      .version(_Version, '--version', 'print version')
       .allowUnknownOption(false)
       // suppress Commander's own error writing — we handle it ourselves so that
       // the error message always appears before any help text
@@ -51,7 +59,7 @@ function buildProgram (ExtraArgv:string[], isSubContext:boolean = false):Command
       .option('--store <id>',         'store identifier (env: SDS_STORE_ID)')
       .option('--token <jwt>',        'client JWT — read/write (env: SDS_TOKEN)')
       .option('--admin-token <jwt>',  'admin JWT (env: SDS_ADMIN_TOKEN)')
-      .option('--data-dir <path>',    'directory for local SQLite files (env: SDS_DATA_DIR)')
+      .option('--persistence-dir <path>',    'directory for local SQLite files (env: SDS_PERSISTENCE_DIR)')
       .option('--format <fmt>',       'output format: text | json (default: text)')
       .option('--on-error <action>',  'error mode: stop | continue | ask (default: stop)')
 
@@ -127,7 +135,7 @@ function configToGlobalTokens (
   if (Config.StoreId     != null) { Tokens.push('--store',       Config.StoreId) }
   if (Config.Token       != null) { Tokens.push('--token',       Config.Token) }
   if (Config.AdminToken  != null) { Tokens.push('--admin-token', Config.AdminToken) }
-  Tokens.push('--data-dir', Config.DataDir)
+  Tokens.push('--persistence-dir', Config.PersistenceDir)
   if (Config.Format !== 'text')   { Tokens.push('--format', Config.Format) }
   return Tokens
 }
@@ -155,7 +163,7 @@ async function executeTokens (
   applyExitOverride(Program)
 
   try {
-    await Program.parseAsync(['node', 'sds', ...GlobalTokens, ...CleanArgv])
+    await Program.parseAsync(['node', _CommandName, ...GlobalTokens, ...CleanArgv])
     return ExitCodes.OK
   } catch (Signal:unknown) {
     const CommanderError = Signal as { code?:string; message:string; exitCode?:number }
@@ -170,7 +178,7 @@ async function executeTokens (
     ) { return ExitCodes.OK }
 
     if (CommanderError.code === 'commander.unknownCommand') {
-      process.stderr.write(`sds: unknown command '${CleanArgv[0]}' — try 'sds help'\n`)
+      process.stderr.write(`${_CommandName}: unknown command '${CleanArgv[0]}' — try '${_CommandName} help'\n`)
       return ExitCodes.UsageError
     }
 
@@ -179,23 +187,23 @@ async function executeTokens (
       (CommanderError.code === 'commander.missingArgument') ||
       (CommanderError.code === 'commander.missingMandatoryOptionValue')
     ) {
-      process.stderr.write(`sds: ${CommanderError.message}\n`)
+      process.stderr.write(`${_CommandName}: ${CommanderError.message}\n`)
       return ExitCodes.UsageError
     }
 
     if (Signal instanceof SDS_ConfigError) {
-      process.stderr.write(`sds: ${Signal.message}\n`)
+      process.stderr.write(`${_CommandName}: ${Signal.message}\n`)
       return Signal.ExitCode
     }
 
     if (Signal instanceof SDS_CommandError) {
-      const OutputConfig = Config ?? { Format:'text' as const, OnError:'stop' as const, DataDir:'' }
+      const OutputConfig = Config ?? { Format:'text' as const, OnError:'stop' as const, PersistenceDir:'' }
       printError(OutputConfig, Signal.message, Signal.ExitCode)
       return Signal.ExitCode
     }
 
     // unexpected error
-    const OutputConfig = Config ?? { Format:'text' as const, OnError:'stop' as const, DataDir:'' }
+    const OutputConfig = Config ?? { Format:'text' as const, OnError:'stop' as const, PersistenceDir:'' }
     printError(OutputConfig, (Signal as Error).message ?? String(Signal))
     return ExitCodes.GeneralError
   }
@@ -220,7 +228,7 @@ async function main ():Promise<void> {
   applyExitOverride(Program)
 
   try {
-    await Program.parseAsync(['node', 'sds', ...CleanArgv])
+    await Program.parseAsync(['node', _CommandName, ...CleanArgv])
   } catch (Signal:unknown) {
     const CommanderError = Signal as { code?:string; message:string; exitCode?:number }
 
@@ -237,13 +245,13 @@ async function main ():Promise<void> {
       (CommanderError.code === 'commander.missingMandatoryOptionValue')
     ) {
       // error message first, then help — so the mistake is visible at the top
-      process.stderr.write(`sds: ${CommanderError.message}\n\n`)
+      process.stderr.write(`${_CommandName}: ${CommanderError.message}\n\n`)
       process.stderr.write(Program.helpInformation())
       process.exit(ExitCodes.UsageError)
     }
 
     if (Signal instanceof SDS_ConfigError) {
-      process.stderr.write(`sds: ${Signal.message}\n`)
+      process.stderr.write(`${_CommandName}: ${Signal.message}\n`)
       process.exit(Signal.ExitCode)
     }
 
@@ -259,15 +267,20 @@ async function main ():Promise<void> {
   }
 }
 
-// run CLI when this module is executed directly
-if (
-  (typeof process !== 'undefined') &&
-  (process.argv[1] != null) &&
-  (process.argv[1].endsWith('sds-command.js') || process.argv[1].endsWith('/sds'))
-) {
-  main().catch((Signal) => {
-    process.stderr.write(`sds: fatal: ${(Signal as Error).message ?? Signal}\n`)
-    process.exit(ExitCodes.GeneralError)
-  })
+//----------------------------------------------------------------------------//
+//                               runCommand                                   //
+//----------------------------------------------------------------------------//
+
+/**** runCommand — called by backend-specific wrapper packages ****/
+
+export async function runCommand (
+  StoreFactory: SDS_StoreFactory,
+  CommandName:  string = 'sds',
+  Version:      string = '0.0.0',
+):Promise<void> {
+  _CommandName = CommandName
+  _Version     = Version
+  setStoreFactory(StoreFactory)
+  return main()
 }
 

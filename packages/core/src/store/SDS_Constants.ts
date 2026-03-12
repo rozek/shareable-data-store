@@ -22,7 +22,7 @@
   export const maxLabelLength    = 1024       // Unicode code points
   export const maxMIMETypeLength = 256        // characters
   export const maxInfoKeyLength  = 1024       // Unicode code points
-  export const maxInfoValueSize  = 1_048_576  // bytes (JSON-encoded, UTF-8)
+  export const maxInfoValueSize  = 262_144    // bytes (JSON-encoded, UTF-8) — 256 Ki
 
 /****  OrderKey management ****/
 

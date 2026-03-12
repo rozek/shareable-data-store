@@ -35,7 +35,7 @@ export declare const LostAndFoundId = "00000000-0000-4000-8000-000000000002";
 
 export declare const maxInfoKeyLength = 1024;
 
-export declare const maxInfoValueSize = 1048576;
+export declare const maxInfoValueSize = 262144;
 
 /**** Validation limits for user-supplied strings and metadata ****/
 export declare const maxLabelLength = 1024;

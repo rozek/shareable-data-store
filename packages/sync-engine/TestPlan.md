@@ -73,16 +73,23 @@ Verify that `SDS_SyncEngine` correctly coordinates `SDS_DataStore` with persiste
 
 ### 3. Checkpoint on threshold
 
-#### 3.1 In-flight checkpoint
+#### 3.1 In-flight checkpoint (offline engine)
 
-- **TC-3.1.1** — Accumulating more than 512 KiB of patch data triggers `saveSnapshot` and `prunePatches` without waiting for `stop()`
+- **TC-3.1.1** — Accumulating more than 512 KiB of patch data triggers `saveSnapshot` without waiting for `stop()`; for offline engines (no `NetworkProvider`) `prunePatches` is NOT called so that patches survive for a future `store sync` upload
 
 ### 4. Stop-time checkpoint
 
 #### 4.1 Checkpoint on stop
 
-- **TC-4.1.1** — After a small store change (below the in-flight threshold), `stop()` triggers `saveSnapshot`, `prunePatches`, and `close()`
-- **TC-4.1.2** — After only remote patches are applied (no local changes, AccumulatedBytes stays 0), `stop()` still triggers `saveSnapshot`; the resulting snapshot binary contains the remotely patched data (regression test for bootstrap-on-new-machine bug)
+- **TC-4.1.1** — After a small store change (below the in-flight threshold), `stop()` on an offline engine triggers `saveSnapshot` and `close()` but does NOT call `prunePatches` (patches must be preserved for a future `store sync` run)
+- **TC-4.1.2** — After only remote patches are applied (no local changes, AccumulatedBytes stays 0), `stop()` on a network engine still triggers `saveSnapshot` and `prunePatches`; the resulting snapshot binary contains the remotely patched data (regression test for bootstrap-on-new-machine bug)
+
+### 5. Offline vs network pruning
+
+#### 5.1 Pruning distinction
+
+- **TC-5.1.1** — Offline engines (no `NetworkProvider`) never call `prunePatches` on any checkpoint (in-flight or stop-time), ensuring SQLite patches are available for a subsequent `store sync`
+- **TC-5.1.2** — Network engines (with `NetworkProvider`) do call `prunePatches` on checkpoint, since patches are already forwarded to the server in real time
 
 ---
 

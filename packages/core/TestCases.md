@@ -73,6 +73,8 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 | N-12 | `newItemAt` with `null` outerItem throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
 | N-13 | `newLinkAt` with `null` Target throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
 | N-14 | `newLinkAt` with a link (not an item) as target throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
+| N-15 | `newItemAt` with MIMEType exceeding `maxMIMETypeLength` throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
+| N-16 | `item.Type` setter with MIMEType exceeding `maxMIMETypeLength` throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
 
 ---
 
@@ -91,6 +93,12 @@ Backend-specific additions are documented in each backend's own `TestCases.md`.
 | L-09 | deleting the last Info key removes the Info node; proxy still returns `{}` and writing afterwards works | `Object.keys(Info).length === 0`; subsequent write succeeds |
 | L-10 | `Label` setter with non-string argument throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
 | L-11 | assigning `undefined` to an Info key deletes the key | key absent from `Object.keys(Info)` afterwards |
+| L-12 | Info value whose UTF-8 JSON representation is exactly `maxInfoValueSize` bytes is accepted | no error thrown; value stored and readable |
+| L-13 | Info value whose UTF-8 JSON representation exceeds `maxInfoValueSize` bytes throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
+| L-14 | `Label` setter with a string exceeding `maxLabelLength` throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
+| L-15 | Info key exceeding `maxInfoKeyLength` throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
+| L-16 | empty Info key (`''`) throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
+| L-17 | non-JSON-serialisable Info value (function) throws `SDS_Error('invalid-argument')` | throws with `code === 'invalid-argument'` |
 
 ---
 

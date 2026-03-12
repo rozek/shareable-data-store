@@ -9,7 +9,7 @@
 import fs              from 'node:fs/promises'
 import type { Command } from 'commander'
 
-import { SDS_DataStore }  from '@rozek/sds-core-jj'
+import type { SDS_DataStore }              from '@rozek/sds-core'
 import { RootId, TrashId, LostAndFoundId } from '@rozek/sds-core'
 
 import { resolveConfig, DBPathFor, type SDSConfig }  from '../Config.js'
@@ -17,6 +17,7 @@ import { printResult, printLine } from '../Output.js'
 import {
   SDS_CommandError, loadContext, closeContext,
   runSync, StoreExists, destroyStore, parseIntOption, readFileSafely,
+  createStoreFromBinary,
 } from '../StoreAccess.js'
 import { ExitCodes } from '../ExitCodes.js'
 
@@ -55,7 +56,14 @@ export function registerStoreCommands (Program:Command):void {
     .option('--timeout <ms>', 'milliseconds to wait after connecting', '5000')
     .action(async (Options, SubCommand) => {
       const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
-      await cmdStoreSync(Config, parseIntOption(Options.timeout, '--timeout'))
+      const TimeoutMs = parseIntOption(Options.timeout, '--timeout')
+      if (TimeoutMs <= 0) {
+        throw new SDS_CommandError(
+          `'--timeout' must be a positive integer — got ${TimeoutMs}`,
+          ExitCodes.UsageError
+        )
+      }
+      await cmdStoreSync(Config, TimeoutMs)
     })
 
 /**** store destroy ****/
@@ -108,7 +116,7 @@ async function cmdStoreInfo (Config:SDSConfig):Promise<void> {
     if (Config.Format === 'json') {
       printResult(Config, { storeId:StoreId, exists:false })
     } else {
-      printLine(`store '${StoreId}': not found in '${Config.DataDir}'`)
+      printLine(`store '${StoreId}': not found in '${Config.PersistenceDir}'`)
     }
     return
   }
@@ -204,7 +212,7 @@ async function cmdStoreExport (
   Config:SDSConfig, Format:string, OutputFile:string | undefined
 ):Promise<void> {
   const NormalizedFormat = Format.toLowerCase()
-  if (NormalizedFormat !== 'json' && NormalizedFormat !== 'binary') {
+  if ((NormalizedFormat !== 'json') && (NormalizedFormat !== 'binary')) {
     throw new SDS_CommandError(
       `'--encoding' accepts 'json' or 'binary' — got '${Format}'`,
       ExitCodes.UsageError
@@ -261,7 +269,7 @@ async function cmdStoreImport (Config:SDSConfig, InputFile:string):Promise<void>
       mergeEntriesFromJSON(Context.Store as unknown as SDS_DataStore, Parsed)
     } else {
       // binary: gzip'd CRDT model — reconstruct a temp store and copy user entries
-      const TmpStore = SDS_DataStore.fromBinary(new Uint8Array(rawData))
+      const TmpStore = createStoreFromBinary(new Uint8Array(rawData))
       try {
         mergeEntriesFromJSON(Context.Store as unknown as SDS_DataStore, TmpStore.asJSON())
       } finally {
@@ -302,12 +310,13 @@ function mergeEntriesFromJSON (
 /**** countEntries — recursive count of all non-system items in the tree ****/
 
 function countEntries (Store:SDS_DataStore):number {
-  const SystemIds = new Set([ RootId, TrashId ])
+  const SystemIds = new Set([ RootId, TrashId, LostAndFoundId ])
   let Count = 0
 
   function traverseEntries (ItemId:string):void {
     for (const Entry of Store._innerEntriesOf(ItemId)) {
-      if (! SystemIds.has(Entry.Id)) { Count++ }
+      if (SystemIds.has(Entry.Id)) { continue }   // skip system containers entirely — no count, no recursion
+      Count++
       if (Entry.isItem) { traverseEntries(Entry.Id) }
     }
   }

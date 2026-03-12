@@ -68,7 +68,7 @@ Copy `dist/sds-browser-bundle-jj.js` to your web server, then declare an import 
   })
 
   await SyncEngine.start()
-  await SyncEngine.connectTo('wss://my-relay.example.com/sync', { Token:'<jwt>' })
+  await SyncEngine.connectTo('wss://my-relay.example.com', { Token:'<jwt>' })
 
   // ── work with items ────────────────────────────────────────────
 
@@ -180,7 +180,7 @@ const SyncEngine = new SDS_SyncEngine(DataStore, {
 })
 
 await SyncEngine.start()
-await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
+await SyncEngine.connectTo('wss://relay.example.com', { Token:'<jwt>' })
 
 // track remote peers
 SyncEngine.onPresenceChange((PeerId,PeerState) => {
@@ -215,7 +215,7 @@ const SyncEngine = new SDS_SyncEngine(DataStore, {
 })
 
 await SyncEngine.start()
-await SyncEngine.connectTo('wss://relay.example.com/sync', { Token:'<jwt>' })
+await SyncEngine.connectTo('wss://relay.example.com', { Token:'<jwt>' })
 ```
 
 ### Automatic trash expiry

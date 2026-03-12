@@ -99,14 +99,18 @@ describe('SDS_SyncEngine — Persistence', () => {
     // allow async checkpoint writes to complete
     await new Promise((r) => setTimeout(r, 50))
 
-    // saveSnapshot should have been called by the in-flight checkpoint
+    // saveSnapshot is called by the in-flight checkpoint; patches are NOT pruned
+    // because this is an offline engine (no NetworkProvider) — patches must
+    // survive so that a future 'store sync' run can upload them to the server
     expect(Persist.saveSnapshot).toHaveBeenCalled()
-    expect(Persist.prunePatches).toHaveBeenCalled()
+    expect(Persist.prunePatches).not.toHaveBeenCalled()
 
     await Engine.stop()
   })
 
-  it('SP-04: stop() always writes a stop-time checkpoint (local changes present)', async () => {
+  it('SP-04: stop() writes a checkpoint but does NOT prune patches for offline engines', async () => {
+    // offline-only engines (no NetworkProvider) must keep their patches in SQLite
+    // so that a subsequent 'store sync' run can upload them to the server
     const Store   = SDS_DataStore.fromScratch()
     const Persist = makeMockPersistence()
 
@@ -121,11 +125,11 @@ describe('SDS_SyncEngine — Persistence', () => {
     // appendPatch must have been called
     expect(Persist.appendPatch).toHaveBeenCalled()
 
-    // stop() always triggers the checkpoint
     await Engine.stop()
 
+    // snapshot is saved but patches are kept (offline engine: no NetworkProvider)
     expect(Persist.saveSnapshot).toHaveBeenCalled()
-    expect(Persist.prunePatches).toHaveBeenCalled()
+    expect(Persist.prunePatches).not.toHaveBeenCalled()
     expect(Persist.close).toHaveBeenCalled()
   })
 
@@ -187,6 +191,54 @@ describe('SDS_SyncEngine — Persistence', () => {
     const SnapshotArg = Persist.saveSnapshot.mock.calls[0][0] as Uint8Array
     const RestoredStore = SDS_DataStore.fromBinary(SnapshotArg)
     expect(RestoredStore.EntryWithId(Item.Id)?.Label).toBe('remote-item')
+  })
+
+  it('SP-06: network engines prune patches on checkpoint; offline engines do not', async () => {
+    // ── offline engine: patches must survive stop() ───────────────────────
+    const OfflineStore   = SDS_DataStore.fromScratch()
+    const OfflinePersist = makeMockPersistence()
+
+    const OfflineEngine = new SDS_SyncEngine(OfflineStore, {
+      PersistenceProvider: OfflinePersist,
+    })
+    await OfflineEngine.start()
+    OfflineStore.newItemAt(undefined, OfflineStore.RootItem)
+    await new Promise((r) => setTimeout(r, 10))
+    await OfflineEngine.stop()
+
+    expect(OfflinePersist.saveSnapshot).toHaveBeenCalled()
+    expect(OfflinePersist.prunePatches).not.toHaveBeenCalled()
+
+    // ── network engine: patches are pruned after checkpoint ───────────────
+    const NetworkStore   = SDS_DataStore.fromScratch()
+    const NetworkPersist = makeMockPersistence()
+    const MockNetwork = {
+      StoreId: 'test',
+      get ConnectionState () { return 'disconnected' as const },
+      connect:            () => Promise.resolve(),
+      disconnect:         () => {},
+      sendPatch:          () => {},
+      sendValue:          () => {},
+      requestValue:       () => {},
+      onPatch:            () => () => {},
+      onValue:            () => () => {},
+      onConnectionChange: () => () => {},
+      sendLocalState:     () => {},
+      onRemoteState:      () => () => {},
+      get PeerSet ()      { return new Map() },
+    }
+
+    const NetworkEngine = new SDS_SyncEngine(NetworkStore, {
+      PersistenceProvider: NetworkPersist,
+      NetworkProvider:     MockNetwork as any,
+    })
+    await NetworkEngine.start()
+    NetworkStore.newItemAt(undefined, NetworkStore.RootItem)
+    await new Promise((r) => setTimeout(r, 10))
+    await NetworkEngine.stop()
+
+    expect(NetworkPersist.saveSnapshot).toHaveBeenCalled()
+    expect(NetworkPersist.prunePatches).toHaveBeenCalled()
   })
 
 })

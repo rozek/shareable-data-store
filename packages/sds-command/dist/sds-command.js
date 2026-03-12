@@ -1,14 +1,13 @@
 #!/usr/bin/env -S node --no-warnings
-import { Command as Q } from "commander";
-import X from "node:os";
-import M from "node:path";
+import { Command as te } from "commander";
+import ne from "node:os";
+import B from "node:path";
 import g from "node:fs/promises";
-import { SDS_DataStore as _ } from "@rozek/sds-core-jj";
-import { SDS_DesktopPersistenceProvider as V } from "@rozek/sds-persistence-node";
-import { SDS_SyncEngine as B } from "@rozek/sds-sync-engine";
-import { SDS_WebSocketProvider as O } from "@rozek/sds-network-websocket";
-import { TrashId as N, RootId as E, LostAndFoundId as ee } from "@rozek/sds-core";
-import C from "node:readline";
+import { SDS_DesktopPersistenceProvider as q } from "@rozek/sds-persistence-node";
+import { SDS_SyncEngine as z } from "@rozek/sds-sync-engine";
+import { SDS_WebSocketProvider as oe } from "@rozek/sds-network-websocket";
+import { LostAndFoundId as L, TrashId as x, RootId as k } from "@rozek/sds-core";
+import K from "node:readline";
 const c = {
   OK: 0,
   // success
@@ -25,68 +24,68 @@ const c = {
   Forbidden: 6
   // operation not permitted for this scope
 };
-class U extends Error {
+class R extends Error {
   ExitCode;
-  constructor(o, n = c.UsageError) {
-    super(o), this.ExitCode = n;
+  constructor(n, t = c.UsageError) {
+    super(n), this.ExitCode = t;
   }
 }
-function m(e) {
-  const o = e.server ?? process.env.SDS_SERVER_URL, n = e.dataDir ?? process.env.SDS_DATA_DIR ?? M.join(X.homedir(), ".sds"), t = e.store ?? process.env.SDS_STORE_ID, r = e.token ?? process.env.SDS_TOKEN, s = e.adminToken ?? process.env.SDS_ADMIN_TOKEN, i = (e.format ?? "text").toLowerCase();
+function w(e) {
+  const n = e.server ?? process.env.SDS_SERVER_URL, t = e.persistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? B.join(ne.homedir(), ".sds"), o = e.store ?? process.env.SDS_STORE_ID, r = e.token ?? process.env.SDS_TOKEN, s = e.adminToken ?? process.env.SDS_ADMIN_TOKEN, i = (e.format ?? "text").toLowerCase();
   if (i !== "text" && i !== "json")
-    throw new U(
+    throw new R(
       `'--format' accepts 'text' or 'json' — got '${e.format}'`,
       c.UsageError
     );
   const a = i, d = (e.onError ?? "stop").toLowerCase();
   if (d !== "stop" && d !== "continue" && d !== "ask")
-    throw new U(
+    throw new R(
       `'--on-error' accepts 'stop', 'continue', or 'ask' — got '${e.onError}'`,
       c.UsageError
     );
-  return { ServerURL: o, DataDir: n, StoreId: t, Token: r, AdminToken: s, Format: a, OnError: d };
+  return { ServerURL: n, PersistenceDir: t, StoreId: o, Token: r, AdminToken: s, Format: a, OnError: d };
 }
-function D(e, o) {
-  const n = o.replace(/[^a-zA-Z0-9_-]/g, "_");
-  return M.join(e.DataDir, `${n}.db`);
+function D(e, n) {
+  const t = n.replace(/[^a-zA-Z0-9_-]/g, "_");
+  return B.join(e.PersistenceDir, `${t}.db`);
 }
 function f(e = "") {
   process.stdout.write(e + `
 `);
 }
-function te(e) {
+function re(e) {
   process.stdout.write(JSON.stringify(e, null, 2) + `
 `);
 }
-function L(e, o, n) {
+function P(e, n, t) {
   e.Format === "json" ? process.stderr.write(
-    JSON.stringify({ error: o, exitCode: n ?? 1 }) + `
+    JSON.stringify({ error: n, exitCode: t ?? 1 }) + `
 `
-  ) : process.stderr.write(`sds: error: ${o}
+  ) : process.stderr.write(`sds: error: ${n}
 `);
 }
-function w(e, o) {
+function h(e, n) {
   if (e.Format === "json") {
-    te(o);
+    re(n);
     return;
   }
   switch (!0) {
-    case o == null:
+    case n == null:
       break;
-    case typeof o == "string":
-      f(o);
+    case typeof n == "string":
+      f(n);
       break;
-    case Array.isArray(o):
-      for (const n of o)
-        f(String(n));
+    case Array.isArray(n):
+      for (const t of n)
+        f(String(t));
       break;
     default:
-      f(JSON.stringify(o));
+      f(JSON.stringify(n));
   }
 }
-function ne(e, o, n, t, r, s) {
+function se(e, n, t, o, r, s) {
   const i = [e];
-  switch (s.showLabel && i.push(o !== "" ? o : "(no label)"), s.showMIME && i.push(n), s.showValue && i.push(t != null ? String(t) : "(no value)"), !0) {
+  switch (s.showLabel && i.push(n !== "" ? n : "(no label)"), s.showMIME && i.push(t), s.showValue && i.push(o != null ? String(o) : "(no value)"), !0) {
     case s.InfoKey != null:
       i.push(JSON.stringify(r[s.InfoKey] ?? null));
       break;
@@ -96,76 +95,410 @@ function ne(e, o, n, t, r, s) {
   }
   return i.join("  ");
 }
-function q(e, o, n, t, r, s, i) {
-  const a = i ? "└── " : "├── ", d = n === "link" ? ` → ${t ?? "?"}` : "", u = o !== "" ? `  ${o}` : "", h = `${s}${a}${e}${u}${d}`, I = s + (i ? "    " : "│   "), v = [h];
-  for (let T = 0; T < r.length; T++) {
-    const b = r[T], F = T === r.length - 1;
-    v.push(
-      ...q(
-        b.Id,
-        b.Label,
-        b.Kind,
-        b.TargetId,
-        b.Children,
+function H(e, n, t, o, r, s, i) {
+  const a = i ? "└── " : "├── ", d = t === "link" ? ` → ${o ?? "?"}` : "", u = n !== "" ? `  ${n}` : "", m = `${s}${a}${e}${u}${d}`, I = s + (i ? "    " : "│   "), T = [m];
+  for (let _ = 0; _ < r.length; _++) {
+    const $ = r[_], j = _ === r.length - 1;
+    T.push(
+      ...H(
+        $.Id,
+        $.Label,
+        $.Kind,
+        $.TargetId,
+        $.Children,
         I,
-        F
+        j
       )
     );
   }
-  return v;
+  return T;
+}
+let U;
+function ie(e) {
+  U = e;
+}
+function ae(e) {
+  return U.fromBinary(e);
 }
 class l extends Error {
   ExitCode;
-  constructor(o, n = c.GeneralError) {
-    super(o), this.name = "SDS_CommandError", this.ExitCode = n;
+  constructor(n, t = c.GeneralError) {
+    super(n), this.name = "SDS_CommandError", this.ExitCode = t;
   }
 }
-async function y(e, o = !1) {
-  const n = e.StoreId;
-  if (n == null)
+async function y(e, n = !1) {
+  const t = e.StoreId;
+  if (t == null)
     throw new l(
       "no store ID — set SDS_STORE_ID or use --store",
       c.UsageError
     );
-  await g.mkdir(e.DataDir, { recursive: !0 });
-  const t = D(e, n), r = new V(t, n);
+  await g.mkdir(e.PersistenceDir, { recursive: !0 });
+  const o = D(e, t), r = new q(o, t);
   let s;
   try {
     const a = await r.loadSnapshot();
     switch (!0) {
       case a != null: {
-        s = _.fromBinary(a);
+        s = U.fromBinary(a);
         break;
       }
-      case o: {
-        s = _.fromScratch();
+      case n: {
+        s = U.fromScratch();
         break;
       }
       default:
         throw await r.close(), new l(
-          `store '${n}' not found in '${e.DataDir}'`,
+          `store '${t}' not found in '${e.PersistenceDir}'`,
           c.NotFound
         );
     }
   } catch (a) {
     throw a instanceof l ? a : (await r.close().catch(() => {
     }), new l(
-      `failed to open store '${n}': ${a.message}`,
+      `failed to open store '${t}': ${a.message}`,
       c.GeneralError
     ));
   }
-  const i = new B(s, { PersistenceProvider: r });
+  const i = new z(s, { PersistenceProvider: r });
   return await i.start(), { Store: s, Persistence: r, Engine: i };
 }
 async function p(e) {
   await e.Engine.stop();
 }
-async function z(e, o = 5e3) {
-  const n = e.StoreId, t = e.ServerURL, r = e.Token;
+async function Y(e, n = 5e3) {
+  const t = e.StoreId, o = e.ServerURL, r = e.Token;
+  if (t == null)
+    throw new l(
+      "no store ID — set SDS_STORE_ID or use --store",
+      c.UsageError
+    );
+  if (o == null)
+    throw new l(
+      "no server URL — set SDS_SERVER_URL or use --server",
+      c.UsageError
+    );
+  if (!/^wss?:\/\//.test(o))
+    throw new l(
+      `invalid server URL '${o}' — must start with 'ws://' or 'wss://'`,
+      c.UsageError
+    );
+  if (r == null)
+    throw new l(
+      "no client token — set SDS_TOKEN or use --token",
+      c.UsageError
+    );
+  await g.mkdir(e.PersistenceDir, { recursive: !0 });
+  const s = D(e, t), i = new q(s, t), a = await i.loadSnapshot(), d = a != null ? U.fromBinary(a) : U.fromScratch(), u = new oe(t), m = new z(d, {
+    PersistenceProvider: i,
+    NetworkProvider: u
+  });
+  await m.start();
+  let I = !1, T;
+  const _ = new Promise((b) => {
+    T = b;
+  }), $ = m.onConnectionChange((b) => {
+    b === "connected" && (I = !0, setTimeout(T, n)), b === "disconnected" && T();
+  }), j = setTimeout(() => {
+    T();
+  }, n * 2);
+  try {
+    await m.connectTo(o, { Token: r });
+    const b = await i.loadPatchesSince(0);
+    for (const ee of b)
+      u.sendPatch(ee);
+    await _;
+  } catch (b) {
+    throw new l(
+      `sync failed: ${b.message}`,
+      c.NetworkError
+    );
+  } finally {
+    clearTimeout(j), $(), await m.stop();
+  }
+  return { Connected: I, StoreId: t, ServerURL: o };
+}
+async function ce(e) {
+  const n = e.StoreId;
+  if (n == null)
+    return !1;
+  const t = D(e, n);
+  try {
+    return await g.access(t), !0;
+  } catch {
+    return !1;
+  }
+}
+async function le(e) {
+  const n = e.StoreId;
   if (n == null)
     throw new l(
       "no store ID — set SDS_STORE_ID or use --store",
       c.UsageError
+    );
+  const t = D(e, n);
+  try {
+    await g.unlink(t), await g.unlink(t + "-wal").catch(() => {
+    }), await g.unlink(t + "-shm").catch(() => {
+    });
+  } catch (o) {
+    const r = o;
+    throw r.code === "ENOENT" ? new l(
+      `store '${n}' not found in '${e.PersistenceDir}'`,
+      c.NotFound
+    ) : new l(
+      `failed to delete store '${n}': ${r.message}`,
+      c.GeneralError
+    );
+  }
+}
+function S(e) {
+  switch (e.toLowerCase()) {
+    case "root":
+      return k;
+    case "trash":
+      return x;
+    case "lost-and-found":
+    case "lostandfound":
+      return L;
+    default:
+      return e;
+  }
+}
+function v(e, n) {
+  const t = parseInt(e, 10);
+  if (isNaN(t))
+    throw new l(
+      `invalid value for ${n}: '${e}' — expected an integer`,
+      c.UsageError
+    );
+  return t;
+}
+async function A(e) {
+  try {
+    return await g.readFile(e);
+  } catch (n) {
+    throw n.code === "ENOENT" ? new l(
+      `file not found: '${e}'`,
+      c.NotFound
+    ) : n;
+  }
+}
+const de = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+function F(e) {
+  if (!de.test(e))
+    throw new l(
+      `invalid info key ${JSON.stringify(e)} — keys must be valid JavaScript identifiers`,
+      c.UsageError
+    );
+}
+function N(e) {
+  const n = [], t = {}, o = [];
+  let r = 0;
+  for (; r < e.length; ) {
+    const s = e[r];
+    if (s.startsWith("--info-delete.")) {
+      const i = s.slice(14);
+      F(i), o.push(i), r++;
+      continue;
+    }
+    if (s.startsWith("--info.") && s.includes("=")) {
+      const i = s.indexOf("="), a = s.slice(7, i), d = s.slice(i + 1);
+      F(a), t[a] = J(d), r++;
+      continue;
+    }
+    if (s.startsWith("--info.") && !s.includes("=")) {
+      const i = s.slice(7);
+      F(i);
+      const a = e[r + 1];
+      if (a != null && !a.startsWith("--")) {
+        t[i] = J(a), r += 2;
+        continue;
+      }
+      t[i] = !0, r++;
+      continue;
+    }
+    n.push(s), r++;
+  }
+  return { CleanArgv: n, InfoEntries: t, InfoDeleteKeys: o };
+}
+function J(e) {
+  try {
+    return JSON.parse(e);
+  } catch {
+    return e;
+  }
+}
+function C(e, n, t, o = []) {
+  if (n != null) {
+    let r;
+    if (typeof n == "string")
+      try {
+        r = JSON.parse(n);
+      } catch {
+        throw new l(
+          `--info value is not valid JSON: ${n}`,
+          c.UsageError
+        );
+      }
+    else
+      r = n;
+    if (typeof r != "object" || r === null || Array.isArray(r))
+      throw new l(
+        "--info value must be a JSON object",
+        c.UsageError
+      );
+    for (const [s, i] of Object.entries(r))
+      F(s), e[s] = i;
+  }
+  for (const [r, s] of Object.entries(t))
+    e[r] = s;
+  for (const r of o)
+    e[r] = void 0;
+}
+function Z(e) {
+  const n = [];
+  let t = "", o = 0;
+  for (; o < e.length; ) {
+    const r = e[o];
+    switch (!0) {
+      // skip leading and inter-token whitespace
+      case (r === " " || r === "	"): {
+        t.length > 0 && (n.push(t), t = ""), o++;
+        break;
+      }
+      // single-quoted string — no escapes inside
+      case r === "'": {
+        for (o++; o < e.length && e[o] !== "'"; )
+          t += e[o], o++;
+        o++;
+        break;
+      }
+      // double-quoted string — supports \" and \\ inside
+      case r === '"': {
+        for (o++; o < e.length && e[o] !== '"'; )
+          if (e[o] === "\\" && o + 1 < e.length) {
+            const s = e[o + 1];
+            t += s === '"' || s === "\\" ? s : "\\" + s, o += 2;
+          } else
+            t += e[o], o++;
+        o++;
+        break;
+      }
+      // inline comment — everything from # to end of line is dropped
+      case (r === "#" && t.length === 0): {
+        o = e.length;
+        break;
+      }
+      default:
+        r === "\\" && o + 1 < e.length ? (t += e[o + 1], o += 2) : (t += r, o++);
+    }
+  }
+  return t.length > 0 && n.push(t), n;
+}
+async function ue(e) {
+  const n = process.stdin.isTTY, t = n ? "\x1B[1msds>\x1B[0m " : "sds> ", o = K.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: n,
+    prompt: t
+  });
+  n && (process.stdout.write(
+    `SDS interactive shell — type "help [command]" for help, "exit" to quit
+`
+  ), o.prompt());
+  for await (const r of o) {
+    const s = r.trim();
+    if (s === "" || s.startsWith("#")) {
+      n && o.prompt();
+      continue;
+    }
+    if (s === "exit" || s === "quit")
+      break;
+    const i = Z(s);
+    if (i.length === 0) {
+      n && o.prompt();
+      continue;
+    }
+    try {
+      await e(i);
+    } catch (a) {
+      process.stderr.write(`sds: ${a.message}
+`);
+    }
+    n && o.prompt();
+  }
+  o.close();
+}
+async function fe(e, n, t) {
+  let o;
+  if (n === "-")
+    o = process.stdin;
+  else
+    try {
+      o = (await g.open(n)).createReadStream();
+    } catch {
+      throw new l(
+        `cannot open script file '${n}'`,
+        c.NotFound
+      );
+    }
+  const r = K.createInterface({
+    input: o,
+    terminal: !1
+  });
+  let s = 0;
+  for await (const i of r) {
+    const a = i.trim();
+    if (a === "" || a.startsWith("#"))
+      continue;
+    const d = Z(a);
+    if (d.length === 0)
+      continue;
+    let u = 0;
+    try {
+      u = await t(d, e);
+    } catch (m) {
+      u = 1, process.stderr.write(`sds: ${m.message}
+`);
+    }
+    if (u !== 0)
+      switch (s = u, e.OnError) {
+        case "stop":
+          return r.close(), u;
+        case "continue":
+          break;
+        // keep executing
+        case "ask": {
+          if (!await me())
+            return r.close(), u;
+          break;
+        }
+      }
+  }
+  return r.close(), s;
+}
+async function me() {
+  return process.stdin.isTTY ? new Promise((n) => {
+    const t = K.createInterface({ input: process.stdin, output: process.stdout });
+    t.question("error — continue? [y/N] ", (o) => {
+      t.close(), n(o.trim().toLowerCase() === "y");
+    });
+  }) : !1;
+}
+function we(e) {
+  e.command("token").description("manage authentication tokens (requires admin token)").command("issue").description("request a new JWT from the server").requiredOption("--sub <subject>", "user identifier (e.g. email address)").requiredOption("--scope <scope>", "token scope: read | write | admin").option("--exp <duration>", "expiry duration, e.g. 24h or 7d", "24h").action(async (t, o) => {
+    const r = w(o.optsWithGlobals());
+    await pe(r, t);
+  });
+}
+const he = /* @__PURE__ */ new Set(["read", "write", "admin"]), ye = /^(\d+)(s|m|h|d)$/;
+async function pe(e, n) {
+  const { ServerURL: t, AdminToken: o } = e;
+  if (o == null)
+    throw new l(
+      "no admin token — set SDS_ADMIN_TOKEN or use --admin-token",
+      c.Unauthorized
     );
   if (t == null)
     throw new l(
@@ -177,342 +510,26 @@ async function z(e, o = 5e3) {
       `invalid server URL '${t}' — must start with 'ws://' or 'wss://'`,
       c.UsageError
     );
-  if (r == null)
+  if (!he.has(n.scope))
     throw new l(
-      "no client token — set SDS_TOKEN or use --token",
+      `invalid scope '${n.scope}' — must be read, write, or admin`,
       c.UsageError
     );
-  await g.mkdir(e.DataDir, { recursive: !0 });
-  const s = D(e, n), i = new V(s, n), a = await i.loadSnapshot(), d = a != null ? _.fromBinary(a) : _.fromScratch(), u = new O(n), h = new B(d, {
-    PersistenceProvider: i,
-    NetworkProvider: u
-  });
-  await h.start();
-  let I = !1, v;
-  const T = new Promise((x) => {
-    v = x;
-  }), b = h.onConnectionChange((x) => {
-    x === "connected" && (I = !0, setTimeout(v, o)), x === "disconnected" && v();
-  }), F = setTimeout(() => {
-    v();
-  }, o * 2);
-  try {
-    await h.connectTo(t, { Token: r }), await T;
-  } catch (x) {
+  if (!ye.test(n.exp))
     throw new l(
-      `sync failed: ${x.message}`,
-      c.NetworkError
-    );
-  } finally {
-    clearTimeout(F), b(), await h.stop();
-  }
-  return { Connected: I, StoreId: n, ServerURL: t };
-}
-async function oe(e) {
-  const o = e.StoreId;
-  if (o == null)
-    return !1;
-  const n = D(e, o);
-  try {
-    return await g.access(n), !0;
-  } catch {
-    return !1;
-  }
-}
-async function re(e) {
-  const o = e.StoreId;
-  if (o == null)
-    throw new l(
-      "no store ID — set SDS_STORE_ID or use --store",
+      `invalid expiry '${n.exp}' — use a number followed by s, m, h, or d`,
       c.UsageError
     );
-  const n = D(e, o);
-  try {
-    await g.unlink(n), await g.unlink(n + "-wal").catch(() => {
-    }), await g.unlink(n + "-shm").catch(() => {
-    });
-  } catch (t) {
-    const r = t;
-    throw r.code === "ENOENT" ? new l(
-      `store '${o}' not found in '${e.DataDir}'`,
-      c.NotFound
-    ) : new l(
-      `failed to delete store '${o}': ${r.message}`,
-      c.GeneralError
-    );
-  }
-}
-function S(e) {
-  switch (e.toLowerCase()) {
-    case "root":
-      return E;
-    case "trash":
-      return N;
-    default:
-      return e;
-  }
-}
-function k(e, o) {
-  const n = parseInt(e, 10);
-  if (isNaN(n))
-    throw new l(
-      `invalid value for ${o}: '${e}' — expected an integer`,
-      c.UsageError
-    );
-  return n;
-}
-async function P(e) {
-  try {
-    return await g.readFile(e);
-  } catch (o) {
-    throw o.code === "ENOENT" ? new l(
-      `file not found: '${e}'`,
-      c.NotFound
-    ) : o;
-  }
-}
-const se = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
-function R(e) {
-  if (!se.test(e))
-    throw new l(
-      `invalid info key ${JSON.stringify(e)} — keys must be valid JavaScript identifiers`,
-      c.UsageError
-    );
-}
-function $(e) {
-  const o = [], n = {};
-  let t = 0;
-  for (; t < e.length; ) {
-    const r = e[t];
-    if (r.startsWith("--info.") && r.includes("=")) {
-      const s = r.indexOf("="), i = r.slice(7, s), a = r.slice(s + 1);
-      R(i), n[i] = G(a), t++;
-      continue;
-    }
-    if (r.startsWith("--info.") && !r.includes("=")) {
-      const s = r.slice(7);
-      R(s);
-      const i = e[t + 1];
-      if (i != null && !i.startsWith("--")) {
-        n[s] = G(i), t += 2;
-        continue;
-      }
-      n[s] = !0, t++;
-      continue;
-    }
-    o.push(r), t++;
-  }
-  return { CleanArgv: o, InfoEntries: n };
-}
-function G(e) {
-  try {
-    return JSON.parse(e);
-  } catch {
-    return e;
-  }
-}
-function j(e, o, n) {
-  if (o != null) {
-    let t;
-    if (typeof o == "string")
-      try {
-        t = JSON.parse(o);
-      } catch {
-        throw new l(
-          `--info value is not valid JSON: ${o}`,
-          c.UsageError
-        );
-      }
-    else
-      t = o;
-    if (typeof t != "object" || t === null || Array.isArray(t))
-      throw new l(
-        "--info value must be a JSON object",
-        c.UsageError
-      );
-    for (const [r, s] of Object.entries(t))
-      R(r), e[r] = s;
-  }
-  for (const [t, r] of Object.entries(n))
-    e[t] = r;
-}
-function H(e) {
-  const o = [];
-  let n = "", t = 0;
-  for (; t < e.length; ) {
-    const r = e[t];
-    switch (!0) {
-      // skip leading and inter-token whitespace
-      case (r === " " || r === "	"): {
-        n.length > 0 && (o.push(n), n = ""), t++;
-        break;
-      }
-      // single-quoted string — no escapes inside
-      case r === "'": {
-        for (t++; t < e.length && e[t] !== "'"; )
-          n += e[t], t++;
-        t++;
-        break;
-      }
-      // double-quoted string — supports \" and \\ inside
-      case r === '"': {
-        for (t++; t < e.length && e[t] !== '"'; )
-          if (e[t] === "\\" && t + 1 < e.length) {
-            const s = e[t + 1];
-            n += s === '"' || s === "\\" ? s : "\\" + s, t += 2;
-          } else
-            n += e[t], t++;
-        t++;
-        break;
-      }
-      // inline comment — everything from # to end of line is dropped
-      case (r === "#" && n.length === 0): {
-        t = e.length;
-        break;
-      }
-      default:
-        r === "\\" && t + 1 < e.length ? (n += e[t + 1], t += 2) : (n += r, t++);
-    }
-  }
-  return n.length > 0 && o.push(n), o;
-}
-async function ie(e) {
-  const o = process.stdin.isTTY, n = o ? "\x1B[1msds>\x1B[0m " : "sds> ", t = C.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: o,
-    prompt: n
-  });
-  o && (process.stdout.write(
-    `SDS interactive shell — type "help [command]" for help, "exit" to quit
-`
-  ), t.prompt());
-  for await (const r of t) {
-    const s = r.trim();
-    if (s === "" || s.startsWith("#")) {
-      o && t.prompt();
-      continue;
-    }
-    if (s === "exit" || s === "quit")
-      break;
-    const i = H(s);
-    if (i.length === 0) {
-      o && t.prompt();
-      continue;
-    }
-    try {
-      await e(i);
-    } catch (a) {
-      process.stderr.write(`sds: ${a.message}
-`);
-    }
-    o && t.prompt();
-  }
-  t.close();
-}
-async function ae(e, o, n) {
-  let t;
-  if (o === "-")
-    t = process.stdin;
-  else
-    try {
-      t = (await g.open(o)).createReadStream();
-    } catch {
-      throw new l(
-        `cannot open script file '${o}'`,
-        c.NotFound
-      );
-    }
-  const r = C.createInterface({
-    input: t,
-    terminal: !1
-  });
-  let s = 0;
-  for await (const i of r) {
-    const a = i.trim();
-    if (a === "" || a.startsWith("#"))
-      continue;
-    const d = H(a);
-    if (d.length === 0)
-      continue;
-    let u = 0;
-    try {
-      u = await n(d, e);
-    } catch (h) {
-      u = 1, process.stderr.write(`sds: ${h.message}
-`);
-    }
-    if (u !== 0)
-      switch (s = u, e.OnError) {
-        case "stop":
-          return r.close(), u;
-        case "continue":
-          break;
-        // keep executing
-        case "ask": {
-          if (!await ce())
-            return r.close(), u;
-          break;
-        }
-      }
-  }
-  return r.close(), s;
-}
-async function ce() {
-  return process.stdin.isTTY ? new Promise((o) => {
-    const n = C.createInterface({ input: process.stdin, output: process.stdout });
-    n.question("error — continue? [y/N] ", (t) => {
-      n.close(), o(t.trim().toLowerCase() === "y");
-    });
-  }) : !1;
-}
-const le = "0.0.9", de = {
-  version: le
-};
-function ue(e) {
-  e.command("token").description("manage authentication tokens (requires admin token)").command("issue").description("request a new JWT from the server").requiredOption("--sub <subject>", "user identifier (e.g. email address)").requiredOption("--scope <scope>", "token scope: read | write | admin").option("--exp <duration>", "expiry duration, e.g. 24h or 7d", "24h").action(async (n, t) => {
-    const r = m(t.optsWithGlobals());
-    await we(r, n);
-  });
-}
-const fe = /* @__PURE__ */ new Set(["read", "write", "admin"]), me = /^(\d+)(s|m|h|d)$/;
-async function we(e, o) {
-  const { ServerURL: n, AdminToken: t } = e;
-  if (t == null)
-    throw new l(
-      "no admin token — set SDS_ADMIN_TOKEN or use --admin-token",
-      c.Unauthorized
-    );
-  if (n == null)
-    throw new l(
-      "no server URL — set SDS_SERVER_URL or use --server",
-      c.UsageError
-    );
-  if (!/^wss?:\/\//.test(n))
-    throw new l(
-      `invalid server URL '${n}' — must start with 'ws://' or 'wss://'`,
-      c.UsageError
-    );
-  if (!fe.has(o.scope))
-    throw new l(
-      `invalid scope '${o.scope}' — must be read, write, or admin`,
-      c.UsageError
-    );
-  if (!me.test(o.exp))
-    throw new l(
-      `invalid expiry '${o.exp}' — use a number followed by s, m, h, or d`,
-      c.UsageError
-    );
-  const s = n.replace(/^wss:\/\//, "https://").replace(/^ws:\/\//, "http://").replace(/\/+$/, "") + "/api/token";
+  const s = t.replace(/^wss:\/\//, "https://").replace(/^ws:\/\//, "http://").replace(/\/+$/, "") + "/api/token";
   let i;
   try {
     i = await fetch(s, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${t}`,
+        Authorization: `Bearer ${o}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ sub: o.sub, scope: o.scope, exp: o.exp })
+      body: JSON.stringify({ sub: n.sub, scope: n.scope, exp: n.exp })
     });
   } catch (u) {
     throw new l(
@@ -544,312 +561,321 @@ async function we(e, o) {
       "server response did not contain a token",
       c.GeneralError
     );
-  e.Format === "json" ? w(e, { token: d, sub: o.sub, scope: o.scope, exp: o.exp }) : w(e, d);
+  e.Format === "json" ? h(e, { token: d, sub: n.sub, scope: n.scope, exp: n.exp }) : h(e, d);
 }
-function he(e) {
-  const o = e.command("store").description("store lifecycle operations");
-  o.command("info").description("show local store metadata (existence, entry count, DB path)").action(async (n, t) => {
-    const r = m(t.optsWithGlobals());
-    await ye(r);
-  }), o.command("ping").description("check connectivity to the WebSocket server").action(async (n, t) => {
-    const r = m(t.optsWithGlobals());
-    await pe(r);
-  }), o.command("sync").description("connect to server, exchange CRDT patches, and disconnect").option("--timeout <ms>", "milliseconds to wait after connecting", "5000").action(async (n, t) => {
-    const r = m(t.optsWithGlobals());
-    await Ie(r, k(n.timeout, "--timeout"));
-  }), o.command("destroy").description("permanently delete the local store database").action(async (n, t) => {
-    const r = m(t.optsWithGlobals());
+function Ie(e) {
+  const n = e.command("store").description("store lifecycle operations");
+  n.command("info").description("show local store metadata (existence, entry count, DB path)").action(async (t, o) => {
+    const r = w(o.optsWithGlobals());
     await Se(r);
-  }), o.command("export").description("export the current store snapshot").option("--encoding <enc>", "serialisation encoding: json | binary", "json").option("--output <file>", "destination file (default: stdout)").action(async (n, t) => {
-    const r = m(t.optsWithGlobals());
-    await ge(r, n.encoding, n.output);
-  }), o.command("import").description("CRDT-merge a snapshot file into the local store").requiredOption("--input <file>", "source file to import").action(async (n, t) => {
-    const r = m(t.optsWithGlobals());
-    await Ee(r, n.input);
+  }), n.command("ping").description("check connectivity to the WebSocket server").action(async (t, o) => {
+    const r = w(o.optsWithGlobals());
+    await Ee(r);
+  }), n.command("sync").description("connect to server, exchange CRDT patches, and disconnect").option("--timeout <ms>", "milliseconds to wait after connecting", "5000").action(async (t, o) => {
+    const r = w(o.optsWithGlobals()), s = v(t.timeout, "--timeout");
+    if (s <= 0)
+      throw new l(
+        `'--timeout' must be a positive integer — got ${s}`,
+        c.UsageError
+      );
+    await ge(r, s);
+  }), n.command("destroy").description("permanently delete the local store database").action(async (t, o) => {
+    const r = w(o.optsWithGlobals());
+    await ke(r);
+  }), n.command("export").description("export the current store snapshot").option("--encoding <enc>", "serialisation encoding: json | binary", "json").option("--output <file>", "destination file (default: stdout)").action(async (t, o) => {
+    const r = w(o.optsWithGlobals());
+    await be(r, t.encoding, t.output);
+  }), n.command("import").description("CRDT-merge a snapshot file into the local store").requiredOption("--input <file>", "source file to import").action(async (t, o) => {
+    const r = w(o.optsWithGlobals());
+    await ve(r, t.input);
   });
 }
-async function ye(e) {
-  const o = e.StoreId;
-  if (o == null)
+async function Se(e) {
+  const n = e.StoreId;
+  if (n == null)
     throw new l(
       "no store ID — set SDS_STORE_ID or use --store",
       c.UsageError
     );
-  if (!await oe(e)) {
-    e.Format === "json" ? w(e, { storeId: o, exists: !1 }) : f(`store '${o}': not found in '${e.DataDir}'`);
+  if (!await ce(e)) {
+    e.Format === "json" ? h(e, { storeId: n, exists: !1 }) : f(`store '${n}': not found in '${e.PersistenceDir}'`);
     return;
   }
-  const t = await y(e);
+  const o = await y(e);
   try {
-    const r = ke(t.Store);
-    e.Format === "json" ? w(e, {
-      storeId: o,
+    const r = Te(o.Store);
+    e.Format === "json" ? h(e, {
+      storeId: n,
       exists: !0,
       entryCount: r,
-      dbPath: D(e, o)
-    }) : (f(`store:       ${o}`), f(`entries:     ${r}`), f(`db path:     ${D(e, o)}`));
+      dbPath: D(e, n)
+    }) : (f(`store:       ${n}`), f(`entries:     ${r}`), f(`db path:     ${D(e, n)}`));
   } finally {
-    await p(t);
+    await p(o);
   }
 }
-async function pe(e) {
-  const o = e.ServerURL, n = e.Token;
-  if (o == null)
+async function Ee(e) {
+  const n = e.ServerURL, t = e.Token;
+  if (n == null)
     throw new l(
       "no server URL — set SDS_SERVER_URL or use --server",
       c.UsageError
     );
-  if (n == null)
+  if (t == null)
     throw new l(
       "no client token — set SDS_TOKEN or use --token",
       c.UsageError
     );
   try {
-    const t = await z(e, 1e3);
-    e.Format === "json" ? w(e, { server: t.ServerURL, storeId: t.StoreId, reachable: !0 }) : f(`server '${t.ServerURL}': reachable`);
-  } catch (t) {
-    if (t instanceof l && t.ExitCode === c.NetworkError)
-      e.Format === "json" ? w(e, { server: o, reachable: !1, error: t.message }) : f(`server '${o}': unreachable — ${t.message}`);
+    const o = await Y(e, 1e3);
+    e.Format === "json" ? h(e, { server: o.ServerURL, storeId: o.StoreId, reachable: !0 }) : f(`server '${o.ServerURL}': reachable`);
+  } catch (o) {
+    if (o instanceof l && o.ExitCode === c.NetworkError)
+      e.Format === "json" ? h(e, { server: n, reachable: !1, error: o.message }) : f(`server '${n}': unreachable — ${o.message}`);
     else
-      throw t;
+      throw o;
   }
 }
-async function Ie(e, o) {
-  const n = await z(e, o);
+async function ge(e, n) {
+  const t = await Y(e, n);
   if (e.Format === "json")
-    w(e, {
-      storeId: n.StoreId,
-      server: n.ServerURL,
-      connected: n.Connected,
-      synced: n.Connected
+    h(e, {
+      storeId: t.StoreId,
+      server: t.ServerURL,
+      connected: t.Connected,
+      synced: t.Connected
     });
   else {
-    const t = n.Connected ? "synced" : "could not connect";
-    f(`store '${n.StoreId}': ${t}`);
+    const o = t.Connected ? "synced" : "could not connect";
+    f(`store '${t.StoreId}': ${o}`);
   }
 }
-async function Se(e) {
-  await re(e), e.Format === "json" ? w(e, { storeId: e.StoreId, destroyed: !0 }) : f(`store '${e.StoreId}': deleted`);
+async function ke(e) {
+  await le(e), e.Format === "json" ? h(e, { storeId: e.StoreId, destroyed: !0 }) : f(`store '${e.StoreId}': deleted`);
 }
-async function ge(e, o, n) {
-  const t = o.toLowerCase();
-  if (t !== "json" && t !== "binary")
+async function be(e, n, t) {
+  const o = n.toLowerCase();
+  if (o !== "json" && o !== "binary")
     throw new l(
-      `'--encoding' accepts 'json' or 'binary' — got '${o}'`,
+      `'--encoding' accepts 'json' or 'binary' — got '${n}'`,
       c.UsageError
     );
   const r = await y(e);
   try {
-    const s = t === "binary", i = s ? r.Store.asBinary() : JSON.stringify(r.Store.asJSON(), null, 2);
-    n != null ? (await g.writeFile(n, s ? i : i + `
-`), e.Format === "json" ? w(e, { exported: !0, file: n, format: t }) : f(`exported to '${n}'`)) : s ? process.stdout.write(i) : process.stdout.write(i + `
+    const s = o === "binary", i = s ? r.Store.asBinary() : JSON.stringify(r.Store.asJSON(), null, 2);
+    t != null ? (await g.writeFile(t, s ? i : i + `
+`), e.Format === "json" ? h(e, { exported: !0, file: t, format: o }) : f(`exported to '${t}'`)) : s ? process.stdout.write(i) : process.stdout.write(i + `
 `);
   } finally {
     await p(r);
   }
 }
-async function Ee(e, o) {
-  const n = await P(o), t = n.toString("utf8").trimStart(), r = t.startsWith("{") || t.startsWith("["), s = await y(e, !0);
+async function ve(e, n) {
+  const t = await A(n), o = t.toString("utf8").trimStart(), r = o.startsWith("{") || o.startsWith("["), s = await y(e, !0);
   try {
     if (r) {
       let i;
       try {
-        i = JSON.parse(t);
+        i = JSON.parse(o);
       } catch {
         throw new l(
-          `'${o}' does not contain valid JSON`,
+          `'${n}' does not contain valid JSON`,
           c.UsageError
         );
       }
-      K(s.Store, i);
+      M(s.Store, i);
     } else {
-      const i = _.fromBinary(new Uint8Array(n));
+      const i = ae(new Uint8Array(t));
       try {
-        K(s.Store, i.asJSON());
+        M(s.Store, i.asJSON());
       } finally {
         i.dispose();
       }
     }
-    e.Format === "json" ? w(e, { imported: !0, file: o }) : f(`imported '${o}'`);
+    e.Format === "json" ? h(e, { imported: !0, file: n }) : f(`imported '${n}'`);
   } finally {
     await p(s);
   }
 }
-function K(e, o) {
-  const n = o, t = /* @__PURE__ */ new Set([E, N, ee]), r = n.innerEntries;
+function M(e, n) {
+  const t = n, o = /* @__PURE__ */ new Set([k, x, L]), r = t.innerEntries;
   if (r != null)
     for (const s of r)
-      t.has(s.Id) || e.newEntryFromJSONat(s, e.RootItem);
+      o.has(s.Id) || e.newEntryFromJSONat(s, e.RootItem);
 }
-function ke(e) {
-  const o = /* @__PURE__ */ new Set([E, N]);
-  let n = 0;
-  function t(r) {
+function Te(e) {
+  const n = /* @__PURE__ */ new Set([k, x, L]);
+  let t = 0;
+  function o(r) {
     for (const s of e._innerEntriesOf(r))
-      o.has(s.Id) || n++, s.isItem && t(s.Id);
+      n.has(s.Id) || (t++, s.isItem && o(s.Id));
   }
-  return t(E), n;
+  return o(k), t;
 }
-function ve(e, o) {
-  const n = e.command("entry").description("operations on entries (items and links)");
-  n.command("create").description("create a new item (default) or link (with --target)").option("--target <itemId>", "link target — creates a link instead of an item").option("--container <itemId>", "container item (default: root)").option("--at <index>", "insertion index (default: append)").option("--label <label>", "initial label").option("--mime <type>", "MIME type (default: text/plain, items only)").option("--value <string>", "initial text value (items only)").option("--file <path>", "read initial value from file (items only)").option("--info <json>", "initial info map as JSON object").option("--info.<key>", "set a single info entry, e.g. --info.author").action(async (t, r) => {
-    const s = m(r.optsWithGlobals()), { InfoEntries: i } = $(o);
-    await be(s, t, i);
-  }), n.command("get <id>").description("display all or selected fields of an entry").option("--kind", "include entry kind (item or link)").option("--label", "include label").option("--mime", "include MIME type (items only)").option("--value", "include value (items only)").option("--info", "include full info map").option("--info.<key>", "include only the named info entry, e.g. --info.author").option("--target", "include link target ID (links only)").action(async (t, r, s) => {
-    const i = m(s.optsWithGlobals()), { InfoEntries: a } = $(o), d = Object.keys(a)[0];
-    await Te(i, t, r, d);
-  }), n.command("list <id>").description("list entries in a container item (only IDs by default)").option("--recursive", "traverse inner containers recursively").option("--depth <n>", "maximum recursion depth").option("--only <kind>", "filter by kind: items | links").option("--label", "include label").option("--mime", "include MIME type (items only)").option("--value", "include value (items only)").option("--info", "include info map").option("--info.<key>", "include only the named info entry, e.g. --info.author").action(async (t, r, s) => {
-    const i = m(s.optsWithGlobals()), { InfoEntries: a } = $(o), d = Object.keys(a)[0];
-    await xe(i, t, r, d);
-  }), n.command("update <id>").description("update entry properties (works on both items and links)").option("--label <label>", "new label (items and links)").option("--mime <type>", "new MIME type (items only)").option("--value <string>", "new text value (items only)").option("--file <path>", "read new value from file (items only)").option("--info <json>", "merge info map from JSON object").option("--info.<key>", "set a single info entry, e.g. --info.author").action(async (t, r, s) => {
-    const i = m(s.optsWithGlobals()), { InfoEntries: a } = $(o);
-    await Ue(i, t, r, a);
-  }), n.command("move <id>").description("move an entry to a different container").requiredOption("--to <targetId>", "destination container item ID").option("--at <index>", "insertion index (default: append)").action(async (t, r, s) => {
-    const i = m(s.optsWithGlobals());
-    await $e(i, t, r.to, r.at);
-  }), n.command("delete <id>").description("soft-delete: move entry to the trash").action(async (t, r, s) => {
-    const i = m(s.optsWithGlobals());
-    await De(i, t);
-  }), n.command("restore <id>").description("restore a trashed entry (moves to root or --to target)").option("--to <targetId>", "destination container item ID (default: root)").option("--at <index>", "insertion index (default: append)").action(async (t, r, s) => {
-    const i = m(s.optsWithGlobals());
-    await _e(i, t, r.to, r.at);
-  }), n.command("purge <id>").description("permanently delete an entry (must be in the trash)").action(async (t, r, s) => {
-    const i = m(s.optsWithGlobals());
-    await Ne(i, t);
+function $e(e, n) {
+  const t = e.command("entry").description("operations on entries (items and links)");
+  t.command("create").description("create a new item (default) or link (with --target)").option("--target <itemId>", "link target — creates a link instead of an item").option("--container <itemId>", "container item (default: root)").option("--at <index>", "insertion index (default: append)").option("--label <label>", "initial label").option("--mime <type>", "MIME type (default: text/plain, items only)").option("--value <string>", "initial text value (items only)").option("--file <path>", "read initial value from file (items only)").option("--info <json>", "initial info map as JSON object").option("--info.<key>", "set a single info entry, e.g. --info.author").option("--info-delete.<key>", "remove a single info entry, e.g. --info-delete.author").action(async (o, r) => {
+    const s = w(r.optsWithGlobals()), { InfoEntries: i, InfoDeleteKeys: a } = N(n);
+    await xe(s, o, i, a);
+  }), t.command("get <id>").description("display all or selected fields of an entry").option("--kind", "include entry kind (item or link)").option("--label", "include label").option("--mime", "include MIME type (items only)").option("--value", "include value (items only)").option("--info", "include full info map").option("--info.<key>", "include only the named info entry, e.g. --info.author").option("--target", "include link target ID (links only)").action(async (o, r, s) => {
+    const i = w(s.optsWithGlobals()), { InfoEntries: a } = N(n), d = Object.keys(a)[0];
+    await _e(i, o, r, d);
+  }), t.command("list <id>").description("list entries in a container item (only IDs by default)").option("--recursive", "traverse inner containers recursively").option("--depth <n>", "maximum recursion depth").option("--only <kind>", "filter by kind: items | links").option("--label", "include label").option("--mime", "include MIME type (items only)").option("--value", "include value (items only)").option("--info", "include info map").option("--info.<key>", "include only the named info entry, e.g. --info.author").action(async (o, r, s) => {
+    const i = w(s.optsWithGlobals()), { InfoEntries: a } = N(n), d = Object.keys(a)[0];
+    await Ne(i, o, r, d);
+  }), t.command("update <id>").description("update entry properties (works on both items and links)").option("--label <label>", "new label (items and links)").option("--mime <type>", "new MIME type (items only)").option("--value <string>", "new text value (items only)").option("--file <path>", "read new value from file (items only)").option("--info <json>", "merge info map from JSON object").option("--info.<key>", "set a single info entry, e.g. --info.author").option("--info-delete.<key>", "remove a single info entry, e.g. --info-delete.author").action(async (o, r, s) => {
+    const i = w(s.optsWithGlobals()), { InfoEntries: a, InfoDeleteKeys: d } = N(n);
+    await Pe(i, o, r, a, d);
+  }), t.command("move <id>").description("move an entry to a different container").requiredOption("--to <targetId>", "destination container item ID").option("--at <index>", "insertion index (default: append)").action(async (o, r, s) => {
+    const i = w(s.optsWithGlobals());
+    await Ue(i, o, r.to, r.at);
+  }), t.command("delete <id>").description("soft-delete: move entry to the trash").action(async (o, r, s) => {
+    const i = w(s.optsWithGlobals());
+    await Le(i, o);
+  }), t.command("restore <id>").description("restore a trashed entry (moves to root or --to target)").option("--to <targetId>", "destination container item ID (default: root)").option("--at <index>", "insertion index (default: append)").action(async (o, r, s) => {
+    const i = w(s.optsWithGlobals());
+    await Fe(i, o, r.to, r.at);
+  }), t.command("purge <id>").description("permanently delete an entry (must be in the trash)").action(async (o, r, s) => {
+    const i = w(s.optsWithGlobals());
+    await Re(i, o);
   });
 }
-async function be(e, o, n) {
-  if (o.value != null && o.file != null)
+async function xe(e, n, t, o) {
+  if (n.value != null && n.file != null)
     throw new l(
       "'--value' and '--file' are mutually exclusive — specify at most one",
       c.UsageError
     );
-  if (o.target != null) {
-    if (o.mime != null)
+  if (n.target != null) {
+    if (n.mime != null)
       throw new l(
         "'--mime' is not supported when creating a link — only items have a MIME type",
         c.UsageError
       );
-    if (o.value != null)
+    if (n.value != null)
       throw new l(
         "'--value' is not supported when creating a link — only items have a value",
         c.UsageError
       );
-    if (o.file != null)
+    if (n.file != null)
       throw new l(
         "'--file' is not supported when creating a link — only items have a value",
         c.UsageError
       );
-    const t = await y(e);
+    const r = await y(e);
     try {
-      const r = S(o.target), s = S(o.container ?? E), i = o.at != null ? k(o.at, "--at") : void 0;
-      if (i != null && i < 0)
+      const s = S(n.target), i = S(n.container ?? k), a = n.at != null ? v(n.at, "--at") : void 0;
+      if (a != null && a < 0)
         throw new l(
-          `'--at' must be a non-negative integer — got ${i}`,
+          `'--at' must be a non-negative integer — got ${a}`,
           c.UsageError
         );
-      const a = t.Store.EntryWithId(r), d = t.Store.EntryWithId(s);
-      if (a == null || !a.isItem)
+      const d = r.Store.EntryWithId(s), u = r.Store.EntryWithId(i);
+      if (d == null || !d.isItem)
         throw new l(
-          `target '${r}' not found or is not an item`,
+          `target '${s}' not found or is not an item`,
           c.NotFound
         );
-      if (d == null || !d.isItem)
+      if (u == null || !u.isItem)
+        throw new l(
+          `container '${i}' not found or is not an item`,
+          c.NotFound
+        );
+      const m = r.Store.newLinkAt(d, u, a);
+      n.label != null && (m.Label = n.label), C(
+        r.Store._InfoProxyOf(m.Id),
+        n.info ?? null,
+        t,
+        o
+      ), e.Format === "json" ? h(e, { id: m.Id, created: !0, kind: "link", target: s }) : f(m.Id);
+    } finally {
+      await p(r);
+    }
+  } else {
+    const r = await y(e, !0);
+    try {
+      const s = S(n.container ?? k), i = r.Store.EntryWithId(s);
+      if (i == null || !i.isItem)
         throw new l(
           `container '${s}' not found or is not an item`,
           c.NotFound
         );
-      const u = t.Store.newLinkAt(a, d, i);
-      o.label != null && (u.Label = o.label), j(
-        t.Store._InfoProxyOf(u.Id),
-        o.info ?? null,
-        n
-      ), e.Format === "json" ? w(e, { id: u.Id, created: !0, kind: "link", target: r }) : f(u.Id);
-    } finally {
-      await p(t);
-    }
-  } else {
-    const t = await y(e, !0);
-    try {
-      const r = S(o.container ?? E), s = t.Store.EntryWithId(r);
-      if (s == null || !s.isItem)
+      const a = n.at != null ? v(n.at, "--at") : void 0;
+      if (a != null && a < 0)
         throw new l(
-          `container '${r}' not found or is not an item`,
-          c.NotFound
-        );
-      const i = o.at != null ? k(o.at, "--at") : void 0;
-      if (i != null && i < 0)
-        throw new l(
-          `'--at' must be a non-negative integer — got ${i}`,
+          `'--at' must be a non-negative integer — got ${a}`,
           c.UsageError
         );
-      const a = o.mime ?? "text/plain", d = t.Store.newItemAt(a, s, i);
-      switch (o.label != null && (d.Label = o.label), !0) {
-        case o.file != null: {
-          const u = await P(o.file), h = !a.startsWith("text/");
-          d.writeValue(h ? new Uint8Array(u) : u.toString("utf8"));
+      const d = n.mime ?? "text/plain", u = r.Store.newItemAt(d, i, a);
+      switch (n.label != null && (u.Label = n.label), !0) {
+        case n.file != null: {
+          const m = await A(n.file), I = !d.startsWith("text/");
+          u.writeValue(I ? new Uint8Array(m) : m.toString("utf8"));
           break;
         }
-        case o.value != null: {
-          d.writeValue(o.value);
+        case n.value != null: {
+          u.writeValue(n.value);
           break;
         }
       }
-      j(d.Info, o.info ?? null, n), e.Format === "json" ? w(e, { id: d.Id, created: !0, kind: "item" }) : f(d.Id);
+      C(u.Info, n.info ?? null, t, o), e.Format === "json" ? h(e, { id: u.Id, created: !0, kind: "item" }) : f(u.Id);
     } finally {
-      await p(t);
+      await p(r);
     }
   }
 }
-async function Te(e, o, n, t) {
+async function _e(e, n, t, o) {
   const r = await y(e);
   try {
-    const s = S(o), i = r.Store.EntryWithId(s);
+    const s = S(n), i = r.Store.EntryWithId(s);
     if (i == null)
       throw new l(`entry '${s}' not found`, c.NotFound);
-    const d = !(n.kind || n.label || n.mime || n.value || n.info || n.target || t != null) ? "all" : { ...n, InfoKey: t };
-    e.Format === "json" ? w(e, Le(i, r.Store, d)) : Fe(i, r.Store, d);
+    const d = !(t.kind || t.label || t.mime || t.value || t.info || t.target || o != null) ? "all" : { ...t, InfoKey: o };
+    e.Format === "json" ? h(e, je(i, r.Store, d)) : Ce(i, r.Store, d);
   } finally {
     await p(r);
   }
 }
-async function xe(e, o, n, t) {
-  const r = n.only?.toLowerCase();
+async function Ne(e, n, t, o) {
+  const r = t.only?.toLowerCase();
   if (r != null && !["item", "items", "link", "links"].includes(r))
     throw new l(
-      `'--only' accepts 'items' or 'links' — got '${n.only}'`,
+      `'--only' accepts 'items' or 'links' — got '${t.only}'`,
       c.UsageError
     );
   const s = await y(e);
   try {
-    const i = S(o), a = s.Store.EntryWithId(i);
+    const i = S(n), a = s.Store.EntryWithId(i);
     if (a == null || !a.isItem)
       throw new l(
         `container '${i}' not found or is not an item`,
         c.NotFound
       );
-    const d = n.depth != null ? k(n.depth, "--depth") : 1 / 0, u = {
-      showLabel: n.label,
-      showMIME: n.mime,
-      showValue: n.value,
-      showInfo: n.info,
-      InfoKey: t
-    }, h = [];
-    if (Y(s.Store, i, n.recursive ?? !1, d, 0, r, u, h, e), e.Format === "json")
-      w(e, h);
+    const d = t.depth != null ? v(t.depth, "--depth") : 1 / 0, u = {
+      showLabel: t.label,
+      showMIME: t.mime,
+      showValue: t.value,
+      showInfo: t.info,
+      InfoKey: o
+    }, m = [];
+    if (Q(s.Store, i, t.recursive ?? !1, d, 0, r, u, m, e), e.Format === "json")
+      h(e, m);
     else
-      for (const I of h)
+      for (const I of m)
         f(I);
   } finally {
     await p(s);
   }
 }
-function Y(e, o, n, t, r, s, i, a, d) {
-  for (const u of e._innerEntriesOf(o)) {
-    const h = u.isItem ? "item" : "link";
-    if (s == null || s === h + "s" || s === h)
+const De = /* @__PURE__ */ new Set([x, L]);
+function Q(e, n, t, o, r, s, i, a, d) {
+  for (const u of e._innerEntriesOf(n)) {
+    if (De.has(u.Id))
+      continue;
+    const m = u.isItem ? "item" : "link";
+    if (s == null || s === m + "s" || s === m)
       if (d.Format === "json") {
-        const I = { id: u.Id, kind: h };
+        const I = { id: u.Id, kind: m };
         switch (i.showLabel && (I.label = u.Label), u.isItem && (i.showMIME && (I.mime = e._TypeOf(u.Id)), i.showValue && (I.value = e._currentValueOf(u.Id) ?? null)), !0) {
           case i.InfoKey != null: {
             I["info." + i.InfoKey] = e._InfoProxyOf(u.Id)[i.InfoKey] ?? null;
@@ -862,7 +888,7 @@ function Y(e, o, n, t, r, s, i, a, d) {
         }
         a.push(I);
       } else
-        a.push(ne(
+        a.push(se(
           u.Id,
           i.showLabel ? u.Label : "",
           i.showMIME && u.isItem ? e._TypeOf(u.Id) : "",
@@ -870,13 +896,13 @@ function Y(e, o, n, t, r, s, i, a, d) {
           i.showInfo || i.InfoKey != null ? e._InfoProxyOf(u.Id) : {},
           i
         ));
-    n && u.isItem && r < t && Y(e, u.Id, n, t, r + 1, s, i, a, d);
+    t && u.isItem && r < o && Q(e, u.Id, t, o, r + 1, s, i, a, d);
   }
 }
-async function $e(e, o, n, t) {
+async function Ue(e, n, t, o) {
   const r = await y(e);
   try {
-    const s = S(o), i = S(n), a = t != null ? k(t, "--at") : void 0;
+    const s = S(n), i = S(t), a = o != null ? v(o, "--at") : void 0;
     if (a != null && a < 0)
       throw new l(
         `'--at' must be a non-negative integer — got ${a}`,
@@ -895,31 +921,31 @@ async function $e(e, o, n, t) {
         `cannot move '${s}' into '${i}' — cycle or invalid target`,
         c.Forbidden
       );
-    d.moveTo(u, a), e.Format === "json" ? w(e, { id: s, movedTo: i, at: a ?? "end" }) : f(`moved '${s}' into '${i}'`);
+    d.moveTo(u, a), e.Format === "json" ? h(e, { id: s, movedTo: i, at: a ?? "end" }) : f(`moved '${s}' into '${i}'`);
   } finally {
     await p(r);
   }
 }
-async function De(e, o) {
-  const n = await y(e);
+async function Le(e, n) {
+  const t = await y(e);
   try {
-    const t = S(o), r = n.Store.EntryWithId(t);
+    const o = S(n), r = t.Store.EntryWithId(o);
     if (r == null)
-      throw new l(`entry '${t}' not found`, c.NotFound);
+      throw new l(`entry '${o}' not found`, c.NotFound);
     if (!r.mayBeDeleted)
       throw new l(
-        `entry '${t}' cannot be deleted (system entry)`,
+        `entry '${o}' cannot be deleted (system entry)`,
         c.Forbidden
       );
-    r.delete(), e.Format === "json" ? w(e, { id: t, deleted: !0 }) : f(`deleted '${t}' (moved to trash)`);
+    r.delete(), e.Format === "json" ? h(e, { id: o, deleted: !0 }) : f(`deleted '${o}' (moved to trash)`);
   } finally {
-    await p(n);
+    await p(t);
   }
 }
-async function _e(e, o, n, t) {
+async function Fe(e, n, t, o) {
   const r = await y(e);
   try {
-    const s = S(o), i = S(n ?? E), a = t != null ? k(t, "--at") : void 0;
+    const s = S(n), i = S(t ?? k), a = o != null ? v(o, "--at") : void 0;
     if (a != null && a < 0)
       throw new l(
         `'--at' must be a non-negative integer — got ${a}`,
@@ -928,7 +954,7 @@ async function _e(e, o, n, t) {
     const d = r.Store.EntryWithId(s), u = r.Store.EntryWithId(i);
     if (d == null)
       throw new l(`entry '${s}' not found`, c.NotFound);
-    if (d.outerItemId !== N)
+    if (d.outerItemId !== x)
       throw new l(
         `entry '${s}' is not in the trash — use 'entry move' to relocate live entries`,
         c.Forbidden
@@ -938,164 +964,165 @@ async function _e(e, o, n, t) {
         `target '${i}' not found or is not an item`,
         c.NotFound
       );
-    d.moveTo(u, a), e.Format === "json" ? w(e, { id: s, restoredTo: i, at: a ?? "end" }) : f(`restored '${s}' into '${i}'`);
+    d.moveTo(u, a), e.Format === "json" ? h(e, { id: s, restoredTo: i, at: a ?? "end" }) : f(`restored '${s}' into '${i}'`);
   } finally {
     await p(r);
   }
 }
-async function Ne(e, o) {
-  const n = await y(e);
+async function Re(e, n) {
+  const t = await y(e);
   try {
-    const t = S(o), r = n.Store.EntryWithId(t);
+    const o = S(n), r = t.Store.EntryWithId(o);
     if (r == null)
-      throw new l(`entry '${t}' not found`, c.NotFound);
-    if (r.outerItemId !== N)
+      throw new l(`entry '${o}' not found`, c.NotFound);
+    if (r.outerItemId !== x)
       throw new l(
-        `entry '${t}' is not in the trash — delete it first`,
+        `entry '${o}' is not in the trash — delete it first`,
         c.Forbidden
       );
-    r.purge(), e.Format === "json" ? w(e, { id: t, purged: !0 }) : f(`purged '${t}'`);
+    r.purge(), e.Format === "json" ? h(e, { id: o, purged: !0 }) : f(`purged '${o}'`);
   } finally {
-    await p(n);
+    await p(t);
   }
 }
-async function Ue(e, o, n, t) {
-  const r = await y(e);
+async function Pe(e, n, t, o, r) {
+  const s = await y(e);
   try {
-    const s = S(o), i = r.Store.EntryWithId(s);
-    if (i == null)
-      throw new l(`entry '${s}' not found`, c.NotFound);
-    if (i.isLink) {
-      if (n.mime != null)
+    const i = S(n), a = s.Store.EntryWithId(i);
+    if (a == null)
+      throw new l(`entry '${i}' not found`, c.NotFound);
+    if (a.isLink) {
+      if (t.mime != null)
         throw new l(
           "'--mime' is not supported for links — only items have a MIME type",
           c.UsageError
         );
-      if (n.value != null)
+      if (t.value != null)
         throw new l(
           "'--value' is not supported for links — only items have a value",
           c.UsageError
         );
-      if (n.file != null)
+      if (t.file != null)
         throw new l(
           "'--file' is not supported for links — only items have a value",
           c.UsageError
         );
     }
-    if (n.label != null && (i.Label = n.label), i.isItem) {
-      if (n.value != null && n.file != null)
+    if (t.label != null && (a.Label = t.label), a.isItem) {
+      if (t.value != null && t.file != null)
         throw new l(
           "'--value' and '--file' are mutually exclusive — specify at most one",
           c.UsageError
         );
-      const a = i;
-      switch (n.mime != null && (a.Type = n.mime), !0) {
-        case n.file != null: {
-          const d = await P(n.file), u = !a.Type.startsWith("text/");
-          a.writeValue(u ? new Uint8Array(d) : d.toString("utf8"));
+      const d = a;
+      switch (t.mime != null && (d.Type = t.mime), !0) {
+        case t.file != null: {
+          const u = await A(t.file), m = !d.Type.startsWith("text/");
+          d.writeValue(m ? new Uint8Array(u) : u.toString("utf8"));
           break;
         }
-        case n.value != null: {
-          a.writeValue(n.value);
+        case t.value != null: {
+          d.writeValue(t.value);
           break;
         }
       }
     }
-    j(
-      r.Store._InfoProxyOf(s),
-      n.info ?? null,
-      t
-    ), e.Format === "json" ? w(e, { id: s, updated: !0 }) : f(`updated '${s}'`);
+    C(
+      s.Store._InfoProxyOf(i),
+      t.info ?? null,
+      o,
+      r
+    ), e.Format === "json" ? h(e, { id: i, updated: !0 }) : f(`updated '${i}'`);
   } finally {
-    await p(r);
+    await p(s);
   }
 }
-function Le(e, o, n) {
-  const t = n === "all", r = { id: e.Id };
-  if ((t || n.kind) && (r.kind = e.isItem ? "item" : "link"), (t || n.label) && (r.label = e.Label), e.isItem) {
+function je(e, n, t) {
+  const o = t === "all", r = { id: e.Id };
+  if ((o || t.kind) && (r.kind = e.isItem ? "item" : "link"), (o || t.label) && (r.label = e.Label), e.isItem) {
     const i = e;
-    (t || n.mime) && (r.mime = i.Type), (t || n.value) && (r.value = o._currentValueOf(e.Id) ?? null);
+    (o || t.mime) && (r.mime = i.Type), (o || t.value) && (r.value = n._currentValueOf(e.Id) ?? null);
   }
   if (e.isLink) {
-    const i = o._TargetOf(e.Id).Id;
-    (t || n.target) && (r.target = i);
+    const i = n._TargetOf(e.Id).Id;
+    (o || t.target) && (r.target = i);
   }
-  const s = n.InfoKey;
+  const s = t.InfoKey;
   switch (!0) {
     case s != null: {
-      r["info." + s] = o._InfoProxyOf(e.Id)[s] ?? null;
+      r["info." + s] = n._InfoProxyOf(e.Id)[s] ?? null;
       break;
     }
-    case (t || n.info): {
-      r.info = { ...o._InfoProxyOf(e.Id) };
+    case (o || t.info): {
+      r.info = { ...n._InfoProxyOf(e.Id) };
       break;
     }
   }
   return r;
 }
-function Fe(e, o, n) {
-  const t = n === "all";
-  if (f(`id:    ${e.Id}`), (t || n.kind) && f(`kind:  ${e.isItem ? "item" : "link"}`), (t || n.label) && f(`label: ${e.Label}`), e.isItem) {
+function Ce(e, n, t) {
+  const o = t === "all";
+  if (f(`id:    ${e.Id}`), (o || t.kind) && f(`kind:  ${e.isItem ? "item" : "link"}`), (o || t.label) && f(`label: ${e.Label}`), e.isItem) {
     const s = e;
-    if ((t || n.mime) && f(`mime:  ${s.Type}`), t || n.value) {
-      const i = o._currentValueOf(e.Id);
+    if ((o || t.mime) && f(`mime:  ${s.Type}`), o || t.value) {
+      const i = n._currentValueOf(e.Id);
       f(`value: ${i != null ? String(i) : "(none)"}`);
     }
   }
   if (e.isLink) {
-    const s = o._TargetOf(e.Id).Id;
-    (t || n.target) && f(`target: ${s}`);
+    const s = n._TargetOf(e.Id).Id;
+    (o || t.target) && f(`target: ${s}`);
   }
-  const r = n.InfoKey;
+  const r = t.InfoKey;
   switch (!0) {
     case r != null: {
-      const s = o._InfoProxyOf(e.Id)[r];
+      const s = n._InfoProxyOf(e.Id)[r];
       f(`info.${r}: ${JSON.stringify(s ?? null)}`);
       break;
     }
-    case (t || n.info): {
-      const s = o._InfoProxyOf(e.Id);
+    case (o || t.info): {
+      const s = n._InfoProxyOf(e.Id);
       f(`info:  ${JSON.stringify(s)}`);
       break;
     }
   }
 }
-const Re = 720 * 60 * 60 * 1e3;
-function je(e) {
-  const o = e.command("trash").description("trash inspection and cleanup");
-  o.command("list").description("list all entries currently in the trash").option("--only <kind>", "filter by kind: items | links").action(async (n, t) => {
-    const r = m(t.optsWithGlobals());
-    await We(r, n.only);
-  }), o.command("purge-all").description("permanently delete every entry in the trash").action(async (n, t) => {
-    const r = m(t.optsWithGlobals());
-    await Ce(r);
-  }), o.command("purge-expired").description("permanently delete trash entries older than --ttl milliseconds").option("--ttl <ms>", "TTL in milliseconds (default: 30 days)", String(Re)).action(async (n, t) => {
-    const r = m(t.optsWithGlobals()), s = k(n.ttl, "--ttl");
+const We = 720 * 60 * 60 * 1e3;
+function Ke(e) {
+  const n = e.command("trash").description("trash inspection and cleanup");
+  n.command("list").description("list all entries currently in the trash").option("--only <kind>", "filter by kind: items | links").action(async (t, o) => {
+    const r = w(o.optsWithGlobals());
+    await Ae(r, t.only);
+  }), n.command("purge-all").description("permanently delete every entry in the trash").action(async (t, o) => {
+    const r = w(o.optsWithGlobals());
+    await Ge(r);
+  }), n.command("purge-expired").description("permanently delete trash entries older than --ttl milliseconds").option("--ttl <ms>", "TTL in milliseconds (default: 30 days)", String(We)).action(async (t, o) => {
+    const r = w(o.optsWithGlobals()), s = v(t.ttl, "--ttl");
     if (s <= 0)
       throw new l(
         `'--ttl' must be a positive integer — got ${s}`,
         c.UsageError
       );
-    await Pe(r, s);
+    await Je(r, s);
   });
 }
-async function We(e, o) {
-  const n = o?.toLowerCase();
-  if (n != null && !["item", "items", "link", "links"].includes(n))
+async function Ae(e, n) {
+  const t = n?.toLowerCase();
+  if (t != null && !["item", "items", "link", "links"].includes(t))
     throw new l(
-      `'--only' accepts 'items' or 'links' — got '${o}'`,
+      `'--only' accepts 'items' or 'links' — got '${n}'`,
       c.UsageError
     );
-  const t = await y(e);
+  const o = await y(e);
   try {
-    const r = t.Store.TrashItem, i = t.Store._innerEntriesOf(r.Id).filter((a) => {
-      if (n == null)
+    const r = o.Store.TrashItem, i = o.Store._innerEntriesOf(r.Id).filter((a) => {
+      if (t == null)
         return !0;
       const d = a.isItem ? "item" : "link";
-      return n === d + "s" || n === d;
+      return t === d + "s" || t === d;
     });
     if (e.Format === "json")
-      w(e, i.map((a) => ({
+      h(e, i.map((a) => ({
         id: a.Id,
         kind: a.isItem ? "item" : "link",
         label: a.Label
@@ -1108,50 +1135,50 @@ async function We(e, o) {
         f(`${a.Id}  ${d}  ${a.Label}`);
       }
   } finally {
-    await p(t);
+    await p(o);
   }
 }
-async function Ce(e) {
-  const o = await y(e);
+async function Ge(e) {
+  const n = await y(e);
   try {
-    const n = o.Store.TrashItem, t = [...o.Store._innerEntriesOf(n.Id)];
+    const t = n.Store.TrashItem, o = [...n.Store._innerEntriesOf(t.Id)];
     let r = 0;
-    for (const s of t)
+    for (const s of o)
       try {
         s.purge(), r++;
       } catch {
       }
-    e.Format === "json" ? w(e, { purged: r }) : f(`purged ${r} entr${r === 1 ? "y" : "ies"} from trash`);
-  } finally {
-    await p(o);
-  }
-}
-async function Pe(e, o) {
-  const n = await y(e);
-  try {
-    const t = n.Store.purgeExpiredTrashEntries(o);
-    e.Format === "json" ? w(e, { purged: t, ttlMs: o }) : f(`purged ${t} expired entr${t === 1 ? "y" : "ies"} from trash`);
+    e.Format === "json" ? h(e, { purged: r }) : f(`purged ${r} entr${r === 1 ? "y" : "ies"} from trash`);
   } finally {
     await p(n);
   }
 }
-function Ae(e) {
-  e.command("tree").description("tree display").command("show").description("display the store tree").option("--depth <n>", "maximum display depth (default: unlimited)").action(async (n, t) => {
-    const r = m(t.optsWithGlobals()), s = n.depth != null ? k(n.depth, "--depth") : 1 / 0;
-    await Ge(r, s);
+async function Je(e, n) {
+  const t = await y(e);
+  try {
+    const o = t.Store.purgeExpiredTrashEntries(n);
+    e.Format === "json" ? h(e, { purged: o, ttlMs: n }) : f(`purged ${o} expired entr${o === 1 ? "y" : "ies"} from trash`);
+  } finally {
+    await p(t);
+  }
+}
+function Me(e) {
+  e.command("tree").description("tree display").command("show").description("display the store tree").option("--depth <n>", "maximum display depth (default: unlimited)").action(async (t, o) => {
+    const r = w(o.optsWithGlobals()), s = t.depth != null ? v(t.depth, "--depth") : 1 / 0;
+    await Ve(r, s);
   });
 }
-async function Ge(e, o) {
-  const n = await y(e);
+async function Ve(e, n) {
+  const t = await y(e);
   try {
     if (e.Format === "json") {
-      const t = W(n.Store, E, o, 0);
-      w(e, { root: t });
+      const o = W(t.Store, k, n, 0);
+      h(e, { root: o });
     } else {
       f("root/");
-      const t = W(n.Store, E, o, 0);
-      for (let r = 0; r < t.length; r++) {
-        const s = t[r], i = r === t.length - 1, a = q(
+      const o = W(t.Store, k, n, 0);
+      for (let r = 0; r < o.length; r++) {
+        const s = o[r], i = r === o.length - 1, a = H(
           s.Id,
           s.Label,
           s.Kind,
@@ -1163,87 +1190,97 @@ async function Ge(e, o) {
         for (const d of a)
           f(d);
       }
-      t.length === 0 && f("  (empty)");
+      o.length === 0 && f("  (empty)");
     }
   } finally {
-    await p(n);
+    await p(t);
   }
 }
-function W(e, o, n, t) {
-  return t >= n ? [] : e._innerEntriesOf(o).map((r) => {
-    const s = r.isItem ? "item" : "link", i = r.isLink ? e._TargetOf(r.Id).Id : void 0, a = r.isItem && t + 1 < n ? W(e, r.Id, n, t + 1) : [];
-    return { Id: r.Id, Kind: s, Label: r.Label, TargetId: i, Children: a };
-  });
+const Be = /* @__PURE__ */ new Set([x, L]);
+function W(e, n, t, o) {
+  if (o >= t)
+    return [];
+  const r = [];
+  for (const s of e._innerEntriesOf(n)) {
+    if (Be.has(s.Id))
+      continue;
+    const i = s.isItem ? "item" : "link", a = s.isLink ? e._TargetOf(s.Id).Id : void 0, d = s.isItem && o + 1 < t ? W(e, s.Id, t, o + 1) : [];
+    r.push({ Id: s.Id, Kind: i, Label: s.Label, TargetId: a, Children: d });
+  }
+  return r;
 }
-function Z(e, o = !1) {
-  const n = new Q("sds");
-  return n.description("shareable-data-store CLI").version(de.version, "--version", "print version").allowUnknownOption(!1).configureOutput({ writeErr: () => {
-  } }).option("--server <url>", "WebSocket server URL (env: SDS_SERVER_URL)").option("--store <id>", "store identifier (env: SDS_STORE_ID)").option("--token <jwt>", "client JWT — read/write (env: SDS_TOKEN)").option("--admin-token <jwt>", "admin JWT (env: SDS_ADMIN_TOKEN)").option("--data-dir <path>", "directory for local SQLite files (env: SDS_DATA_DIR)").option("--format <fmt>", "output format: text | json (default: text)").option("--on-error <action>", "error mode: stop | continue | ask (default: stop)"), ue(n), he(n), ve(n, e), je(n), Ae(n), o || (n.command("shell").description("start an interactive REPL").action(async (t, r) => {
-    const s = m(r.optsWithGlobals());
-    await ie((i) => J(i, s));
-  }), n.option("--script <file>", "run commands from file (use - for stdin)").action(async (t) => {
-    const r = m(t);
-    if (t.script != null) {
-      const s = await ae(r, t.script, J);
+let E = "sds", X = "0.0.0";
+function O(e, n = !1) {
+  const t = new te(E);
+  return t.description("shareable-data-store CLI").version(X, "--version", "print version").allowUnknownOption(!1).configureOutput({ writeErr: () => {
+  } }).option("--server <url>", "WebSocket server URL (env: SDS_SERVER_URL)").option("--store <id>", "store identifier (env: SDS_STORE_ID)").option("--token <jwt>", "client JWT — read/write (env: SDS_TOKEN)").option("--admin-token <jwt>", "admin JWT (env: SDS_ADMIN_TOKEN)").option("--persistence-dir <path>", "directory for local SQLite files (env: SDS_PERSISTENCE_DIR)").option("--format <fmt>", "output format: text | json (default: text)").option("--on-error <action>", "error mode: stop | continue | ask (default: stop)"), we(t), Ie(t), $e(t, e), Ke(t), Me(t), n || (t.command("shell").description("start an interactive REPL").action(async (o, r) => {
+    const s = w(r.optsWithGlobals());
+    await ue((i) => V(i, s));
+  }), t.option("--script <file>", "run commands from file (use - for stdin)").action(async (o) => {
+    const r = w(o);
+    if (o.script != null) {
+      const s = await fe(r, o.script, V);
       process.exit(s);
     } else
-      process.stdout.write(n.helpInformation()), process.exit(c.OK);
-  }), n.addHelpCommand(!0)), n;
+      process.stdout.write(t.helpInformation()), process.exit(c.OK);
+  }), t.addHelpCommand(!0)), t;
 }
-function A(e) {
+function G(e) {
   e.exitOverride(), e.configureOutput({ writeErr: () => {
   } });
-  for (const o of e.commands)
-    A(o);
+  for (const n of e.commands)
+    G(n);
 }
-function Ke(e) {
-  const o = [];
-  return e.ServerURL != null && o.push("--server", e.ServerURL), e.StoreId != null && o.push("--store", e.StoreId), e.Token != null && o.push("--token", e.Token), e.AdminToken != null && o.push("--admin-token", e.AdminToken), o.push("--data-dir", e.DataDir), e.Format !== "text" && o.push("--format", e.Format), o;
+function qe(e) {
+  const n = [];
+  return e.ServerURL != null && n.push("--server", e.ServerURL), e.StoreId != null && n.push("--store", e.StoreId), e.Token != null && n.push("--token", e.Token), e.AdminToken != null && n.push("--admin-token", e.AdminToken), n.push("--persistence-dir", e.PersistenceDir), e.Format !== "text" && n.push("--format", e.Format), n;
 }
-async function J(e, o) {
+async function V(e, n) {
   if (e.length === 0)
     return c.OK;
-  const { CleanArgv: n, InfoEntries: t } = $(e), r = o != null ? Ke(o) : [], s = Z(
-    Object.entries(t).flatMap(([i, a]) => [
+  const { CleanArgv: t, InfoEntries: o } = N(e), r = n != null ? qe(n) : [], s = O(
+    Object.entries(o).flatMap(([i, a]) => [
       `--info.${i}`,
       JSON.stringify(a)
     ]),
     !0
     // isSubContext: skip shell + root action so process.exit() can never fire
   );
-  A(s);
+  G(s);
   try {
-    return await s.parseAsync(["node", "sds", ...r, ...n]), c.OK;
+    return await s.parseAsync(["node", E, ...r, ...t]), c.OK;
   } catch (i) {
     const a = i;
-    return a.code === "commander.help" || a.code === "commander.helpDisplayed" || a.code === "commander.version" ? c.OK : a.code === "commander.unknownCommand" ? (process.stderr.write(`sds: unknown command '${n[0]}' — try 'sds help'
-`), c.UsageError) : a.code === "commander.unknownOption" || a.code === "commander.missingArgument" || a.code === "commander.missingMandatoryOptionValue" ? (process.stderr.write(`sds: ${a.message}
-`), c.UsageError) : i instanceof U ? (process.stderr.write(`sds: ${i.message}
-`), i.ExitCode) : i instanceof l ? (L(o ?? { Format: "text" }, i.message, i.ExitCode), i.ExitCode) : (L(o ?? { Format: "text" }, i.message ?? String(i)), c.GeneralError);
+    return a.code === "commander.help" || a.code === "commander.helpDisplayed" || a.code === "commander.version" ? c.OK : a.code === "commander.unknownCommand" ? (process.stderr.write(`${E}: unknown command '${t[0]}' — try '${E} help'
+`), c.UsageError) : a.code === "commander.unknownOption" || a.code === "commander.missingArgument" || a.code === "commander.missingMandatoryOptionValue" ? (process.stderr.write(`${E}: ${a.message}
+`), c.UsageError) : i instanceof R ? (process.stderr.write(`${E}: ${i.message}
+`), i.ExitCode) : i instanceof l ? (P(n ?? { Format: "text" }, i.message, i.ExitCode), i.ExitCode) : (P(n ?? { Format: "text" }, i.message ?? String(i)), c.GeneralError);
   }
 }
-async function Je() {
-  const { CleanArgv: e, InfoEntries: o } = $(process.argv.slice(2)), n = Object.entries(o).flatMap(([r, s]) => [
+async function ze() {
+  const { CleanArgv: e, InfoEntries: n } = N(process.argv.slice(2)), t = Object.entries(n).flatMap(([r, s]) => [
     `--info.${r}`,
     JSON.stringify(s)
-  ]), t = Z(n);
-  A(t);
+  ]), o = O(t);
+  G(o);
   try {
-    await t.parseAsync(["node", "sds", ...e]);
+    await o.parseAsync(["node", E, ...e]);
   } catch (r) {
     const s = r;
-    if ((s.code === "commander.help" || s.code === "commander.helpDisplayed" || s.code === "commander.version") && process.exit(c.OK), (s.code === "commander.unknownCommand" || s.code === "commander.unknownOption" || s.code === "commander.missingArgument" || s.code === "commander.missingMandatoryOptionValue") && (process.stderr.write(`sds: ${s.message}
+    if ((s.code === "commander.help" || s.code === "commander.helpDisplayed" || s.code === "commander.version") && process.exit(c.OK), (s.code === "commander.unknownCommand" || s.code === "commander.unknownOption" || s.code === "commander.missingArgument" || s.code === "commander.missingMandatoryOptionValue") && (process.stderr.write(`${E}: ${s.message}
 
-`), process.stderr.write(t.helpInformation()), process.exit(c.UsageError)), r instanceof U && (process.stderr.write(`sds: ${r.message}
+`), process.stderr.write(o.helpInformation()), process.exit(c.UsageError)), r instanceof R && (process.stderr.write(`${E}: ${r.message}
 `), process.exit(r.ExitCode)), r instanceof l) {
-      const a = m({});
-      L(a, r.message, r.ExitCode), process.exit(r.ExitCode);
+      const a = w({});
+      P(a, r.message, r.ExitCode), process.exit(r.ExitCode);
     }
-    const i = m({});
-    L(i, r.message ?? String(r)), process.exit(c.GeneralError);
+    const i = w({});
+    P(i, r.message ?? String(r)), process.exit(c.GeneralError);
   }
 }
-typeof process < "u" && process.argv[1] != null && (process.argv[1].endsWith("sds-command.js") || process.argv[1].endsWith("/sds")) && Je().catch((e) => {
-  process.stderr.write(`sds: fatal: ${e.message ?? e}
-`), process.exit(c.GeneralError);
-});
+async function ot(e, n = "sds", t = "0.0.0") {
+  return E = n, X = t, ie(e), ze();
+}
+export {
+  ot as runCommand
+};

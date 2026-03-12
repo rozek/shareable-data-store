@@ -4,8 +4,9 @@
 *                                                                              *
 *******************************************************************************/
 
-// extracts --info.key value pairs from an argv-like array so that commander
-// never sees them (commander would reject unknown options otherwise)
+// extracts --info.key value pairs and --info-delete.key flags from an
+// argv-like array so that commander never sees them (commander would
+// reject unknown options otherwise)
 
 import { SDS_CommandError } from './StoreAccess.js'
 import { ExitCodes }        from './ExitCodes.js'
@@ -35,18 +36,29 @@ function assertValidInfoKey (Key:string):void {
 //                              extractInfoEntries                            //
 //----------------------------------------------------------------------------//
 
-/**** extractInfoEntries — removes --info.key [value] pairs from argv ****/
+/**** extractInfoEntries — removes --info.key [value] and --info-delete.key pairs from argv ****/
 
 export function extractInfoEntries (Argv:readonly string[]):{
-  CleanArgv:   string[]
-  InfoEntries: Record<string,unknown>
+  CleanArgv:      string[]
+  InfoEntries:    Record<string,unknown>
+  InfoDeleteKeys: string[]
 } {
   const CleanArgv:string[]                 = []
   const InfoEntries:Record<string,unknown> = {}
+  const InfoDeleteKeys:string[]            = []
   let ArgIdx = 0
 
   while (ArgIdx < Argv.length) {
     const Arg = Argv[ArgIdx]
+
+    // --info-delete.key  (flag only — no value)
+    if (Arg.startsWith('--info-delete.')) {
+      const Key = Arg.slice(14)
+      assertValidInfoKey(Key)
+      InfoDeleteKeys.push(Key)
+      ArgIdx++
+      continue
+    }
 
     // --info.key=value  (value embedded with =)
     if (Arg.startsWith('--info.') && Arg.includes('=')) {
@@ -79,7 +91,7 @@ export function extractInfoEntries (Argv:readonly string[]):{
     ArgIdx++
   }
 
-  return { CleanArgv, InfoEntries }
+  return { CleanArgv, InfoEntries, InfoDeleteKeys }
 }
 
 /**** parseInfoValue — tries JSON parse first, falls back to plain string ****/
@@ -92,12 +104,13 @@ function parseInfoValue (raw:string):unknown {
 //                              applyInfoToEntry                              //
 //----------------------------------------------------------------------------//
 
-/**** applyInfoToEntry — writes info entries into the proxy returned by entry.Info ****/
+/**** applyInfoToEntry — writes and deletes info entries via the proxy returned by entry.Info ****/
 
 export function applyInfoToEntry (
   InfoProxy:Record<string,unknown>,
   WholeMap:unknown,
-  InfoEntries:Record<string,unknown>
+  InfoEntries:Record<string,unknown>,
+  InfoDeleteKeys:string[] = []
 ):void {
   // --info <json>: set all keys from the map (merge into existing info)
   if (WholeMap != null) {
@@ -127,5 +140,10 @@ export function applyInfoToEntry (
   // --info.key: set individual keys (already validated in extractInfoEntries)
   for (const [Key, Value] of Object.entries(InfoEntries)) {
     InfoProxy[Key] = Value
+  }
+
+  // --info-delete.key: remove individual keys (already validated in extractInfoEntries)
+  for (const Key of InfoDeleteKeys) {
+    InfoProxy[Key] = undefined
   }
 }

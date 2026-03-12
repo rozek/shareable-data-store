@@ -1,0 +1,369 @@
+/*******************************************************************************
+*                                                                              *
+*                               StoreAccess                                    *
+*                                                                              *
+*******************************************************************************/
+
+// loads the CRDT store from local SQLite persistence, manages the SyncEngine
+// lifecycle, and provides a one-shot sync helper — adapted from sds-command
+
+import fs   from 'node:fs/promises'
+import path from 'node:path'
+
+import type { SDS_DataStore }             from '@rozek/sds-core'
+import { RootId, TrashId, LostAndFoundId } from '@rozek/sds-core'
+import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
+import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
+import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
+
+import type { MCPConfig }  from './Config.js'
+import { DBPathFor }       from './Config.js'
+import { MCP_ToolError }   from './Errors.js'
+
+//----------------------------------------------------------------------------//
+//                             SDS_StoreFactory                               //
+//----------------------------------------------------------------------------//
+
+/**** SDS_StoreFactory — pluggable backend factory injected by the server wrapper ****/
+
+export interface SDS_StoreFactory {
+  fromScratch (): SDS_DataStore
+  fromBinary  (Data:Uint8Array): SDS_DataStore
+}
+
+let Factory:SDS_StoreFactory
+
+/**** setStoreFactory — called once by runMCPServer before any store operations ****/
+
+export function setStoreFactory (f:SDS_StoreFactory):void {
+  Factory = f
+}
+
+/**** createStoreFromBinary — creates a temporary store using the injected factory ****/
+
+export function createStoreFromBinary (Data:Uint8Array):SDS_DataStore {
+  return Factory.fromBinary(Data)
+}
+
+//----------------------------------------------------------------------------//
+//                               StoreContext                                 //
+//----------------------------------------------------------------------------//
+
+export interface StoreContext {
+  Store:       SDS_DataStore
+  Persistence: SDS_DesktopPersistenceProvider
+  Engine:      SDS_SyncEngine
+}
+
+//----------------------------------------------------------------------------//
+//                               loadContext                                  //
+//----------------------------------------------------------------------------//
+
+/**** loadContext — opens the local store; creates it only when allowCreate is true ****/
+
+export async function loadContext (
+  Config:MCPConfig, allowCreate:boolean = false
+):Promise<StoreContext> {
+  const StoreId = Config.StoreId
+  if (StoreId == null) {
+    throw new MCP_ToolError('StoreId is required')
+  }
+
+  await fs.mkdir(Config.PersistenceDir, { recursive:true })
+  const DbPath      = DBPathFor(Config, StoreId)
+  const Persistence = new SDS_DesktopPersistenceProvider(DbPath, StoreId)
+
+  let Store:SDS_DataStore
+  try {
+    const Snapshot = await Persistence.loadSnapshot()
+    switch (true) {
+      case (Snapshot != null): {
+        Store = Factory.fromBinary(Snapshot!)
+        break
+      }
+      case (allowCreate): {
+        Store = Factory.fromScratch()
+        break
+      }
+      default: {
+        await Persistence.close()
+        throw new MCP_ToolError(
+          `store '${StoreId}' not found in '${Config.PersistenceDir}'`
+        )
+      }
+    }
+  } catch (Signal) {
+    if (Signal instanceof MCP_ToolError) { throw Signal }
+    await Persistence.close().catch(() => {})
+    throw new MCP_ToolError(
+      `failed to open store '${StoreId}': ${(Signal as Error).message}`
+    )
+  }
+
+  const SyncEngine = new SDS_SyncEngine(Store, { PersistenceProvider:Persistence })
+  await SyncEngine.start()
+
+  return { Store, Persistence, Engine:SyncEngine }
+}
+
+/**** closeContext — flushes any pending checkpoint and closes the database ****/
+
+export async function closeContext (Context:StoreContext):Promise<void> {
+  await Context.Engine.stop()
+}
+
+//----------------------------------------------------------------------------//
+//                               BatchSession                                 //
+//----------------------------------------------------------------------------//
+
+/**** BatchSession — manages a shared store context for batch tool execution ****/
+
+export class BatchSession {
+  #store:       SDS_DataStore
+  #persistence: SDS_DesktopPersistenceProvider
+  #engine:      SDS_SyncEngine
+  #storeId:     string
+  #persistenceDir:     string
+
+  constructor (
+    Store:SDS_DataStore, Persistence:SDS_DesktopPersistenceProvider,
+    Engine:SDS_SyncEngine, StoreId:string, PersistenceDir:string
+  ) {
+    this.#store       = Store
+    this.#persistence = Persistence
+    this.#engine      = Engine
+    this.#storeId     = StoreId
+    this.#persistenceDir     = PersistenceDir
+  }
+
+  get Store ():SDS_DataStore       { return this.#store }
+  get Persistence ():SDS_DesktopPersistenceProvider { return this.#persistence }
+  get StoreId ():string            { return this.#storeId }
+  get PersistenceDir ():string            { return this.#persistenceDir }
+
+  /**** syncWith — flushes, syncs with server, then reloads the store ****/
+
+  async syncWith (
+    ServerURL:string, Token:string, TimeoutMs:number = 5000
+  ):Promise<void> {
+    // flush all pending changes to disk, then disconnect from engine
+    await this.#engine.stop()
+
+    const SyncConfig:MCPConfig = {
+      StoreId:   this.#storeId,
+      PersistenceDir:   this.#persistenceDir,
+      ServerURL,
+      Token,
+    }
+    await runSync(SyncConfig, TimeoutMs)
+
+    // reload the updated state from disk
+    const Snapshot = await this.#persistence.loadSnapshot()
+    this.#store = Snapshot != null
+      ? Factory.fromBinary(Snapshot)
+      : Factory.fromScratch()
+
+    this.#engine = new SDS_SyncEngine(
+      this.#store, { PersistenceProvider:this.#persistence }
+    )
+    await this.#engine.start()
+  }
+
+  /**** close — flushes and closes the batch session ****/
+
+  async close ():Promise<void> {
+    await this.#engine.stop()
+  }
+}
+
+/**** openBatchSession — opens a store and wraps it in a BatchSession ****/
+
+export async function openBatchSession (
+  Config:MCPConfig, allowCreate:boolean = false
+):Promise<BatchSession> {
+  const Context = await loadContext(Config, allowCreate)
+  return new BatchSession(
+    Context.Store, Context.Persistence, Context.Engine,
+    Config.StoreId!, Config.PersistenceDir
+  )
+}
+
+//----------------------------------------------------------------------------//
+//                                 runSync                                    //
+//----------------------------------------------------------------------------//
+
+export interface SyncResult {
+  Connected:  boolean
+  StoreId:    string
+  ServerURL:  string
+}
+
+/**** runSync — one-shot: load → connect → exchange patches → save → close ****/
+
+export async function runSync (
+  Config:MCPConfig, TimeoutMs:number = 5000
+):Promise<SyncResult> {
+  const StoreId   = Config.StoreId
+  const ServerURL = Config.ServerURL
+  const Token     = Config.Token
+
+  if (StoreId == null) {
+    throw new MCP_ToolError('StoreId is required')
+  }
+  if (ServerURL == null) {
+    throw new MCP_ToolError('ServerURL is required')
+  }
+  if (! /^wss?:\/\//.test(ServerURL)) {
+    throw new MCP_ToolError(
+      `invalid ServerURL '${ServerURL}' — must start with 'ws://' or 'wss://'`
+    )
+  }
+  if (Token == null) {
+    throw new MCP_ToolError('Token is required')
+  }
+
+  await fs.mkdir(Config.PersistenceDir, { recursive:true })
+  const DbPath      = DBPathFor(Config, StoreId)
+  const Persistence = new SDS_DesktopPersistenceProvider(DbPath, StoreId)
+
+  const Snapshot = await Persistence.loadSnapshot()
+  const Store    = Snapshot != null
+    ? Factory.fromBinary(Snapshot)
+    : Factory.fromScratch()
+
+  const Network    = new SDS_WebSocketProvider(StoreId)
+  const SyncEngine = new SDS_SyncEngine(Store, {
+    PersistenceProvider: Persistence,
+    NetworkProvider:     Network,
+  })
+  await SyncEngine.start()
+
+  let ConnectionEstablished = false
+  let Resolve!:() => void
+  const CompletionPromise = new Promise<void>((resolve) => { Resolve = resolve })
+
+  const detachConnectionObserver = SyncEngine.onConnectionChange((State) => {
+    if (State === 'connected') {
+      ConnectionEstablished = true
+      setTimeout(Resolve, TimeoutMs)
+    }
+    if (State === 'disconnected') { Resolve() }
+  })
+
+  const Guard = setTimeout(() => { Resolve() }, TimeoutMs*2)
+
+  try {
+    await SyncEngine.connectTo(ServerURL, { Token })
+    const LocalPatches = await Persistence.loadPatchesSince(0)
+    for (const Patch of LocalPatches) {
+      Network.sendPatch(Patch)
+    }
+    await CompletionPromise
+  } catch (Signal) {
+    throw new MCP_ToolError(
+      `could not connect to '${ServerURL}': ${(Signal as Error).message}`
+    )
+  } finally {
+    clearTimeout(Guard)
+    detachConnectionObserver()
+    await SyncEngine.stop()
+  }
+
+  return { Connected:ConnectionEstablished, StoreId, ServerURL }
+}
+
+//----------------------------------------------------------------------------//
+//                               StoreExists                                  //
+//----------------------------------------------------------------------------//
+
+/**** StoreExists — returns true when the SQLite DB file for StoreId is present ****/
+
+export async function StoreExists (Config:MCPConfig):Promise<boolean> {
+  const StoreId = Config.StoreId
+  if (StoreId == null) { return false }
+  const DbPath = DBPathFor(Config, StoreId)
+  try {
+    await fs.access(DbPath)
+    return true
+  } catch { return false }
+}
+
+/**** destroyStore — deletes the local SQLite DB file and its companions ****/
+
+export async function destroyStore (Config:MCPConfig):Promise<void> {
+  const StoreId = Config.StoreId
+  if (StoreId == null) {
+    throw new MCP_ToolError('StoreId is required')
+  }
+  const DbPath = DBPathFor(Config, StoreId)
+  try {
+    await fs.unlink(DbPath)
+    await fs.unlink(DbPath+'-wal').catch(() => {})
+    await fs.unlink(DbPath+'-shm').catch(() => {})
+  } catch (Signal:unknown) {
+    const FileSystemError = Signal as NodeJS.ErrnoException
+    if (FileSystemError.code === 'ENOENT') {
+      throw new MCP_ToolError(
+        `store '${StoreId}' not found in '${Config.PersistenceDir}'`
+      )
+    }
+    throw new MCP_ToolError(
+      `failed to delete store '${StoreId}': ${FileSystemError.message}`
+    )
+  }
+}
+
+//----------------------------------------------------------------------------//
+//                             resolveEntryId                                 //
+//----------------------------------------------------------------------------//
+
+/**** resolveEntryId — maps well-known aliases to their canonical UUIDs ****/
+
+export function resolveEntryId (IdOrAlias:string):string {
+  switch (IdOrAlias.toLowerCase()) {
+    case 'root':          return RootId
+    case 'trash':         return TrashId
+    case 'lost-and-found':
+    case 'lostandfound':  return LostAndFoundId
+    default:              return IdOrAlias
+  }
+}
+
+//----------------------------------------------------------------------------//
+//                             readFileSafely                                 //
+//----------------------------------------------------------------------------//
+
+/**** readFileSafely — wraps fs.readFile; maps ENOENT to MCP_ToolError ****/
+
+export async function readFileSafely (FilePath:string):Promise<Buffer> {
+  try {
+    return await fs.readFile(FilePath)
+  } catch (Signal:unknown) {
+    if ((Signal as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw new MCP_ToolError(`file '${FilePath}' not found`)
+    }
+    throw Signal
+  }
+}
+
+//----------------------------------------------------------------------------//
+//                             countEntries                                   //
+//----------------------------------------------------------------------------//
+
+/**** countEntries — recursive count of all non-system items in the tree ****/
+
+export function countEntries (Store:SDS_DataStore):number {
+  const SystemIds = new Set([ RootId, TrashId, LostAndFoundId ])
+  let Count = 0
+
+  function traverseEntries (ItemId:string):void {
+    for (const Entry of Store._innerEntriesOf(ItemId)) {
+      if (SystemIds.has(Entry.Id)) { continue }
+      Count++
+      if (Entry.isItem) { traverseEntries(Entry.Id) }
+    }
+  }
+
+  traverseEntries(RootId)
+  return Count
+}

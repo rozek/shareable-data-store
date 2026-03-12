@@ -109,4 +109,57 @@ describe('SDS_DataStore — Label & Info', () => {
     expect(Item.Info['tag']).toBeUndefined()
     expect(Object.keys(Item.Info)).not.toContain('tag')
   })
+
+  it('L-12: Info value whose UTF-8 JSON representation is exactly maxInfoValueSize bytes is accepted', () => {
+    // 'x'.repeat(262142) → JSON.stringify → '"' + 262142 chars + '"' = 262144 bytes = maxInfoValueSize
+    const Store     = SDS_DataStore.fromScratch()
+    const Item      = Store.newItemAt(undefined, Store.RootItem)
+    const AtLimit   = 'x'.repeat(262_142)
+    expect(() => { Item.Info['big'] = AtLimit }).not.toThrow()
+    expect(Item.Info['big']).toBe(AtLimit)
+  })
+
+  it('L-13: Info value whose UTF-8 JSON representation exceeds maxInfoValueSize bytes throws SDS_Error', () => {
+    // 'x'.repeat(262143) → JSON.stringify → '"' + 262143 chars + '"' = 262145 bytes > maxInfoValueSize
+    const Store      = SDS_DataStore.fromScratch()
+    const Item       = Store.newItemAt(undefined, Store.RootItem)
+    const OverLimit  = 'x'.repeat(262_143)
+    expect(() => { Item.Info['big'] = OverLimit }).toThrowError(
+      expect.objectContaining({ code:'invalid-argument' })
+    )
+  })
+
+  it('L-14: Label exceeding maxLabelLength throws SDS_Error invalid-argument', () => {
+    const Store    = SDS_DataStore.fromScratch()
+    const Item     = Store.newItemAt(undefined, Store.RootItem)
+    const TooLong  = 'x'.repeat(1025)
+    expect(() => { Item.Label = TooLong }).toThrowError(
+      expect.objectContaining({ code:'invalid-argument' })
+    )
+  })
+
+  it('L-15: Info key exceeding maxInfoKeyLength throws SDS_Error invalid-argument', () => {
+    const Store    = SDS_DataStore.fromScratch()
+    const Item     = Store.newItemAt(undefined, Store.RootItem)
+    const LongKey  = 'k'.repeat(1025)
+    expect(() => { Item.Info[LongKey] = 'val' }).toThrowError(
+      expect.objectContaining({ code:'invalid-argument' })
+    )
+  })
+
+  it('L-16: empty Info key throws SDS_Error invalid-argument', () => {
+    const Store = SDS_DataStore.fromScratch()
+    const Item  = Store.newItemAt(undefined, Store.RootItem)
+    expect(() => { Item.Info[''] = 'val' }).toThrowError(
+      expect.objectContaining({ code:'invalid-argument' })
+    )
+  })
+
+  it('L-17: non-JSON-serialisable Info value (function) throws SDS_Error invalid-argument', () => {
+    const Store = SDS_DataStore.fromScratch()
+    const Item  = Store.newItemAt(undefined, Store.RootItem)
+    expect(() => { (Item.Info as any)['fn'] = () => {} }).toThrowError(
+      expect.objectContaining({ code:'invalid-argument' })
+    )
+  })
 })

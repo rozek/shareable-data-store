@@ -15,6 +15,7 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - Command tokenisation (`tokenizeLine`) for quoted strings, escapes, and edge cases
 - Info-entry extraction and application (`extractInfoEntries`, `applyInfoToEntry`)
 - All offline `store` sub-commands: `info`, `destroy`, `export`, `import`
+- `runSync()` unit tests — input validation and upload behaviour (mocked providers)
 - All `entry` sub-commands: `create`, `get`, `list`, `update`, `move`, `delete`, `restore`, `purge`
 - All `trash` sub-commands: `list`, `purge-all`, `purge-expired`
 - `tree show`
@@ -23,7 +24,7 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - Exit-code mapping for all error conditions
 
 **Out of scope:**
-- Network commands requiring a live WebSocket server: `store ping`, `store sync`, `token issue` (covered by `@rozek/sds-sync-engine` tests)
+- Network commands requiring a live WebSocket server: `store ping`, `store sync`, `token issue` (integration tests with a real server)
 - JWT cryptographic validity (tested by `@rozek/websocket-server`)
 - Concurrent multi-process store access
 
@@ -43,7 +44,7 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 
 #### 1.1 Defaults
 
-- **TC-1.1.1** — Calling `resolveConfig({})` with no options and no env vars produces `Format:'text'`, `OnError:'stop'`, and `DataDir` equal to `~/.sds`
+- **TC-1.1.1** — Calling `resolveConfig({})` with no options and no env vars produces `Format:'text'`, `OnError:'stop'`, and `PersistenceDir` equal to `~/.sds`
 - **TC-1.1.2** — `resolveConfig` ignores unknown option keys
 
 #### 1.2 Option precedence
@@ -64,7 +65,7 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 
 ### 2. `DBPathFor`
 
-- **TC-2.1** — The returned path combines `DataDir` and the store ID followed by `.db`
+- **TC-2.1** — The returned path combines `PersistenceDir` and the store ID followed by `.db`
 - **TC-2.2** — Characters outside `[a-zA-Z0-9_-]` in the store ID are replaced with `_`
 
 ---
@@ -88,6 +89,16 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 
 - **TC-5.1** — `'item\\ get'` (backslash-space) returns `['item get']` as one token
 - **TC-5.2** — `'\\"'` returns `['"']` (escaped double-quote inside unquoted context)
+- **TC-5.3** — A backslash-escaped double-quote inside a double-quoted string (e.g. `"say \\"hi\\""`) returns the literal quote character in the token
+
+### 4. Comments
+
+- **TC-5.4** — A `#` character (preceded by a space) outside any quoted string strips the `#` and everything after it; the preceding tokens are returned
+- **TC-5.5** — A line whose first character is `#` returns `[]`
+
+### 5. Tabs
+
+- **TC-5.6** — A tab character between tokens is treated as whitespace
 
 ---
 
@@ -100,6 +111,15 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-6.3** — Multiple `--info.<key>` pairs are all extracted; none remain in `CleanArgv`
 - **TC-6.4** — A numeric JSON value is parsed as a number, not a string
 - **TC-6.5** — A key that is not a valid JavaScript identifier (e.g. `--info.my-key`) throws a `SDS_CommandError` with `UsageError` code
+- **TC-6.6** — `--info.key=value` syntax (equals sign embedded in the token) is accepted; the key and value are extracted correctly
+- **TC-6.7** — `--info.flag` with no following value argument sets `flag:true` in `InfoEntries`
+- **TC-6.8** — Keys using valid JS identifier characters (`_`, `$`, letters, digits not in first position) are accepted without error
+- **TC-6.9** — A key starting with a digit (e.g. `--info.1st`) throws a `SDS_CommandError` with `UsageError` code
+- **TC-6.10** — A key containing an embedded dot (e.g. `--info.a.b=v`) throws a `SDS_CommandError` with `UsageError` code
+- **TC-6.11** — An empty key (e.g. `--info.=v`) throws a `SDS_CommandError` with `UsageError` code
+- **TC-6.12** — `--info-delete.key` is extracted into `InfoDeleteKeys`; the flag does not appear in `CleanArgv` *(see IP-23)*
+- **TC-6.13** — Multiple `--info-delete.<key>` flags are all collected into `InfoDeleteKeys` *(see IP-24)*
+- **TC-6.14** — An invalid key in `--info-delete.<key>` (e.g. `--info-delete.my-key`) throws a `SDS_CommandError` with `UsageError` code *(see IP-25)*
 
 ### 2. `applyInfoToEntry`
 
@@ -108,6 +128,10 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-7.3** — `null` for both `--info` and `InfoEntries` leaves the info proxy unchanged
 - **TC-7.4** — A malformed JSON string for `--info` throws a `SDS_CommandError` with `UsageError` code
 - **TC-7.5** — A JSON object supplied via `--info` whose keys contain non-identifier characters (e.g. `"my-key"`) throws a `SDS_CommandError` with `UsageError` code
+- **TC-7.6** — A JSON value that is not an object (e.g. `null`, `"string"`, `42`, `[1,2,3]`) throws
+- **TC-7.7** — A JSON object whose keys contain a key starting with a digit throws
+- **TC-7.8** — A JSON object whose keys are all valid JS identifiers is accepted; all keys are merged into the proxy
+- **TC-7.9** — Passing a non-empty `InfoDeleteKeys` removes those keys from the proxy; other keys remain *(see IP-26)*
 
 ---
 
@@ -147,14 +171,14 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-11.7** — `--at` with a non-integer value exits with `UsageError` (code 2)
 - **TC-11.8** — With `--target` creates a link; `entry get --kind` returns `link`
 - **TC-11.9** — `--target` pointing to a non-existent item exits with `NotFound`
-- **TC-11.10** — `--mime` combined with `--target` exits with `UsageError` (code 2); error names the flag and mentions "link"
-- **TC-11.11** — `--value` combined with `--target` exits with `UsageError` (code 2); error names the flag and mentions "link"
-- **TC-11.12** — `--file` combined with `--target` exits with `UsageError` (code 2); error names the flag and mentions "link"
-- **TC-11.13** — `--label` at link creation time is stored and visible in a subsequent `entry get`
-- **TC-11.14** — `--info` at link creation time is stored and visible in a subsequent `entry get`
-- **TC-11.15** — `--value` and `--file` together exit with `UsageError` (code 2); error message mentions both flags
-- **TC-11.16** — `--container` pointing to a link (not an item) exits with `NotFound` (code 3); error mentions `not an item`
-- **TC-11.17** — `--at` with a negative value exits with `UsageError` (code 2); error message mentions `--at`
+- **TC-11.10** — `--mime` combined with `--target` exits with `UsageError` (code 2); error names the flag and mentions "link" *(representative for the item-only-flag + --target guard; the same check rejects --value and --file)*
+- **TC-11.11** — `--label` at link creation time is stored and visible in a subsequent `entry get`
+- **TC-11.12** — `--info` at link creation time is stored and visible in a subsequent `entry get`
+- **TC-11.13** — `--value` and `--file` together exit with `UsageError` (code 2); error message mentions both flags
+- **TC-11.14** — `--container` pointing to a link (not an item) exits with `NotFound` (code 3); error mentions `not an item`
+- **TC-11.15** — `--at` with a negative value exits with `UsageError` (code 2); error message mentions `--at`
+- **TC-11.16** — `--container root` alias creates an item in root; item appears in `entry list root` *(representative for alias resolution; other aliases use the same code path)*
+- **TC-11.17** — `--info-delete.<key>` is accepted at item-creation time; command exits with code 0; the new entry's info contains only keys explicitly set via `--info` / `--info.<key>`, never a key named by `--info-delete` (the flag is a no-op on a new entry)
 
 ### 2. `entry get`
 
@@ -165,6 +189,8 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-12.5** — `--kind` alone returns only the `kind` field; no `label` or `mime` in the output
 - **TC-12.6** — `entry get` on a link with `--format json` includes `kind: "link"` and `target` field; no `mime` or `value`
 - **TC-12.7** — `entry get trash` (well-known alias) returns a valid entry with `id` and `kind: "item"`
+- **TC-12.8** — `entry get lost-and-found` (well-known alias) returns a valid entry with `id` and `kind: "item"`
+- **TC-12.9** — `entry get lostandfound` (no-hyphen variant) returns the same entry as `lost-and-found`; returned `id` values match
 
 ### 3. `entry list`
 
@@ -179,6 +205,8 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-13.9** — `--label` flag in text format: the line for a known entry contains both the UUID and the label
 - **TC-13.10** — `--label` flag in JSON format: each object in the array includes a `label` field
 - **TC-13.11** — `entry list root` (well-known alias) lists direct root-level entries as a JSON array
+- **TC-13.12** — System containers (Trash, LostAndFound) are never present in the output of `entry list root`; their IDs are absent from the result array
+- **TC-13.13** — `entry list lost-and-found` (well-known alias) exits with code 0; returns a JSON array
 
 ### 4. `entry update`
 
@@ -192,15 +220,19 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-14.8** — `--value` and `--file` together exit with `UsageError` (code 2); error message mentions both flags
 - **TC-14.9** — `--mime <type>` on an item changes the stored MIME type; subsequent `entry get` reflects the new value
 - **TC-14.10** — `--info.<key>` updates a single info key without replacing other existing keys (merge semantics)
+- **TC-14.11** — `--info-delete.<key>` removes the specified key; other info keys remain
+- **TC-14.12** — `--info.<key>` and `--info-delete.<key>` for different keys in one command: the new key is added and the deleted key is removed atomically
+- **TC-14.13** — `--info.<key>` and `--info-delete.<key>` naming the same key: delete wins — key is absent after the command regardless of flag order
 
 ### 5. `entry move`
 
 - **TC-15.1** — Moving an item to a valid container succeeds
-- **TC-15.2** — Attempting to move the root or trash item exits with `Forbidden`
+- **TC-15.2** — Attempting to move a system entry (root, trash, or lost-and-found) to a non-root container exits with `Forbidden`
 - **TC-15.3** — Moving to a non-existent target exits with `NotFound`
 - **TC-15.4** — `--at` with a non-integer value exits with `UsageError` (code 2)
-- **TC-15.6** — `--at` with a negative value exits with `UsageError` (code 2); error message mentions `--at`
 - **TC-15.5** — Attempting to move an item into its own descendant (cycle) exits with `Forbidden` (code 6)
+- **TC-15.6** — `--at` with a negative value exits with `UsageError` (code 2); error message mentions `--at`
+- **TC-15.7** — `--to root` alias moves item to root; item appears in `entry list root` *(representative for alias resolution; other aliases use the same code path)*
 
 ### 6. `entry delete` / `entry restore` / `entry purge`
 
@@ -208,10 +240,12 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-16.2** — Restoring a trashed item moves it back to root by default
 - **TC-16.3** — `entry restore --to <container>` places the entry in the specified container, not root
 - **TC-16.4** — `entry restore --at <non-integer>` exits with `UsageError` (code 2)
-- **TC-16.8** — `entry restore --at` with a negative value exits with `UsageError` (code 2); error message mentions `--at`
 - **TC-16.5** — Attempting to restore a live (non-trash) entry exits with `Forbidden`
 - **TC-16.6** — Purging an entry that is not in the trash exits with `Forbidden`
 - **TC-16.7** — Purging a trashed entry removes it permanently; `entry get` afterwards exits with `NotFound`
+- **TC-16.8** — `entry restore --at` with a negative value exits with `UsageError` (code 2); error message mentions `--at`
+- **TC-16.9** — Attempting to delete a system entry (root, trash, or lost-and-found) exits with `Forbidden` (code 6); error message mentions "system entry"
+- **TC-16.10** — `entry restore --to root` alias restores trashed item to root; item appears in `entry list root`
 
 ---
 
@@ -244,8 +278,9 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-23.2** — A store with one item produces exactly one tree node beneath root
 - **TC-23.3** — `--depth 1` limits the output to direct inner entries of root
 - **TC-23.4** — `--depth` with a non-integer value exits with `UsageError` (code 2)
-- **TC-23.6** — `--depth 0` with items present: exits with code 0; JSON `root` array is empty (no entries shown at any depth)
 - **TC-23.5** — Calling `tree show` when the store does not exist exits with `NotFound` (code 3)
+- **TC-23.6** — `--depth 0` with items present: exits with code 0; JSON `root` array is empty (no entries shown at any depth)
+- **TC-23.7** — System containers (Trash, LostAndFound) never appear anywhere in the JSON tree output; their IDs are absent from the serialized tree
 
 ---
 
@@ -260,38 +295,60 @@ Verify that the `sds` CLI tool correctly resolves configuration, tokenises input
 - **TC-26.5** — `sds --version` exits with code 0 and prints a semver version string to stdout
 - **TC-26.6** — `sds help entry` exits with code 0, shows entry-specific usage (contains `sds entry` and `create`), and produces no error on stderr
 
-### 4. Usage error output order
-
-- **TC-27.1** — An unknown global option produces a line containing `error:` in stderr followed by the full help text; the `error:` line appears before `Usage:`
-- **TC-27.2** — An unknown command produces a line containing `error:` in stderr followed by the full help text; the `error:` line appears before `Usage:`
-- **TC-27.3** — A missing required option (e.g. `store import` without `--input`) produces an `error:` line in stderr followed by the full help text; the `error:` line appears before `Usage:`
-
 ### 2. REPL
 
 - **TC-24.1** — Blank lines are ignored
 - **TC-24.2** — Lines starting with `#` are ignored
 - **TC-24.3** — `exit` and `quit` close the session
-- **TC-24.4** — Global options given at `sds shell` start (e.g. `--store`, `--data-dir`) are inherited by every command in the session
+- **TC-24.4** — Global options given at `sds shell` start (e.g. `--store`, `--persistence-dir`) are inherited by every command in the session
 - **TC-24.5** — A failing command prints an error but does not end the session; subsequent commands succeed normally
 - **TC-24.6** — An unknown command prints an error but does not end the session
 - **TC-24.7** — `help` inside the REPL shows available commands and does not end the session; `shell` does not appear in the help output; no error is written to stderr
-- **TC-24.9** — `help entry` inside the REPL shows entry subcommand help and does not end the session; no error is written to stderr
 - **TC-24.8** — A failing command in the REPL sends its error to stderr (not stdout); stdout is unaffected
+- **TC-24.9** — `help entry` inside the REPL shows entry subcommand help and does not end the session; no error is written to stderr
 
 ### 3. Script runner — `--on-error` modes
 
 - **TC-25.1** — `stop` (default): stops after the first failing command and returns its exit code
 - **TC-25.2** — `continue`: continues after errors; returns the last non-zero exit code
 - **TC-25.3** — A script file that does not exist causes an immediate error
-- **TC-25.4** — Global options given at `sds --script` start (e.g. `--store`, `--data-dir`) are inherited by every script line
+- **TC-25.4** — Global options given at `sds --script` start (e.g. `--store`, `--persistence-dir`) are inherited by every script line
 - **TC-25.5** — `ask` in non-TTY context falls back to `stop` behaviour (stdin not a TTY → `askContinue` returns false)
 - **TC-25.6** — A script file containing only blank lines and comments exits with code 0 and produces no error output
+
+### 4. Usage error output order
+
+- **TC-27.1** — An unknown global option produces a line containing `error:` in stderr followed by the full help text; the `error:` line appears before `Usage:`
+- **TC-27.2** — An unknown command produces a line containing `error:` in stderr followed by the full help text; the `error:` line appears before `Usage:`
+- **TC-27.3** — A missing required option (e.g. `store import` without `--input`) produces an `error:` line in stderr followed by the full help text; the `error:` line appears before `Usage:`
 
 ### 5. Duplicate options
 
 - **TC-28.1** — When `--label` is given twice (e.g. `--label A --label B`), the last value (`B`) is used; applies to `entry create`
 - **TC-28.2** — When `--label` is given twice in `entry update`, the last value is used
 - **TC-28.3** — When `--mime` is given twice in `entry create`, the last value is used
+
+---
+
+## Part IX — `runSync()` Unit Tests
+
+These tests exercise the `runSync()` helper directly with mocked persistence and network providers (no real SQLite file or WebSocket connection). They cover input validation and the bidirectional upload logic.
+
+### 1. Input validation
+
+- **TC-SY-1** — Calling `runSync()` with no `StoreId` in the config throws a `SDS_CommandError` with `UsageError` exit code (2) and a message containing "no store ID"
+- **TC-SY-2** — Calling `runSync()` with no `ServerURL` throws a `SDS_CommandError` with `UsageError` exit code (2) and a message containing "no server URL"
+- **TC-SY-3** — Calling `runSync()` with a `ServerURL` that does not start with `ws://` or `wss://` throws a `SDS_CommandError` with `UsageError` exit code (2) and a message containing "invalid server URL"
+- **TC-SY-4** — Calling `runSync()` with no `Token` throws a `SDS_CommandError` with `UsageError` exit code (2) and a message containing "no client token"
+
+### 2. Upload behaviour
+
+- **TC-SY-5** — When the persistence provider returns two stored patches from `loadPatchesSince(0)` and the mock network provider fires `'connected'`, `runSync()` calls `Network.sendPatch()` once per patch and resolves with `Connected:true`
+
+### 3. `--timeout` CLI option validation
+
+- **TC-SY-6** — `store sync --timeout 0` exits with `UsageError` (code 2) and the error message mentions `--timeout`
+- **TC-SY-7** — `store sync --timeout -1` exits with `UsageError` (code 2) and the error message mentions `--timeout`
 
 ---
 

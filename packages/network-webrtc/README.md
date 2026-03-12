@@ -21,6 +21,9 @@ This package targets **browsers only** — Node.js does not provide a native Web
 
 ```bash
 pnpm add @rozek/sds-network-webrtc
+# peer dependencies:
+pnpm add @rozek/sds-core
+pnpm add @rozek/sds-network-websocket
 ```
 
 ---

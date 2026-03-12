@@ -50,6 +50,14 @@ import {
       })
       return
     }
+    if (serializedValue === undefined) {
+      // JSON.stringify returns undefined (without throwing) for functions and symbols
+      Context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Info value must be JSON-serialisable',
+      })
+      return
+    }
     if (new TextEncoder().encode(serializedValue).length > maxInfoValueSize) {
       Context.addIssue({
         code: z.ZodIssueCode.custom,

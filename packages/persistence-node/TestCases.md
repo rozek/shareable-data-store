@@ -11,7 +11,7 @@
 
 | # | Description | Expected |
 |---|---|---|
-| PS-01 | loadSnapshot on empty DB returns null | `null` |
+| PS-01 | loadSnapshot on empty DB returns undefined | `undefined` |
 | PS-02 | saveSnapshot then loadSnapshot returns same bytes | deep-equal Uint8Array |
 | PS-03 | saveSnapshot twice overwrites previous | second snapshot is returned |
 | PS-04 | saveSnapshot / close / reopen / loadSnapshot survives restart | data survives close/reopen |
@@ -31,8 +31,8 @@
 
 | # | Description | Expected |
 |---|---|---|
-| PV-01 | loadValue for unknown hash returns null | `null` |
+| PV-01 | loadValue for unknown hash returns undefined | `undefined` |
 | PV-02 | saveValue then loadValue returns same bytes | deep-equal Uint8Array |
 | PV-03 | saveValue same hash twice increments ref_count | ref_count = 2 after two saves |
-| PV-04 | releaseValue decrements ref_count; at 0 row is deleted | loadValue returns null after two releases |
+| PV-04 | releaseValue decrements ref_count; at 0 row is deleted | loadValue returns undefined after two releases |
 | PV-05 | releaseValue below 0 is safe (no negative ref_count; row deleted) | no exception; row gone |

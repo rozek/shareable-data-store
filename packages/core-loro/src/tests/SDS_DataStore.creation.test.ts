@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest'
 import { SDS_DataStore } from '../store/SDS_DataStore.js'
 import { SDS_Item }      from '../store/SDS_Item.js'
 import { SDS_Link }      from '../store/SDS_Link.js'
-import { SDS_Error }     from '../error/SDS_Error.js'
+import { SDS_Error }     from '@rozek/sds-core'
 
 //----------------------------------------------------------------------------//
 //                                   Tests                                    //
@@ -111,6 +111,23 @@ describe('SDS_DataStore — Entry Creation', () => {
     const Link   = Store.newLinkAt(Target, Store.RootItem)
     expect(() => Store.newLinkAt(Link as unknown as SDS_Item, Store.RootItem)).toThrowError(
       expect.objectContaining({ code:'invalid-argument' })
+    )
+  })
+
+  it("N-15: newItemAt with MIMEType exceeding maxMIMETypeLength throws SDS_Error invalid-argument", () => {
+    const Store    = SDS_DataStore.fromScratch()
+    const TooLong  = "text/plain" + "x".repeat(250)  // > 256 chars
+    expect(() => Store.newItemAt(TooLong, Store.RootItem)).toThrowError(
+      expect.objectContaining({ code:"invalid-argument" })
+    )
+  })
+
+  it("N-16: item.Type setter with MIMEType exceeding maxMIMETypeLength throws SDS_Error invalid-argument", () => {
+    const Store    = SDS_DataStore.fromScratch()
+    const Item     = Store.newItemAt(undefined, Store.RootItem)
+    const TooLong  = "text/plain" + "x".repeat(250)  // > 256 chars
+    expect(() => { Item.Type = TooLong }).toThrowError(
+      expect.objectContaining({ code:"invalid-argument" })
     )
   })
 })

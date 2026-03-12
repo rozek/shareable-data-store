@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { SDS_DataStore } from '../store/SDS_DataStore.js'
-import { SDS_Error }     from '../error/SDS_Error.js'
+import { SDS_Error }     from '@rozek/sds-core'
 
 //----------------------------------------------------------------------------//
 //                                   Tests                                    //

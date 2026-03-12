@@ -19,6 +19,8 @@ This package is isomorphic — it contains no native code, no WebAssembly, and n
 
 ```bash
 pnpm add @rozek/sds-sync-engine
+# @rozek/sds-core is a peer dependency:
+pnpm add @rozek/sds-core
 ```
 
 ---

@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-websocket-server",
-  "description": "WebSocket server for shareable-data-store (Hono, JWT auth, multi-store)",
-  "version": "0.0.9",
+  "description": "Relay-only WebSocket server for shareable-data-store (Hono, JWT auth, multi-store)",
+  "version": "0.0.10",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
@@ -13,6 +13,7 @@
     "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
+  "keywords": ["crdt","collaborative","offline-first","sync","websocket","relay","server","hono","jwt"],
   "type": "module",
   "main": "./dist/sds-websocket-server.js",
   "module": "./dist/sds-websocket-server.js",
@@ -43,16 +44,7 @@
     "hono": "^4.0.0",
     "jose": "^5.0.0"
   },
-  "peerDependencies": {
-    "@rozek/sds-persistence-node": "workspace:*"
-  },
-  "peerDependenciesMeta": {
-    "@rozek/sds-persistence-node": {
-      "optional": true
-    }
-  },
   "devDependencies": {
-    "@rozek/sds-persistence-node": "workspace:*",
     "@types/node": "^25.3.3",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",

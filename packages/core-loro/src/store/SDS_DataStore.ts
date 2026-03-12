@@ -29,7 +29,7 @@ import { Loro, LoroMap, LoroText, VersionVector } from 'loro-crdt'
 import { z }                     from 'zod'
 import { gzipSync, gunzipSync }  from 'fflate'
 import { generateKeyBetween, generateNKeysBetween } from 'fractional-indexing'
-import { SDS_Error }             from '../error/SDS_Error.js'
+import { SDS_Error }             from '@rozek/sds-core'
 import {
   SDS_DataStore as SDS_StoreBase,
   _base64ToUint8Array,

@@ -12,7 +12,7 @@ class V extends Error {
     this.code = t, this.name = "SDS_Error";
   }
 }
-const re = "00000000-0000-4000-8000-000000000000", De = "00000000-0000-4000-8000-000000000001", Pe = "00000000-0000-4000-8000-000000000002", Et = "text/plain", Rt = 131072, Zt = 2048, jt = 5e3, pe = 1024, _e = 256, ye = 1024, ge = 1048576, Vt = 200;
+const re = "00000000-0000-4000-8000-000000000000", De = "00000000-0000-4000-8000-000000000001", Pe = "00000000-0000-4000-8000-000000000002", Et = "text/plain", Rt = 131072, Zt = 2048, jt = 5e3, pe = 1024, _e = 256, ye = 1024, ge = 262144, Vt = 200;
 function Ue(r) {
   const e = globalThis.Buffer;
   if (e != null)
@@ -2802,6 +2802,13 @@ const bt = J({
   try {
     t = JSON.stringify(r);
   } catch {
+    e.addIssue({
+      code: d.custom,
+      message: "Info value must be JSON-serialisable"
+    });
+    return;
+  }
+  if (t === void 0) {
     e.addIssue({
       code: d.custom,
       message: "Info value must be JSON-serialisable"

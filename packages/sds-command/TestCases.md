@@ -4,13 +4,13 @@
 
 | # | Description | Expected |
 |---|---|---|
-| CF-01 | `resolveConfig({})` with no env vars | `Format:'text'`, `OnError:'stop'`, `DataDir:'~/.sds'` |
+| CF-01 | `resolveConfig({})` with no env vars | `Format:'text'`, `OnError:'stop'`, `PersistenceDir:'~/.sds'` |
 | CF-02 | `format:'json'` option | `Format:'json'` |
 | CF-03 | `onError:'continue'` option | `OnError:'continue'` |
 | CF-04 | option overrides matching env var | option value is used |
 | CF-05 | `SDS_SERVER_URL` env var set, no `server` option | `ServerURL` reflects env var |
 | CF-06 | `SDS_TOKEN` env var set, no `token` option | `Token` reflects env var |
-| CF-07 | `DBPathFor` with a simple store ID | `<DataDir>/<storeId>.db` |
+| CF-07 | `DBPathFor` with a simple store ID | `<PersistenceDir>/<storeId>.db` |
 | CF-08 | `DBPathFor` with special chars in store ID | chars outside `[a-zA-Z0-9_-]` replaced with `_` |
 | CF-09 | `format:'unknown'` option | throws `SDS_ConfigError` with `UsageError` code |
 | CF-10 | `onError:'unknown'` option | throws `SDS_ConfigError` with `UsageError` code |
@@ -28,6 +28,10 @@
 | CT-07 | unclosed quote | remaining input merged into last token |
 | CT-08 | backslash-escaped space (`item\ get`) | `['item get']` as one token |
 | CT-09 | `'\\"'` (escaped double-quote) | `['"']` |
+| CT-10 | backslash-escaped double-quote inside a double-quoted string (`"say \"hi\""`) | `['say "hi"']` |
+| CT-11 | inline comment (`tokens # comment`) | tokens before `#` returned; `#` and everything after stripped |
+| CT-12 | line starting with `#` | `[]` |
+| CT-13 | tab character between tokens | treated as whitespace |
 
 ## IP — Info-Entry Parsing (`extractInfoEntries`, `applyInfoToEntry`)
 
@@ -46,6 +50,19 @@
 | IP-11 | `applyInfoToEntry` with `null` (valid JSON, not an object) | throws |
 | IP-12 | `applyInfoToEntry` with `"hello"` (JSON string, not an object) | throws |
 | IP-13 | `applyInfoToEntry` with `42` (JSON number, not an object) | throws |
+| IP-14 | `--info.key=value` syntax (equals sign in token) | equivalent to `--info.key value`; key extracted, value parsed |
+| IP-15 | `--info.flag` (no value argument follows) | `InfoEntries:{flag:true}` |
+| IP-16 | key with valid JS identifier chars (`_`, `$`, letter, digit) | accepted without error |
+| IP-17 | key starting with a digit (`--info.1st`) | throws `SDS_CommandError` with `UsageError` code |
+| IP-18 | key with embedded dot (`--info.a.b=v`) | throws `SDS_CommandError` with `UsageError` code |
+| IP-19 | empty key (`--info.=v`) | throws `SDS_CommandError` with `UsageError` code |
+| IP-20 | `applyInfoToEntry` with JSON array (not an object) (`[1,2,3]`) | throws |
+| IP-21 | `applyInfoToEntry` JSON object contains a key starting with a digit (`{"1st":"v"}`) | throws |
+| IP-22 | `applyInfoToEntry` JSON object contains only valid JS identifier keys | accepted; all keys merged into proxy |
+| IP-23 | `--info-delete.key` flag | `InfoDeleteKeys` contains `'key'`; flag absent from `CleanArgv` |
+| IP-24 | multiple `--info-delete.<key>` flags | all keys collected into `InfoDeleteKeys`; none remain in `CleanArgv` |
+| IP-25 | invalid key in `--info-delete.<key>` (e.g. `--info-delete.my-key`) | throws `SDS_CommandError` with `UsageError` code |
+| IP-26 | `applyInfoToEntry` with non-empty `InfoDeleteKeys` | listed keys removed from proxy; other keys unchanged |
 
 ## SI — Store Info (`store info`)
 
@@ -54,7 +71,7 @@
 | SI-01 | no store ID configured | exits with `UsageError` (code 2) |
 | SI-02 | store does not exist locally (text) | message contains "not found" |
 | SI-03 | store does not exist locally (json) | `{ exists: false }` |
-| SI-04 | store exists (json) | `{ exists:true, entryCount:≥0, dbPath:<non-empty> }` |
+| SI-04 | store exists (json) | `{ exists:true, entryCount:≥1, dbPath:<non-empty> }` |
 
 ## SD — Store Destroy (`store destroy`)
 
@@ -87,14 +104,14 @@
 | EC-08 | `--file` points to non-existent file | exits with `NotFound` (code 3) |
 | EC-09 | `--at` is a non-integer (`abc`) | exits with `UsageError` (code 2) |
 | EC-10 | `--target` with non-existent target | exits with `NotFound` (code 3) |
-| EC-11 | `--mime` combined with `--target` | exits with `UsageError` (code 2); error mentions `--mime` and `link` |
-| EC-12 | `--value` combined with `--target` | exits with `UsageError` (code 2); error mentions `--value` and `link` |
-| EC-13 | `--file` combined with `--target` | exits with `UsageError` (code 2); error mentions `--file` and `link` |
-| EC-14 | `--label` at link creation time | label stored; visible in subsequent `entry get` |
-| EC-15 | `--info` at link creation time | info entries stored; visible in subsequent `entry get` |
-| EC-16 | `--value` and `--file` together | exits with `UsageError` (code 2); error mentions both `--value` and `--file` |
-| EC-17 | `--container` points to a link (not an item) | exits with `NotFound` (code 3); error mentions `not an item` |
-| EC-18 | `--at -1` (negative index) | exits with `UsageError` (code 2); error mentions `--at` |
+| EC-11 | `--mime` combined with `--target` (representative for all item-only flags) | exits with `UsageError` (code 2); error mentions `--mime` and `link` |
+| EC-12 | `--label` at link creation time | label stored; visible in subsequent `entry get` |
+| EC-13 | `--info` at link creation time | info entries stored; visible in subsequent `entry get` |
+| EC-14 | `--value` and `--file` together | exits with `UsageError` (code 2); error mentions both `--value` and `--file` |
+| EC-15 | `--container` points to a link (not an item) | exits with `NotFound` (code 3); error mentions `not an item` |
+| EC-16 | `--at -1` (negative index) | exits with `UsageError` (code 2); error mentions `--at` |
+| EC-17 | `--container root` alias (representative for alias resolution) | exits with code 0; item UUID printed; item appears in root list |
+| EC-18 | `--info-delete.<key>` at create time | exits with code 0; new entry's info lacks that key (no-op) |
 
 ## EG — Entry Get (`entry get`)
 
@@ -108,6 +125,8 @@
 | EG-06 | `--kind` only | only `kind` field in output; no `label` or `mime` |
 | EG-07 | `entry get` on a link with `--format json` | JSON output includes `kind: "link"` and `target` field; no `mime` or `value` |
 | EG-08 | `entry get trash` (well-known alias) | exits with code 0; JSON includes `id` and `kind: "item"` |
+| EG-09 | `entry get lost-and-found` (well-known alias) | exits with code 0; JSON includes `id` and `kind: "item"` |
+| EG-10 | `entry get lostandfound` (no-hyphen variant) | exits with code 0; returned `id` equals the `lost-and-found` entry ID |
 
 ## EL — Entry List (`entry list`)
 
@@ -125,13 +144,15 @@
 | EL-10 | `entry list --label` in text format | line for known entry contains both UUID and label text |
 | EL-11 | `entry list --label` in JSON format | JSON array objects include a `label` field matching the stored label |
 | EL-12 | `entry list root` (well-known alias) | exits with code 0; JSON array includes direct root-level entries |
+| EL-13 | `entry list root` does not include system containers | TrashId and LostAndFoundId are absent from the result array |
+| EL-14 | `entry list lost-and-found` (well-known alias) | exits with code 0; result is an array |
 
 ## EM — Entry Move / Delete / Restore / Purge
 
 | # | Description | Expected |
 |---|---|---|
 | EM-01 | move item to valid container | success; `entry get` shows new container |
-| EM-02 | move root or trash entry | exits with `Forbidden` (code 6) |
+| EM-02 | move root, trash, or lost-and-found to a non-root container | exits with `Forbidden` (code 6) |
 | EM-03 | move to non-existent target | exits with `NotFound` (code 3) |
 | EM-04 | delete item | entry appears in `trash list` |
 | EM-05 | restore trashed item | entry moves back to root (or specified target) |
@@ -144,7 +165,9 @@
 | EM-12 | move an item into its own descendant (cycle) | exits with `Forbidden` (code 6) |
 | EM-13 | `entry move --at -1` (negative index) | exits with `UsageError` (code 2); error mentions `--at` |
 | EM-14 | `entry restore --at -5` (negative index) | exits with `UsageError` (code 2); error mentions `--at` |
-| EM-15 | delete system entries (root, trash) | exits with `Forbidden` (code 6); error mentions "system entry" |
+| EM-15 | delete system entries (root, trash, lost-and-found) | exits with `Forbidden` (code 6); error mentions "system entry" |
+| EM-16 | `entry move --to root` alias (representative for alias resolution) | exits with code 0; item appears in root list |
+| EM-17 | `entry restore --to root` alias | exits with code 0; item appears in root list |
 
 ## TR — Trash Commands (`trash list`, `trash purge-all`, `trash purge-expired`)
 
@@ -168,8 +191,9 @@
 | TW-03 | one item in root | one node beneath root |
 | TW-04 | `--depth 1` | only direct inner entries of root; no deeper nodes |
 | TW-05 | `--depth` is a non-integer (`abc`) | exits with `UsageError` (code 2) |
-| TW-07 | `--depth 0` with items present | exits with code 0; JSON `root` array is empty |
 | TW-06 | `tree show` on a non-existent store | exits with `NotFound` (code 3) |
+| TW-07 | `--depth 0` with items present | exits with code 0; JSON `root` array is empty |
+| TW-08 | system containers (trash, lost-and-found) are excluded from tree output | TrashId and LostAndFoundId do not appear anywhere in the JSON tree |
 
 ## CL — CLI default behaviour
 
@@ -204,6 +228,9 @@
 | EU-08 | `entry update <itemId> --value` and `--file` together | exits with `UsageError` (code 2); error mentions both `--value` and `--file` |
 | EU-09 | `entry update <itemId> --mime application/json` | MIME type stored; visible in subsequent `entry get` |
 | EU-10 | `entry update --info.author alice --info.version 1`, then `--info.version 2` only | `version` updated to `2`; `author` still `alice` (merge, not replace) |
+| EU-11 | `entry update --info.keep yes --info.remove bye`, then `--info-delete.remove` | `remove` key gone; `keep` key still `yes` |
+| EU-12 | `--info.<key>` and `--info-delete.<key>` for different keys in one command | new key added; deleted key removed in one operation |
+| EU-13 | `--info.<key>` and `--info-delete.<key>` naming the **same** key | delete wins; key is absent after the command |
 
 ## RP — REPL (`startREPL`)
 
@@ -217,8 +244,8 @@
 | RP-06 | failing command in REPL | error printed; session continues; next command succeeds |
 | RP-07 | unknown command in REPL | error printed; session continues; next command succeeds |
 | RP-08 | `help` in REPL | available commands shown; session continues; `shell` not listed; no error on stderr |
-| RP-10 | `help entry` in REPL | entry subcommand help shown; session continues; no error on stderr |
 | RP-09 | failing command in REPL | error message goes to stderr (not stdout); stdout unaffected |
+| RP-10 | `help entry` in REPL | entry subcommand help shown; session continues; no error on stderr |
 
 ## DO — Duplicate Options
 
@@ -227,6 +254,18 @@
 | DO-01 | `entry create --label A --label B` | label stored is `B` (last value wins) |
 | DO-02 | `entry update <id> --label A --label B` | label stored is `B` (last value wins) |
 | DO-03 | `entry create --mime text/plain --mime application/json` | MIME type stored is `application/json` (last value wins) |
+
+## SY — Store Sync (`runSync`, `store sync`)
+
+| # | Description | Expected |
+|---|---|---|
+| SY-01 | `runSync()` without a store ID | throws `SDS_CommandError` with `UsageError` (code 2); message contains "no store ID" |
+| SY-02 | `runSync()` without a server URL | throws `SDS_CommandError` with `UsageError` (code 2); message contains "no server URL" |
+| SY-03 | `runSync()` with invalid URL scheme (e.g. `http://`) | throws `SDS_CommandError` with `UsageError` (code 2); message contains "invalid server URL" |
+| SY-04 | `runSync()` without a token | throws `SDS_CommandError` with `UsageError` (code 2); message contains "no client token" |
+| SY-05 | local SQLite patches exist; connection succeeds | `Network.sendPatch()` called once per stored patch; result `Connected:true` |
+| SY-06 | `store sync --timeout 0` | exits with `UsageError` (code 2); error mentions `--timeout` |
+| SY-07 | `store sync --timeout -1` (negative) | exits with `UsageError` (code 2); error mentions `--timeout` |
 
 ## SR — Script Runner (`runScript`)
 

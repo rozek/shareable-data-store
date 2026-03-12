@@ -4,7 +4,7 @@
 
 ## Goal
 
-Verify that the SDS WebSocket server correctly authenticates clients, relays CRDT frames, enforces scope restrictions, and issues tokens via the admin API.
+Verify that the relay-only SDS WebSocket server correctly authenticates clients, relays CRDT frames, enforces scope restrictions, and issues tokens via the admin API.
 
 ---
 
@@ -19,6 +19,7 @@ Verify that the SDS WebSocket server correctly authenticates clients, relays CRD
 
 **Out of scope:**
 - TLS / Caddy configuration
+- Persistence — the relay server holds no state; persistence is the responsibility of `sds-sidecar-*` packages
 
 ---
 
@@ -29,6 +30,14 @@ Verify that the SDS WebSocket server correctly authenticates clients, relays CRD
 - **WebSocket unit testing:** `LiveStore` and `rejectWriteFrame` helpers imported directly
 - **Test framework:** Vitest 2
 
+> **Note on WebSocket auth testing:** `createNodeWebSocket` requires a raw Node.js
+> socket that is absent from Hono's HTTP test harness, so all `/ws` requests return
+> HTTP 500 in unit tests regardless of auth outcome.  Auth rejections (SA-01, SA-04)
+> are detected by spying on `console.error` for the `'[/ws] token rejected:'` prefix.
+> SA-02 (valid token accepted) is verified by asserting that no such log entry is
+> produced.  SA-03 (wrong `aud`) is handled silently at the application level and
+> falls back to an HTTP status assertion.
+
 ---
 
 ## Part I — Authentication
@@ -37,15 +46,19 @@ Verify that the SDS WebSocket server correctly authenticates clients, relays CRD
 
 #### 1.1 Missing token
 
-- **TC-1.1.1** — A WebSocket upgrade request to `/ws/:storeId` with no `token` query parameter returns HTTP 4xx
+- **TC-1.1.1** — A WebSocket upgrade request to `/ws/:storeId` with no `token` query parameter causes the server to log `'[/ws] token rejected:'` (auth rejection detected via `console.error` spy)
 
-#### 1.2 Wrong audience
+#### 1.2 Valid token — happy path
 
-- **TC-1.2.1** — A valid JWT whose `aud` claim does not match the `:storeId` path parameter is rejected with HTTP 4xx
+- **TC-1.2.1** — A WebSocket upgrade request with a valid JWT whose `aud` matches `:storeId` does **not** cause the server to log `'[/ws] token rejected:'` (auth passes; in a production WS-capable environment this results in HTTP 101)
 
-#### 1.3 Expired token
+#### 1.3 Wrong audience
 
-- **TC-1.3.1** — A JWT with an expiry in the past is rejected with HTTP 4xx
+- **TC-1.3.1** — A valid JWT whose `aud` claim does not match the `:storeId` path parameter is rejected at the application level (returns HTTP ≥ 400)
+
+#### 1.4 Expired token
+
+- **TC-1.4.1** — A JWT with an expiry in the past causes the server to log `'[/ws] token rejected:'` (auth rejection detected via `console.error` spy)
 
 ---
 
@@ -98,46 +111,6 @@ Verify that the SDS WebSocket server correctly authenticates clients, relays CRD
 #### 2.2 Issued token is valid
 
 - **TC-3.4.1** — The JWT returned by a successful `POST /api/token` is verifiable with the server's secret and carries the requested `sub`, `aud`, and `scope` claims
-
----
-
-## Part IV — Persistence
-
-Persistence is tested via `LiveStore` directly with a real `SDS_DesktopPersistenceProvider`
-backed by a temporary SQLite file. Each test gets a fresh `mkdtemp` directory that is
-removed in `afterEach`.
-
-### 1. PATCH persistence
-
-#### 1.1 Patch stored and replayed
-
-- **TC-4.1.1** — After `persistPatch()`, a newly connecting client receives the patch payload as a `0x01` frame via `replayTo()`
-
-### 2. VALUE persistence
-
-#### 2.1 Snapshot stored and replayed
-
-- **TC-4.2.1** — After `persistValue()`, a newly connecting client receives the value payload as a `0x02` frame via `replayTo()`
-
-#### 2.2 Patches pruned on VALUE
-
-- **TC-4.2.2** — A PATCH persisted before `persistValue()` is pruned; `replayTo()` sends only the snapshot, not the superseded patch
-
-#### 2.3 Patches after VALUE replayed
-
-- **TC-4.2.3** — A PATCH persisted after `persistValue()` is not pruned; `replayTo()` sends the snapshot followed by the patch
-
-### 3. VALUE_CHUNK reassembly
-
-#### 3.1 Chunks assembled and persisted as snapshot
-
-- **TC-4.3.1** — Two VALUE_CHUNK frames for the same hash (chunk 0/2, chunk 1/2) are assembled by `handleChunk()`; `replayTo()` sends the assembled value as a `0x02` frame
-
-### 4. Store close / reopen
-
-#### 4.1 Data survives store close
-
-- **TC-4.4.1** — After `close()`, creating a new `LiveStore` with the same SQLite file and calling `replayTo()` returns the previously persisted patches
 
 ---
 

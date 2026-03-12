@@ -33,9 +33,11 @@ Choose one of the alternative backend packages when you need a different CRDT li
 
 ```bash
 pnpm add @rozek/sds-core-yjs
+# @rozek/sds-core is a peer dependency:
+pnpm add @rozek/sds-core
 ```
 
-All runtime dependencies (`yjs`, `fflate`, `fractional-indexing`, `zod`) are bundled — no additional installs required.
+All other runtime dependencies (`yjs`, `fflate`, `fractional-indexing`, `zod`) are bundled.
 
 ---
 

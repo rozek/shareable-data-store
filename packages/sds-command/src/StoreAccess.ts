@@ -10,7 +10,7 @@
 import fs   from 'node:fs/promises'
 import path from 'node:path'
 
-import { SDS_DataStore }                  from '@rozek/sds-core-jj'
+import type { SDS_DataStore }             from '@rozek/sds-core'
 import { SDS_DesktopPersistenceProvider } from '@rozek/sds-persistence-node'
 import { SDS_SyncEngine }                 from '@rozek/sds-sync-engine'
 import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
@@ -18,6 +18,31 @@ import { SDS_WebSocketProvider }          from '@rozek/sds-network-websocket'
 import type { SDSConfig }  from './Config.js'
 import { DBPathFor }       from './Config.js'
 import { ExitCodes }       from './ExitCodes.js'
+
+//----------------------------------------------------------------------------//
+//                             SDS_StoreFactory                               //
+//----------------------------------------------------------------------------//
+
+/**** SDS_StoreFactory — pluggable backend factory injected by the CLI wrapper ****/
+
+export interface SDS_StoreFactory {
+  fromScratch (): SDS_DataStore
+  fromBinary  (Data:Uint8Array): SDS_DataStore
+}
+
+let Factory:SDS_StoreFactory
+
+/**** setStoreFactory — called once by runCommand before any store operations ****/
+
+export function setStoreFactory (f:SDS_StoreFactory):void {
+  Factory = f
+}
+
+/**** createStoreFromBinary — creates a temporary store using the injected factory ****/
+
+export function createStoreFromBinary (Data:Uint8Array):SDS_DataStore {
+  return Factory.fromBinary(Data)
+}
 
 //----------------------------------------------------------------------------//
 //                              SDS_CommandError                              //
@@ -62,7 +87,7 @@ export async function loadContext (
     )
   }
 
-  await fs.mkdir(Config.DataDir, { recursive:true })
+  await fs.mkdir(Config.PersistenceDir, { recursive:true })
   const DbPath      = DBPathFor(Config, StoreId)
   const Persistence = new SDS_DesktopPersistenceProvider(DbPath, StoreId)
 
@@ -71,17 +96,17 @@ export async function loadContext (
     const Snapshot = await Persistence.loadSnapshot()
     switch (true) {
       case (Snapshot != null): {
-        Store = SDS_DataStore.fromBinary(Snapshot!)
+        Store = Factory.fromBinary(Snapshot!)
         break
       }
       case (allowCreate): {
-        Store = SDS_DataStore.fromScratch()
+        Store = Factory.fromScratch()
         break
       }
       default: {
         await Persistence.close()
         throw new SDS_CommandError(
-          `store '${StoreId}' not found in '${Config.DataDir}'`,
+          `store '${StoreId}' not found in '${Config.PersistenceDir}'`,
           ExitCodes.NotFound
         )
       }
@@ -149,14 +174,14 @@ export async function runSync (
     )
   }
 
-  await fs.mkdir(Config.DataDir, { recursive:true })
+  await fs.mkdir(Config.PersistenceDir, { recursive:true })
   const DbPath      = DBPathFor(Config, StoreId)
   const Persistence = new SDS_DesktopPersistenceProvider(DbPath, StoreId)
 
   const Snapshot = await Persistence.loadSnapshot()
   const Store    = Snapshot != null
-    ? SDS_DataStore.fromBinary(Snapshot)
-    : SDS_DataStore.fromScratch()
+    ? Factory.fromBinary(Snapshot)
+    : Factory.fromScratch()
 
   const Network    = new SDS_WebSocketProvider(StoreId)
   const SyncEngine = new SDS_SyncEngine(Store, {
@@ -183,6 +208,15 @@ export async function runSync (
 
   try {
     await SyncEngine.connectTo(ServerURL, { Token })
+    // push all locally-stored patches to the server — this is the "upload"
+    // half of bidirectional sync; the server's replayTo() handles the
+    // "download" half by replaying stored patches back to us.
+    // We send the raw SQLite patches rather than Store.exportPatch() because
+    // exportPatch() on a fromBinary store returns a useless 4-byte no-op.
+    const LocalPatches = await Persistence.loadPatchesSince(0)
+    for (const Patch of LocalPatches) {
+      Network.sendPatch(Patch)
+    }
     await CompletionPromise
   } catch (Signal) {
     throw new SDS_CommandError(
@@ -233,7 +267,7 @@ export async function destroyStore (Config:SDSConfig):Promise<void> {
     const FileSystemError = Signal as NodeJS.ErrnoException
     if (FileSystemError.code === 'ENOENT') {
       throw new SDS_CommandError(
-        `store '${StoreId}' not found in '${Config.DataDir}'`,
+        `store '${StoreId}' not found in '${Config.PersistenceDir}'`,
         ExitCodes.NotFound
       )
     }
@@ -248,15 +282,17 @@ export async function destroyStore (Config:SDSConfig):Promise<void> {
 //                               resolveEntryId                               //
 //----------------------------------------------------------------------------//
 
-import { RootId, TrashId } from '@rozek/sds-core'
+import { RootId, TrashId, LostAndFoundId } from '@rozek/sds-core'
 
 /**** resolveEntryId — maps well-known aliases to their canonical UUIDs ****/
 
 export function resolveEntryId (IdOrAlias:string):string {
   switch (IdOrAlias.toLowerCase()) {
-    case 'root':  return RootId
-    case 'trash': return TrashId
-    default:      return IdOrAlias
+    case 'root':          return RootId
+    case 'trash':         return TrashId
+    case 'lost-and-found':
+    case 'lostandfound':  return LostAndFoundId
+    default:              return IdOrAlias
   }
 }
 

@@ -18,6 +18,8 @@ This package targets **browsers only** and is not intended for use in a Node.js 
 
 ```bash
 pnpm add @rozek/sds-persistence-browser
+# @rozek/sds-core is a peer dependency:
+pnpm add @rozek/sds-core
 ```
 
 No native dependencies; pure browser API.

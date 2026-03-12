@@ -22,6 +22,8 @@ SQLite support is provided by the built-in `node:sqlite` module (available since
 
 ```bash
 pnpm add @rozek/sds-persistence-node
+# @rozek/sds-core is a peer dependency:
+pnpm add @rozek/sds-core
 ```
 
 Requires Node.js 22.5+. No native dependencies are needed — SQLite is provided by Node.js itself.

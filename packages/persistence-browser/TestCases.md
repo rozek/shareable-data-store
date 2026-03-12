@@ -4,13 +4,13 @@
 
 | # | Description | Expected |
 |---|---|---|
-| BC-01 | construct with a storeId and call loadSnapshot (lazy-opens DB) | no exception; returns null |
+| BC-01 | construct with a storeId and call loadSnapshot (lazy-opens DB) | no exception; returns undefined |
 
 ## BS — Snapshot
 
 | # | Description | Expected |
 |---|---|---|
-| BS-01 | loadSnapshot on empty DB returns null | `null` |
+| BS-01 | loadSnapshot on empty DB returns undefined | `undefined` |
 | BS-02 | saveSnapshot then loadSnapshot returns same bytes | deep-equal Uint8Array |
 | BS-03 | saveSnapshot twice overwrites previous | second snapshot is returned |
 
@@ -28,7 +28,7 @@
 
 | # | Description | Expected |
 |---|---|---|
-| BV-01 | loadValue for unknown hash returns null | `null` |
+| BV-01 | loadValue for unknown hash returns undefined | `undefined` |
 | BV-02 | saveValue then loadValue returns same bytes | deep-equal Uint8Array |
-| BV-03 | saveValue same hash twice; two releaseValue calls delete row | null after two releases |
+| BV-03 | saveValue same hash twice; two releaseValue calls delete row | undefined after two releases |
 | BV-04 | releaseValue on unknown hash does not throw | resolves without error |

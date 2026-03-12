@@ -62,7 +62,7 @@ Every command shares the same set of global options and environment variable ove
 | `--store <id>` | `SDS_STORE_ID` | Store identifier (= local SQLite file basename) |
 | `--token <jwt>` | `SDS_TOKEN` | Client JWT with `read` or `write` scope |
 | `--admin-token <jwt>` | `SDS_ADMIN_TOKEN` | Admin JWT with `admin` scope |
-| `--data-dir <path>` | `SDS_DATA_DIR` | Directory for local SQLite files (default: `~/.sds`) |
+| `--persistence-dir <path>` | `SDS_PERSISTENCE_DIR` | Directory for local SQLite files (default: `~/.sds`) |
 | `--format <fmt>` | — | Output format: `text` (default) or `json`; any other value exits with code 2 |
 | `--on-error <action>` | — | Error handling in script/batch mode: `stop` (default), `continue`, or `ask`; ignored in the interactive REPL (which always continues on error); any other value exits with code 2 |
 | `--version` | — | Print the installed `sds` version number and exit with code 0 |
@@ -123,36 +123,36 @@ sds store import --input <file>
 
 ### `entry`
 
-All entry operations — creating, reading, listing, and modifying both items and links — are handled by a single `entry` command group. `<id>` accepts a canonical UUID or the aliases `root` and `trash`.
+All entry operations — creating, reading, listing, and modifying both items and links — are handled by a single `entry` command group. `<id>` accepts a canonical UUID or the well-known aliases `root`, `trash`, and `lost-and-found` (also accepted without hyphens as `lostandfound`).
 
 ```
 sds entry create [--target <item-id>] [--container <item-id>] [--at <index>]
                  [--label <label>] [--mime <type>] [--value <string>] [--file <path>]
-                 [--info <json>] [--info.<key> <value>]
+                 [--info <json>] [--info.<key> <value>] [--info-delete.<key>]
 sds entry get    <id> [--kind] [--label] [--mime] [--value] [--info] [--info.<key>] [--target]
 sds entry list   <id> [--recursive] [--depth <n>] [--only items|links]
                       [--label] [--mime] [--value] [--info] [--info.<key>]
 sds entry update <id> [--label <label>] [--mime <type>] [--value <string>]
-                      [--file <path>] [--info <json>] [--info.<key> <value>]
+                      [--file <path>] [--info <json>] [--info.<key> <value>] [--info-delete.<key>]
 sds entry move   <id> --to <target-id> [--at <index>]
 sds entry delete <id>
 sds entry restore <id> [--to <target-id>] [--at <index>]
 sds entry purge  <id>
 ```
 
-`entry create` creates a new entry and prints its UUID to stdout. Without `--target` an **item** is created; `--target <item-id>` creates a **link** pointing at that item instead. If the store does not exist yet it is created automatically (items only — for links the store must already exist). `--container <item-id>` sets the outer container (default: root) — the container must be an item, not a link; passing a link ID exits with code 3 (NotFound). `--at <index>` controls the insertion position as a zero-based integer (0 = first, default: append at end); a negative value exits with code 2; a value larger than the current child count is silently clamped to the end. `--label <label>` sets an initial label; `--info <json>` and `--info.<key> <value>` set initial info entries. Item-only options (`--mime`, `--value`, `--file`) exit with code 2 when combined with `--target`. `--value` and `--file` are mutually exclusive; using both at once exits with code 2. JSON output: `{ id, created: true, kind: "item" }` for items, `{ id, created: true, kind: "link", target: "<target-id>" }` for links.
+`entry create` creates a new entry and prints its UUID to stdout. Without `--target` an **item** is created; `--target <item-id>` creates a **link** pointing at that item instead. If the store does not exist yet it is created automatically (items only — for links the store must already exist). `--container <item-id>` sets the outer container (default: root) — also accepts the well-known aliases `root` and `lost-and-found`; the container must be an item, not a link; passing a link ID exits with code 3 (NotFound). `--at <index>` controls the insertion position as a zero-based integer (0 = first, default: append at end); a negative value exits with code 2; a value larger than the current child count is silently clamped to the end. `--label <label>` sets an initial label; `--info <json>` and `--info.<key> <value>` set initial info entries; `--info-delete.<key>` is accepted for consistency with `entry update` but is a no-op on a new entry (there are no existing keys to remove). Item-only options (`--mime`, `--value`, `--file`) exit with code 2 when combined with `--target`. `--value` and `--file` are mutually exclusive; using both at once exits with code 2. JSON output: `{ id, created: true, kind: "item" }` for items, `{ id, created: true, kind: "link", target: "<target-id>" }` for links.
 
 `entry get` displays fields of an entry. Without display flags all available fields are shown. `--kind` returns `item` or `link`; `--label` includes the label; `--mime` includes the MIME type (items only); `--value` includes the stored value (items only); `--info` includes the full info map as a JSON object; `--info.<key>` includes only the single info entry named `<key>` (output key: `info.<key>`); `--target` includes the target item's UUID (links only). `--mime`, `--value`, and `--info.<key>` are silently ignored for links; `--target` is silently ignored for items. JSON output: `{ id, [kind], [label], [mime], [value], [info], [target] }` — only the requested fields are included; `mime`, `value`, and `info` only appear for items; `target` only appears for links.
 
-`entry list` traverses the direct inner entries of a container item and prints one entry per line. Without display flags only the UUID of each entry is printed. `--recursive` enables a depth-first walk; `--depth <n>` limits the recursion depth (only effective with `--recursive`). `--only items` (or the singular form `--only item`) restricts output to items; `--only links` (or `--only link`) restricts to links; any other value exits with code 2. The display flags (`--label`, `--mime`, `--value`, `--info`, `--info.<key>`) work exactly as described for `entry get`. JSON output: array of `{ id, kind, [label], [mime], [value], [info] }` — `id` and `kind` are always present; additional fields follow the same display-flag rules as `entry get`.
+`entry list` traverses the direct inner entries of a container item and prints one entry per line. The container `<id>` accepts a canonical UUID or the well-known aliases `root`, `trash`, and `lost-and-found` (also `lostandfound` without hyphens). Without display flags only the UUID of each entry is printed. `--recursive` enables a depth-first walk; `--depth <n>` limits the recursion depth (only effective with `--recursive`). `--only items` (or the singular form `--only item`) restricts output to items; `--only links` (or `--only link`) restricts to links; any other value exits with code 2. The display flags (`--label`, `--mime`, `--value`, `--info`, `--info.<key>`) work exactly as described for `entry get`. JSON output: array of `{ id, kind, [label], [mime], [value], [info] }` — `id` and `kind` are always present; additional fields follow the same display-flag rules as `entry get`.
 
-`entry update` modifies an existing entry — works on both items and links. Only explicitly specified fields are changed. `--label` is accepted for both kinds. `--mime`, `--value`, and `--file` are items-only; using them on a link exits with code 2. `--value` and `--file` are mutually exclusive; using both at once exits with code 2. `--info <json>` and `--info.<key> <value>` are merged into the existing info map (individual keys are added or overwritten, not replaced entirely). JSON output: `{ id, updated: true }`.
+`entry update` modifies an existing entry — works on both items and links. Only explicitly specified fields are changed. `--label` is accepted for both kinds. `--mime`, `--value`, and `--file` are items-only; using them on a link exits with code 2. `--value` and `--file` are mutually exclusive; using both at once exits with code 2. `--info <json>` and `--info.<key> <value>` are merged into the existing info map (individual keys are added or overwritten, not replaced entirely). `--info-delete.<key>` removes a single key from the info map; any number of delete flags may be combined with `--info` and `--info.<key>` flags in the same command. JSON output: `{ id, updated: true }`.
 
-`entry move` moves a live entry to a different container. `--to <target-id>` is required; `--at <index>` sets the insertion position as a zero-based integer (0 = first, default: append at end); a negative value exits with code 2; a value larger than the current child count is silently clamped to the end. Moving an entry into its own descendant exits with code 6 (Forbidden). JSON output: `{ id, movedTo: "<target-id>", at: <index>|"end" }`.
+`entry move` moves a live entry to a different container. `--to <target-id>` is required and also accepts the well-known aliases `root`, `trash`, and `lost-and-found`; `--at <index>` sets the insertion position as a zero-based integer (0 = first, default: append at end); a negative value exits with code 2; a value larger than the current child count is silently clamped to the end. Moving an entry into its own descendant exits with code 6 (Forbidden). JSON output: `{ id, movedTo: "<target-id>", at: <index>|"end" }`.
 
-`entry delete` soft-deletes the entry by moving it to the trash. System entries (`root`, `trash`) cannot be deleted — attempting to do so exits with code 6 (Forbidden). JSON output: `{ id, deleted: true }`.
+`entry delete` soft-deletes the entry by moving it to the trash. System entries (`root`, `trash`, `lost-and-found`) cannot be deleted — attempting to do so exits with code 6 (Forbidden). JSON output: `{ id, deleted: true }`.
 
-`entry restore` moves a trashed entry back to a live container. The entry must already be in the trash; attempting to restore a live entry exits with code 6 (Forbidden). `--to <target-id>` sets the destination container (default: root); `--at <index>` sets the insertion position as a zero-based integer (0 = first, default: append at end); a negative value exits with code 2; a value larger than the current child count is silently clamped to the end. JSON output: `{ id, restoredTo: "<target-id>", at: <index>|"end" }`.
+`entry restore` moves a trashed entry back to a live container. The entry must already be in the trash; attempting to restore a live entry exits with code 6 (Forbidden). `--to <target-id>` sets the destination container (default: root) — also accepts the well-known aliases `root` and `lost-and-found`; `--at <index>` sets the insertion position as a zero-based integer (0 = first, default: append at end); a negative value exits with code 2; a value larger than the current child count is silently clamped to the end. JSON output: `{ id, restoredTo: "<target-id>", at: <index>|"end" }`.
 
 `entry purge` permanently deletes an entry. The entry must already be in the trash; purging a live entry exits with code 6 (Forbidden). JSON output: `{ id, purged: true }`.
 
@@ -199,8 +199,8 @@ The REPL continues after errors — a failing command prints the error message b
 | what you type | what you get |
 | --- | --- |
 | `help` | list of all available commands |
-| `help <command>` | help for a top-level command group (e.g. `help item`) |
-| `<command> --help` | help for a command or sub-command (e.g. `item list --help`) |
+| `help <command>` | help for a top-level command group (e.g. `help entry`) |
+| `<command> --help` | help for a command or sub-command (e.g. `entry list --help`) |
 
 ---
 
@@ -225,6 +225,12 @@ Several commands support dynamically named info options where `<key>` is the nam
 
 **Key naming rules**: `<key>` must be a valid JavaScript identifier — it may contain letters, digits, `_`, and `$`, but must not start with a digit and must not contain spaces, hyphens, dots, or other special characters. Examples of valid keys: `author`, `_private`, `$ref`, `createdAt`. Keys that violate this rule cause `sds` to exit with a usage error (exit code 2). The same rule applies to keys inside a JSON object supplied via `--info <json>`.
 
+### The `--info-delete.<key>` pattern
+
+**In write commands** (`entry create`, `entry update`): `--info-delete.<key>` (no value argument) removes a single info entry from the stored info map. For example, `--info-delete.author` removes the `author` key. Multiple `--info-delete.<key>` flags can be combined with `--info` and `--info.<key>` flags in the same command — all changes are applied together. On `entry create` the flag is accepted but has no effect (there are no existing keys to remove). The same key-naming rules apply: `<key>` must be a valid JavaScript identifier.
+
+**Conflict rule — delete wins**: If the same key is specified by both `--info.<key>` (or `--info <json>`) and `--info-delete.<key>` in the same command, the delete takes precedence and the key will be absent after the command. The write is applied first and the delete second, regardless of the order the flags appear on the command line.
+
 ---
 
 ## Examples
@@ -245,6 +251,32 @@ sds --store notes entry list root --label --mime
 
 # Get a specific entry (UUID printed by entry create)
 sds --store notes entry get <uuid> --label --value
+```
+
+---
+
+### Working with info metadata
+
+Attach arbitrary key/value metadata to entries, update individual keys, and remove keys that are no longer needed:
+
+```bash
+# Create an entry with two info keys
+sds --store notes entry create --label "Report Q1" \
+    --info.author "alice" --info.status "draft"
+
+# Update the status, add a reviewer key, and remove the now-unnecessary author key
+# All three changes happen atomically in a single command
+sds --store notes entry update <uuid> \
+    --info.status "final" \
+    --info.reviewer "bob" \
+    --info-delete.author
+
+# Conflict rule: if the same key appears in both --info.<key> and --info-delete.<key>,
+# the delete always wins and the key is absent after the command
+sds --store notes entry update <uuid> \
+    --info.status "published" \
+    --info-delete.status
+# → "status" will NOT be present in the info map afterwards
 ```
 
 ---
@@ -341,7 +373,7 @@ The shell is useful for ad-hoc inspection and edits without retyping global flag
 
 ```
 $ sds --store team-wiki shell
-SDS interactive shell — type "help" for commands, "exit" to quit
+SDS interactive shell — type "help [command]" for help, "exit" to quit
 sds> store info
 sds> entry list root --label --mime
 sds> entry create --label "Ideas" --mime text/plain

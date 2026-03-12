@@ -15,8 +15,8 @@
 | WF-03 | sendValue (> 1 MB) sends multiple VALUE_CHUNK frames (0x05) | multiple frames, all with correct chunk header |
 | WF-04 | requestValue sends 0x03 frame with 32-byte hash | first byte = 0x03; next 32 bytes = hash |
 | WF-05 | sendLocalState sends 0x04 frame with JSON-encoded state | first byte = 0x04; JSON-parseable presence payload |
-| WF-07 | sendLocalState with custom field includes custom data in JSON payload | parsed JSON contains `custom` key with correct value |
 | WF-06 | incoming VALUE_CHUNK frames reassembled before firing onValue | single complete callback after all chunks arrive |
+| WF-07 | sendLocalState with custom field includes custom data in JSON payload | parsed JSON contains `custom` key with correct value |
 
 ## WE — Events
 

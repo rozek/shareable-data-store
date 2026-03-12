@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-network-webrtc",
   "description": "WebRTC sync + presence provider for shareable-data-store (browser)",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
@@ -13,6 +13,7 @@
     "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
+  "keywords": ["crdt","collaborative","offline-first","sync","webrtc","p2p","presence","browser"],
   "type": "module",
   "main": "./dist/sds-network-webrtc.js",
   "module": "./dist/sds-network-webrtc.js",

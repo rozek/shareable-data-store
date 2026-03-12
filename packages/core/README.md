@@ -356,14 +356,14 @@ These interfaces are implemented by the infrastructure packages and consumed by 
 
 ```typescript
 interface SDS_PersistenceProvider {
-  loadSnapshot ():Promise<Uint8Array | null>
+  loadSnapshot ():Promise<Uint8Array | undefined>
   saveSnapshot (Data:Uint8Array):Promise<void>
 
   loadPatchesSince (SeqNumber:SDS_PatchSeqNumber):Promise<Uint8Array[]>
   appendPatch (Patch:Uint8Array, SeqNumber:SDS_PatchSeqNumber):Promise<void>
   prunePatches (beforeSeqNumber:SDS_PatchSeqNumber):Promise<void>
 
-  loadValue (ValueHash:string):Promise<Uint8Array | null>
+  loadValue (ValueHash:string):Promise<Uint8Array | undefined>
   saveValue (ValueHash:string, Data:Uint8Array):Promise<void>
   releaseValue (ValueHash:string):Promise<void>
 
@@ -425,7 +425,7 @@ interface SDS_RemotePresenceState extends SDS_LocalPresenceState {
 interface SDS_PresenceProvider {
   sendLocalState (State:SDS_LocalPresenceState):void
   onRemoteState (
-    Callback:(PeerId:string, State:SDS_RemotePresenceState | null) => void
+    Callback:(PeerId:string, State:SDS_RemotePresenceState | undefined) => void
   ):() => void
   readonly PeerSet:ReadonlyMap<string,SDS_RemotePresenceState>
 }
@@ -444,9 +444,13 @@ All three backends enforce the same hard limits on user-supplied strings and met
 | `Label` | `maxLabelLength` | 1 024 chars | `entry.Label = …` |
 | `MIMEType` | `maxMIMETypeLength` | 256 chars | `item.Type = …`, `newItemAt(…, mimeType)` |
 | `Info` key | `maxInfoKeyLength` | 1 024 chars | `entry.Info['key'] = …` |
-| `Info` value | `maxInfoValueSize` | 1 048 576 bytes (UTF-8 JSON) | `entry.Info['key'] = …` |
+| `Info` value | `maxInfoValueSize` | 262 144 bytes (UTF-8 JSON) | `entry.Info['key'] = …` |
 
 Info values must also be JSON-serialisable; functions, symbols, and circular references are rejected.
+
+The `maxInfoValueSize` limit is measured on the value's `JSON.stringify` output encoded as UTF-8, not on the raw value itself. `JSON.stringify` always adds overhead — strings gain two surrounding quote characters, objects pay for `"`, `:`, `,`, `{`, and `}` per key, and non-ASCII characters may expand to up to four UTF-8 bytes or six characters via `\uXXXX` escaping. For a plain ASCII string the effective character limit is therefore 262 142, not 262 144.
+
+`Info` is designed for compact metadata such as tag lists, content hashes, status flags, or short annotations — not for storing large payloads. Large binary or text data belongs in the entry's `Value` field, which has its own blob storage and chunked transfer mechanism.
 
 All four constants are exported from `@rozek/sds-core` so that application code can display the limits to users without hard-coding them.
 

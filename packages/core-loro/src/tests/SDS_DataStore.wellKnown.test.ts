@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { SDS_DataStore } from '../store/SDS_DataStore.js'
-import { SDS_Error }     from '../error/SDS_Error.js'
+import { SDS_Error }     from '@rozek/sds-core'
 
 const RootId = '00000000-0000-4000-8000-000000000000'
 

@@ -22,7 +22,6 @@ export default defineConfig({
         /^node:/,
         'commander',
         '@rozek/sds-core',
-        '@rozek/sds-core-jj',
         '@rozek/sds-network-websocket',
         '@rozek/sds-persistence-node',
         '@rozek/sds-sync-engine',
@@ -32,5 +31,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [ dts({ rollupTypes:true }) ],
+  plugins: [ dts({ rollupTypes:false }) ],
 })

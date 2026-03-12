@@ -9,7 +9,7 @@
 import type { Command }    from 'commander'
 import type { SDS_Entry }  from '@rozek/sds-core'
 import type { SDS_Item }   from '@rozek/sds-core'
-import { RootId, TrashId } from '@rozek/sds-core'
+import { RootId, TrashId, LostAndFoundId } from '@rozek/sds-core'
 
 import { resolveConfig, type SDSConfig }  from '../Config.js'
 import { printResult, printLine, formatItemLine, type ItemDisplayOptions } from '../Output.js'
@@ -41,12 +41,13 @@ export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void
     .option('--mime <type>',        'MIME type (default: text/plain, items only)')
     .option('--value <string>',     'initial text value (items only)')
     .option('--file <path>',        'read initial value from file (items only)')
-    .option('--info <json>',        'initial info map as JSON object')
-    .option('--info.<key>',         'set a single info entry, e.g. --info.author')
+    .option('--info <json>',          'initial info map as JSON object')
+    .option('--info.<key>',           'set a single info entry, e.g. --info.author')
+    .option('--info-delete.<key>',    'remove a single info entry, e.g. --info-delete.author')
     .action(async (Options, SubCommand) => {
-      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
-      const { InfoEntries }  = extractInfoEntries(ExtraArgv)
-      await cmdEntryCreate(Config, Options, InfoEntries)
+      const Config:SDSConfig                = resolveConfig(SubCommand.optsWithGlobals())
+      const { InfoEntries, InfoDeleteKeys } = extractInfoEntries(ExtraArgv)
+      await cmdEntryCreate(Config, Options, InfoEntries, InfoDeleteKeys)
     })
 
 /**** entry get ****/
@@ -95,11 +96,12 @@ export function registerEntryCommands (Program:Command, ExtraArgv:string[]):void
     .option('--value <string>', 'new text value (items only)')
     .option('--file <path>',    'read new value from file (items only)')
     .option('--info <json>',    'merge info map from JSON object')
-    .option('--info.<key>',     'set a single info entry, e.g. --info.author')
+    .option('--info.<key>',         'set a single info entry, e.g. --info.author')
+    .option('--info-delete.<key>',  'remove a single info entry, e.g. --info-delete.author')
     .action(async (Id:string, Options, SubCommand) => {
-      const Config:SDSConfig = resolveConfig(SubCommand.optsWithGlobals())
-      const { InfoEntries }  = extractInfoEntries(ExtraArgv)
-      await cmdEntryUpdate(Config, Id, Options, InfoEntries)
+      const Config:SDSConfig                = resolveConfig(SubCommand.optsWithGlobals())
+      const { InfoEntries, InfoDeleteKeys } = extractInfoEntries(ExtraArgv)
+      await cmdEntryUpdate(Config, Id, Options, InfoEntries, InfoDeleteKeys)
     })
 
 /**** entry move ****/
@@ -155,10 +157,11 @@ async function cmdEntryCreate (
     target?:string; container?:string; at?:string;
     label?:string; mime?:string; value?:string; file?:string; info?:string
   },
-  InfoEntries:Record<string,unknown>
+  InfoEntries:Record<string,unknown>,
+  InfoDeleteKeys:string[]
 ):Promise<void> {
   // mutual exclusion: --value and --file cannot both be specified
-  if (Options.value != null && Options.file != null) {
+  if ((Options.value != null) && (Options.file != null)) {
     throw new SDS_CommandError(
       `'--value' and '--file' are mutually exclusive — specify at most one`,
       ExitCodes.UsageError
@@ -193,7 +196,7 @@ async function cmdEntryCreate (
       const TargetId    = resolveEntryId(Options.target)
       const ContainerId = resolveEntryId(Options.container ?? RootId)
       const AtIndex     = Options.at != null ? parseIntOption(Options.at, '--at') : undefined
-      if (AtIndex != null && AtIndex < 0) {
+      if ((AtIndex != null) && (AtIndex < 0)) {
         throw new SDS_CommandError(
           `'--at' must be a non-negative integer — got ${AtIndex}`, ExitCodes.UsageError
         )
@@ -219,7 +222,7 @@ async function cmdEntryCreate (
       applyInfoToEntry(
         Context.Store._InfoProxyOf(Link.Id) as Record<string,unknown>,
         Options.info ?? null,
-        InfoEntries
+        InfoEntries, InfoDeleteKeys
       )
 
       if (Config.Format === 'json') {
@@ -245,7 +248,7 @@ async function cmdEntryCreate (
       }
 
       const AtIndex  = Options.at != null ? parseIntOption(Options.at, '--at') : undefined
-      if (AtIndex != null && AtIndex < 0) {
+      if ((AtIndex != null) && (AtIndex < 0)) {
         throw new SDS_CommandError(
           `'--at' must be a non-negative integer — got ${AtIndex}`, ExitCodes.UsageError
         )
@@ -268,7 +271,7 @@ async function cmdEntryCreate (
         }
       }
 
-      applyInfoToEntry(Item.Info, Options.info ?? null, InfoEntries)
+      applyInfoToEntry(Item.Info, Options.info ?? null, InfoEntries, InfoDeleteKeys)
 
       if (Config.Format === 'json') {
         printResult(Config, { id:Item.Id, created:true, kind:'item' })
@@ -323,7 +326,7 @@ async function cmdEntryList (
   InfoKey:string | undefined
 ):Promise<void> {
   const OnlyKind = Options.only?.toLowerCase()
-  if (OnlyKind != null && ! ['item', 'items', 'link', 'links'].includes(OnlyKind)) {
+  if ((OnlyKind != null) && (! ['item', 'items', 'link', 'links'].includes(OnlyKind))) {
     throw new SDS_CommandError(
       `'--only' accepts 'items' or 'links' — got '${Options.only}'`,
       ExitCodes.UsageError
@@ -364,6 +367,8 @@ async function cmdEntryList (
 
 /**** walkEntries — recursive DFS for entry list ****/
 
+const SystemListIds = new Set([ TrashId, LostAndFoundId ])
+
 function walkEntries (
   Store:import('@rozek/sds-core').SDS_DataStore,
   ItemId:string,
@@ -374,6 +379,7 @@ function walkEntries (
   Config:SDSConfig
 ):void {
   for (const Entry of Store._innerEntriesOf(ItemId)) {
+    if (SystemListIds.has(Entry.Id)) { continue }  // hide system containers from listing
     const Kind = Entry.isItem ? 'item' : 'link'
     if ((OnlyKind == null) || (OnlyKind === Kind+'s') || (OnlyKind === Kind)) {
       if (Config.Format === 'json') {
@@ -421,7 +427,7 @@ async function cmdEntryMove (
     const Id       = resolveEntryId(RawId)
     const TargetId = resolveEntryId(RawTarget)
     const AtIndex  = AtStr != null ? parseIntOption(AtStr, '--at') : undefined
-    if (AtIndex != null && AtIndex < 0) {
+    if ((AtIndex != null) && (AtIndex < 0)) {
       throw new SDS_CommandError(
         `'--at' must be a non-negative integer — got ${AtIndex}`, ExitCodes.UsageError
       )
@@ -494,7 +500,7 @@ async function cmdEntryRestore (
     const Id       = resolveEntryId(RawId)
     const TargetId = resolveEntryId(RawTarget ?? RootId)
     const AtIndex  = AtStr != null ? parseIntOption(AtStr, '--at') : undefined
-    if (AtIndex != null && AtIndex < 0) {
+    if ((AtIndex != null) && (AtIndex < 0)) {
       throw new SDS_CommandError(
         `'--at' must be a non-negative integer — got ${AtIndex}`, ExitCodes.UsageError
       )
@@ -569,7 +575,8 @@ async function cmdEntryPurge (Config:SDSConfig, RawId:string):Promise<void> {
 async function cmdEntryUpdate (
   Config:SDSConfig, RawId:string,
   Options:{ label?:string; mime?:string; value?:string; file?:string; info?:string },
-  InfoEntries:Record<string,unknown>
+  InfoEntries:Record<string,unknown>,
+  InfoDeleteKeys:string[]
 ):Promise<void> {
   const Context = await loadContext(Config)
   try {
@@ -605,7 +612,7 @@ async function cmdEntryUpdate (
 
     if (Entry.isItem) {
       // mutual exclusion: --value and --file cannot both be specified
-      if (Options.value != null && Options.file != null) {
+      if ((Options.value != null) && (Options.file != null)) {
         throw new SDS_CommandError(
           `'--value' and '--file' are mutually exclusive — specify at most one`,
           ExitCodes.UsageError
@@ -631,7 +638,7 @@ async function cmdEntryUpdate (
     applyInfoToEntry(
       Context.Store._InfoProxyOf(Id) as Record<string,unknown>,
       Options.info ?? null,
-      InfoEntries
+      InfoEntries, InfoDeleteKeys
     )
 
     if (Config.Format === 'json') {

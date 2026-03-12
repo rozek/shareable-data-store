@@ -25,7 +25,6 @@ export default defineConfig({
         '@hono/node-server',
         '@hono/node-ws',
         'jose',
-        '@rozek/sds-persistence-node',
       ],
     },
   },

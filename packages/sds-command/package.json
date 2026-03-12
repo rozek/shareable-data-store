@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-command",
   "description": "CLI tool for shareable-data-store — interactive REPL, one-shot and batch commands",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "keywords": [
     "crdt",
     "cli",
@@ -32,9 +32,6 @@
       "types": "./dist/sds-command.d.ts"
     }
   },
-  "bin": {
-    "sds": "./dist/sds-command.js"
-  },
   "files": [
     "dist"
   ],
@@ -47,18 +44,13 @@
   },
   "dependencies": {
     "@rozek/sds-core": "workspace:*",
-    "@rozek/sds-core-jj": "workspace:*",
     "@rozek/sds-network-websocket": "workspace:*",
     "@rozek/sds-persistence-node": "workspace:*",
     "@rozek/sds-sync-engine": "workspace:*",
     "commander": "^12.0.0"
   },
   "devDependencies": {
-    "@rozek/sds-core": "workspace:*",
     "@rozek/sds-core-jj": "workspace:*",
-    "@rozek/sds-network-websocket": "workspace:*",
-    "@rozek/sds-persistence-node": "workspace:*",
-    "@rozek/sds-sync-engine": "workspace:*",
     "@types/node": "^22.0.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.0",

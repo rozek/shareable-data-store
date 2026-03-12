@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-persistence-node",
   "description": "SQLite persistence provider for shareable-data-store (Node.js)",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {
@@ -13,6 +13,7 @@
     "url": "https://github.com/rozek/shareable-data-store/issues"
   },
   "license": "MIT",
+  "keywords": ["crdt","collaborative","offline-first","persistence","sqlite","node"],
   "type": "module",
   "main": "./dist/sds-persistence-node.js",
   "module": "./dist/sds-persistence-node.js",

@@ -112,4 +112,21 @@ describe('SDS_DataStore — Entry Creation', () => {
       expect.objectContaining({ code:'invalid-argument' })
     )
   })
+
+  it('N-15: newItemAt with MIMEType exceeding maxMIMETypeLength throws SDS_Error invalid-argument', () => {
+    const Store    = SDS_DataStore.fromScratch()
+    const TooLong  = 'text/plain' + 'x'.repeat(250)  // > 256 chars
+    expect(() => Store.newItemAt(TooLong, Store.RootItem)).toThrowError(
+      expect.objectContaining({ code:'invalid-argument' })
+    )
+  })
+
+  it('N-16: item.Type setter with MIMEType exceeding maxMIMETypeLength throws SDS_Error invalid-argument', () => {
+    const Store    = SDS_DataStore.fromScratch()
+    const Item     = Store.newItemAt(undefined, Store.RootItem)
+    const TooLong  = 'text/plain' + 'x'.repeat(250)  // > 256 chars
+    expect(() => { Item.Type = TooLong }).toThrowError(
+      expect.objectContaining({ code:'invalid-argument' })
+    )
+  })
 })
