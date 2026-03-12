@@ -270,10 +270,8 @@ async function toolStorePing (Config:ReturnType<typeof configFrom>):Promise<obje
     const Result = await runSync(Config, 1000)
     return { Server:Result.ServerURL, StoreId:Result.StoreId, reachable:true }
   } catch (Signal) {
-    if (Signal instanceof MCP_ToolError) {
-      return { Server:ServerURL, reachable:false, Error:Signal.message }
-    }
-    throw Signal
+    const message = Signal instanceof Error ? Signal.message : String(Signal)
+    return { Server:ServerURL, reachable:false, Error:message }
   }
 }
 
