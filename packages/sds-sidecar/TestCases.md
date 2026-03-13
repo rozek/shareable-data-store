@@ -12,6 +12,14 @@
 | PS-06 | `parseTriggerSpec('info:')` and `parseTriggerSpec('info:=value')` — `EqIdx < 1` in both cases | throws `SDS_SidecarError` | PS-04 |
 | PS-07 | `parseTriggerSpec('unknown')` and `parseTriggerSpec('')` | throws `SDS_SidecarError` | — |
 
+## DP — `DBPathFor` (Config)
+
+| # | Description | Expected | Builds on |
+|---|---|---|---|
+| DP-01 | store ID containing only `[a-zA-Z0-9_-]` | returned unchanged inside `PersistenceDir` with `.db` suffix | — |
+| DP-02 | store ID with special characters (e.g. space, `/`) | chars replaced with `_` | DP-01 |
+| DP-03 | any store ID | result starts with `PersistenceDir` and ends with `.db` | DP-01 |
+
 ## BD — Backoff Delay Formula (`SidecarNetworkProvider`)
 
 | # | Description | Expected | Builds on |
@@ -42,3 +50,17 @@
 |---|---|---|---|
 | DC-01 | chain `[{Id:'watch'},{Id:'root'}]`, watchId `'watch'` → `findIndex + 1` | `1` (direct child) | — |
 | DC-02 | chain `[{Id:'parent'},{Id:'root'}]`, watchId `'other'` → `findIndex` | `-1` (not in subtree) | DC-01 |
+
+## PC — `parseWebHookConfig` (Config)
+
+| # | Description | Expected | Builds on |
+|---|---|---|---|
+| PC-01 | non-object inputs (`null`, primitive string, array) | throws `SDS_SidecarError` | — |
+| PC-02 | missing URL, empty URL, whitespace-only URL, non-string URL | throws `SDS_SidecarError` | PC-01 |
+| PC-03 | negative `maxDepth` or non-integer `maxDepth` | throws `SDS_SidecarError` | PC-02 |
+| PC-04 | absent `on`, empty `on` array, non-array `on` | throws `SDS_SidecarError` | PC-02 |
+| PC-05 | unknown trigger string inside `on` array | throws `SDS_SidecarError`; exercises `parseTriggerSpec` error wrapping | PC-04 |
+| PC-06 | minimal valid config (`URL` + one trigger) | returns `{ URL, Topic:undefined, Watch:undefined, maxDepth:undefined, on:[{Kind:'change'}] }` | PC-01..05 |
+| PC-07 | full config with `Topic`, `Watch`, `maxDepth`, mixed triggers | all fields present; `on` contains parsed trigger objects | PC-06 |
+| PC-08 | URL with leading/trailing whitespace | `URL` trimmed in result | PC-06 |
+| PC-09 | error messages include webhook index (e.g. `WebHooks[3]`, `WebHooks[7].URL`) | index embedded in thrown message | PC-01 |

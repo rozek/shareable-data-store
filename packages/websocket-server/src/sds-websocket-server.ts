@@ -26,15 +26,6 @@ import { SignJWT, jwtVerify }              from 'jose'
 import type { WSContext }                  from 'hono/ws'
 
 //----------------------------------------------------------------------------//
-//                              Frame type bytes                              //
-//----------------------------------------------------------------------------//
-
-  const MSG_PATCH       = 0x01
-  const MSG_VALUE       = 0x02
-  const MSG_PRESENCE    = 0x04
-  const MSG_VALUE_CHUNK = 0x05
-
-//----------------------------------------------------------------------------//
 //                                 LiveStore                                  //
 //----------------------------------------------------------------------------//
 
@@ -55,7 +46,9 @@ import type { WSContext }                  from 'hono/ws'
 
   /**** addClient ****/
 
-    addClient (Client:LiveClient):void { this.#Clients.add(Client) }
+    addClient (Client:LiveClient):void {
+      this.#Clients.add(Client)
+    }
 
   /**** removeClient ****/
 
@@ -65,7 +58,7 @@ import type { WSContext }                  from 'hono/ws'
 
     isEmpty ():boolean { return this.#Clients.size === 0 }
 
-  /**** broadcast — sends Data to all clients in this store except Sender ****/
+  /**** broadcast — relays Data to all clients except Sender ****/
 
     broadcast (Data:Uint8Array, Sender:LiveClient):void {
       for (const Client of this.#Clients) {
@@ -154,6 +147,10 @@ import type { WSContext }                  from 'hono/ws'
 //----------------------------------------------------------------------------//
 //                           Frame write / dispatch                           //
 //----------------------------------------------------------------------------//
+
+  const MSG_PATCH       = 0x01
+  const MSG_VALUE       = 0x02
+  const MSG_VALUE_CHUNK = 0x05
 
 /**** rejectWriteFrame — returns true for message types that only write-scope clients may send ****/
 

@@ -20,6 +20,7 @@ Verify the correctness of the pure-logic components of `sds-sidecar` — trigger
 - Subscription contract (SidecarNetworkProvider) — idempotent unsubscribe, constructor-property initialisation
 - MIME glob matching (WebHookManager, inline re-implementation) — wildcard expansion, case-insensitivity, literal-dot handling
 - Depth-check formula (WebHookManager, inline) — `chainIndex + 1` formula and the 'not found' case
+- `parseWebHookConfig` (Config.ts) — structural validation, URL/`on`/`maxDepth` guards, trigger-error wrapping, webhook-index embedding
 
 **Out of scope:**
 
@@ -161,3 +162,45 @@ The helper is private; a local re-implementation (kept in sync with the producti
 cd packages/sds-sidecar
 pnpm test:run
 ```
+
+---
+
+### Part VII — `parseWebHookConfig` (WebHookConfig.test.ts)
+
+`parseWebHookConfig` validates and parses a single element of the `WebHooks` array from the sidecar configuration. It wraps `parseTriggerSpec` internally and embeds the webhook index in all error messages.
+
+#### 7.1 Structural rejection
+
+- **TC-PC-01** — Non-object inputs (`null`, primitive string, array) all fail the object-shape guard and throw `SDS_SidecarError`
+
+#### 7.2 URL validation (builds on TC-PC-01)
+
+- **TC-PC-02** — Missing `URL`, empty string, whitespace-only string, and non-string values all fail the non-empty-string guard
+
+#### 7.3 `maxDepth` validation (builds on TC-PC-02)
+
+- **TC-PC-03** — A negative number and a non-integer both fail the non-negative-integer guard
+
+#### 7.4 `on` array validation (builds on TC-PC-02)
+
+- **TC-PC-04** — Absent `on`, empty `on` array, and non-array `on` all fail the required-non-empty-array guard
+
+#### 7.5 Trigger string rejection (builds on TC-PC-04)
+
+- **TC-PC-05** — An unknown trigger string inside the `on` array causes `parseTriggerSpec` to throw; the error is re-wrapped with the webhook-index prefix
+
+#### 7.6 Minimal valid config (builds on TC-PC-01–05)
+
+- **TC-PC-06** — A config with only `URL` and one trigger returns the fully-structured object with all optional fields as `undefined`
+
+#### 7.7 Full config with all optional fields (builds on TC-PC-06)
+
+- **TC-PC-07** — `Topic`, `Watch`, `maxDepth`, and multiple mixed triggers are all parsed and returned correctly
+
+#### 7.8 URL whitespace trimming (builds on TC-PC-06)
+
+- **TC-PC-08** — Leading and trailing whitespace is stripped from `URL` before it is stored in the result
+
+#### 7.9 Webhook index in error messages (builds on TC-PC-01)
+
+- **TC-PC-09** — The `Index` argument is embedded in all thrown error messages (e.g. `WebHooks[3]`, `WebHooks[7].URL`)

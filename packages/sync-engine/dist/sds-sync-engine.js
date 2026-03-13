@@ -60,7 +60,8 @@ class ae {
     // tracks entryId → blob hash for all entries whose value is in a *-reference kind;
     // used to call releaseValue() when the entry's value changes or the entry is purged
     r(this, S, /* @__PURE__ */ new Map());
-    c(this, u, t), c(this, d, s.PersistenceProvider ?? void 0), c(this, a, s.NetworkProvider ?? void 0), c(this, H, s.PresenceProvider ?? s.NetworkProvider ?? void 0), c(this, V, s.PresenceTimeoutMs ?? 12e4), (s.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && e(this, a) != null && c(this, P, new BroadcastChannel(`sds:${e(this, a).StoreId}`));
+    var o;
+    c(this, u, t), c(this, d, s.PersistenceProvider ?? void 0), c(this, a, s.NetworkProvider ?? void 0), c(this, H, s.PresenceProvider ?? (typeof ((o = s.NetworkProvider) == null ? void 0 : o.onRemoteState) == "function" ? s.NetworkProvider : void 0)), c(this, V, s.PresenceTimeoutMs ?? 12e4), (s.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && e(this, a) != null && c(this, P, new BroadcastChannel(`sds:${e(this, a).StoreId}`));
   }
   //----------------------------------------------------------------------------//
   //                                 Lifecycle                                  //

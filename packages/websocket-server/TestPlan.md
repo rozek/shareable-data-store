@@ -4,7 +4,7 @@
 
 ## Goal
 
-Verify that the relay-only SDS WebSocket server correctly authenticates clients, relays CRDT frames, enforces scope restrictions, and issues tokens via the admin API.
+Verify that the SDS WebSocket server correctly authenticates clients, relays CRDT frames, enforces scope restrictions, and issues tokens via the admin API.
 
 ---
 
@@ -19,7 +19,7 @@ Verify that the relay-only SDS WebSocket server correctly authenticates clients,
 
 **Out of scope:**
 - TLS / Caddy configuration
-- Persistence — the relay server holds no state; persistence is the responsibility of `sds-sidecar-*` packages
+- Persistence — the relay server holds no state; use `sds-sidecar-*` packages for a persisting peer
 
 ---
 

@@ -10,6 +10,8 @@ The relay server for the **shareable-data-store** (SDS) family. A [Hono](https:/
 
 The server is **relay-only**: it holds no store state between connections. Use a [`@rozek/sds-sidecar-*`](../sds-sidecar-jj/README.md) daemon alongside the relay to keep a persistent local copy of any store.
 
+> **Important — sync requires an online peer:** Because the relay server holds no state, a `sds store sync` invocation can only receive remote data if at least one other peer (e.g. a `sds-sidecar-*` daemon) is **connected to the same relay at the same time**. If the other peer is offline when `sync` runs, the syncing client will see an empty store.
+
 Runs on Node.js 22.5+ using `@hono/node-server`.
 
 You may install the server locally or deploy it using a Docker image (refer to [DEPLOYMENT.md](./DEPLOYMENT.md))

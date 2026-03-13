@@ -7,7 +7,7 @@
 // MCP tool definition and handler for tree display: sds_tree_show
 
 import type { Tool }       from '@modelcontextprotocol/sdk/types.js'
-import { RootId, TrashId, LostAndFoundId } from '@rozek/sds-core'
+import { RootId } from '@rozek/sds-core'
 
 import { configFrom }    from '../Config.js'
 import { MCP_ToolError } from '../Errors.js'
@@ -91,8 +91,6 @@ function coreTreeShow (Store:SDS_DataStore, MaxDepth:number):object {
 
 /**** buildTreeNodes — recursive conversion of store entries to TreeNode ****/
 
-const SystemTreeIds = new Set([ TrashId, LostAndFoundId ])
-
 function buildTreeNodes (
   Store:SDS_DataStore, ItemId:string, MaxDepth:number, Depth:number
 ):TreeNode[] {
@@ -100,7 +98,6 @@ function buildTreeNodes (
 
   const Result:TreeNode[] = []
   for (const Entry of Store._innerEntriesOf(ItemId)) {
-    if (SystemTreeIds.has(Entry.Id)) { continue }
     if (Entry.isLink) {
       const TargetId = Store._TargetOf(Entry.Id).Id
       Result.push({ Id:Entry.Id, Kind:'link' as const, Label:Entry.Label, TargetId })

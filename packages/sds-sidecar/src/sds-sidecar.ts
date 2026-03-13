@@ -68,7 +68,7 @@ import { WebHookManager }                    from './WebHookManager.js'
         .option('--config <file>',          'JSON config file path')
 
         // persistence
-        .option('--persist-dir <path>',     'directory for local SQLite DB (env: SDS_PERSISTENCE_DIR)')
+        .option('--persistence-dir <path>', 'directory for local SQLite DB (env: SDS_PERSISTENCE_DIR)')
 
         // single inline webhook
         .option('--webhook-url <url>',      'webhook endpoint URL')

@@ -104,7 +104,7 @@ async function j(n) {
       );
     }
   }
-  const o = n.server ?? process.env.SDS_SERVER_URL ?? e.ServerURL, r = n.store ?? process.env.SDS_STORE_ID ?? e.StoreId, s = n.token ?? process.env.SDS_TOKEN ?? e.Token, c = n.persistDir ?? process.env.SDS_PERSISTENCE_DIR ?? e.PersistenceDir, i = n.webhookToken ?? process.env.SDS_WEBHOOK_TOKEN ?? e.WebHookToken, f = n.onAuthError ?? process.env.SDS_ON_AUTH_ERROR ?? e.onAuthError;
+  const o = n.server ?? process.env.SDS_SERVER_URL ?? e.ServerURL, r = n.store ?? process.env.SDS_STORE_ID ?? e.StoreId, s = n.token ?? process.env.SDS_TOKEN ?? e.Token, c = n.persistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? e.PersistenceDir, i = n.webhookToken ?? process.env.SDS_WEBHOOK_TOKEN ?? e.WebHookToken, f = n.onAuthError ?? process.env.SDS_ON_AUTH_ERROR ?? e.onAuthError;
   if (o == null || o.trim().length === 0)
     throw new h(
       'no server URL — set SDS_SERVER_URL, use --server, or set "ServerURL" in config file'
@@ -526,7 +526,7 @@ function ee(n) {
 function te(n) {
   const e = new K(n);
   return e.description("shareable-data-store sidecar — persistent sync + webhook notifications").version(N.version, "--version", "print version").allowUnknownOption(!1).configureOutput({ writeErr: () => {
-  } }).argument("[ws-url]", "WebSocket server URL (env: SDS_SERVER_URL)").argument("[store-id]", "store identifier     (env: SDS_STORE_ID)").option("--token <jwt>", "JWT for the WebSocket server (env: SDS_TOKEN)").option("--config <file>", "JSON config file path").option("--persist-dir <path>", "directory for local SQLite DB (env: SDS_PERSISTENCE_DIR)").option("--webhook-url <url>", "webhook endpoint URL").option("--webhook-token <token>", "bearer token for webhook calls (env: SDS_WEBHOOK_TOKEN)").option("--topic <string>", "opaque string echoed in the webhook payload").option("--watch <uuid>", "UUID of the subtree root to observe").option("--depth <n>", "max watch depth (default: unlimited)").option("--on <trigger>", "trigger condition (repeatable)", ne, []).option("--on-auth-error <url>", "webhook URL to notify on auth errors").option("--reconnect-initial <ms>", "initial reconnect delay in ms (default: 1000)").option("--reconnect-max <ms>", "max reconnect delay in ms     (default: 60000)").option("--reconnect-jitter <f>", "jitter fraction 0..1          (default: 0.1)"), e;
+  } }).argument("[ws-url]", "WebSocket server URL (env: SDS_SERVER_URL)").argument("[store-id]", "store identifier     (env: SDS_STORE_ID)").option("--token <jwt>", "JWT for the WebSocket server (env: SDS_TOKEN)").option("--config <file>", "JSON config file path").option("--persistence-dir <path>", "directory for local SQLite DB (env: SDS_PERSISTENCE_DIR)").option("--webhook-url <url>", "webhook endpoint URL").option("--webhook-token <token>", "bearer token for webhook calls (env: SDS_WEBHOOK_TOKEN)").option("--topic <string>", "opaque string echoed in the webhook payload").option("--watch <uuid>", "UUID of the subtree root to observe").option("--depth <n>", "max watch depth (default: unlimited)").option("--on <trigger>", "trigger condition (repeatable)", ne, []).option("--on-auth-error <url>", "webhook URL to notify on auth errors").option("--reconnect-initial <ms>", "initial reconnect delay in ms (default: 1000)").option("--reconnect-max <ms>", "max reconnect delay in ms     (default: 60000)").option("--reconnect-jitter <f>", "jitter fraction 0..1          (default: 0.1)"), e;
 }
 function ne(n, e) {
   return [...e, n];

@@ -129,7 +129,7 @@ This package contains the **full integration test suite** for the MCP server too
 
 ## Part V — Tree Tool
 
-- **TW-01** through **TW-06**, **TW-04b** — Populated tree, empty store, depth limits, system-container exclusion, link nodes
+- **TW-01** through **TW-06**, **TW-04b** — Populated tree, empty store, depth limits, system-container inclusion, link nodes
 
 ---
 

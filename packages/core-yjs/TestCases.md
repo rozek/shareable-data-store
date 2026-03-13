@@ -15,6 +15,19 @@ well-known entry IDs.  Y.js state-vector-based delta encoding correctly handles
 the case where both docs started from divergent initial states — Y.js simply
 merges both sets of updates.  No canonical pre-generated snapshot is required.
 
+## SDS_CoreYjs.test.ts — Export Smoke Tests
+
+| # | Test case | Expected result |
+|---|---|---|
+| YJS-01 | `SDS_Error` imported from `@rozek/sds-core-yjs` is constructible | `err instanceof SDS_Error`, `err.code === 'test'`, `err.message === 'test message'` |
+| YJS-02 | `SDS_DataStore` factory methods are exported | `fromScratch`, `fromBinary`, `fromJSON` are functions |
+| YJS-03 | `SDS_Entry`, `SDS_Item`, `SDS_Link` are exported | all three are defined |
+| YJS-04 | `fromScratch()` produces a working store | `instanceof SDS_DataStore`; well-known IDs correct |
+| YJS-05 | Instances have correct prototypes | `instanceof SDS_Item`, `instanceof SDS_Link` |
+| YJS-06 | Patch exchange between two independent stores | Label set on StoreA visible on StoreB after `applyRemotePatch` |
+
+---
+
 ## SDS_DataStore.construction.test.ts — Backend-specific (Y.js)
 
 | # | Test case | Expected result |

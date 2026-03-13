@@ -46,6 +46,13 @@ export function resolveConfig (Options:Record<string,unknown>):SDSConfig {
   const Token      = (Options['token']      ?? process.env['SDS_TOKEN'])       as string | undefined
   const AdminToken = (Options['adminToken'] ?? process.env['SDS_ADMIN_TOKEN']) as string | undefined
 
+  if (ServerURL != null && ! /^wss?:\/\//.test(ServerURL)) {
+    throw new SDS_ConfigError(
+      `invalid '--server' URL '${ServerURL}' — must start with 'ws://' or 'wss://'`,
+      ExitCodes.UsageError
+    )
+  }
+
   const rawFormat  = ((Options['format']   ?? 'text') as string).toLowerCase()
   if ((rawFormat !== 'text') && (rawFormat !== 'json')) {
     throw new SDS_ConfigError(

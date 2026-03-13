@@ -234,4 +234,12 @@ describe('store sync CLI options (SY)', () => {
     expect(Result.ExitCode).toBe(2)
     expect(Result.Stderr).toMatch(/--timeout/i)
   })
+
+  it('SY-08: --server with an invalid scheme exits with UsageError (code 2) and mentions --server', async () => {
+    const Result = await runCLI([
+      '--store', 'test', '--server', 'http://bad', 'store', 'info',
+    ])
+    expect(Result.ExitCode).toBe(2)
+    expect(Result.Stderr).toMatch(/--server/i)
+  })
 })

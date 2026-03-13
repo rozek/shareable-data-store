@@ -20,7 +20,7 @@ class ue extends Error {
     this.code = t, this.name = "SDS_Error";
   }
 }
-const Qe = "00000000-0000-4000-8000-000000000000", ve = "00000000-0000-4000-8000-000000000001", Ae = "00000000-0000-4000-8000-000000000002", Wt = "text/plain", fh = 131072, ph = 2048, gh = 5e3, bo = 1024, wo = 256, _o = 1024, ko = 262144, yh = 200;
+const Qe = "00000000-0000-4000-8000-000000000000", ve = "00000000-0000-4000-8000-000000000001", Ae = "00000000-0000-4000-8000-000000000002", Wt = "text/plain", fh = 131072, ph = 2048, yh = 5e3, bo = 1024, wo = 256, _o = 1024, ko = 262144, gh = 200;
 function vh(r) {
   const e = globalThis.Buffer;
   if (e != null)
@@ -330,7 +330,7 @@ class at extends Error {
   }
 }
 at.create = (r) => new at(r);
-const xs = (r, e) => {
+const Os = (r, e) => {
   let t;
   switch (r.code) {
     case L.invalid_type:
@@ -386,7 +386,7 @@ const xs = (r, e) => {
   }
   return { message: t };
 };
-let bh = xs;
+let bh = Os;
 function wh() {
   return bh;
 }
@@ -423,7 +423,7 @@ function q(r, e) {
       // then schema-bound map if available
       t,
       // then global override map
-      t === xs ? void 0 : xs
+      t === Os ? void 0 : Os
       // then global default map
     ].filter((n) => !!n)
   });
@@ -472,7 +472,7 @@ class Te {
 }
 const Z = Object.freeze({
   status: "aborted"
-}), Rr = (r) => ({ status: "dirty", value: r }), je = (r) => ({ status: "valid", value: r }), Oo = (r) => r.status === "aborted", xo = (r) => r.status === "dirty", Sn = (r) => r.status === "valid", li = (r) => typeof Promise < "u" && r instanceof Promise;
+}), Rr = (r) => ({ status: "dirty", value: r }), je = (r) => ({ status: "valid", value: r }), xo = (r) => r.status === "aborted", Oo = (r) => r.status === "dirty", Sn = (r) => r.status === "valid", li = (r) => typeof Promise < "u" && r instanceof Promise;
 var F;
 (function(r) {
   r.errToObj = (e) => typeof e == "string" ? { message: e } : e || {}, r.toString = (e) => typeof e == "string" ? e : e == null ? void 0 : e.message;
@@ -730,7 +730,7 @@ class ee {
     return this.safeParse(null).success;
   }
 }
-const kh = /^c[^\s-]{8,}$/i, Sh = /^[0-9a-z]+$/, Oh = /^[0-9A-HJKMNP-TV-Z]{26}$/i, xh = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i, Ih = /^[a-z0-9_-]{21}$/i, Ch = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, Nh = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/, Th = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i, Ah = "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$";
+const kh = /^c[^\s-]{8,}$/i, Sh = /^[0-9a-z]+$/, xh = /^[0-9A-HJKMNP-TV-Z]{26}$/i, Oh = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i, Ih = /^[a-z0-9_-]{21}$/i, Ch = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, Nh = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/, Th = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i, Ah = "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$";
 let Ti;
 const jh = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/, Eh = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/, Ph = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/, Rh = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/, Vh = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/, Bh = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/, du = "((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))", Lh = new RegExp(`^${du}$`);
 function fu(r) {
@@ -827,7 +827,7 @@ class bt extends ee {
           message: s.message
         }), i.dirty());
       else if (s.kind === "uuid")
-        xh.test(e.data) || (n = this._getOrReturnCtx(e, n), q(n, {
+        Oh.test(e.data) || (n = this._getOrReturnCtx(e, n), q(n, {
           validation: "uuid",
           code: L.invalid_string,
           message: s.message
@@ -851,7 +851,7 @@ class bt extends ee {
           message: s.message
         }), i.dirty());
       else if (s.kind === "ulid")
-        Oh.test(e.data) || (n = this._getOrReturnCtx(e, n), q(n, {
+        xh.test(e.data) || (n = this._getOrReturnCtx(e, n), q(n, {
           validation: "ulid",
           code: L.invalid_string,
           message: s.message
@@ -1153,7 +1153,7 @@ function Hh(r, e) {
   const t = (r.toString().split(".")[1] || "").length, i = (e.toString().split(".")[1] || "").length, n = t > i ? t : i, s = Number.parseInt(r.toFixed(n).replace(".", "")), o = Number.parseInt(e.toFixed(n).replace(".", ""));
   return s % o / 10 ** n;
 }
-class On extends ee {
+class xn extends ee {
   constructor() {
     super(...arguments), this.min = this.gte, this.max = this.lte, this.step = this.multipleOf;
   }
@@ -1211,7 +1211,7 @@ class On extends ee {
     return this.setLimit("max", e, !1, F.toString(t));
   }
   setLimit(e, t, i, n) {
-    return new On({
+    return new xn({
       ...this._def,
       checks: [
         ...this._def.checks,
@@ -1225,7 +1225,7 @@ class On extends ee {
     });
   }
   _addCheck(e) {
-    return new On({
+    return new xn({
       ...this._def,
       checks: [...this._def.checks, e]
     });
@@ -1319,7 +1319,7 @@ class On extends ee {
     return Number.isFinite(t) && Number.isFinite(e);
   }
 }
-On.create = (r) => new On({
+xn.create = (r) => new xn({
   checks: [],
   typeName: K.ZodNumber,
   coerce: (r == null ? void 0 : r.coerce) || !1,
@@ -1812,10 +1812,10 @@ class me extends ee {
     return n.common.async ? Promise.resolve().then(async () => {
       const l = [];
       for (const c of u) {
-        const h = await c.key, y = await c.value;
+        const h = await c.key, g = await c.value;
         l.push({
           key: h,
-          value: y,
+          value: g,
           alwaysSet: c.alwaysSet
         });
       }
@@ -2139,10 +2139,10 @@ function Ns(r, e) {
 class fi extends ee {
   _parse(e) {
     const { status: t, ctx: i } = this._processInputParams(e), n = (s, o) => {
-      if (Oo(s) || Oo(o))
+      if (xo(s) || xo(o))
         return Z;
       const a = Ns(s.value, o.value);
-      return a.valid ? ((xo(s) || xo(o)) && t.dirty(), { status: t.value, value: a.data }) : (q(i, {
+      return a.valid ? ((Oo(s) || Oo(o)) && t.dirty(), { status: t.value, value: a.data }) : (q(i, {
         code: L.invalid_intersection_types
       }), Z);
     };
@@ -2372,13 +2372,13 @@ Po.create = (r, e) => new Po({
   ...X(e)
 });
 function pu(r, e) {
-  return new xn({
+  return new On({
     values: r,
     typeName: K.ZodEnum,
     ...X(e)
   });
 }
-class xn extends ee {
+class On extends ee {
   _parse(e) {
     if (typeof e.data != "string") {
       const t = this._getOrReturnCtx(e), i = this._def.values;
@@ -2420,19 +2420,19 @@ class xn extends ee {
     return e;
   }
   extract(e, t = this._def) {
-    return xn.create(e, {
+    return On.create(e, {
       ...this._def,
       ...t
     });
   }
   exclude(e, t = this._def) {
-    return xn.create(this.options.filter((i) => !e.includes(i)), {
+    return On.create(this.options.filter((i) => !e.includes(i)), {
       ...this._def,
       ...t
     });
   }
 }
-xn.create = pu;
+On.create = pu;
 class Ro extends ee {
   _parse(e) {
     const t = te.getValidEnumValues(this._def.values), i = this._getOrReturnCtx(e);
@@ -2778,7 +2778,7 @@ var K;
 })(K || (K = {}));
 const Kh = (r, e = {
   message: `Input not instance of ${r.name}`
-}) => Zh((t) => t instanceof r, e), $r = bt.create, gu = On.create, Jh = Is.create;
+}) => Zh((t) => t instanceof r, e), $r = bt.create, yu = xn.create, Jh = Is.create;
 Fr.create;
 const Wh = Cs.create;
 kt.create;
@@ -2786,7 +2786,7 @@ We.create;
 const Gh = di.create;
 fi.create;
 zt.create;
-xn.create;
+On.create;
 pi.create;
 wt.create;
 Cn.create;
@@ -2827,7 +2827,7 @@ const Xh = $r({
     message: `Info value must not exceed ${ko} bytes when serialised as UTF-8 JSON`
   });
 });
-function yu(r) {
+function gu(r) {
   mi(Xh, r);
 }
 function Es(r) {
@@ -2886,7 +2886,7 @@ class vu {
     return this._Store._LabelOf(this.Id);
   }
   set Label(e) {
-    yu(e), this._Store._setLabelOf(this.Id, e);
+    gu(e), this._Store._setLabelOf(this.Id, e);
   }
   get Info() {
     return this._Store._InfoProxyOf(this.Id);
@@ -2934,7 +2934,7 @@ class vu {
 const nd = Gh(
   [$r(), Kh(Uint8Array), Jh()],
   { invalid_type_error: "Value must be a string, a Uint8Array, or undefined" }
-), Lo = gu({
+), Lo = yu({
   invalid_type_error: "index must be a number"
 }).int("index must be an integer").nonnegative("index must be a non-negative integer"), rd = $r({
   invalid_type_error: "Replacement must be a string"
@@ -3050,14 +3050,14 @@ function mu(r, e) {
   }
   r.prototype = e === null ? Object.create(e) : (t.prototype = e.prototype, new t());
 }
-var gi = function() {
-  return gi = Object.assign || function(e) {
+var yi = function() {
+  return yi = Object.assign || function(e) {
     for (var t, i = 1, n = arguments.length; i < n; i++) {
       t = arguments[i];
       for (var s in t) Object.prototype.hasOwnProperty.call(t, s) && (e[s] = t[s]);
     }
     return e;
-  }, gi.apply(this, arguments);
+  }, yi.apply(this, arguments);
 };
 function bu(r, e) {
   var t = {};
@@ -3083,12 +3083,12 @@ function ku(r, e, t, i, n, s) {
     if (_ !== void 0 && typeof _ != "function") throw new TypeError("Function expected");
     return _;
   }
-  for (var a = i.kind, u = a === "getter" ? "get" : a === "setter" ? "set" : "value", l = !e && r ? i.static ? r : r.prototype : null, c = e || (l ? Object.getOwnPropertyDescriptor(l, i.name) : {}), h, y = !1, p = t.length - 1; p >= 0; p--) {
+  for (var a = i.kind, u = a === "getter" ? "get" : a === "setter" ? "set" : "value", l = !e && r ? i.static ? r : r.prototype : null, c = e || (l ? Object.getOwnPropertyDescriptor(l, i.name) : {}), h, g = !1, p = t.length - 1; p >= 0; p--) {
     var b = {};
     for (var k in i) b[k] = k === "access" ? {} : i[k];
     for (var k in i.access) b.access[k] = i.access[k];
     b.addInitializer = function(_) {
-      if (y) throw new TypeError("Cannot add initializers after decoration has completed");
+      if (g) throw new TypeError("Cannot add initializers after decoration has completed");
       s.push(o(_ || null));
     };
     var m = (0, t[p])(a === "accessor" ? { get: c.get, set: c.set } : c[u], b);
@@ -3098,17 +3098,17 @@ function ku(r, e, t, i, n, s) {
       (h = o(m.get)) && (c.get = h), (h = o(m.set)) && (c.set = h), (h = o(m.init)) && n.unshift(h);
     } else (h = o(m)) && (a === "field" ? n.unshift(h) : c[u] = h);
   }
-  l && Object.defineProperty(l, i.name, c), y = !0;
+  l && Object.defineProperty(l, i.name, c), g = !0;
 }
 function Su(r, e, t) {
   for (var i = arguments.length > 2, n = 0; n < e.length; n++)
     t = i ? e[n].call(r, t) : e[n].call(r);
   return i ? t : void 0;
 }
-function Ou(r) {
+function xu(r) {
   return typeof r == "symbol" ? r : "".concat(r);
 }
-function xu(r, e, t) {
+function Ou(r, e, t) {
   return typeof e == "symbol" && (e = e.description ? "[".concat(e.description, "]") : ""), Object.defineProperty(r, "name", { configurable: !0, value: t ? "".concat(t, " ", e) : e });
 }
 function Iu(r, e) {
@@ -3213,7 +3213,7 @@ var bi = Object.create ? (function(r, e, t, i) {
 function Tu(r, e) {
   for (var t in r) t !== "default" && !Object.prototype.hasOwnProperty.call(e, t) && bi(e, r, t);
 }
-function yi(r) {
+function gi(r) {
   var e = typeof Symbol == "function" && Symbol.iterator, t = e && r[e], i = 0;
   if (t) return t.call(r);
   if (r && typeof r.length == "number") return {
@@ -3282,11 +3282,11 @@ function Pu(r, e, t) {
     try {
       l(i[p](b));
     } catch (k) {
-      y(s[0][3], k);
+      g(s[0][3], k);
     }
   }
   function l(p) {
-    p.value instanceof Nn ? Promise.resolve(p.value.v).then(c, h) : y(s[0][2], p);
+    p.value instanceof Nn ? Promise.resolve(p.value.v).then(c, h) : g(s[0][2], p);
   }
   function c(p) {
     u("next", p);
@@ -3294,7 +3294,7 @@ function Pu(r, e, t) {
   function h(p) {
     u("throw", p);
   }
-  function y(p, b) {
+  function g(p, b) {
     p(b), s.shift(), s.length && u(s[0][0], s[0][1]);
   }
 }
@@ -3314,7 +3314,7 @@ function Ru(r) {
 function Vu(r) {
   if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
   var e = r[Symbol.asyncIterator], t;
-  return e ? e.call(r) : (r = typeof yi == "function" ? yi(r) : r[Symbol.iterator](), t = {}, i("next"), i("throw"), i("return"), t[Symbol.asyncIterator] = function() {
+  return e ? e.call(r) : (r = typeof gi == "function" ? gi(r) : r[Symbol.iterator](), t = {}, i("next"), i("throw"), i("return"), t[Symbol.asyncIterator] = function() {
     return this;
   }, t);
   function i(s) {
@@ -3425,20 +3425,20 @@ function zu(r, e) {
 }
 const ad = {
   __extends: mu,
-  __assign: gi,
+  __assign: yi,
   __rest: bu,
   __decorate: wu,
   __param: _u,
   __esDecorate: ku,
   __runInitializers: Su,
-  __propKey: Ou,
-  __setFunctionName: xu,
+  __propKey: xu,
+  __setFunctionName: Ou,
   __metadata: Iu,
   __awaiter: Cu,
   __generator: Nu,
   __createBinding: bi,
   __exportStar: Tu,
-  __values: yi,
+  __values: gi,
   __read: io,
   __spread: Au,
   __spreadArrays: ju,
@@ -3460,7 +3460,7 @@ const ad = {
   __proto__: null,
   __addDisposableResource: Fu,
   get __assign() {
-    return gi;
+    return yi;
   },
   __asyncDelegator: Ru,
   __asyncGenerator: Pu,
@@ -3482,16 +3482,16 @@ const ad = {
   __makeTemplateObject: Bu,
   __metadata: Iu,
   __param: _u,
-  __propKey: Ou,
+  __propKey: xu,
   __read: io,
   __rest: bu,
   __rewriteRelativeImportExtension: zu,
   __runInitializers: Su,
-  __setFunctionName: xu,
+  __setFunctionName: Ou,
   __spread: Au,
   __spreadArray: Eu,
   __spreadArrays: ju,
-  __values: yi,
+  __values: gi,
   default: ad
 }, Symbol.toStringTag, { value: "Module" })), re = /* @__PURE__ */ id(cd);
 var Ei = {}, Pi = {}, qo;
@@ -3593,15 +3593,15 @@ function pd() {
         return 1;
       if (_ < f)
         return -1;
-      const d = k.sid, g = m.sid;
-      return d > g ? 1 : d < g ? -1 : 0;
+      const d = k.sid, y = m.sid;
+      return d > y ? 1 : d < y ? -1 : 0;
     };
     r.compare = a;
     const u = (k, m, _, f) => {
       if (k.sid !== _.sid)
         return !1;
-      const d = k.time, g = _.time;
-      return !(d > g || d + m < g + f);
+      const d = k.time, y = _.time;
+      return !(d > y || d + m < y + f);
     };
     r.contains = u;
     const l = (k, m, _) => {
@@ -3620,7 +3620,7 @@ function pd() {
     r.printTs = c;
     const h = (k, m, _) => new t(k.sid, k.time + m, _);
     r.interval = h;
-    class y extends e {
+    class g extends e {
       /**
        * Returns a new timestamp, which is the current clock value, and advances the
        * clock by a number of cycles.
@@ -3633,8 +3633,8 @@ function pd() {
         return this.time += m, _;
       }
     }
-    r.LogicalClock = y;
-    class p extends y {
+    r.LogicalClock = g;
+    class p extends g {
       constructor() {
         super(...arguments), this.peers = /* @__PURE__ */ new Map();
       }
@@ -3650,8 +3650,8 @@ function pd() {
       observe(m, _) {
         const f = m.time + _ - 1, d = m.sid;
         if (d !== this.sid) {
-          const g = this.peers.get(m.sid);
-          g ? f > g.time && (g.time = f) : this.peers.set(m.sid, (0, r.ts)(d, f));
+          const y = this.peers.get(m.sid);
+          y ? f > y.time && (y.time = f) : this.peers.set(m.sid, (0, r.ts)(d, f));
         }
         f >= this.time && (this.time = f + 1);
       }
@@ -3684,14 +3684,14 @@ function pd() {
       toString(m = "") {
         const _ = this.peers.size;
         let f = 1, d = "";
-        return this.peers.forEach((g) => {
+        return this.peers.forEach((y) => {
           d += `
-${m}${f === _ ? "└─" : "├─"} ${g.sid}.${g.time}`, f++;
+${m}${f === _ ? "└─" : "├─"} ${y.sid}.${y.time}`, f++;
         }), `clock ${this.sid}.${this.time}${d}`;
       }
     }
     r.ClockVector = p;
-    class b extends y {
+    class b extends g {
       constructor() {
         super(...arguments), this.peers = /* @__PURE__ */ new Map();
       }
@@ -3755,27 +3755,27 @@ function ei() {
   Wo = 1, Object.defineProperty(Q, "__esModule", { value: !0 }), Q.NopOp = Q.DelOp = Q.UpdArrOp = Q.InsArrOp = Q.InsBinOp = Q.InsStrOp = Q.InsVecOp = Q.InsObjOp = Q.InsValOp = Q.NewArrOp = Q.NewBinOp = Q.NewStrOp = Q.NewVecOp = Q.NewObjOp = Q.NewValOp = Q.NewConOp = void 0;
   const r = Ee(), e = de();
   class t {
-    constructor(g) {
-      this.id = g;
+    constructor(y) {
+      this.id = y;
     }
     span() {
       return 1;
     }
     toString() {
-      let g = this.name() + " " + (0, e.printTs)(this.id);
+      let y = this.name() + " " + (0, e.printTs)(this.id);
       const v = this.span();
-      return v > 1 && (g += "!" + v), g;
+      return v > 1 && (y += "!" + v), y;
     }
   }
   class i extends t {
-    constructor(g, v) {
-      super(g), this.id = g, this.val = v;
+    constructor(y, v) {
+      super(y), this.id = y, this.val = v;
     }
     name() {
       return "new_con";
     }
     toString() {
-      const g = this.val, v = "Uint8Array", w = g instanceof e.Timestamp ? `{ ${(0, e.printTs)(g)} }` : g instanceof Uint8Array ? g.length < 13 ? `${v} { ${("" + g).replaceAll(",", ", ")} }` : `${v}(${g.length})` : `{ ${JSON.stringify(g)} }`;
+      const y = this.val, v = "Uint8Array", w = y instanceof e.Timestamp ? `{ ${(0, e.printTs)(y)} }` : y instanceof Uint8Array ? y.length < 13 ? `${v} { ${("" + y).replaceAll(",", ", ")} }` : `${v}(${y.length})` : `{ ${JSON.stringify(y)} }`;
       return super.toString() + " " + w;
     }
   }
@@ -3817,8 +3817,8 @@ function ei() {
   }
   Q.NewArrOp = l;
   class c extends t {
-    constructor(g, v, w) {
-      super(g), this.id = g, this.obj = v, this.val = w;
+    constructor(y, v, w) {
+      super(y), this.id = y, this.obj = v, this.val = w;
     }
     name() {
       return "ins_val";
@@ -3829,32 +3829,32 @@ function ei() {
   }
   Q.InsValOp = c;
   class h extends t {
-    constructor(g, v, w) {
-      super(g), this.id = g, this.obj = v, this.data = w;
+    constructor(y, v, w) {
+      super(y), this.id = y, this.obj = v, this.data = w;
     }
     name() {
       return "ins_obj";
     }
-    toString(g = "") {
-      return super.toString() + `, obj = ${(0, e.printTs)(this.obj)}` + (0, r.printTree)(g, this.data.map((w) => (O) => `${JSON.stringify(w[0])}: ${(0, e.printTs)(w[1])}`));
+    toString(y = "") {
+      return super.toString() + `, obj = ${(0, e.printTs)(this.obj)}` + (0, r.printTree)(y, this.data.map((w) => (x) => `${JSON.stringify(w[0])}: ${(0, e.printTs)(w[1])}`));
     }
   }
   Q.InsObjOp = h;
-  class y extends t {
-    constructor(g, v, w) {
-      super(g), this.id = g, this.obj = v, this.data = w;
+  class g extends t {
+    constructor(y, v, w) {
+      super(y), this.id = y, this.obj = v, this.data = w;
     }
     name() {
       return "ins_vec";
     }
-    toString(g = "") {
-      return super.toString() + `, obj = ${(0, e.printTs)(this.obj)}` + (0, r.printTree)(g, this.data.map((w) => (O) => `${w[0]}: ${(0, e.printTs)(w[1])}`));
+    toString(y = "") {
+      return super.toString() + `, obj = ${(0, e.printTs)(this.obj)}` + (0, r.printTree)(y, this.data.map((w) => (x) => `${w[0]}: ${(0, e.printTs)(w[1])}`));
     }
   }
-  Q.InsVecOp = y;
+  Q.InsVecOp = g;
   class p extends t {
-    constructor(g, v, w, O) {
-      super(g), this.id = g, this.obj = v, this.ref = w, this.data = O;
+    constructor(y, v, w, x) {
+      super(y), this.id = y, this.obj = v, this.ref = w, this.data = x;
     }
     span() {
       return this.data.length;
@@ -3868,8 +3868,8 @@ function ei() {
   }
   Q.InsStrOp = p;
   class b extends t {
-    constructor(g, v, w, O) {
-      super(g), this.id = g, this.obj = v, this.ref = w, this.data = O;
+    constructor(y, v, w, x) {
+      super(y), this.id = y, this.obj = v, this.ref = w, this.data = x;
     }
     span() {
       return this.data.length;
@@ -3878,8 +3878,8 @@ function ei() {
       return "ins_bin";
     }
     toString() {
-      const g = (0, e.printTs)(this.ref);
-      return super.toString() + `, obj = ${(0, e.printTs)(this.obj)} { ${g} ← ${this.data} }`;
+      const y = (0, e.printTs)(this.ref);
+      return super.toString() + `, obj = ${(0, e.printTs)(this.obj)} { ${y} ← ${this.data} }`;
     }
   }
   Q.InsBinOp = b;
@@ -3896,8 +3896,8 @@ function ei() {
      * @param ref ID of the element after which to insert elements.
      * @param data The elements to insert.
      */
-    constructor(g, v, w, O) {
-      super(g), this.id = g, this.obj = v, this.ref = w, this.data = O;
+    constructor(y, v, w, x) {
+      super(y), this.id = y, this.obj = v, this.ref = w, this.data = x;
     }
     span() {
       return this.data.length;
@@ -3906,8 +3906,8 @@ function ei() {
       return "ins_arr";
     }
     toString() {
-      const g = (0, e.printTs)(this.obj), v = (0, e.printTs)(this.ref), w = this.data.map(e.printTs).join(", ");
-      return super.toString() + ", obj = " + g + " { " + v + " ← " + w + " }";
+      const y = (0, e.printTs)(this.obj), v = (0, e.printTs)(this.ref), w = this.data.map(e.printTs).join(", ");
+      return super.toString() + ", obj = " + y + " { " + v + " ← " + w + " }";
     }
   }
   Q.InsArrOp = k;
@@ -3918,15 +3918,15 @@ function ei() {
      * @param ref ID of the element to update.
      * @param val ID of the new value to set.
      */
-    constructor(g, v, w, O) {
-      super(g), this.id = g, this.obj = v, this.ref = w, this.val = O;
+    constructor(y, v, w, x) {
+      super(y), this.id = y, this.obj = v, this.ref = w, this.val = x;
     }
     name() {
       return "upd_arr";
     }
     toString() {
-      const g = (0, e.printTs)(this.obj), v = (0, e.printTs)(this.ref), w = (0, e.printTs)(this.val);
-      return super.toString() + ", obj = " + g + " { " + v + ": " + w + " }";
+      const y = (0, e.printTs)(this.obj), v = (0, e.printTs)(this.ref), w = (0, e.printTs)(this.val);
+      return super.toString() + ", obj = " + y + " { " + v + ": " + w + " }";
     }
   }
   Q.UpdArrOp = m;
@@ -3936,21 +3936,21 @@ function ei() {
      * @param obj Object in which to delete something.
      * @param what ID of the first operation to be deleted.
      */
-    constructor(g, v, w) {
-      super(g), this.id = g, this.obj = v, this.what = w;
+    constructor(y, v, w) {
+      super(y), this.id = y, this.obj = v, this.what = w;
     }
     name() {
       return "del";
     }
     toString() {
-      const g = this.what.map((v) => (0, e.printTs)(v) + "!" + v.span).join(", ");
-      return super.toString() + `, obj = ${(0, e.printTs)(this.obj)} { ${g} }`;
+      const y = this.what.map((v) => (0, e.printTs)(v) + "!" + v.span).join(", ");
+      return super.toString() + `, obj = ${(0, e.printTs)(this.obj)} { ${y} }`;
     }
   }
   Q.DelOp = _;
   class f extends t {
-    constructor(g, v) {
-      super(g), this.id = g, this.len = v;
+    constructor(y, v) {
+      super(y), this.id = y, this.len = v;
     }
     span() {
       return this.len;
@@ -3962,7 +3962,7 @@ function ei() {
   return Q.NopOp = f, Q;
 }
 var Vn = {}, Fi = {}, Bn = {}, Ln = {}, Mn = {}, Dn = {}, Go;
-function gd() {
+function yd() {
   if (Go) return Dn;
   Go = 1, Object.defineProperty(Dn, "__esModule", { value: !0 }), Dn.Slice = void 0;
   let r = class {
@@ -3979,7 +3979,7 @@ var Xo;
 function Zu() {
   if (Xo) return Mn;
   Xo = 1, Object.defineProperty(Mn, "__esModule", { value: !0 }), Mn.Writer = void 0;
-  const r = gd(), e = new Uint8Array([]), t = new DataView(e.buffer), i = typeof Buffer == "function", n = i ? Buffer.prototype.utf8Write : null, s = i ? Buffer.from : null, o = typeof TextEncoder < "u" ? new TextEncoder() : null;
+  const r = yd(), e = new Uint8Array([]), t = new DataView(e.buffer), i = typeof Buffer == "function", n = i ? Buffer.prototype.utf8Write : null, s = i ? Buffer.from : null, o = typeof TextEncoder < "u" ? new TextEncoder() : null;
   let a = class {
     /**
      * @param allocSize Number of bytes to allocate at a time when buffer ends.
@@ -3989,7 +3989,7 @@ function Zu() {
     }
     /** @ignore */
     grow(l) {
-      const c = this.x0, h = this.x, y = this.uint8, p = new Uint8Array(l), b = new DataView(p.buffer), k = y.subarray(c, h);
+      const c = this.x0, h = this.x, g = this.uint8, p = new Uint8Array(l), b = new DataView(p.buffer), k = g.subarray(c, h);
       p.set(k, 0), this.x = h - c, this.x0 = 0, this.uint8 = p, this.size = l, this.view = b;
     }
     /**
@@ -4001,7 +4001,7 @@ function Zu() {
     ensureCapacity(l) {
       const c = this.size, h = c - this.x;
       if (h < l) {
-        const y = c - this.x0, p = l - h, b = y + p;
+        const g = c - this.x0, p = l - h, b = g + p;
         this.grow(b <= this.allocSize ? this.allocSize : b * 2);
       }
     }
@@ -4095,47 +4095,47 @@ function Zu() {
       this.ensureCapacity(c);
       const h = this.size - this.x;
       if (n) {
-        const y = n.call(this.uint8, l, this.x, h);
-        return this.x += y, y;
+        const g = n.call(this.uint8, l, this.x, h);
+        return this.x += g, g;
       } else if (s) {
-        const y = this.uint8, p = y.byteOffset + this.x, k = s(y.buffer).subarray(p, p + h).write(l, 0, h, "utf8");
+        const g = this.uint8, p = g.byteOffset + this.x, k = s(g.buffer).subarray(p, p + h).write(l, 0, h, "utf8");
         return this.x += k, k;
       } else if (c > 1024 && o) {
-        const y = o.encodeInto(l, this.uint8.subarray(this.x, this.x + h)).written;
-        return this.x += y, y;
+        const g = o.encodeInto(l, this.uint8.subarray(this.x, this.x + h)).written;
+        return this.x += g, g;
       }
       return this.utf8Native(l);
     }
     utf8Native(l) {
       const c = l.length, h = this.uint8;
-      let y = this.x, p = 0;
+      let g = this.x, p = 0;
       for (; p < c; ) {
         let k = l.charCodeAt(p++);
         if ((k & 4294967168) === 0) {
-          h[y++] = k;
+          h[g++] = k;
           continue;
         } else if ((k & 4294965248) === 0)
-          h[y++] = k >> 6 & 31 | 192;
+          h[g++] = k >> 6 & 31 | 192;
         else {
           if (k >= 55296 && k <= 56319 && p < c) {
             const m = l.charCodeAt(p);
             (m & 64512) === 56320 && (p++, k = ((k & 1023) << 10) + (m & 1023) + 65536);
           }
-          (k & 4294901760) === 0 ? (h[y++] = k >> 12 & 15 | 224, h[y++] = k >> 6 & 63 | 128) : (h[y++] = k >> 18 & 7 | 240, h[y++] = k >> 12 & 63 | 128, h[y++] = k >> 6 & 63 | 128);
+          (k & 4294901760) === 0 ? (h[g++] = k >> 12 & 15 | 224, h[g++] = k >> 6 & 63 | 128) : (h[g++] = k >> 18 & 7 | 240, h[g++] = k >> 12 & 63 | 128, h[g++] = k >> 6 & 63 | 128);
         }
-        h[y++] = k & 63 | 128;
+        h[g++] = k & 63 | 128;
       }
-      const b = y - this.x;
-      return this.x = y, b;
+      const b = g - this.x;
+      return this.x = g, b;
     }
     ascii(l) {
       const c = l.length;
       this.ensureCapacity(c);
       const h = this.uint8;
-      let y = this.x, p = 0;
+      let g = this.x, p = 0;
       for (; p < c; )
-        h[y++] = l.charCodeAt(p++);
-      this.x = y;
+        h[g++] = l.charCodeAt(p++);
+      this.x = g;
     }
   };
   return Mn.Writer = a, Mn;
@@ -4315,7 +4315,7 @@ function so() {
   return Ln.CrdtWriter = e, Ln;
 }
 var qn = {}, Un = {}, Qo;
-function yd() {
+function gd() {
   if (Qo) return Un;
   Qo = 1, Object.defineProperty(Un, "__esModule", { value: !0 }), Un.isFloat32 = void 0;
   const r = new DataView(new ArrayBuffer(4)), e = (t) => (r.setFloat32(0, t), t === r.getFloat32(0));
@@ -4552,7 +4552,7 @@ var na;
 function Ju() {
   if (na) return qn;
   na = 1, Object.defineProperty(qn, "__esModule", { value: !0 }), qn.CborEncoder = void 0;
-  const r = yd(), e = Ku(), t = vd(), i = oo();
+  const r = gd(), e = Ku(), t = vd(), i = oo();
   let n = class extends t.CborEncoderFast {
     /**
      * Called when the encoder encounters a value that it does not know how to encode.
@@ -4723,51 +4723,51 @@ function Wu() {
           break;
         }
         case e.InsObjOp: {
-          const c = a, h = c.data, y = h.length;
-          y <= 7 ? u.u8(80 + y) : (u.u8(
+          const c = a, h = c.data, g = h.length;
+          g <= 7 ? u.u8(80 + g) : (u.u8(
             80
             /* JsonCrdtPatchOpcodeOverlay.ins_obj */
-          ), u.vu57(y)), this.encodeId(c.obj);
-          for (let p = 0; p < y; p++) {
+          ), u.vu57(g)), this.encodeId(c.obj);
+          for (let p = 0; p < g; p++) {
             const b = h[p];
             this.writeStr(b[0]), this.encodeId(b[1]);
           }
           break;
         }
         case e.InsVecOp: {
-          const c = a, h = c.data, y = h.length;
-          y <= 7 ? u.u8(88 + y) : (u.u8(
+          const c = a, h = c.data, g = h.length;
+          g <= 7 ? u.u8(88 + g) : (u.u8(
             88
             /* JsonCrdtPatchOpcodeOverlay.ins_vec */
-          ), u.vu57(y)), this.encodeId(c.obj);
-          for (let p = 0; p < y; p++) {
+          ), u.vu57(g)), this.encodeId(c.obj);
+          for (let p = 0; p < g; p++) {
             const b = h[p];
             u.u8(b[0]), this.encodeId(b[1]);
           }
           break;
         }
         case e.InsStrOp: {
-          const c = a, h = c.obj, y = c.ref, p = c.data, b = p.length;
+          const c = a, h = c.obj, g = c.ref, p = c.data, b = p.length;
           u.ensureCapacity(24 + b * 4);
-          const k = u.x, m = this.writeInsStr(b, h, y, p);
-          b !== m && (u.x = k, this.writeInsStr(m, h, y, p));
+          const k = u.x, m = this.writeInsStr(b, h, g, p);
+          b !== m && (u.x = k, this.writeInsStr(m, h, g, p));
           break;
         }
         case e.InsBinOp: {
-          const c = a, h = c.data, y = h.length;
-          y <= 7 ? u.u8(104 + y) : (u.u8(
+          const c = a, h = c.data, g = h.length;
+          g <= 7 ? u.u8(104 + g) : (u.u8(
             104
             /* JsonCrdtPatchOpcodeOverlay.ins_bin */
-          ), u.vu57(y)), this.encodeId(c.obj), this.encodeId(c.ref), u.buf(h, y);
+          ), u.vu57(g)), this.encodeId(c.obj), this.encodeId(c.ref), u.buf(h, g);
           break;
         }
         case e.InsArrOp: {
-          const c = a, h = c.data, y = h.length;
-          y <= 7 ? u.u8(112 + y) : (u.u8(
+          const c = a, h = c.data, g = h.length;
+          g <= 7 ? u.u8(112 + g) : (u.u8(
             112
             /* JsonCrdtPatchOpcodeOverlay.ins_arr */
-          ), u.vu57(y)), this.encodeId(c.obj), this.encodeId(c.ref);
-          for (let p = 0; p < y; p++)
+          ), u.vu57(g)), this.encodeId(c.obj), this.encodeId(c.ref);
+          for (let p = 0; p < g; p++)
             this.encodeId(h[p]);
           break;
         }
@@ -4780,12 +4780,12 @@ function Wu() {
           break;
         }
         case e.DelOp: {
-          const c = a, h = c.what, y = h.length;
-          y <= 7 ? u.u8(128 + y) : (u.u8(
+          const c = a, h = c.what, g = h.length;
+          g <= 7 ? u.u8(128 + g) : (u.u8(
             128
             /* JsonCrdtPatchOpcodeOverlay.del */
-          ), u.vu57(y)), this.encodeId(c.obj);
-          for (let p = 0; p < y; p++)
+          ), u.vu57(g)), this.encodeId(c.obj);
+          for (let p = 0; p < g; p++)
             this.encodeTss(h[p]);
           break;
         }
@@ -4872,28 +4872,28 @@ function md() {
         }
         if (s < 7)
           return r(o, a, u, l, c, h);
-        const y = i[n++];
-        if ((y & 128) > 0) {
+        const g = i[n++];
+        if ((g & 128) > 0) {
           n -= 7;
           return;
         }
-        return r(o, a, u, l, c, h, y);
+        return r(o, a, u, l, c, h, g);
       } else {
-        const c = i[n++], h = i[n++], y = i[n++], p = i[n++];
-        if ((c & 128) > 0 || (h & 128) > 0 || (y & 128) > 0 || (p & 128) > 0) {
+        const c = i[n++], h = i[n++], g = i[n++], p = i[n++];
+        if ((c & 128) > 0 || (h & 128) > 0 || (g & 128) > 0 || (p & 128) > 0) {
           n -= 8;
           return;
         }
         if (s < 10) {
           if (s === 8)
-            return r(o, a, u, l, c, h, y, p);
+            return r(o, a, u, l, c, h, g, p);
           {
             const b = i[n++];
             if ((b & 128) > 0) {
               n -= 9;
               return;
             }
-            return r(o, a, u, l, c, h, y, p, b);
+            return r(o, a, u, l, c, h, g, p, b);
           }
         } else if (s < 12) {
           const b = i[n++], k = i[n++];
@@ -4902,13 +4902,13 @@ function md() {
             return;
           }
           if (s < 11)
-            return r(o, a, u, l, c, h, y, p, b, k);
+            return r(o, a, u, l, c, h, g, p, b, k);
           const m = i[n++];
           if ((m & 128) > 0) {
             n -= 11;
             return;
           }
-          return r(o, a, u, l, c, h, y, p, b, k, m);
+          return r(o, a, u, l, c, h, g, p, b, k, m);
         } else {
           const b = i[n++], k = i[n++], m = i[n++], _ = i[n++];
           if ((b & 128) > 0 || (k & 128) > 0 || (m & 128) > 0 || (_ & 128) > 0) {
@@ -4917,14 +4917,14 @@ function md() {
           }
           if (s < 14) {
             if (s === 12)
-              return r(o, a, u, l, c, h, y, p, b, k, m, _);
+              return r(o, a, u, l, c, h, g, p, b, k, m, _);
             {
               const f = i[n++];
               if ((f & 128) > 0) {
                 n -= 13;
                 return;
               }
-              return r(o, a, u, l, c, h, y, p, b, k, m, _, f);
+              return r(o, a, u, l, c, h, g, p, b, k, m, _, f);
             }
           } else {
             const f = i[n++], d = i[n++];
@@ -4933,13 +4933,13 @@ function md() {
               return;
             }
             if (s < 15)
-              return r(o, a, u, l, c, h, y, p, b, k, m, _, f, d);
-            const g = i[n++];
-            if ((g & 128) > 0) {
+              return r(o, a, u, l, c, h, g, p, b, k, m, _, f, d);
+            const y = i[n++];
+            if ((y & 128) > 0) {
               n -= 15;
               return;
             }
-            return r(o, a, u, l, c, h, y, p, b, k, m, _, f, d, g);
+            return r(o, a, u, l, c, h, g, p, b, k, m, _, f, d, y);
           }
         }
       }
@@ -4970,8 +4970,8 @@ function bd() {
             let h = (a & 7) << 18 | u << 12 | l << 6 | c;
             if (h > 65535) {
               h -= 65536;
-              const y = h >>> 10 & 1023 | 55296;
-              a = 56320 | h & 1023, o.push(y);
+              const g = h >>> 10 & 1023 | 55296;
+              a = 56320 | h & 1023, o.push(g);
             } else
               a = h;
           }
@@ -4986,7 +4986,7 @@ var oa;
 function wd() {
   if (oa) return ii;
   oa = 1, Object.defineProperty(ii, "__esModule", { value: !0 });
-  const r = re, e = md(), t = r.__importDefault(bd()), i = typeof Buffer < "u", n = i ? Buffer.prototype.utf8Slice : null, s = i ? Buffer.from : null, o = (c, h, y) => (0, e.decodeAsciiMax15)(c, h, y) ?? (0, t.default)(c, h, y), a = (c, h, y) => (0, e.decodeAscii)(c, h, y) ?? (0, t.default)(c, h, y), u = n ? (c, h, y) => n.call(c, h, h + y) : s ? (c, h, y) => s(c).subarray(h, h + y).toString("utf8") : t.default, l = (c, h, y) => y < 16 ? o(c, h, y) : y < 32 ? a(c, h, y) : u(c, h, y);
+  const r = re, e = md(), t = r.__importDefault(bd()), i = typeof Buffer < "u", n = i ? Buffer.prototype.utf8Slice : null, s = i ? Buffer.from : null, o = (c, h, g) => (0, e.decodeAsciiMax15)(c, h, g) ?? (0, t.default)(c, h, g), a = (c, h, g) => (0, e.decodeAscii)(c, h, g) ?? (0, t.default)(c, h, g), u = n ? (c, h, g) => n.call(c, h, h + g) : s ? (c, h, g) => s(c).subarray(h, h + g).toString("utf8") : t.default, l = (c, h, g) => g < 16 ? o(c, h, g) : g < 32 ? a(c, h, g) : u(c, h, g);
   return ii.default = l, ii;
 }
 var aa;
@@ -5184,10 +5184,10 @@ function Yu() {
           n,
           h * 2199023255552 + ((c & 127) * 17179869184 + ((l & 127) * 134217728 + ((u & 127) << 20 | (a & 127) << 13 | (o & 127) << 6 | s & 63)))
         ];
-      const y = this.u8();
+      const g = this.u8();
       return [
         n,
-        y * 281474976710656 + ((h & 127) * 2199023255552 + ((c & 127) * 17179869184 + ((l & 127) * 134217728 + ((u & 127) << 20 | (a & 127) << 13 | (o & 127) << 6 | s & 63))))
+        g * 281474976710656 + ((h & 127) * 2199023255552 + ((c & 127) * 17179869184 + ((l & 127) * 134217728 + ((u & 127) << 20 | (a & 127) << 13 | (o & 127) << 6 | s & 63))))
       ];
     }
   };
@@ -5235,19 +5235,19 @@ function Sd() {
 ` + e);
   return Qn.printJson = r, Qn;
 }
-var ga;
-function Od() {
-  return ga || (ga = 1, (function(r) {
+var ya;
+function xd() {
+  return ya || (ya = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 });
     const e = re;
     e.__exportStar(Ee(), r), e.__exportStar(_i(), r), e.__exportStar(Sd(), r);
   })(Ki)), Ki;
 }
-var ya;
+var ga;
 function ki() {
-  return ya || (ya = 1, (function(r) {
+  return ga || (ga = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.s = r.schema = r.nodes = r.SchemaNode = r.NodeBuilder = void 0;
-    const e = re, t = ao(), i = de(), n = e.__importStar(nl()), s = Od(), o = (c) => {
+    const e = re, t = ao(), i = de(), n = e.__importStar(nl()), s = xd(), o = (c) => {
       switch (typeof c) {
         case "number":
         case "boolean":
@@ -5264,8 +5264,8 @@ function ki() {
         this._build = h;
       }
       build(h) {
-        var y;
-        return ((y = this._build) == null ? void 0 : y.call(this, h)) ?? h.con(void 0);
+        var g;
+        return ((g = this._build) == null ? void 0 : g.call(this, h)) ?? h.con(void 0);
       }
     }
     r.NodeBuilder = a;
@@ -5278,123 +5278,123 @@ function ki() {
     var l;
     (function(c) {
       class h extends u {
-        constructor(g) {
-          super(), this.raw = g, this.type = "con";
+        constructor(y) {
+          super(), this.raw = y, this.type = "con";
         }
-        build(g) {
-          return g.con(this.raw);
+        build(y) {
+          return y.con(this.raw);
         }
-        toString(g) {
+        toString(y) {
           return this.type + " " + n.con(this.raw);
         }
       }
       c.con = h;
-      class y extends u {
-        constructor(g) {
-          super(), this.raw = g, this.type = "str";
+      class g extends u {
+        constructor(y) {
+          super(), this.raw = y, this.type = "str";
         }
-        build(g) {
-          return g.json(this.raw);
+        build(y) {
+          return y.json(this.raw);
         }
-        toString(g) {
+        toString(y) {
           return this.type + " " + n.con(this.raw);
         }
       }
-      c.str = y;
+      c.str = g;
       class p extends u {
-        constructor(g) {
-          super(), this.raw = g, this.type = "bin";
+        constructor(y) {
+          super(), this.raw = y, this.type = "bin";
         }
-        build(g) {
-          return g.json(this.raw);
+        build(y) {
+          return y.json(this.raw);
         }
-        toString(g) {
+        toString(y) {
           return this.type + " " + n.bin(this.raw);
         }
       }
       c.bin = p;
       class b extends u {
-        constructor(g) {
-          super(), this.value = g, this.type = "val";
+        constructor(y) {
+          super(), this.value = y, this.type = "val";
         }
-        build(g) {
-          const v = g.val(), w = this.value.build(g);
-          return g.setVal(v, w), v;
+        build(y) {
+          const v = y.val(), w = this.value.build(y);
+          return y.setVal(v, w), v;
         }
-        toString(g) {
-          return this.type + (0, s.printTree)(g, [(v) => this.value.toString(v)]);
+        toString(y) {
+          return this.type + (0, s.printTree)(y, [(v) => this.value.toString(v)]);
         }
       }
       c.val = b;
       class k extends u {
-        constructor(g) {
-          super(), this.value = g, this.type = "vec";
+        constructor(y) {
+          super(), this.value = y, this.type = "vec";
         }
-        build(g) {
-          const v = g.vec(), w = this.value, O = w.length;
-          if (O) {
+        build(y) {
+          const v = y.vec(), w = this.value, x = w.length;
+          if (x) {
             const I = [];
-            for (let C = 0; C < O; C++) {
+            for (let C = 0; C < x; C++) {
               const E = w[C];
               if (!E)
                 continue;
-              const x = E.build(g);
-              I.push([C, x]);
+              const O = E.build(y);
+              I.push([C, O]);
             }
-            g.insVec(v, I);
+            y.insVec(v, I);
           }
           return v;
         }
-        toString(g) {
-          return this.type + (0, s.printTree)(g, [
-            ...this.value.map((v, w) => (O) => `${w}: ${v ? v.toString(O) : n.line(v)}`)
+        toString(y) {
+          return this.type + (0, s.printTree)(y, [
+            ...this.value.map((v, w) => (x) => `${w}: ${v ? v.toString(x) : n.line(v)}`)
           ]);
         }
       }
       c.vec = k;
       class m extends u {
-        constructor(g, v) {
-          super(), this.obj = g, this.opt = v, this.type = "obj";
+        constructor(y, v) {
+          super(), this.obj = y, this.opt = v, this.type = "obj";
         }
         optional() {
           return this;
         }
-        build(g) {
-          const v = g.obj(), w = [], O = { ...this.obj, ...this.opt }, I = Object.keys(O), C = I.length;
+        build(y) {
+          const v = y.obj(), w = [], x = { ...this.obj, ...this.opt }, I = Object.keys(x), C = I.length;
           if (C) {
             for (let E = 0; E < C; E++) {
-              const x = I[E], T = O[x].build(g);
-              w.push([x, T]);
+              const O = I[E], T = x[O].build(y);
+              w.push([O, T]);
             }
-            g.insObj(v, w);
+            y.insObj(v, w);
           }
           return v;
         }
-        toString(g = "") {
-          return this.type + (0, s.printTree)(g, [
-            ...[...Object.entries(this.obj)].map(([v, w]) => (O) => n.line(v) + (0, s.printTree)(O + " ", [(I) => w.toString(I)])),
-            ...[...Object.entries(this.opt ?? [])].map(([v, w]) => (O) => n.line(v) + "?" + (0, s.printTree)(O + " ", [(I) => w.toString(I)]))
+        toString(y = "") {
+          return this.type + (0, s.printTree)(y, [
+            ...[...Object.entries(this.obj)].map(([v, w]) => (x) => n.line(v) + (0, s.printTree)(x + " ", [(I) => w.toString(I)])),
+            ...[...Object.entries(this.opt ?? [])].map(([v, w]) => (x) => n.line(v) + "?" + (0, s.printTree)(x + " ", [(I) => w.toString(I)]))
           ]);
         }
       }
       c.obj = m;
       class _ extends u {
-        constructor(g) {
-          super(), this.arr = g, this.type = "arr";
+        constructor(y) {
+          super(), this.arr = y, this.type = "arr";
         }
-        build(g) {
-          const v = g.arr(), w = this.arr, O = w.length;
-          if (O) {
+        build(y) {
+          const v = y.arr(), w = this.arr, x = w.length;
+          if (x) {
             const I = [];
-            for (let C = 0; C < O; C++)
-              I.push(w[C].build(g));
-            g.insArr(v, v, I);
+            for (let C = 0; C < x; C++)
+              I.push(w[C].build(y));
+            y.insArr(v, v, I);
           }
           return v;
         }
-        toString(g) {
-          return this.type + (0, s.printTree)(g, [
-            ...this.arr.map((v, w) => (O) => `[${w}]: ${v ? v.toString(O) : n.line(v)}`)
+        toString(y) {
+          return this.type + (0, s.printTree)(y, [
+            ...this.arr.map((v, w) => (x) => `[${w}]: ${v ? v.toString(x) : n.line(v)}`)
           ]);
         }
       }
@@ -5404,18 +5404,18 @@ function ki() {
          * @param id A unique extension ID.
          * @param data Schema of the data node of the extension.
          */
-        constructor(g, v) {
-          super(), this.id = g, this.data = v, this.type = "ext";
+        constructor(y, v) {
+          super(), this.id = y, this.data = v, this.type = "ext";
         }
-        build(g) {
-          const v = new Uint8Array([this.id, 0, 0]), w = g.vec();
-          return v[1] = w.sid % 256, v[2] = w.time % 256, g.insVec(w, [
-            [0, g.constOrJson(r.s.con(v))],
-            [1, this.data.build(g)]
+        build(y) {
+          const v = new Uint8Array([this.id, 0, 0]), w = y.vec();
+          return v[1] = w.sid % 256, v[2] = w.time % 256, y.insVec(w, [
+            [0, y.constOrJson(r.s.con(v))],
+            [1, this.data.build(y)]
           ]), w;
         }
-        toString(g) {
-          return this.type + "(" + this.id + ")" + (0, s.printTree)(g, [(v) => this.data.toString(v)]);
+        toString(y) {
+          return this.type + "(" + this.id + ")" + (0, s.printTree)(y, [(v) => this.data.toString(v)]);
         }
       }
       c.ext = f;
@@ -5488,8 +5488,8 @@ function ki() {
             if (c instanceof i.Timestamp)
               return r.s.val(r.s.con(c));
             {
-              const h = {}, y = Object.keys(c);
-              for (const p of y)
+              const h = {}, g = Object.keys(c);
+              for (const p of g)
                 h[p] = r.s.jsonCon(c[p]);
               return r.s.obj(h);
             }
@@ -5651,8 +5651,8 @@ function co() {
       if (!h.length)
         throw new Error("EMPTY_TUPLES");
       this.pad();
-      const y = this.clock.tick(1), p = new e.InsObjOp(y, c, h), b = p.span();
-      return b > 1 && this.clock.tick(b - 1), this.patch.ops.push(p), y;
+      const g = this.clock.tick(1), p = new e.InsObjOp(g, c, h), b = p.span();
+      return b > 1 && this.clock.tick(b - 1), this.patch.ops.push(p), g;
     }
     /**
      * Set elements of a "vec" object.
@@ -5663,8 +5663,8 @@ function co() {
       if (!h.length)
         throw new Error("EMPTY_TUPLES");
       this.pad();
-      const y = this.clock.tick(1), p = new e.InsVecOp(y, c, h), b = p.span();
-      return b > 1 && this.clock.tick(b - 1), this.patch.ops.push(p), y;
+      const g = this.clock.tick(1), p = new e.InsVecOp(g, c, h), b = p.span();
+      return b > 1 && this.clock.tick(b - 1), this.patch.ops.push(p), g;
     }
     /**
      * Set value of a "val" object.
@@ -5674,19 +5674,19 @@ function co() {
      */
     setVal(c, h) {
       this.pad();
-      const y = this.clock.tick(1), p = new e.InsValOp(y, c, h);
-      return this.patch.ops.push(p), y;
+      const g = this.clock.tick(1), p = new e.InsValOp(g, c, h);
+      return this.patch.ops.push(p), g;
     }
     /**
      * Insert a substring into a "str" object.
      *
      * @returns ID of the new operation.
      */
-    insStr(c, h, y) {
-      if (!y.length)
+    insStr(c, h, g) {
+      if (!g.length)
         throw new Error("EMPTY_STRING");
       this.pad();
-      const p = this.clock.tick(1), b = new e.InsStrOp(p, c, h, y), k = b.span();
+      const p = this.clock.tick(1), b = new e.InsStrOp(p, c, h, g), k = b.span();
       return k > 1 && this.clock.tick(k - 1), this.patch.ops.push(b), p;
     }
     /**
@@ -5694,11 +5694,11 @@ function co() {
      *
      * @returns ID of the new operation.
      */
-    insBin(c, h, y) {
-      if (!y.length)
+    insBin(c, h, g) {
+      if (!g.length)
         throw new Error("EMPTY_BINARY");
       this.pad();
-      const p = this.clock.tick(1), b = new e.InsBinOp(p, c, h, y), k = b.span();
+      const p = this.clock.tick(1), b = new e.InsBinOp(p, c, h, g), k = b.span();
       return k > 1 && this.clock.tick(k - 1), this.patch.ops.push(b), p;
     }
     /**
@@ -5706,9 +5706,9 @@ function co() {
      *
      * @returns ID of the new operation.
      */
-    insArr(c, h, y) {
+    insArr(c, h, g) {
       this.pad();
-      const p = this.clock.tick(1), b = new e.InsArrOp(p, c, h, y), k = b.span();
+      const p = this.clock.tick(1), b = new e.InsArrOp(p, c, h, g), k = b.span();
       return k > 1 && this.clock.tick(k - 1), this.patch.ops.push(b), p;
     }
     /**
@@ -5716,9 +5716,9 @@ function co() {
      *
      * @returns ID of the new operation.
      */
-    updArr(c, h, y) {
+    updArr(c, h, g) {
       this.pad();
-      const p = this.clock.tick(1), b = new e.UpdArrOp(p, c, h, y);
+      const p = this.clock.tick(1), b = new e.UpdArrOp(p, c, h, g);
       return this.patch.ops.push(b), p;
     }
     /**
@@ -5730,8 +5730,8 @@ function co() {
      */
     del(c, h) {
       this.pad();
-      const y = this.clock.tick(1);
-      return this.patch.ops.push(new e.DelOp(y, c, h)), y;
+      const g = this.clock.tick(1);
+      return this.patch.ops.push(new e.DelOp(g, c, h)), g;
     }
     /**
      * Operation that does nothing just skips IDs in the patch.
@@ -5750,10 +5750,10 @@ function co() {
      * Run the necessary builder commands to create an arbitrary JSON object.
      */
     jsonObj(c) {
-      const h = this.obj(), y = Object.keys(c);
-      if (y.length) {
+      const h = this.obj(), g = Object.keys(c);
+      if (g.length) {
         const p = [];
-        for (const b of y) {
+        for (const b of g) {
           const k = c[b], m = k instanceof t.Timestamp ? k : a(k) ? this.con(k) : this.json(k);
           p.push([b, m]);
         }
@@ -5767,10 +5767,10 @@ function co() {
     jsonArr(c) {
       const h = this.arr();
       if (c.length) {
-        const y = [];
+        const g = [];
         for (const p of c)
-          y.push(this.json(p));
-        this.insArr(h, h, y);
+          g.push(this.json(p));
+        this.insArr(h, h, g);
       }
       return h;
     }
@@ -5792,8 +5792,8 @@ function co() {
      * Run builder commands to create a JSON value.
      */
     jsonVal(c) {
-      const h = this.val(), y = this.con(c);
-      return this.setVal(h, y), h;
+      const h = this.val(), g = this.con(c);
+      return this.setVal(h, g), h;
     }
     /**
      * Run the necessary builder commands to create any arbitrary JSON value.
@@ -5855,7 +5855,7 @@ function co() {
         return;
       const h = this.clock.time - c;
       if (h > 0) {
-        const y = (0, t.ts)(this.clock.sid, c), p = new e.NopOp(y, h);
+        const g = (0, t.ts)(this.clock.sid, c), p = new e.NopOp(g, h);
         this.patch.ops.push(p);
       }
     }
@@ -5863,7 +5863,7 @@ function co() {
   return Gn.PatchBuilder = u, Gn;
 }
 var $n = {}, er = {}, tr = {}, ma;
-function xd() {
+function Od() {
   if (ma) return tr;
   ma = 1, Object.defineProperty(tr, "__esModule", { value: !0 }), tr.decodeF16 = void 0;
   const r = Math.pow, e = (t) => {
@@ -5902,8 +5902,8 @@ function Id() {
         let h = (a & 7) << 18 | u << 12 | l << 6 | c;
         if (h > 65535) {
           h -= 65536;
-          const y = h >>> 10 & 1023 | 55296;
-          h = 56320 | h & 1023, o += r(y, h);
+          const g = h >>> 10 & 1023 | 55296;
+          h = 56320 | h & 1023, o += r(g, h);
         } else
           o += r(h);
       } else
@@ -5934,8 +5934,8 @@ function Cd() {
     }
     get(a, u, l) {
       const c = this.caches[l - 1], h = c.length;
-      e: for (let y = 0; y < h; y++) {
-        const p = c[y], b = p.bytes;
+      e: for (let g = 0; g < h; g++) {
+        const p = c[g], b = p.bytes;
         for (let k = 0; k < l; k++)
           if (b[k] !== a[u + k])
             continue e;
@@ -5953,8 +5953,8 @@ function Cd() {
       const c = this.get(a, u, l);
       if (c !== null)
         return c;
-      const h = (0, e.default)(a, u, l), y = Uint8Array.prototype.slice.call(a, u, u + l);
-      return this.store(y, h), h;
+      const h = (0, e.default)(a, u, l), g = Uint8Array.prototype.slice.call(a, u, u + l);
+      return this.store(g, h), h;
     }
   };
   return nr.CachedUtf8Decoder = s, nr;
@@ -5970,7 +5970,7 @@ var ka;
 function Qu() {
   if (ka) return er;
   ka = 1, Object.defineProperty(er, "__esModule", { value: !0 }), er.CborDecoderBase = void 0;
-  const r = re, e = xd(), t = Ku(), i = oo(), n = Xu(), s = r.__importDefault(Nd());
+  const r = re, e = Od(), t = Ku(), i = oo(), n = Xu(), s = r.__importDefault(Nd());
   let o = class {
     constructor(u = new n.Reader(), l = s.default) {
       this.reader = u, this.keyDecoder = l;
@@ -6055,14 +6055,14 @@ function Qu() {
             c += k.length, h.push(k);
           }
           this.reader.x++;
-          const y = new Uint8Array(c);
+          const g = new Uint8Array(c);
           let p = 0;
           const b = h.length;
           for (let k = 0; k < b; k++) {
             const m = h[k];
-            y.set(m, p), p += m.length;
+            g.set(m, p), p += m.length;
           }
-          return y;
+          return g;
         }
         default:
           throw 1;
@@ -6167,11 +6167,11 @@ function Qu() {
         }
         const c = {};
         for (let h = 0; h < l; h++) {
-          const y = this.key();
-          if (y === "__proto__")
+          const g = this.key();
+          if (g === "__proto__")
             throw 6;
           const p = this.readAny();
-          c[y] = p;
+          c[g] = p;
         }
         return c;
       } else {
@@ -6184,8 +6184,8 @@ function Qu() {
     readObjRaw(u) {
       const l = {};
       for (let c = 0; c < u; c++) {
-        const h = this.key(), y = this.readAny();
-        l[h] = y;
+        const h = this.key(), g = this.readAny();
+        l[h] = g;
       }
       return l;
     }
@@ -6207,8 +6207,8 @@ function Qu() {
       const h = this.readStrLen(c);
       if (h > 31)
         return this.reader.utf8(h);
-      const y = this.keyDecoder.decode(this.reader.uint8, this.reader.x, h);
-      return this.reader.skip(h), y;
+      const g = this.keyDecoder.decode(this.reader.uint8, this.reader.x, h);
+      return this.reader.skip(h), g;
     }
     // -------------------------------------------------------------- Tag reading
     readTag(u) {
@@ -6623,10 +6623,10 @@ function Td() {
   };
   return $n.CborDecoder = t, $n;
 }
-var Oa;
+var xa;
 function $u() {
-  if (Oa) return Zn;
-  Oa = 1, Object.defineProperty(Zn, "__esModule", { value: !0 }), Zn.Decoder = void 0;
+  if (xa) return Zn;
+  xa = 1, Object.defineProperty(Zn, "__esModule", { value: !0 }), Zn.Decoder = void 0;
   const r = Yu(), e = de(), t = co(), i = Td();
   class n extends i.CborDecoder {
     /**
@@ -6649,8 +6649,8 @@ function $u() {
     readPatch() {
       const o = this.reader, a = o.vu57(), u = o.vu57(), c = a === 1 ? new e.ServerClockVector(1, u) : new e.ClockVector(a, u);
       this.patchSid = c.sid;
-      const h = this.builder = new t.PatchBuilder(c), y = this.val();
-      return Array.isArray(y) && (h.patch.meta = y[0]), this.decodeOperations(), h.patch;
+      const h = this.builder = new t.PatchBuilder(c), g = this.val();
+      return Array.isArray(g) && (h.patch.meta = g[0]), this.decodeOperations(), h.patch;
     }
     decodeId() {
       const o = this.reader, [a, u] = o.b1vu56();
@@ -6703,58 +6703,58 @@ function $u() {
           break;
         }
         case 10: {
-          const c = u & 7 || a.vu57(), h = this.decodeId(), y = [];
+          const c = u & 7 || a.vu57(), h = this.decodeId(), g = [];
           for (let p = 0; p < c; p++) {
             const b = this.val();
             if (typeof b != "string")
               continue;
             const k = this.decodeId();
-            y.push([b, k]);
+            g.push([b, k]);
           }
-          o.insObj(h, y);
+          o.insObj(h, g);
           break;
         }
         case 11: {
-          const c = u & 7 || a.vu57(), h = this.decodeId(), y = [];
+          const c = u & 7 || a.vu57(), h = this.decodeId(), g = [];
           for (let p = 0; p < c; p++) {
             const b = this.val();
             if (typeof b != "number")
               continue;
             const k = this.decodeId();
-            y.push([b, k]);
+            g.push([b, k]);
           }
-          o.insVec(h, y);
+          o.insVec(h, g);
           break;
         }
         case 12: {
-          const c = u & 7 || a.vu57(), h = this.decodeId(), y = this.decodeId(), p = a.utf8(c);
-          o.insStr(h, y, p);
+          const c = u & 7 || a.vu57(), h = this.decodeId(), g = this.decodeId(), p = a.utf8(c);
+          o.insStr(h, g, p);
           break;
         }
         case 13: {
-          const c = u & 7 || a.vu57(), h = this.decodeId(), y = this.decodeId(), p = a.buf(c);
+          const c = u & 7 || a.vu57(), h = this.decodeId(), g = this.decodeId(), p = a.buf(c);
           if (!(p instanceof Uint8Array))
             return;
-          o.insBin(h, y, p);
+          o.insBin(h, g, p);
           break;
         }
         case 14: {
-          const c = u & 7 || a.vu57(), h = this.decodeId(), y = this.decodeId(), p = [];
+          const c = u & 7 || a.vu57(), h = this.decodeId(), g = this.decodeId(), p = [];
           for (let b = 0; b < c; b++)
             p.push(this.decodeId());
-          o.insArr(h, y, p);
+          o.insArr(h, g, p);
           break;
         }
         case 15: {
-          const c = this.decodeId(), h = this.decodeId(), y = this.decodeId();
-          o.updArr(c, h, y);
+          const c = this.decodeId(), h = this.decodeId(), g = this.decodeId();
+          o.updArr(c, h, g);
           break;
         }
         case 16: {
-          const c = u & 7 || a.vu57(), h = this.decodeId(), y = [];
+          const c = u & 7 || a.vu57(), h = this.decodeId(), g = [];
           for (let p = 0; p < c; p++)
-            y.push(this.decodeTss());
-          o.del(h, y);
+            g.push(this.decodeTss());
+          o.del(h, g);
           break;
         }
         case 17: {
@@ -6769,9 +6769,9 @@ function $u() {
   }
   return Zn.Decoder = n, Zn;
 }
-var Ji = {}, xa;
+var Ji = {}, Oa;
 function Ad() {
-  return xa || (xa = 1, (function(r) {
+  return Oa || (Oa = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.decode = r.decoder = r.encode = r.encoder = void 0;
     const e = Wu(), t = $u(), i = so(), n = new i.CrdtWriter(1024 * 4);
     r.encoder = new e.Encoder(n);
@@ -6846,8 +6846,8 @@ function tl() {
      */
     rewriteTime(a) {
       const u = new el(), l = this.ops, c = l.length, h = u.ops;
-      for (let y = 0; y < c; y++) {
-        const p = l[y];
+      for (let g = 0; g < c; g++) {
+        const p = l[g];
         p instanceof e.DelOp ? h.push(new e.DelOp(a(p.id), a(p.obj), p.what)) : p instanceof e.NewConOp ? h.push(new e.NewConOp(a(p.id), p.val instanceof t.Timestamp ? a(p.val) : p.val)) : p instanceof e.NewVecOp ? h.push(new e.NewVecOp(a(p.id))) : p instanceof e.NewValOp ? h.push(new e.NewValOp(a(p.id))) : p instanceof e.NewObjOp ? h.push(new e.NewObjOp(a(p.id))) : p instanceof e.NewStrOp ? h.push(new e.NewStrOp(a(p.id))) : p instanceof e.NewBinOp ? h.push(new e.NewBinOp(a(p.id))) : p instanceof e.NewArrOp ? h.push(new e.NewArrOp(a(p.id))) : p instanceof e.InsArrOp ? h.push(new e.InsArrOp(a(p.id), a(p.obj), a(p.ref), p.data.map(a))) : p instanceof e.UpdArrOp ? h.push(new e.UpdArrOp(a(p.id), a(p.obj), a(p.ref), a(p.val))) : p instanceof e.InsStrOp ? h.push(new e.InsStrOp(a(p.id), a(p.obj), a(p.ref), p.data)) : p instanceof e.InsBinOp ? h.push(new e.InsBinOp(a(p.id), a(p.obj), a(p.ref), p.data)) : p instanceof e.InsValOp ? h.push(new e.InsValOp(a(p.id), a(p.obj), a(p.val))) : p instanceof e.InsObjOp ? h.push(new e.InsObjOp(a(p.id), a(p.obj), p.data.map(([b, k]) => [b, a(k)]))) : p instanceof e.InsVecOp ? h.push(new e.InsVecOp(a(p.id), a(p.obj), p.data.map(([b, k]) => [b, a(k)]))) : p instanceof e.NopOp && h.push(new e.NopOp(a(p.id), p.len));
       }
       return u;
@@ -6871,12 +6871,12 @@ function tl() {
       const c = l.sid, h = l.time;
       if (u ?? (u = h), h === a)
         return this;
-      const y = a - h;
+      const g = a - h;
       return this.rewriteTime((p) => {
         if (p.sid !== c)
           return p;
         const b = p.time;
-        return b < u ? p : (0, t.ts)(c, b + y);
+        return b < u ? p : (0, t.ts)(c, b + g);
       });
     }
     /**
@@ -6911,7 +6911,7 @@ function tl() {
   return Vn.Patch = s, Vn;
 }
 var Na;
-function Ot() {
+function xt() {
   return Na || (Na = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 });
     const e = re;
@@ -6922,7 +6922,7 @@ var Ta;
 function nl() {
   return Ta || (Ta = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.bin = r.con = r.line = void 0;
-    const e = hd(), t = Ot();
+    const e = hd(), t = xt();
     r.line = e.toLine;
     const i = (s) => s instanceof Uint8Array ? "Uint8Array " + (0, r.bin)(s) : `{ ${s instanceof t.Timestamp ? (0, t.printTs)(s) : (0, r.line)(s)} }`;
     r.con = i;
@@ -7045,12 +7045,12 @@ var Ra;
 function Rd() {
   if (Ra) return ir;
   Ra = 1, Object.defineProperty(ir, "__esModule", { value: !0 }), ir.Encoder = void 0;
-  const e = re.__importStar(xt()), t = Pd(), i = so(), n = de(), s = Ju(), o = il();
+  const e = re.__importStar(Ot()), t = Pd(), i = so(), n = de(), s = Ju(), o = il();
   let a = class extends s.CborEncoder {
     constructor(l) {
       super(l || new i.CrdtWriter()), this.clockEncoder = new t.ClockEncoder(), this.time = 0, this.cTableEntry = (c) => {
-        const h = c.clock, y = this.writer;
-        y.vu57(h.sid), y.vu57(h.time);
+        const h = c.clock, g = this.writer;
+        g.vu57(h.sid), g.vu57(h.time);
       }, this.tsLogical = (c) => {
         const h = this.clockEncoder.append(c);
         this.writer.id(h.sessionIndex, h.timeDiff);
@@ -7068,8 +7068,8 @@ function Rd() {
     encodeLogical(l) {
       const c = this.writer;
       this.ts = this.tsLogical, this.clockEncoder.reset(l.clock), c.ensureCapacity(4);
-      const h = c.x0, y = c.x;
-      c.x += 4, this.cRoot(l.root), this.encodeClockTable(h, y);
+      const h = c.x0, g = c.x;
+      c.x += 4, this.cRoot(l.root), this.encodeClockTable(h, g);
     }
     encodeServer(l) {
       this.ts = this.tsServer;
@@ -7077,8 +7077,8 @@ function Rd() {
       c.u8(128), c.vu57(this.time = l.clock.time), this.cRoot(l.root);
     }
     encodeClockTable(l, c) {
-      const h = this.writer, y = h.x0 - l;
-      h.view.setUint32(h.x0 + (c - l), h.x - c - y - 4);
+      const h = this.writer, g = h.x0 - l;
+      h.view.setUint32(h.x0 + (c - l), h.x - c - g - 4);
       const b = this.clockEncoder.table, k = b.size;
       h.vu57(k), b.forEach(this.cTableEntry);
     }
@@ -7107,10 +7107,10 @@ function Rd() {
     cVec(l) {
       const c = l.elements, h = c.length;
       this.ts(l.id), this.writeTL(o.CRDT_MAJOR_OVERLAY.VEC, h);
-      const y = this.doc.index;
+      const g = this.doc.index;
       for (let p = 0; p < h; p++) {
         const b = c[p];
-        b ? this.cNode(y.get(b)) : this.writer.u8(0);
+        b ? this.cNode(g.get(b)) : this.writer.u8(0);
       }
     }
     cStr(l) {
@@ -7122,16 +7122,16 @@ function Rd() {
     cBin(l) {
       const c = this.ts, h = this.writer;
       c(l.id), this.writeTL(o.CRDT_MAJOR_OVERLAY.BIN, l.count);
-      for (let y = l.first(); y; y = l.next(y)) {
-        c(y.id);
-        const p = y.span, b = y.del;
-        h.b1vu56(~~b, p), !b && h.buf(y.data, p);
+      for (let g = l.first(); g; g = l.next(g)) {
+        c(g.id);
+        const p = g.span, b = g.del;
+        h.b1vu56(~~b, p), !b && h.buf(g.data, p);
       }
     }
     cArr(l) {
       const c = this.ts, h = this.writer;
       c(l.id), this.writeTL(o.CRDT_MAJOR_OVERLAY.ARR, l.count);
-      const y = this.doc.index;
+      const g = this.doc.index;
       for (let p = l.first(); p; p = l.next(p)) {
         c(p.id);
         const b = p.span, k = p.del;
@@ -7139,7 +7139,7 @@ function Rd() {
           continue;
         const m = p.data;
         for (let _ = 0; _ < b; _++)
-          this.cNode(y.get(m[_]));
+          this.cNode(g.get(m[_]));
       }
     }
   };
@@ -7179,23 +7179,23 @@ var Ba;
 function Bd() {
   if (Ba) return ar;
   Ba = 1, Object.defineProperty(ar, "__esModule", { value: !0 }), ar.Decoder = void 0;
-  const e = re.__importStar(xt()), t = Vd(), i = Yu(), n = de(), s = po(), o = Qu(), a = il();
+  const e = re.__importStar(Ot()), t = Vd(), i = Yu(), n = de(), s = po(), o = Qu(), a = il();
   let u = class extends o.CborDecoderBase {
     constructor() {
       super(new i.CrdtReader()), this.clockDecoder = void 0, this.time = -1, this.cStrChunk = () => {
         const c = this.ts(), h = this.val();
         return typeof h == "string" ? new e.StrChunk(c, h.length, h) : new e.StrChunk(c, ~~h, "");
       }, this.cBinChunk = () => {
-        const c = this.ts(), h = this.reader, [y, p] = h.b1vu56();
-        return y ? new e.BinChunk(c, p, void 0) : new e.BinChunk(c, p, h.buf(p));
+        const c = this.ts(), h = this.reader, [g, p] = h.b1vu56();
+        return g ? new e.BinChunk(c, p, void 0) : new e.BinChunk(c, p, h.buf(p));
       };
     }
     decode(c, h) {
       this.clockDecoder = void 0, this.time = -1;
-      const y = this.reader;
-      if (y.reset(c), y.peak() & 128) {
-        y.x++;
-        const m = this.time = y.vu57();
+      const g = this.reader;
+      if (g.reset(c), g.peak() & 128) {
+        g.x++;
+        const m = this.time = g.vu57();
         h || (h = s.Model.withServerClock(void 0, m));
       } else if (this.decodeClockTable(), !h) {
         const m = this.clockDecoder.clock;
@@ -7206,7 +7206,7 @@ function Bd() {
       return b.parent = k, this.clockDecoder = void 0, h;
     }
     decodeClockTable() {
-      const c = this.reader, h = c.u32(), y = c.x;
+      const c = this.reader, h = c.u32(), g = c.x;
       c.x += h;
       const p = c.vu57(), b = c.vu57(), k = c.vu57();
       this.clockDecoder = new t.ClockDecoder(b, k);
@@ -7214,12 +7214,12 @@ function Bd() {
         const _ = c.vu57(), f = c.vu57();
         this.clockDecoder.pushTuple(_, f);
       }
-      c.x = y;
+      c.x = g;
     }
     ts() {
       if (this.time < 0) {
-        const [y, p] = this.reader.id();
-        return this.clockDecoder.decodeId(y, p);
+        const [g, p] = this.reader.id();
+        return this.clockDecoder.decodeId(g, p);
       } else
         return new n.Timestamp(1, this.reader.vu57());
     }
@@ -7228,7 +7228,7 @@ function Bd() {
       return c.uint8[c.x] ? this.cNode() : s.UNDEFINED;
     }
     cNode() {
-      const c = this.reader, h = this.ts(), y = c.u8(), p = y >> 5, b = y & 31;
+      const c = this.reader, h = this.ts(), g = c.u8(), p = g >> 5, b = g & 31;
       switch (p) {
         case a.CRDT_MAJOR.CON:
           return this.cCon(h, b);
@@ -7248,28 +7248,28 @@ function Bd() {
       throw new Error("UNKNOWN_NODE");
     }
     cCon(c, h) {
-      const y = this.doc, p = h ? this.ts() : this.val(), b = new e.ConNode(c, p);
-      return y.index.set(c, b), b;
+      const g = this.doc, p = h ? this.ts() : this.val(), b = new e.ConNode(c, p);
+      return g.index.set(c, b), b;
     }
     cVal(c) {
-      const h = this.cNode(), y = this.doc, p = new e.ValNode(y, c, h.id);
-      return h.parent = p, y.index.set(c, p), p;
+      const h = this.cNode(), g = this.doc, p = new e.ValNode(g, c, h.id);
+      return h.parent = p, g.index.set(c, p), p;
     }
     cObj(c, h) {
-      const y = new e.ObjNode(this.doc, c);
+      const g = new e.ObjNode(this.doc, c);
       for (let p = 0; p < h; p++)
-        this.cObjChunk(y);
-      return this.doc.index.set(c, y), y;
+        this.cObjChunk(g);
+      return this.doc.index.set(c, g), g;
     }
     cObjChunk(c) {
-      const h = this.key(), y = this.cNode();
-      y.parent = c, c.keys.set(h, y.id);
+      const h = this.key(), g = this.cNode();
+      g.parent = c, c.keys.set(h, g.id);
     }
     cVec(c, h) {
-      const y = this.reader, p = new e.VecNode(this.doc, c), b = p.elements;
+      const g = this.reader, p = new e.VecNode(this.doc, c), b = p.elements;
       for (let k = 0; k < h; k++)
-        if (!y.peak())
-          y.x++, b.push(void 0);
+        if (!g.peak())
+          g.x++, b.push(void 0);
         else {
           const _ = this.cNode();
           _.parent = p, b.push(_.id);
@@ -7277,26 +7277,26 @@ function Bd() {
       return this.doc.index.set(c, p), p;
     }
     cStr(c, h) {
-      const y = new e.StrNode(c);
-      return h && y.ingest(h, this.cStrChunk), this.doc.index.set(c, y), y;
+      const g = new e.StrNode(c);
+      return h && g.ingest(h, this.cStrChunk), this.doc.index.set(c, g), g;
     }
     cBin(c, h) {
-      const y = new e.BinNode(c);
-      return h && y.ingest(h, this.cBinChunk), this.doc.index.set(c, y), y;
+      const g = new e.BinNode(c);
+      return h && g.ingest(h, this.cBinChunk), this.doc.index.set(c, g), g;
     }
     cArr(c, h) {
-      const y = new e.ArrNode(this.doc, c);
-      return h && y.ingest(h, () => {
+      const g = new e.ArrNode(this.doc, c);
+      return h && g.ingest(h, () => {
         const p = this.ts(), [b, k] = this.reader.b1vu56();
         if (b)
           return new e.ArrChunk(p, k, void 0);
         const m = [];
         for (let _ = 0; _ < k; _++) {
           const f = this.cNode();
-          f.parent = y, m.push(f.id);
+          f.parent = g, m.push(f.id);
         }
         return new e.ArrChunk(p, k, m);
-      }), this.doc.index.set(c, y), y;
+      }), this.doc.index.set(c, g), g;
     }
   };
   return ar.Decoder = u, ar;
@@ -7308,7 +7308,7 @@ function Ld() {
   const r = Rd(), e = Bd();
   return Nt.encoder = new r.Encoder(), Nt.decoder = new e.Decoder(), Nt;
 }
-var Wi = {}, ge = {}, ur = {}, ci = {}, Ma;
+var Wi = {}, ye = {}, ur = {}, ci = {}, Ma;
 function uo() {
   if (Ma) return ci;
   Ma = 1, Object.defineProperty(ci, "__esModule", { value: !0 }), ci.hasOwnProperty = e;
@@ -7383,8 +7383,8 @@ function lo() {
           return !1;
       return !0;
     }
-    const y = (m) => !m.length;
-    r.isRoot = y;
+    const g = (m) => !m.length;
+    r.isRoot = g;
     function p(m) {
       if (m.length < 1)
         throw new Error("NO_PARENT");
@@ -7457,8 +7457,8 @@ function qd() {
     if (!u)
       return { val: o };
     let l, c;
-    for (let y = 0; y < u; y++)
-      if (l = o, c = a[y], e(l)) {
+    for (let g = 0; g < u; g++)
+      if (l = o, c = a[g], e(l)) {
         const p = l.length;
         if (c === "-")
           c = p;
@@ -7531,7 +7531,7 @@ var Ja;
 function zd() {
   if (Ja) return lr;
   Ja = 1, Object.defineProperty(lr, "__esModule", { value: !0 }), lr.find = void 0;
-  const r = Hd(), e = xt(), t = (i, n) => {
+  const r = Hd(), e = Ot(), t = (i, n) => {
     const s = (0, r.toPath)(n);
     let o = i;
     const a = s.length;
@@ -7765,10 +7765,10 @@ function Wd() {
     Object.defineProperty(r, "__esModule", { value: !0 }), re.__exportStar(Jd(), r);
   })(es)), es;
 }
-var gr = {}, ec;
+var yr = {}, ec;
 function Gd() {
-  if (ec) return gr;
-  ec = 1, Object.defineProperty(gr, "__esModule", { value: !0 }), gr.cmpUint8Array = void 0;
+  if (ec) return yr;
+  ec = 1, Object.defineProperty(yr, "__esModule", { value: !0 }), yr.cmpUint8Array = void 0;
   const r = (e, t) => {
     const i = e.length;
     if (i !== t.length)
@@ -7778,32 +7778,32 @@ function Gd() {
         return !1;
     return !0;
   };
-  return gr.cmpUint8Array = r, gr;
+  return yr.cmpUint8Array = r, yr;
 }
 var ns = {}, tc;
 function ho() {
   return tc || (tc = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.apply = r.invert = r.dst = r.src = r.diffEdit = r.diff = r.overlap = r.sfx = r.pfx = r.normalize = void 0;
     const e = (d) => {
-      const g = d.length;
-      if (g < 2)
+      const y = d.length;
+      if (y < 2)
         return d;
       let v = 0;
       e: {
         if (!d[0][1])
           break e;
-        for (v = 1; v < g; v++) {
-          const O = d[v - 1], I = d[v];
-          if (!I[1] || O[0] === I[0])
+        for (v = 1; v < y; v++) {
+          const x = d[v - 1], I = d[v];
+          if (!I[1] || x[0] === I[0])
             break e;
         }
         return d;
       }
       const w = [];
-      for (let O = 0; O < v; O++)
-        w.push(d[O]);
-      for (let O = v; O < g; O++) {
-        const I = d[O];
+      for (let x = 0; x < v; x++)
+        w.push(d[x]);
+      for (let x = v; x < y; x++) {
+        const I = d[x];
         if (!I[1])
           continue;
         const C = w.length > 0 ? w[w.length - 1] : null;
@@ -7813,14 +7813,14 @@ function ho() {
     };
     r.normalize = e;
     const t = (d) => {
-      const g = d.charCodeAt(0);
-      return g >= 56320 && g <= 57343;
+      const y = d.charCodeAt(0);
+      return y >= 56320 && y <= 57343;
     }, i = (d) => {
-      const g = d.charCodeAt(d.length - 1);
-      return g >= 55296 && g <= 56319;
-    }, n = (d, g) => {
+      const y = d.charCodeAt(d.length - 1);
+      return y >= 55296 && y <= 56319;
+    }, n = (d, y) => {
       d.push([0, ""]);
-      let v = 0, w = 0, O = 0, I = "", C = "", E = 0;
+      let v = 0, w = 0, x = 0, I = "", C = "", E = 0;
       for (; v < d.length; ) {
         if (v < d.length - 1 && !d[v][1]) {
           d.splice(v, 1);
@@ -7829,14 +7829,14 @@ function ho() {
         const T = d[v];
         switch (T[0]) {
           case 1:
-            O++, v++, C += T[1];
+            x++, v++, C += T[1];
             break;
           case -1:
             w++, v++, I += T[1];
             break;
           case 0: {
-            let j = v - O - w - 1;
-            if (g) {
+            let j = v - x - w - 1;
+            if (y) {
               const V = d[j];
               if (j >= 0) {
                 let he = V[1];
@@ -7848,7 +7848,7 @@ function ho() {
                     const ce = d[fe];
                     if (ce) {
                       const oe = ce[0];
-                      oe === 1 ? (O++, fe--, C = ce[1] + C) : oe === -1 && (w++, fe--, I = ce[1] + I);
+                      oe === 1 ? (x++, fe--, C = ce[1] + C) : oe === -1 && (w++, fe--, I = ce[1] + I);
                     }
                     j = fe;
                   }
@@ -7867,69 +7867,69 @@ function ho() {
             const P = I.length > 0, R = C.length > 0;
             if (P || R) {
               P && R && (E = (0, r.pfx)(C, I), E !== 0 && (j >= 0 ? d[j][1] += C.slice(0, E) : (d.splice(0, 0, [0, C.slice(0, E)]), v++), C = C.slice(E), I = I.slice(E)), E = (0, r.sfx)(C, I), E !== 0 && (d[v][1] = C.slice(C.length - E) + d[v][1], C = C.slice(0, C.length - E), I = I.slice(0, I.length - E)));
-              const V = O + w, z = I.length, J = C.length;
+              const V = x + w, z = I.length, J = C.length;
               z === 0 && J === 0 ? (d.splice(v - V, V), v = v - V) : z === 0 ? (d.splice(v - V, V, [1, C]), v = v - V + 1) : J === 0 ? (d.splice(v - V, V, [-1, I]), v = v - V + 1) : (d.splice(v - V, V, [-1, I], [1, C]), v = v - V + 2);
             }
             const M = d[v - 1];
-            v !== 0 && M[0] === 0 ? (M[1] += d[v][1], d.splice(v, 1)) : v++, O = 0, w = 0, I = "", C = "";
+            v !== 0 && M[0] === 0 ? (M[1] += d[v][1], d.splice(v, 1)) : v++, x = 0, w = 0, I = "", C = "";
             break;
           }
         }
       }
       d[d.length - 1][1] === "" && d.pop();
-      let x = !1;
+      let O = !1;
       for (v = 1; v < d.length - 1; ) {
         const T = d[v - 1], j = d[v + 1];
         if (T[0] === 0 && j[0] === 0) {
           const P = T[1], R = d[v], M = R[1], V = j[1];
-          M.slice(M.length - P.length) === P ? (d[v][1] = P + M.slice(0, M.length - P.length), j[1] = P + V, d.splice(v - 1, 1), x = !0) : M.slice(0, V.length) === V && (T[1] += j[1], R[1] = M.slice(V.length) + V, d.splice(v + 1, 1), x = !0);
+          M.slice(M.length - P.length) === P ? (d[v][1] = P + M.slice(0, M.length - P.length), j[1] = P + V, d.splice(v - 1, 1), O = !0) : M.slice(0, V.length) === V && (T[1] += j[1], R[1] = M.slice(V.length) + V, d.splice(v + 1, 1), O = !0);
         }
         v++;
       }
-      x && n(d, g);
-    }, s = (d, g, v, w) => {
+      O && n(d, y);
+    }, s = (d, y, v, w) => {
       if (v > 0 && v < d.length) {
         const C = d.charCodeAt(v);
         C >= 56320 && C <= 57343 && v--;
       }
-      if (w > 0 && w < g.length) {
-        const C = g.charCodeAt(w);
+      if (w > 0 && w < y.length) {
+        const C = y.charCodeAt(w);
         C >= 56320 && C <= 57343 && w--;
       }
-      const O = h(d.slice(0, v), g.slice(0, w), !1), I = h(d.slice(v), g.slice(w), !1);
-      return O.concat(I);
-    }, o = (d, g) => {
-      const v = d.length, w = g.length, O = Math.ceil((v + w) / 2), I = O, C = 2 * O, E = new Array(C), x = new Array(C);
+      const x = h(d.slice(0, v), y.slice(0, w), !1), I = h(d.slice(v), y.slice(w), !1);
+      return x.concat(I);
+    }, o = (d, y) => {
+      const v = d.length, w = y.length, x = Math.ceil((v + w) / 2), I = x, C = 2 * x, E = new Array(C), O = new Array(C);
       for (let z = 0; z < C; z++)
-        E[z] = -1, x[z] = -1;
-      E[I + 1] = 0, x[I + 1] = 0;
+        E[z] = -1, O[z] = -1;
+      E[I + 1] = 0, O[I + 1] = 0;
       const T = v - w, j = T % 2 !== 0;
       let P = 0, R = 0, M = 0, V = 0;
-      for (let z = 0; z < O; z++) {
+      for (let z = 0; z < x; z++) {
         for (let J = -z + P; J <= z - R; J += 2) {
           const he = I + J;
           let Y = 0;
           const fe = E[he - 1], ce = E[he + 1];
           J === -z || J !== z && fe < ce ? Y = ce : Y = fe + 1;
           let oe = Y - J;
-          for (; Y < v && oe < w && d.charAt(Y) === g.charAt(oe); )
+          for (; Y < v && oe < w && d.charAt(Y) === y.charAt(oe); )
             Y++, oe++;
           if (E[he] = Y, Y > v)
             R += 2;
           else if (oe > w)
             P += 2;
           else if (j) {
-            const ie = I + T - J, Oe = x[ie];
-            if (ie >= 0 && ie < C && Oe !== -1 && Y >= v - Oe)
-              return s(d, g, Y, oe);
+            const ie = I + T - J, xe = O[ie];
+            if (ie >= 0 && ie < C && xe !== -1 && Y >= v - xe)
+              return s(d, y, Y, oe);
           }
         }
         for (let J = -z + M; J <= z - V; J += 2) {
           const he = I + J;
-          let Y = J === -z || J !== z && x[he - 1] < x[he + 1] ? x[he + 1] : x[he - 1] + 1, fe = Y - J;
-          for (; Y < v && fe < w && d.charAt(v - Y - 1) === g.charAt(w - fe - 1); )
+          let Y = J === -z || J !== z && O[he - 1] < O[he + 1] ? O[he + 1] : O[he - 1] + 1, fe = Y - J;
+          for (; Y < v && fe < w && d.charAt(v - Y - 1) === y.charAt(w - fe - 1); )
             Y++, fe++;
-          if (x[he] = Y, Y > v)
+          if (O[he] = Y, Y > v)
             V += 2;
           else if (fe > w)
             M += 2;
@@ -7938,162 +7938,162 @@ function ho() {
             if (ce >= 0 && ce < C && oe !== -1) {
               const ie = I + oe - ce;
               if (Y = v - Y, oe >= Y)
-                return s(d, g, oe, ie);
+                return s(d, y, oe, ie);
             }
           }
         }
       }
       return [
         [-1, d],
-        [1, g]
+        [1, y]
       ];
-    }, a = (d, g) => {
+    }, a = (d, y) => {
       if (!d)
-        return [[1, g]];
-      if (!g)
+        return [[1, y]];
+      if (!y)
         return [[-1, d]];
-      const v = d.length, w = g.length, O = v > w ? d : g, I = v > w ? g : d, C = I.length, E = O.indexOf(I);
+      const v = d.length, w = y.length, x = v > w ? d : y, I = v > w ? y : d, C = I.length, E = x.indexOf(I);
       if (E >= 0) {
-        const x = O.slice(0, E), T = O.slice(E + C);
+        const O = x.slice(0, E), T = x.slice(E + C);
         return v > w ? [
-          [-1, x],
+          [-1, O],
           [0, I],
           [-1, T]
         ] : [
-          [1, x],
+          [1, O],
           [0, I],
           [1, T]
         ];
       }
       return C === 1 ? [
         [-1, d],
-        [1, g]
-      ] : o(d, g);
-    }, u = (d, g) => {
-      if (!d || !g || d.charAt(0) !== g.charAt(0))
+        [1, y]
+      ] : o(d, y);
+    }, u = (d, y) => {
+      if (!d || !y || d.charAt(0) !== y.charAt(0))
         return 0;
-      let v = 0, w = Math.min(d.length, g.length), O = w, I = 0;
-      for (; v < O; )
-        d.slice(I, O) === g.slice(I, O) ? (v = O, I = v) : w = O, O = Math.floor((w - v) / 2 + v);
-      const C = d.charCodeAt(O - 1);
-      return C >= 55296 && C <= 56319 && O--, O;
+      let v = 0, w = Math.min(d.length, y.length), x = w, I = 0;
+      for (; v < x; )
+        d.slice(I, x) === y.slice(I, x) ? (v = x, I = v) : w = x, x = Math.floor((w - v) / 2 + v);
+      const C = d.charCodeAt(x - 1);
+      return C >= 55296 && C <= 56319 && x--, x;
     };
     r.pfx = u;
-    const l = (d, g) => {
-      if (!d || !g || d.slice(-1) !== g.slice(-1))
+    const l = (d, y) => {
+      if (!d || !y || d.slice(-1) !== y.slice(-1))
         return 0;
-      let v = 0, w = Math.min(d.length, g.length), O = w, I = 0;
-      for (; v < O; )
-        d.slice(d.length - O, d.length - I) === g.slice(g.length - O, g.length - I) ? (v = O, I = v) : w = O, O = Math.floor((w - v) / 2 + v);
-      if (O > 0 && O < d.length) {
-        const C = d.length - O - 1, E = d.charCodeAt(C), x = E >= 55296 && E <= 56319, T = E === 8205 || // ZWJ
+      let v = 0, w = Math.min(d.length, y.length), x = w, I = 0;
+      for (; v < x; )
+        d.slice(d.length - x, d.length - I) === y.slice(y.length - x, y.length - I) ? (v = x, I = v) : w = x, x = Math.floor((w - v) / 2 + v);
+      if (x > 0 && x < d.length) {
+        const C = d.length - x - 1, E = d.charCodeAt(C), O = E >= 55296 && E <= 56319, T = E === 8205 || // ZWJ
         E >= 65024 && E <= 65039 || // Variation selectors
         E >= 768 && E <= 879;
-        if (x || T)
-          for (O--; O > 0; ) {
-            const j = d.length - O - 1;
+        if (O || T)
+          for (x--; x > 0; ) {
+            const j = d.length - x - 1;
             if (j < 0)
               break;
             const P = d.charCodeAt(j), R = P >= 55296 && P <= 56319, M = P === 8205 || P >= 65024 && P <= 65039 || P >= 768 && P <= 879;
             if (!R && !M)
               break;
-            O--;
+            x--;
           }
       }
-      return O;
+      return x;
     };
     r.sfx = l;
-    const c = (d, g) => {
-      const v = d.length, w = g.length;
+    const c = (d, y) => {
+      const v = d.length, w = y.length;
       if (v === 0 || w === 0)
         return 0;
-      let O = v;
-      if (v > w ? (O = w, d = d.substring(v - w)) : v < w && (g = g.substring(0, v)), d === g)
-        return O;
+      let x = v;
+      if (v > w ? (x = w, d = d.substring(v - w)) : v < w && (y = y.substring(0, v)), d === y)
+        return x;
       let I = 0, C = 1;
       for (; ; ) {
-        const E = d.substring(O - C), x = g.indexOf(E);
-        if (x === -1)
+        const E = d.substring(x - C), O = y.indexOf(E);
+        if (O === -1)
           return I;
-        C += x, (x === 0 || d.substring(O - C) === g.substring(0, C)) && (I = C, C++);
+        C += O, (O === 0 || d.substring(x - C) === y.substring(0, C)) && (I = C, C++);
       }
     };
     r.overlap = c;
-    const h = (d, g, v) => {
-      if (d === g)
+    const h = (d, y, v) => {
+      if (d === y)
         return d ? [[0, d]] : [];
-      const w = (0, r.pfx)(d, g), O = d.slice(0, w);
-      d = d.slice(w), g = g.slice(w);
-      const I = (0, r.sfx)(d, g), C = d.slice(d.length - I);
-      d = d.slice(0, d.length - I), g = g.slice(0, g.length - I);
-      const E = a(d, g);
-      return O && E.unshift([0, O]), C && E.push([0, C]), n(E, v), E;
-    }, y = (d, g) => h(d, g, !0);
-    r.diff = y;
-    const p = (d, g, v) => {
+      const w = (0, r.pfx)(d, y), x = d.slice(0, w);
+      d = d.slice(w), y = y.slice(w);
+      const I = (0, r.sfx)(d, y), C = d.slice(d.length - I);
+      d = d.slice(0, d.length - I), y = y.slice(0, y.length - I);
+      const E = a(d, y);
+      return x && E.unshift([0, x]), C && E.push([0, C]), n(E, v), E;
+    }, g = (d, y) => h(d, y, !0);
+    r.diff = g;
+    const p = (d, y, v) => {
       e: {
         if (v < 0)
           break e;
-        const w = d.length, O = g.length;
-        if (w === O)
+        const w = d.length, x = y.length;
+        if (w === x)
           break e;
-        const I = g.slice(v), C = I.length;
+        const I = y.slice(v), C = I.length;
         if (C > w || d.slice(w - C) !== I)
           break e;
-        if (O > w) {
-          const T = w - C, j = d.slice(0, T), P = g.slice(0, T);
+        if (x > w) {
+          const T = w - C, j = d.slice(0, T), P = y.slice(0, T);
           if (j !== P)
             break e;
-          const R = g.slice(T, v), M = [];
+          const R = y.slice(T, v), M = [];
           return j && M.push([0, j]), R && M.push([1, R]), I && M.push([0, I]), M;
         } else {
-          const T = O - C, j = g.slice(0, T), P = d.slice(0, T);
+          const T = x - C, j = y.slice(0, T), P = d.slice(0, T);
           if (P !== j)
             break e;
           const R = d.slice(T, w - C), M = [];
           return P && M.push([0, P]), R && M.push([-1, R]), I && M.push([0, I]), M;
         }
       }
-      return (0, r.diff)(d, g);
+      return (0, r.diff)(d, y);
     };
     r.diffEdit = p;
     const b = (d) => {
-      let g = "";
+      let y = "";
       const v = d.length;
       for (let w = 0; w < v; w++) {
-        const O = d[w];
-        O[0] !== 1 && (g += O[1]);
+        const x = d[w];
+        x[0] !== 1 && (y += x[1]);
       }
-      return g;
+      return y;
     };
     r.src = b;
     const k = (d) => {
-      let g = "";
+      let y = "";
       const v = d.length;
       for (let w = 0; w < v; w++) {
-        const O = d[w];
-        O[0] !== -1 && (g += O[1]);
+        const x = d[w];
+        x[0] !== -1 && (y += x[1]);
       }
-      return g;
+      return y;
     };
     r.dst = k;
     const m = (d) => {
-      const g = d[0];
-      return g === 0 ? d : g === 1 ? [-1, d[1]] : [1, d[1]];
+      const y = d[0];
+      return y === 0 ? d : y === 1 ? [-1, d[1]] : [1, d[1]];
     }, _ = (d) => d.map(m);
     r.invert = _;
-    const f = (d, g, v, w) => {
-      const O = d.length;
-      let I = g;
-      for (let C = O - 1; C >= 0; C--) {
-        const [E, x] = d[C];
+    const f = (d, y, v, w) => {
+      const x = d.length;
+      let I = y;
+      for (let C = x - 1; C >= 0; C--) {
+        const [E, O] = d[C];
         if (E === 0)
-          I -= x.length;
+          I -= O.length;
         else if (E === 1)
-          v(I, x);
+          v(I, O);
         else {
-          const T = x.length;
-          I -= T, w(I, T, x);
+          const T = O.length;
+          I -= T, w(I, T, O);
         }
       }
     };
@@ -8107,24 +8107,24 @@ function Xd() {
     const t = re.__importStar(ho()), i = (l) => {
       let c = "";
       const h = l.length;
-      for (let y = 0; y < h; y++)
-        c += String.fromCharCode(l[y]);
+      for (let g = 0; g < h; g++)
+        c += String.fromCharCode(l[g]);
       return c;
     };
     r.toStr = i;
     const n = (l) => {
       const c = l.length, h = new Uint8Array(c);
-      for (let y = 0; y < c; y++)
-        h[y] = l.charCodeAt(y);
+      for (let g = 0; g < c; g++)
+        h[g] = l.charCodeAt(g);
       return h;
     };
     r.toBin = n;
     const s = (l, c) => {
-      const h = (0, r.toStr)(l), y = (0, r.toStr)(c);
-      return t.diff(h, y);
+      const h = (0, r.toStr)(l), g = (0, r.toStr)(c);
+      return t.diff(h, g);
     };
     r.diff = s;
-    const o = (l, c, h, y) => t.apply(l, c, (p, b) => h(p, (0, r.toBin)(b)), y);
+    const o = (l, c, h, g) => t.apply(l, c, (p, b) => h(p, (0, r.toBin)(b)), g);
     r.apply = o;
     const a = (l) => (0, r.toBin)(t.src(l));
     r.src = a;
@@ -8139,21 +8139,21 @@ function Yd() {
     const t = re.__importStar(ho()), i = (o) => {
       const a = [], u = o.length;
       let l = [];
-      const c = (h, y) => {
-        if (!y.length)
+      const c = (h, g) => {
+        if (!g.length)
           return;
         const p = l.length;
         if (p) {
           const b = l[p - 1];
           if (b[0] === h) {
-            b[1] += y;
+            b[1] += g;
             return;
           }
         }
-        l.push([h, y]);
+        l.push([h, g]);
       };
       e: for (let h = 0; h < u; h++) {
-        const y = o[h], p = y[0], b = y[1], k = b.indexOf(`
+        const g = o[h], p = g[0], b = g[1], k = b.indexOf(`
 `);
         if (k < 0) {
           c(p, b);
@@ -8175,8 +8175,8 @@ function Yd() {
       l.length && a.push(l);
       {
         const h = a.length;
-        for (let y = 0; y < h; y++) {
-          const p = a[y] = t.normalize(a[y]), b = p.length;
+        for (let g = 0; g < h; g++) {
+          const p = a[g] = t.normalize(a[g]), b = p.length;
           e: {
             if (b < 2)
               break e;
@@ -8186,14 +8186,14 @@ function Yd() {
             for (let f = 2; f < b; f++)
               if (p[f][0] !== _)
                 break e;
-            for (let f = y + 1; f < h; f++) {
-              const d = a[f] = t.normalize(a[f]), g = d.length, v = k[1];
-              let w, O;
-              if (d.length > 1 && (w = d[0])[0] === _ && (O = d[1])[0] === 0 && v === w[1]) {
-                p.splice(0, 1), m[1] = v + m[1], O[1] = v + O[1], d.splice(0, 1);
+            for (let f = g + 1; f < h; f++) {
+              const d = a[f] = t.normalize(a[f]), y = d.length, v = k[1];
+              let w, x;
+              if (d.length > 1 && (w = d[0])[0] === _ && (x = d[1])[0] === 0 && v === w[1]) {
+                p.splice(0, 1), m[1] = v + m[1], x[1] = v + x[1], d.splice(0, 1);
                 break e;
               } else
-                for (let I = 0; I < g; I++)
+                for (let I = 0; I < y; I++)
                   if (d[I][0] !== _)
                     break e;
             }
@@ -8204,28 +8204,28 @@ function Yd() {
             const k = p[p.length - 1], m = k[1];
             if (k[0] !== -1)
               break e;
-            t: for (let _ = y + 1; _ < h; _++) {
+            t: for (let _ = g + 1; _ < h; _++) {
               const f = a[_] = t.normalize(a[_]), d = f.length;
-              let g;
+              let y;
               if (d === 0)
                 continue t;
               if (d === 1) {
-                if (g = f[0], g[0] === -1)
+                if (y = f[0], y[0] === -1)
                   continue t;
                 if (f[0][0] !== 0)
                   break e;
-              } else if (g = f[1], d > 2 || f[0][0] !== -1)
+              } else if (y = f[1], d > 2 || f[0][0] !== -1)
                 break e;
-              const v = g[0];
+              const v = y[0];
               if (v === -1)
                 continue t;
               if (v !== 0)
                 break e;
-              const w = g[1];
+              const w = y[1];
               if (w.length > m.length || !m.endsWith(w))
                 break e;
-              const O = m.length - w.length;
-              k[1] = m.slice(0, O), p.push([0, w]), g[0] = -1, a[y] = t.normalize(a[y]), a[_] = t.normalize(a[_]);
+              const x = m.length - w.length;
+              k[1] = m.slice(0, x), p.push([0, w]), y[0] = -1, a[g] = t.normalize(a[g]), a[_] = t.normalize(a[_]);
               break e;
             }
           }
@@ -8246,31 +8246,31 @@ function Yd() {
 `;
       if (u === l)
         return [];
-      const c = t.diff(u, l), h = (0, r.agg)(c), y = h.length, p = [];
+      const c = t.diff(u, l), h = (0, r.agg)(c), g = h.length, p = [];
       let b = -1, k = -1;
       const m = o.length, _ = a.length;
-      for (let f = 0; f < y; f++) {
+      for (let f = 0; f < g; f++) {
         const d = h[f];
-        let g = d.length;
-        if (!g)
+        let y = d.length;
+        if (!y)
           continue;
-        const v = d[g - 1], w = v[0], O = v[1];
-        if (O === `
+        const v = d[y - 1], w = v[0], x = v[1];
+        if (x === `
 `)
-          d.splice(g - 1, 1);
+          d.splice(y - 1, 1);
         else {
-          const C = O.length;
-          O[C - 1] === `
-` && (C === 1 ? d.splice(g - 1, 1) : v[1] = O.slice(0, C - 1));
+          const C = x.length;
+          x[C - 1] === `
+` && (C === 1 ? d.splice(y - 1, 1) : v[1] = x.slice(0, C - 1));
         }
         let I = 0;
-        if (g = d.length, !g)
+        if (y = d.length, !y)
           w === 0 ? (I = 0, b++, k++) : w === 1 ? (I = 1, k++) : w === -1 && (I = -1, b++);
-        else if (f + 1 === y)
-          b + 1 < m ? k + 1 < _ ? (I = g === 1 && d[0][0] === 0 ? 0 : 2, b++, k++) : (I = -1, b++) : (I = 1, k++);
+        else if (f + 1 === g)
+          b + 1 < m ? k + 1 < _ ? (I = y === 1 && d[0][0] === 0 ? 0 : 2, b++, k++) : (I = -1, b++) : (I = 1, k++);
         else {
           const E = d[0][0];
-          g === 1 && E === w && E === 0 ? (b++, k++) : w === 0 ? (I = 2, b++, k++) : w === 1 ? (I = 1, k++) : w === -1 && (I = -1, b++);
+          y === 1 && E === w && E === 0 ? (b++, k++) : w === 0 ? (I = 2, b++, k++) : w === 1 ? (I = 1, k++) : w === -1 && (I = -1, b++);
         }
         I === 0 && o[b] !== a[k] && (I = 2), p.push([I, b, k]);
       }
@@ -8280,8 +8280,8 @@ function Yd() {
     const s = (o, a, u, l) => {
       const c = o.length;
       e: for (let h = c - 1; h >= 0; h--) {
-        const [y, p, b] = o[h];
-        switch (y) {
+        const [g, p, b] = o[h];
+        switch (g) {
           case 0:
             continue e;
           case -1:
@@ -8299,10 +8299,10 @@ function Yd() {
     r.apply = s;
   })(is)), is;
 }
-var ss = {}, yr = {}, ic;
-function Oi() {
-  if (ic) return yr;
-  ic = 1, Object.defineProperty(yr, "__esModule", { value: !0 }), yr.sort = void 0;
+var ss = {}, gr = {}, ic;
+function xi() {
+  if (ic) return gr;
+  ic = 1, Object.defineProperty(gr, "__esModule", { value: !0 }), gr.sort = void 0;
   const r = (e) => {
     const t = e.length;
     for (let i = 1; i < t; i++) {
@@ -8314,13 +8314,13 @@ function Oi() {
     }
     return e;
   };
-  return yr.sort = r, yr;
+  return gr.sort = r, gr;
 }
 var os = {}, sc;
 function fo() {
   return sc || (sc = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.hash = r.updateJson = r.updateBin = r.updateStr = r.updateNum = r.CONST = void 0;
-    const e = Oi();
+    const e = xi();
     var t;
     (function(u) {
       u[u.START_STATE = 5381] = "START_STATE", u[u.NULL = 982452847] = "NULL", u[u.TRUE = 982453247] = "TRUE", u[u.FALSE = 982454243] = "FALSE", u[u.ARRAY = 982452259] = "ARRAY", u[u.STRING = 982453601] = "STRING", u[u.OBJECT = 982454533] = "OBJECT", u[u.BINARY = 982454837] = "BINARY";
@@ -8355,9 +8355,9 @@ function fo() {
           if (l === null)
             return (0, r.updateNum)(u, t.NULL);
           if (Array.isArray(l)) {
-            const y = l.length;
+            const g = l.length;
             u = (0, r.updateNum)(u, t.ARRAY);
-            for (let p = 0; p < y; p++)
+            for (let p = 0; p < g; p++)
               u = (0, r.updateJson)(u, l[p]);
             return u;
           }
@@ -8365,8 +8365,8 @@ function fo() {
             return (0, r.updateBin)(u, l);
           u = (0, r.updateNum)(u, t.OBJECT);
           const c = (0, e.sort)(Object.keys(l)), h = c.length;
-          for (let y = 0; y < h; y++) {
-            const p = c[y];
+          for (let g = 0; g < h; g++) {
+            const p = c[g];
             u = (0, r.updateStr)(u, p), u = (0, r.updateJson)(u, l[p]);
           }
           return u;
@@ -8385,7 +8385,7 @@ var as = {}, oc;
 function ul() {
   return oc || (oc = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.structHash = void 0;
-    const e = Oi(), t = fo(), i = Ot(), n = (s) => {
+    const e = xi(), t = fo(), i = xt(), n = (s) => {
       switch (typeof s) {
         case "string":
           return (0, t.hash)(s).toString(36);
@@ -8431,7 +8431,7 @@ var ac;
 function Qd() {
   return ac || (ac = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.structHashCrdt = void 0;
-    const e = Oi(), t = Ol(), i = fo(), n = ul(), s = (o) => {
+    const e = xi(), t = xl(), i = fo(), n = ul(), s = (o) => {
       if (o instanceof t.ConNode)
         return (0, n.structHash)(o.val);
       if (o instanceof t.ValNode)
@@ -8444,8 +8444,8 @@ function Qd() {
         (0, e.sort)(u);
         const l = u.length;
         for (let c = 0; c < l; c++) {
-          const h = u[c], y = o.get(h);
-          a += (0, i.hash)(h).toString(36) + ":" + (0, r.structHashCrdt)(y) + ",";
+          const h = u[c], g = o.get(h);
+          a += (0, i.hash)(h).toString(36) + ":" + (0, r.structHashCrdt)(g) + ",";
         }
         return a + "}";
       } else if (o instanceof t.ArrNode || o instanceof t.VecNode) {
@@ -8464,7 +8464,7 @@ var cs = {}, cc;
 function $d() {
   return cc || (cc = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.structHashSchema = void 0;
-    const e = Oi(), t = ki(), i = fo(), n = ul(), s = (o) => {
+    const e = xi(), t = ki(), i = fo(), n = ul(), s = (o) => {
       if (o instanceof t.nodes.con || o instanceof t.nodes.str || o instanceof t.nodes.bin)
         return (0, n.structHash)(o.raw);
       if (o instanceof t.nodes.val)
@@ -8475,8 +8475,8 @@ function $d() {
         (0, e.sort)(l);
         const c = l.length;
         for (let h = 0; h < c; h++) {
-          const y = l[h], p = u[y];
-          a += (0, i.hash)(y).toString(36) + ":" + (0, r.structHashSchema)(p) + ",";
+          const g = l[h], p = u[g];
+          a += (0, i.hash)(g).toString(36) + ":" + (0, r.structHashSchema)(p) + ",";
         }
         return a + "}";
       } else if (o instanceof t.nodes.arr || o instanceof t.nodes.vec) {
@@ -8495,7 +8495,7 @@ var uc;
 function ll() {
   if (uc) return At;
   uc = 1, Object.defineProperty(At, "__esModule", { value: !0 }), At.JsonCrdtDiff = At.DiffError = void 0;
-  const r = re, e = Wd(), t = Gd(), i = Ot(), n = xt(), s = r.__importStar(ho()), o = r.__importStar(Xd()), a = r.__importStar(Yd()), u = Qd(), l = $d();
+  const r = re, e = Wd(), t = Gd(), i = xt(), n = Ot(), s = r.__importStar(ho()), o = r.__importStar(Xd()), a = r.__importStar(Yd()), u = Qd(), l = $d();
   class c extends Error {
     constructor(p = "DIFF") {
       super(p);
@@ -8522,52 +8522,52 @@ function ll() {
     }
     diffArr(p, b) {
       if (p.size() === 0) {
-        const O = b.length;
-        if (O === 0)
+        const x = b.length;
+        if (x === 0)
           return;
         let I = p.id;
-        for (let C = 0; C < O; C++)
+        for (let C = 0; C < x; C++)
           I = this.builder.insArr(p.id, I, [this.buildView(b[C])]);
         return;
       } else if (b.length === 0) {
-        const O = [];
+        const x = [];
         for (const I of p.chunks()) {
           if (I.del)
             continue;
           const C = I.id;
-          O.push((0, i.tss)(C.sid, C.time, I.span));
+          x.push((0, i.tss)(C.sid, C.time, I.span));
         }
-        O.length && this.builder.del(p.id, O);
+        x.length && this.builder.del(p.id, x);
         return;
       }
       const k = [];
-      p.children((O) => k.push((0, u.structHashCrdt)(O)));
+      p.children((x) => k.push((0, u.structHashCrdt)(x)));
       const m = [], _ = b.length;
-      for (let O = 0; O < _; O++)
-        m.push((0, l.structHashSchema)(b[O]));
+      for (let x = 0; x < _; x++)
+        m.push((0, l.structHashSchema)(b[x]));
       const f = a.diff(k, m);
       if (!f.length)
         return;
-      const d = [], g = [];
-      a.apply(f, (O) => {
-        const I = p.findInterval(O, 1);
+      const d = [], y = [];
+      a.apply(f, (x) => {
+        const I = p.findInterval(x, 1);
         if (!I || !I.length)
           throw new c();
-        g.push(...I);
-      }, (O, I) => {
-        const C = b[I], E = O >= 0 ? p.find(O) : p.id;
+        y.push(...I);
+      }, (x, I) => {
+        const C = b[I], E = x >= 0 ? p.find(x) : p.id;
         if (!E)
           throw new c();
         d.push([E, [C]]);
-      }, (O, I) => {
+      }, (x, I) => {
         const C = b[I];
         try {
-          this.diffAny(p.getNode(O), C);
+          this.diffAny(p.getNode(x), C);
         } catch (E) {
           if (E instanceof c) {
-            const x = p.findInterval(O, 1);
-            g.push(...x);
-            const T = O ? p.find(O - 1) : p.id;
+            const O = p.findInterval(x, 1);
+            y.push(...O);
+            const T = x ? p.find(x - 1) : p.id;
             if (!T)
               throw new c();
             d.push([T, [C]]);
@@ -8576,25 +8576,25 @@ function ll() {
         }
       });
       const v = this.builder, w = d.length;
-      for (let O = 0; O < w; O++) {
-        const [I, C] = d[O];
+      for (let x = 0; x < w; x++) {
+        const [I, C] = d[x];
         v.insArr(p.id, I, C.map((E) => this.buildView(E)));
       }
-      g.length && v.del(p.id, g);
+      y.length && v.del(p.id, y);
     }
     diffObj(p, b) {
       const k = this.builder, m = [], _ = /* @__PURE__ */ new Set();
-      p.forEach((g) => {
-        _.add(g), b[g] === void 0 && m.push([g, k.con(void 0)]);
+      p.forEach((y) => {
+        _.add(y), b[y] === void 0 && m.push([y, k.con(void 0)]);
       });
       const f = Object.keys(b), d = f.length;
-      for (let g = 0; g < d; g++) {
-        const v = f[g], w = b[v];
+      for (let y = 0; y < d; y++) {
+        const v = f[y], w = b[v];
         if (_.has(v)) {
-          const O = p.get(v);
-          if (O)
+          const x = p.get(v);
+          if (x)
             try {
-              this.diffAny(O, w);
+              this.diffAny(x, w);
               continue;
             } catch (I) {
               if (!(I instanceof c))
@@ -8606,33 +8606,33 @@ function ll() {
       m.length && k.insObj(p.id, m);
     }
     diffVec(p, b) {
-      const k = this.builder, m = [], _ = p.elements, f = _.length, d = b.length, g = p.doc.index, v = Math.min(f, d);
+      const k = this.builder, m = [], _ = p.elements, f = _.length, d = b.length, y = p.doc.index, v = Math.min(f, d);
       for (let w = d; w < f; w++) {
-        const O = _[w];
-        if (O) {
-          const I = g.get(O);
+        const x = _[w];
+        if (x) {
+          const I = y.get(x);
           if (!I || I instanceof n.ConNode && I.val === void 0)
             continue;
           m.push([w, k.con(void 0)]);
         }
       }
       e: for (let w = 0; w < v; w++) {
-        const O = b[w], I = p.get(w);
+        const x = b[w], I = p.get(w);
         if (I) {
           try {
-            this.diffAny(I, O);
+            this.diffAny(I, x);
             continue;
           } catch (C) {
             if (!(C instanceof c))
               throw C;
           }
-          if (I instanceof n.ConNode && typeof O != "object") {
-            const C = k.con(O);
+          if (I instanceof n.ConNode && typeof x != "object") {
+            const C = k.con(x);
             m.push([w, C]);
             continue e;
           }
         }
-        m.push([w, this.buildConView(O)]);
+        m.push([w, this.buildConView(x)]);
       }
       for (let w = f; w < d; w++)
         m.push([w, this.buildConView(b[w])]);
@@ -8690,18 +8690,18 @@ function ll() {
     diffDstKeys(p, b) {
       const k = this.builder, m = [], _ = Object.keys(b), f = _.length;
       for (let d = 0; d < f; d++) {
-        const g = _[d], v = p.get(g), w = b[g];
+        const y = _[d], v = p.get(y), w = b[y];
         if (!v) {
-          m.push([g, this.buildConView(w)]);
+          m.push([y, this.buildConView(w)]);
           continue;
         }
         try {
           this.diffAny(v, w);
-        } catch (O) {
-          if (O instanceof c)
-            m.push([g, this.buildConView(w)]);
+        } catch (x) {
+          if (x instanceof c)
+            m.push([y, this.buildConView(w)]);
           else
-            throw O;
+            throw x;
         }
       }
       return m.length && k.insObj(p.id, m), this.builder.flush();
@@ -8737,7 +8737,7 @@ var vr = {}, hc;
 function tf() {
   if (hc) return vr;
   hc = 1, Object.defineProperty(vr, "__esModule", { value: !0 }), vr.ChangeEvent = void 0;
-  const r = Ot(), e = (i) => i instanceof r.InsValOp || i instanceof r.InsObjOp || i instanceof r.InsVecOp || i instanceof r.InsStrOp || i instanceof r.InsBinOp || i instanceof r.InsArrOp || i instanceof r.UpdArrOp || i instanceof r.DelOp;
+  const r = xt(), e = (i) => i instanceof r.InsValOp || i instanceof r.InsObjOp || i instanceof r.InsVecOp || i instanceof r.InsStrOp || i instanceof r.InsBinOp || i instanceof r.InsArrOp || i instanceof r.UpdArrOp || i instanceof r.DelOp;
   class t {
     constructor(n, s) {
       this.raw = n, this.api = s, this._direct = null, this._parents = null;
@@ -8772,8 +8772,8 @@ function tf() {
           for (let c = a; c < l.length; c++) {
             const h = l[c];
             if (e(h)) {
-              const y = o.get(h.obj);
-              y && n.add(y);
+              const g = o.get(h.obj);
+              g && n.add(g);
             }
           }
         } else if (s instanceof r.Patch) {
@@ -8825,9 +8825,9 @@ function nf() {
 }
 var fc;
 function rf() {
-  if (fc) return ge;
-  fc = 1, Object.defineProperty(ge, "__esModule", { value: !0 }), ge.ModelApi = ge.ArrApi = ge.BinApi = ge.StrApi = ge.ObjApi = ge.VecApi = ge.ValApi = ge.ConApi = ge.NodeApi = void 0;
-  const r = re, e = Ee(), t = ol(), i = lo(), n = zd(), s = xt(), o = Zd(), a = al(), u = co(), l = cl(), c = Kd(), h = ll(), y = r.__importStar(ef()), p = tf(), b = de(), k = nf(), m = (E) => {
+  if (fc) return ye;
+  fc = 1, Object.defineProperty(ye, "__esModule", { value: !0 }), ye.ModelApi = ye.ArrApi = ye.BinApi = ye.StrApi = ye.ObjApi = ye.VecApi = ye.ValApi = ye.ConApi = ye.NodeApi = void 0;
+  const r = re, e = Ee(), t = ol(), i = lo(), n = zd(), s = Ot(), o = Zd(), a = al(), u = co(), l = cl(), c = Kd(), h = ll(), g = r.__importStar(ef()), p = tf(), b = de(), k = nf(), m = (E) => {
     if (!E)
       return [void 0, ""];
     if (typeof E == "number")
@@ -8838,14 +8838,14 @@ function rf() {
       case 1:
         return [void 0, E[0]];
       default: {
-        const x = E[E.length - 1];
-        return [E.slice(0, -1), x];
+        const O = E[E.length - 1];
+        return [E.slice(0, -1), O];
       }
     }
   };
   class _ {
-    constructor(x, T) {
-      this.node = x, this.api = T, this.ev = void 0;
+    constructor(O, T) {
+      this.node = O, this.api = T, this.ev = void 0;
     }
     /**
      * Find a child node at the given path starting from this node.
@@ -8853,9 +8853,9 @@ function rf() {
      * @param path Path to the child node to find.
      * @returns JSON CRDT node at the given path.
      */
-    find(x) {
+    find(O) {
       let T = this.node;
-      if (x === void 0) {
+      if (O === void 0) {
         if (typeof T.child == "function") {
           const j = T.child();
           if (!j) {
@@ -8867,9 +8867,9 @@ function rf() {
         }
         throw new Error("CANNOT_IN");
       }
-      for (typeof x == "string" && x && x[0] !== "/" && (x = "/" + x), typeof x == "number" && (x = [x]); T instanceof s.ValNode; )
+      for (typeof O == "string" && O && O[0] !== "/" && (O = "/" + O), typeof O == "number" && (O = [O]); T instanceof s.ValNode; )
         T = T.child();
-      return (0, n.find)(T, x);
+      return (0, n.find)(T, O);
     }
     /**
      * Find a child node at the given path starting from this node and wrap it in
@@ -8878,8 +8878,8 @@ function rf() {
      * @param path Path to the child node to find.
      * @returns Local changes API for the child node at the given path.
      */
-    in(x) {
-      const T = this.find(x);
+    in(O) {
+      const T = this.find(O);
       return this.api.wrap(T);
     }
     asVal() {
@@ -8917,43 +8917,43 @@ function rf() {
         return this.api.wrap(this.node);
       throw new Error("NOT_CON");
     }
-    asExt(x) {
+    asExt(O) {
       let T;
       const j = this.node;
       if (j instanceof c.ExtNode && (T = j), j instanceof s.VecNode && (T = j.ext()), !T)
         throw new Error("NOT_EXT");
       const P = this.api.wrap(T);
-      if (!x || P instanceof x.Api)
+      if (!O || P instanceof O.Api)
         return P;
       throw new Error("NOT_EXT");
     }
-    val(x) {
-      return this.in(x).asVal();
+    val(O) {
+      return this.in(O).asVal();
     }
-    str(x) {
-      return this.in(x).asStr();
+    str(O) {
+      return this.in(O).asStr();
     }
-    bin(x) {
-      return this.in(x).asBin();
+    bin(O) {
+      return this.in(O).asBin();
     }
-    arr(x) {
-      return this.in(x).asArr();
+    arr(O) {
+      return this.in(O).asArr();
     }
-    vec(x) {
-      return this.in(x).asVec();
+    vec(O) {
+      return this.in(O).asVec();
     }
-    obj(x) {
-      return this.in(x).asObj();
+    obj(O) {
+      return this.in(O).asObj();
     }
-    con(x) {
-      return this.in(x).asCon();
+    con(O) {
+      return this.in(O).asCon();
     }
     view() {
       return this.node.view();
     }
-    select(x, T) {
+    select(O, T) {
       try {
-        let j = x !== void 0 ? this.find(x) : this.node;
+        let j = O !== void 0 ? this.find(O) : this.node;
         if (T)
           for (; j instanceof s.ValNode; )
             j = j.child();
@@ -8962,22 +8962,22 @@ function rf() {
         return;
       }
     }
-    read(x) {
+    read(O) {
       const T = this.view();
-      if (Array.isArray(x))
-        return (0, t.get)(T, x);
-      if (!x)
+      if (Array.isArray(O))
+        return (0, t.get)(T, O);
+      if (!O)
         return T;
-      let j = x + "";
-      return x && j[0] !== "/" && (j = "/" + j), (0, t.get)(T, (0, i.toPath)(j));
+      let j = O + "";
+      return O && j[0] !== "/" && (j = "/" + j), (0, t.get)(T, (0, i.toPath)(j));
     }
-    add(x, T) {
-      const [j, P] = m(x);
+    add(O, T) {
+      const [j, P] = m(O);
       e: try {
         const R = this.select(j, !0);
         if (R instanceof v)
           R.set({ [P]: T });
-        else if (R instanceof I || R instanceof w || R instanceof O) {
+        else if (R instanceof I || R instanceof w || R instanceof x) {
           const M = R.length();
           let V = 0;
           if (typeof P == "number")
@@ -8992,12 +8992,12 @@ function rf() {
             R.ins(V, Array.isArray(T) ? T : [T]);
           else if (R instanceof w)
             R.ins(V, T + "");
-          else if (R instanceof O) {
+          else if (R instanceof x) {
             if (!(T instanceof Uint8Array))
               break e;
             R.ins(V, T);
           }
-        } else if (R instanceof g)
+        } else if (R instanceof y)
           R.set([[~~P, T]]);
         else
           break e;
@@ -9006,8 +9006,8 @@ function rf() {
       }
       return !1;
     }
-    replace(x, T) {
-      const [j, P] = m(x);
+    replace(O, T) {
+      const [j, P] = m(O);
       e: try {
         const R = this.select(j, !0);
         if (R instanceof v) {
@@ -9025,7 +9025,7 @@ function rf() {
           if (V !== V || V < 0 || V > M)
             break e;
           V === M ? R.ins(V, [T]) : R.upd(V, T);
-        } else if (R instanceof g)
+        } else if (R instanceof y)
           R.set([[~~P, T]]);
         else
           break e;
@@ -9034,8 +9034,8 @@ function rf() {
       }
       return !1;
     }
-    remove(x, T = 1) {
-      const [j, P] = m(x);
+    remove(O, T = 1) {
+      const [j, P] = m(O);
       e: try {
         const R = this.select(j, !0);
         if (R instanceof v) {
@@ -9043,7 +9043,7 @@ function rf() {
           if (!R.has(M))
             break e;
           R.del([M]);
-        } else if (R instanceof I || R instanceof w || R instanceof O) {
+        } else if (R instanceof I || R instanceof w || R instanceof x) {
           const M = R.length();
           let V = 0;
           if (typeof P == "number")
@@ -9055,7 +9055,7 @@ function rf() {
           if (V !== V || V < 0 || V > M)
             break e;
           R.del(V, Math.min(T, M - V));
-        } else if (R instanceof g)
+        } else if (R instanceof y)
           R.set([[~~P, void 0]]);
         else
           break e;
@@ -9064,17 +9064,17 @@ function rf() {
       }
       return !1;
     }
-    diff(x) {
-      return y.diff(this, x);
+    diff(O) {
+      return g.diff(this, O);
     }
-    merge(x) {
-      return y.merge(this, x);
+    merge(O) {
+      return g.merge(this, O);
     }
-    op(x) {
+    op(O) {
       var R;
-      if (!Array.isArray(x))
+      if (!Array.isArray(O))
         return !1;
-      const [T, j, P] = x;
+      const [T, j, P] = O;
       switch (T) {
         case "add":
           return this.add(j, P);
@@ -9090,9 +9090,9 @@ function rf() {
       return { $: this };
     }
     get $() {
-      return (0, k.proxy$)((x) => {
+      return (0, k.proxy$)((O) => {
         try {
-          return this.api.wrap(this.find(x));
+          return this.api.wrap(this.find(O));
         } catch {
           return;
         }
@@ -9133,9 +9133,9 @@ function rf() {
      *     be called when the model is reset using the `.reset()` method.
      * @returns Returns an unsubscribe function to stop listening to the events.
      */
-    onSelfChange(x, T) {
+    onSelfChange(O, T) {
       return this.api.onChange.listen((j) => {
-        (j.direct().has(this.node) || T && j.isReset()) && x(j);
+        (j.direct().has(this.node) || T && j.isReset()) && O(j);
       });
     }
     /**
@@ -9157,9 +9157,9 @@ function rf() {
      *     be called when the model is reset using the `.reset()` method.
      * @return Returns an unsubscribe function to stop listening to the events.
      */
-    onChildChange(x, T) {
+    onChildChange(O, T) {
       return this.api.onChange.listen((j) => {
-        (j.parents().has(this.node) || T && j.isReset()) && x(j);
+        (j.parents().has(this.node) || T && j.isReset()) && O(j);
       });
     }
     /**
@@ -9176,18 +9176,18 @@ function rf() {
      *     be called when the model is reset using the `.reset()` method.
      * @return Returns an unsubscribe function to stop listening to the events.
      */
-    onSubtreeChange(x, T) {
+    onSubtreeChange(O, T) {
       return this.api.onChange.listen((j) => {
         const P = this.node;
-        (j.direct().has(P) || j.parents().has(P) || T && j.isReset()) && x(j);
+        (j.direct().has(P) || j.parents().has(P) || T && j.isReset()) && O(j);
       });
     }
     // -------------------------------------------------------------------- Debug
-    toString(x = "") {
-      return "api(" + (this.constructor === _ ? "*" : this.node.name()) + ")" + (0, e.printTree)(x, [(j) => this.node.toString(j)]);
+    toString(O = "") {
+      return "api(" + (this.constructor === _ ? "*" : this.node.name()) + ")" + (0, e.printTree)(O, [(j) => this.node.toString(j)]);
     }
   }
-  ge.NodeApi = _;
+  ye.NodeApi = _;
   class f extends _ {
     /**
      * Returns a proxy object for this node.
@@ -9196,7 +9196,7 @@ function rf() {
       return { $: this };
     }
   }
-  ge.ConApi = f;
+  ye.ConApi = f;
   class d extends _ {
     /**
      * Get API instance of the inner node.
@@ -9211,8 +9211,8 @@ function rf() {
      * @param json JSON/CBOR value or ID (logical timestamp) of the value to set.
      * @returns Reference to itself.
      */
-    set(x) {
-      const { api: T, node: j } = this, R = T.builder.constOrJson(x);
+    set(O) {
+      const { api: T, node: j } = this, R = T.builder.constOrJson(O);
       T.builder.setVal(j.id, R), T.apply();
     }
     /**
@@ -9220,26 +9220,26 @@ function rf() {
      * node by accessing the `.val` property.
      */
     get s() {
-      const x = this;
+      const O = this;
       return {
         $: this,
         get _() {
-          const j = x.node.node();
-          return x.api.wrap(j).s;
+          const j = O.node.node();
+          return O.api.wrap(j).s;
         }
       };
     }
   }
-  ge.ValApi = d;
-  class g extends _ {
+  ye.ValApi = d;
+  class y extends _ {
     /**
      * Get API instance of a child node.
      *
      * @param key Object key to get.
      * @returns A specified child node API.
      */
-    get(x) {
-      return this.in(x);
+    get(O) {
+      return this.in(O);
     }
     /**
      * Sets a list of elements to the given values.
@@ -9247,13 +9247,13 @@ function rf() {
      * @param entries List of index-value pairs to set.
      * @returns Reference to itself.
      */
-    set(x) {
+    set(O) {
       const { api: T, node: j } = this, { builder: P } = T;
-      P.insVec(j.id, x.map(([R, M]) => [R, P.constOrJson(M)])), T.apply();
+      P.insVec(j.id, O.map(([R, M]) => [R, P.constOrJson(M)])), T.apply();
     }
-    push(...x) {
+    push(...O) {
       const T = this.length();
-      this.set(x.map((j, P) => [T + P, j]));
+      this.set(O.map((j, P) => [T + P, j]));
     }
     /**
      * Get the length of the vector without materializing it to a view.
@@ -9285,7 +9285,7 @@ function rf() {
       });
     }
   }
-  ge.VecApi = g;
+  ye.VecApi = y;
   class v extends _ {
     /**
      * Get API instance of a child node.
@@ -9293,8 +9293,8 @@ function rf() {
      * @param key Object key to get.
      * @returns A specified child node API.
      */
-    get(x) {
-      return this.in(x);
+    get(O) {
+      return this.in(O);
     }
     /**
      * Sets a list of keys to the given values.
@@ -9302,9 +9302,9 @@ function rf() {
      * @param entries List of key-value pairs to set.
      * @returns Reference to itself.
      */
-    set(x) {
+    set(O) {
       const { api: T, node: j } = this, { builder: P } = T;
-      P.insObj(j.id, Object.entries(x).map(([R, M]) => [R, P.constOrJson(M)])), T.apply();
+      P.insObj(j.id, Object.entries(O).map(([R, M]) => [R, P.constOrJson(M)])), T.apply();
     }
     /**
      * Deletes a list of keys from the object.
@@ -9312,9 +9312,9 @@ function rf() {
      * @param keys List of keys to delete.
      * @returns Reference to itself.
      */
-    del(x) {
+    del(O) {
       const { api: T, node: j } = this, { builder: P } = T;
-      T.builder.insObj(j.id, x.map((R) => [R, P.con(void 0)])), T.apply();
+      T.builder.insObj(j.id, O.map((R) => [R, P.con(void 0)])), T.apply();
     }
     /**
      * Checks if a key exists in the object.
@@ -9322,17 +9322,17 @@ function rf() {
      * @param key Key to check.
      * @returns True if the key exists, false otherwise.
      */
-    has(x) {
-      return this.node.keys.has(x);
+    has(O) {
+      return this.node.keys.has(O);
     }
     /** Diffs only keys present in `dst` object. */
-    diffKeys(x) {
-      const j = new h.JsonCrdtDiff(this.api.model).diffDstKeys(this.node, x);
+    diffKeys(O) {
+      const j = new h.JsonCrdtDiff(this.api.model).diffDstKeys(this.node, O);
       return j.ops.length ? j : void 0;
     }
     /** Merges only keys present in `dst` object. */
-    mergeKeys(x) {
-      const T = this.diffKeys(x);
+    mergeKeys(O) {
+      const T = this.diffKeys(O);
       return T && this.api.model.applyLocalPatch(T), T;
     }
     /**
@@ -9352,7 +9352,7 @@ function rf() {
       });
     }
   }
-  ge.ObjApi = v;
+  ye.ObjApi = v;
   class w extends _ {
     /**
      * Inserts text at a given position.
@@ -9361,12 +9361,12 @@ function rf() {
      * @param text Text to insert.
      * @returns Reference to itself.
      */
-    ins(x, T) {
+    ins(O, T) {
       const { api: j, node: P } = this;
       j.onBeforeLocalChange.emit(j.next);
       const R = j.builder;
       R.pad();
-      const M = j.builder.nextTime(), V = new b.Timestamp(R.clock.sid, M), z = P.insAt(x, V, T);
+      const M = j.builder.nextTime(), V = new b.Timestamp(R.clock.sid, M), z = P.insAt(O, V, T);
       if (!z)
         throw new Error("OUT_OF_BOUNDS");
       R.insStr(P.id, z, T), j.advance();
@@ -9378,12 +9378,12 @@ function rf() {
      * @param length Number of UTF-16 code units to delete.
      * @returns Reference to itself.
      */
-    del(x, T) {
+    del(O, T) {
       const { api: j, node: P } = this;
       j.onBeforeLocalChange.emit(j.next);
       const R = j.builder;
       R.pad();
-      const M = P.findInterval(x, T);
+      const M = P.findInterval(O, T);
       if (!M)
         throw new Error("OUT_OF_BOUNDS");
       P.delete(M), R.del(P.id, M), j.advance();
@@ -9395,9 +9395,9 @@ function rf() {
      * @param index Index of the character or `-1` for before the first character.
      * @returns ID of the character after which the given position is located.
      */
-    findId(x) {
+    findId(O) {
       const T = this.node, P = T.length() - 1;
-      return x > P && (x = P), x < 0 ? T.id : T.find(x) || T.id;
+      return O > P && (O = P), O < 0 ? T.id : T.find(O) || T.id;
     }
     /**
      * Given a position in global coordinates, find the position in local
@@ -9407,12 +9407,12 @@ function rf() {
      * @returns Index of the character in local coordinates. Returns -1 if the
      *          the position refers to the beginning of the string.
      */
-    findPos(x) {
+    findPos(O) {
       const T = this.node, j = T.id;
-      if (j.sid === x.sid && j.time === x.time)
+      if (j.sid === O.sid && j.time === O.time)
         return -1;
-      const P = T.findById(x);
-      return P ? T.pos(P) + (P.del ? 0 : x.time - P.id.time) : -1;
+      const P = T.findById(O);
+      return P ? T.pos(P) + (P.del ? 0 : O.time - P.id.time) : -1;
     }
     /**
      * Get the length of the string without materializing it to a view.
@@ -9429,8 +9429,8 @@ function rf() {
       return { $: this };
     }
   }
-  ge.StrApi = w;
-  class O extends _ {
+  ye.StrApi = w;
+  class x extends _ {
     /**
      * Inserts octets at a given position.
      *
@@ -9438,8 +9438,8 @@ function rf() {
      * @param data Octets to insert.
      * @returns Reference to itself.
      */
-    ins(x, T) {
-      const { api: j, node: P } = this, R = x ? P.find(x - 1) : P.id;
+    ins(O, T) {
+      const { api: j, node: P } = this, R = O ? P.find(O - 1) : P.id;
       if (!R)
         throw new Error("OUT_OF_BOUNDS");
       j.builder.insBin(P.id, R, T), j.apply();
@@ -9451,8 +9451,8 @@ function rf() {
      * @param length Number of octets to delete.
      * @returns Reference to itself.
      */
-    del(x, T) {
-      const { api: j, node: P } = this, R = P.findInterval(x, T);
+    del(O, T) {
+      const { api: j, node: P } = this, R = P.findInterval(O, T);
       if (!R)
         throw new Error("OUT_OF_BOUNDS");
       j.builder.del(P.id, R), j.apply();
@@ -9472,7 +9472,7 @@ function rf() {
       return { $: this };
     }
   }
-  ge.BinApi = O;
+  ye.BinApi = x;
   class I extends _ {
     /**
      * Get API instance of a child node.
@@ -9480,8 +9480,8 @@ function rf() {
      * @param index Index of the element to get.
      * @returns Child node API for the element at the given index.
      */
-    get(x) {
-      return this.in(x);
+    get(O) {
+      return this.in(O);
     }
     /**
      * Inserts elements at a given position.
@@ -9489,8 +9489,8 @@ function rf() {
      * @param index Position at which to insert elements.
      * @param values Values or schema of the elements to insert.
      */
-    ins(x, T) {
-      const { api: j, node: P } = this, { builder: R } = j, M = x ? P.find(x - 1) : P.id;
+    ins(O, T) {
+      const { api: j, node: P } = this, { builder: R } = j, M = O ? P.find(O - 1) : P.id;
       if (!M)
         throw new Error("OUT_OF_BOUNDS");
       const V = [];
@@ -9503,9 +9503,9 @@ function rf() {
      *
      * @param values Values or schema of the elements to insert at the end of the array.
      */
-    push(...x) {
+    push(...O) {
       const T = this.length();
-      this.ins(T, x);
+      this.ins(T, O);
     }
     /**
      * Updates (overwrites) an element at a given position.
@@ -9513,8 +9513,8 @@ function rf() {
      * @param index Position at which to update the element.
      * @param value Value or schema of the element to replace with.
      */
-    upd(x, T) {
-      const { api: j, node: P } = this, R = P.getId(x);
+    upd(O, T) {
+      const { api: j, node: P } = this, R = P.getId(O);
       if (!R)
         throw new Error("OUT_OF_BOUNDS");
       const { builder: M } = j;
@@ -9527,8 +9527,8 @@ function rf() {
      * @param length Number of elements to delete.
      * @returns Reference to itself.
      */
-    del(x, T) {
-      const { api: j, node: P } = this, R = P.findInterval(x, T);
+    del(O, T) {
+      const { api: j, node: P } = this, R = P.findInterval(O, T);
       if (!R)
         throw new Error("OUT_OF_BOUNDS");
       j.builder.del(P.id, R), j.apply();
@@ -9562,34 +9562,34 @@ function rf() {
       });
     }
   }
-  ge.ArrApi = I;
+  ye.ArrApi = I;
   class C extends d {
     /**
      * @param model Model instance on which the API operates.
      */
-    constructor(x) {
-      super(x.root, void 0), this.model = x, this.next = 0, this.onBeforeReset = new a.FanOut(), this.onReset = new a.FanOut(), this.onBeforePatch = new a.FanOut(), this.onPatch = new a.FanOut(), this.onBeforeLocalChange = new a.FanOut(), this.onLocalChange = new a.FanOut(), this.onLocalChanges = new l.MicrotaskBufferFanOut(this.onLocalChange), this.onBeforeTransaction = new a.FanOut(), this.onTransaction = new a.FanOut(), this.onChange = new l.MergeFanOut([this.onReset, this.onPatch, this.onLocalChange], (T) => new p.ChangeEvent(T, this)), this.onChanges = new l.MicrotaskBufferFanOut(this.onChange), this.onFlush = new a.FanOut(), this.inTx = !1, this.stopAutoFlush = void 0, this.subscribe = (T) => this.onChanges.listen(() => T()), this.getSnapshot = () => this.view(), this.api = this, this.builder = new u.PatchBuilder(x.clock), x.onbeforereset = () => this.onBeforeReset.emit(), x.onreset = (T) => this.onReset.emit(T), x.onbeforepatch = (T) => this.onBeforePatch.emit(T), x.onpatch = (T) => this.onPatch.emit(T);
+    constructor(O) {
+      super(O.root, void 0), this.model = O, this.next = 0, this.onBeforeReset = new a.FanOut(), this.onReset = new a.FanOut(), this.onBeforePatch = new a.FanOut(), this.onPatch = new a.FanOut(), this.onBeforeLocalChange = new a.FanOut(), this.onLocalChange = new a.FanOut(), this.onLocalChanges = new l.MicrotaskBufferFanOut(this.onLocalChange), this.onBeforeTransaction = new a.FanOut(), this.onTransaction = new a.FanOut(), this.onChange = new l.MergeFanOut([this.onReset, this.onPatch, this.onLocalChange], (T) => new p.ChangeEvent(T, this)), this.onChanges = new l.MicrotaskBufferFanOut(this.onChange), this.onFlush = new a.FanOut(), this.inTx = !1, this.stopAutoFlush = void 0, this.subscribe = (T) => this.onChanges.listen(() => T()), this.getSnapshot = () => this.view(), this.api = this, this.builder = new u.PatchBuilder(O.clock), O.onbeforereset = () => this.onBeforeReset.emit(), O.onreset = (T) => this.onReset.emit(T), O.onbeforepatch = (T) => this.onBeforePatch.emit(T), O.onpatch = (T) => this.onPatch.emit(T);
     }
-    wrap(x) {
-      if (x instanceof s.ValNode)
-        return x.api || (x.api = new d(x, this));
-      if (x instanceof s.StrNode)
-        return x.api || (x.api = new w(x, this));
-      if (x instanceof s.BinNode)
-        return x.api || (x.api = new O(x, this));
-      if (x instanceof s.ArrNode)
-        return x.api || (x.api = new I(x, this));
-      if (x instanceof s.ObjNode)
-        return x.api || (x.api = new v(x, this));
-      if (x instanceof s.ConNode)
-        return x.api || (x.api = new f(x, this));
-      if (x instanceof s.VecNode)
-        return x.api || (x.api = new g(x, this));
-      if (x instanceof c.ExtNode) {
-        if (x.api)
-          return x.api;
-        const T = this.model.ext.get(x.extId);
-        return x.api = new T.Api(x, this);
+    wrap(O) {
+      if (O instanceof s.ValNode)
+        return O.api || (O.api = new d(O, this));
+      if (O instanceof s.StrNode)
+        return O.api || (O.api = new w(O, this));
+      if (O instanceof s.BinNode)
+        return O.api || (O.api = new x(O, this));
+      if (O instanceof s.ArrNode)
+        return O.api || (O.api = new I(O, this));
+      if (O instanceof s.ObjNode)
+        return O.api || (O.api = new v(O, this));
+      if (O instanceof s.ConNode)
+        return O.api || (O.api = new f(O, this));
+      if (O instanceof s.VecNode)
+        return O.api || (O.api = new y(O, this));
+      if (O instanceof c.ExtNode) {
+        if (O.api)
+          return O.api;
+        const T = this.model.ext.get(O.extId);
+        return O.api = new T.Api(O, this);
       } else
         throw new Error("UNKNOWN_NODE");
     }
@@ -9602,21 +9602,21 @@ function rf() {
      *
      * @deprecated Use `.set()` instead.
      */
-    root(x) {
-      return this.set(x);
+    root(O) {
+      return this.set(O);
     }
-    set(x) {
-      return super.set(x), this;
+    set(O) {
+      return super.set(O), this;
     }
     /**
      * Apply locally any operations from the `.builder`, which haven't been
      * applied yet.
      */
     apply() {
-      const x = this.builder.patch.ops, T = x.length, j = this.model, P = this.next;
+      const O = this.builder.patch.ops, T = O.length, j = this.model, P = this.next;
       this.onBeforeLocalChange.emit(P);
       for (let R = this.next; R < T; R++)
-        j.applyOperation(x[R]);
+        j.applyOperation(O[R]);
       this.next = T, j.tick++, this.onLocalChange.emit(P);
     }
     /**
@@ -9629,16 +9629,16 @@ function rf() {
      * @ignore
      */
     advance() {
-      const x = this.next;
-      this.next = this.builder.patch.ops.length, this.model.tick++, this.onLocalChange.emit(x);
+      const O = this.next;
+      this.next = this.builder.patch.ops.length, this.model.tick++, this.onLocalChange.emit(O);
     }
-    transaction(x) {
+    transaction(O) {
       if (this.inTx)
-        x();
+        O();
       else {
         this.inTx = !0;
         try {
-          this.onBeforeTransaction.emit(), x(), this.onTransaction.emit();
+          this.onBeforeTransaction.emit(), O(), this.onTransaction.emit();
         } finally {
           this.inTx = !1;
         }
@@ -9651,8 +9651,8 @@ function rf() {
      * @todo Make this return undefined if there are no operations in the builder.
      */
     flush() {
-      const x = this.builder.flush();
-      return this.next = 0, x.ops.length && this.onFlush.emit(x), x;
+      const O = this.builder.flush();
+      return this.next = 0, O.ops.length && this.onFlush.emit(O), O;
     }
     /**
      * Begins to automatically flush buffered operations into patches, grouping
@@ -9661,14 +9661,14 @@ function rf() {
      *
      * @returns Callback to stop auto flushing.
      */
-    autoFlush(x = !1) {
+    autoFlush(O = !1) {
       const T = () => this.builder.patch.ops.length && this.flush(), j = this.onLocalChanges.listen(T), P = this.onBeforeTransaction.listen(T), R = this.onTransaction.listen(T);
-      return x && T(), this.stopAutoFlush = () => {
+      return O && T(), this.stopAutoFlush = () => {
         this.stopAutoFlush = void 0, j(), P(), R();
       };
     }
   }
-  return ge.ModelApi = C, ge;
+  return ye.ModelApi = C, ye;
 }
 var pc;
 function hl() {
@@ -9676,17 +9676,17 @@ function hl() {
     Object.defineProperty(r, "__esModule", { value: !0 }), re.__exportStar(rf(), r);
   })(Wi)), Wi;
 }
-var mr = {}, gc;
+var mr = {}, yc;
 function sf() {
-  if (gc) return mr;
-  gc = 1, Object.defineProperty(mr, "__esModule", { value: !0 }), mr.randomSessionId = void 0;
+  if (yc) return mr;
+  yc = 1, Object.defineProperty(mr, "__esModule", { value: !0 }), mr.randomSessionId = void 0;
   const r = 65535, e = 9007199254740991 - r, t = () => Math.floor(e * Math.random() + r);
   return mr.randomSessionId = t, mr;
 }
-var br = {}, yc;
+var br = {}, gc;
 function of() {
-  if (yc) return br;
-  yc = 1, Object.defineProperty(br, "__esModule", { value: !0 }), br.Extensions = void 0;
+  if (gc) return br;
+  gc = 1, Object.defineProperty(br, "__esModule", { value: !0 }), br.Extensions = void 0;
   const r = Ee();
   let e = class dl {
     constructor() {
@@ -9729,8 +9729,8 @@ function cf() {
       if (!f)
         return k;
       const d = m === f.l;
-      let g = f.bf | 0;
-      switch (d ? f.bf = ++g : f.bf = --g, g) {
+      let y = f.bf | 0;
+      switch (d ? f.bf = ++y : f.bf = --y, y) {
         case 0:
           return k;
         case 1:
@@ -9744,13 +9744,13 @@ function cf() {
     }, n = (k, m) => {
       const _ = k.p, f = m.r;
       m.p = _, m.r = k, k.p = m, k.l = f, f && (f.p = k), _ && (_.l === k ? _.l = m : _.r = m);
-      let d = k.bf, g = m.bf;
-      d += -1 - (g > 0 ? g : 0), g += -1 + (d < 0 ? d : 0), k.bf = d, m.bf = g;
+      let d = k.bf, y = m.bf;
+      d += -1 - (y > 0 ? y : 0), y += -1 + (d < 0 ? d : 0), k.bf = d, m.bf = y;
     }, s = (k, m) => {
       const _ = k.p, f = m.l;
       m.p = _, m.l = k, k.p = m, k.r = f, f && (f.p = k), _ && (_.l === k ? _.l = m : _.r = m);
-      let d = k.bf, g = m.bf;
-      d += 1 - (g < 0 ? g : 0), g += 1 + (d > 0 ? d : 0), k.bf = d, m.bf = g;
+      let d = k.bf, y = m.bf;
+      d += 1 - (y < 0 ? y : 0), y += 1 + (d > 0 ? d : 0), k.bf = d, m.bf = y;
     }, o = (k, m, _) => {
       s(m, _), n(k, _);
     }, a = (k, m, _) => {
@@ -9763,9 +9763,9 @@ function cf() {
       if (!k)
         return m;
       const f = m.k;
-      let d = k, g, v = 0;
-      for (; g = (v = _(f, d.k)) < 0 ? d.l : d.r; )
-        d = g;
+      let d = k, y, v = 0;
+      for (; y = (v = _(f, d.k)) < 0 ? d.l : d.r; )
+        d = y;
       return v < 0 ? (0, r.insertLeft)(k, m, d) : (0, r.insertRight)(k, m, d);
     };
     r.insert = c;
@@ -9775,27 +9775,27 @@ function cf() {
       const _ = m.p, f = m.l, d = m.r;
       if (m.p = m.l = m.r = void 0, f && d)
         if (f.r) {
-          let w = f, O = w;
-          for (; O = w.r; )
-            w = O;
+          let w = f, x = w;
+          for (; x = w.r; )
+            w = x;
           const I = w.l, C = w.p, E = I;
           return _ && (_.l === m ? _.l = w : _.r = w), w.p = _, w.r = d, w.bf = m.bf, f !== w && (w.l = f, f.p = w), d.p = w, C && (C.l === w ? C.l = E : C.r = E), E && (E.p = C), p(_ ? k : w, C, 1);
         } else {
           _ && (_.l === m ? _.l = f : _.r = f), f.p = _, f.r = d, d.p = f;
           const w = m.bf;
           if (_)
-            return f.bf = w, y(k, f, 1);
-          const O = w - 1;
-          if (f.bf = O, O >= -1)
+            return f.bf = w, g(k, f, 1);
+          const x = w - 1;
+          if (f.bf = x, x >= -1)
             return f;
           const I = d.l;
           return d.bf > 0 ? (a(f, d, I), I) : (s(f, d), d);
         }
-      const g = f || d;
-      return g && (g.p = _), _ ? _.l === m ? (_.l = g, y(k, _, 1)) : (_.r = g, p(k, _, 1)) : g;
+      const y = f || d;
+      return y && (y.p = _), _ ? _.l === m ? (_.l = y, g(k, _, 1)) : (_.r = y, p(k, _, 1)) : y;
     };
     r.remove = h;
-    const y = (k, m, _) => {
+    const g = (k, m, _) => {
       let f = m.bf | 0;
       f -= _, m.bf = f;
       let d = _;
@@ -9810,8 +9810,8 @@ function cf() {
           a(m, v, w), m = w;
         }
       }
-      const g = m.p;
-      return g ? g.l === m ? y(k, g, d) : p(k, g, d) : m;
+      const y = m.p;
+      return y ? y.l === m ? g(k, y, d) : p(k, y, d) : m;
     }, p = (k, m, _) => {
       let f = m.bf | 0;
       f += _, m.bf = f;
@@ -9827,13 +9827,13 @@ function cf() {
           o(m, v, w), m = w;
         }
       }
-      const g = m.p;
-      return g ? g.l === m ? y(k, g, d) : p(k, g, d) : m;
+      const y = m.p;
+      return y ? y.l === m ? g(k, y, d) : p(k, y, d) : m;
     }, b = (k, m = "") => {
       if (!k)
         return "∅";
-      const { bf: _, l: f, r: d, k: g, v } = k, w = v && typeof v == "object" && v.constructor === Object ? t(v) : v && typeof v == "object" ? v.toString(m) : t(v), O = g !== void 0 ? ` { ${t(g)} = ${w} }` : "", I = _ ? ` [${_}]` : "";
-      return k.constructor.name + `${I}` + O + (0, e.printBinary)(m, [f ? (C) => (0, r.print)(f, C) : null, d ? (C) => (0, r.print)(d, C) : null]);
+      const { bf: _, l: f, r: d, k: y, v } = k, w = v && typeof v == "object" && v.constructor === Object ? t(v) : v && typeof v == "object" ? v.toString(m) : t(v), x = y !== void 0 ? ` { ${t(y)} = ${w} }` : "", I = _ ? ` [${_}]` : "";
+      return k.constructor.name + `${I}` + x + (0, e.printBinary)(m, [f ? (C) => (0, r.print)(f, C) : null, d ? (C) => (0, r.print)(d, C) : null]);
     };
     r.print = b;
   })(hs)), hs;
@@ -9963,7 +9963,7 @@ function pl() {
       return p;
     };
     r.insert = h;
-    const y = (p, b) => {
+    const g = (p, b) => {
       const k = b.p, m = b.l, _ = b.r;
       if (b.p = b.l = b.r = void 0, !m && !_) {
         if (k)
@@ -9982,7 +9982,7 @@ function pl() {
       else return f;
       return p;
     };
-    r.remove = y;
+    r.remove = g;
   })(fs)), fs;
 }
 var ps = {}, kc;
@@ -9997,76 +9997,76 @@ function hf() {
   Sc = 1, Object.defineProperty(wr, "__esModule", { value: !0 }), wr.createMap = void 0;
   const r = pl(), e = lf(), t = (n, s) => n === s ? 0 : n < s ? -1 : 1, i = (n, s, o, a, u, l) => {
     class c {
-      constructor(y) {
-        this.min = void 0, this.root = void 0, this.max = void 0, this._size = 0, this.next = r.next, this.comparator = y || t;
+      constructor(g) {
+        this.min = void 0, this.root = void 0, this.max = void 0, this._size = 0, this.next = r.next, this.comparator = g || t;
       }
-      set(y, p) {
+      set(g, p) {
         const b = this.root;
         if (b === void 0) {
           this._size = 1;
-          const g = new n(y, p);
-          return this.root = this.min = this.max = s(void 0, g, this.comparator);
+          const y = new n(g, p);
+          return this.root = this.min = this.max = s(void 0, y, this.comparator);
         }
         const k = this.comparator;
         let m;
         const _ = this.max;
-        if (m = k(y, _.k), m === 0)
+        if (m = k(g, _.k), m === 0)
           return _.v = p, _;
         if (m > 0) {
-          const g = this.max = new n(y, p);
-          return this.root = a(b, g, _), this._size++, g;
+          const y = this.max = new n(g, p);
+          return this.root = a(b, y, _), this._size++, y;
         }
         const f = this.min;
-        if (m = k(y, f.k), m === 0)
+        if (m = k(g, f.k), m === 0)
           return f.v = p, f;
         if (m < 0) {
-          const g = this.min = new n(y, p);
-          return this.root = o(b, g, f), this._size++, g;
+          const y = this.min = new n(g, p);
+          return this.root = o(b, y, f), this._size++, y;
         }
         let d = b;
         do {
-          if (m = k(y, d.k), m === 0)
+          if (m = k(g, d.k), m === 0)
             return d.v = p, d;
           if (m > 0) {
-            const g = d.r;
-            if (g === void 0) {
-              const v = new n(y, p);
+            const y = d.r;
+            if (y === void 0) {
+              const v = new n(g, p);
               return this.root = a(b, v, d), this._size++, v;
             }
-            d = g;
+            d = y;
           } else if (m < 0) {
-            const g = d.l;
-            if (g === void 0) {
-              const v = new n(y, p);
+            const y = d.l;
+            if (y === void 0) {
+              const v = new n(g, p);
               return this.root = o(b, v, d), this._size++, v;
             }
-            d = g;
+            d = y;
           }
         } while (!0);
       }
-      find(y) {
+      find(g) {
         const p = this.comparator;
         let b = this.root;
         for (; b; ) {
-          const k = +p(y, b.k);
+          const k = +p(g, b.k);
           if (k === 0)
             return b;
           b = k < 0 ? b.l : b.r;
         }
       }
-      get(y) {
+      get(g) {
         var p;
-        return (p = this.find(y)) == null ? void 0 : p.v;
+        return (p = this.find(g)) == null ? void 0 : p.v;
       }
-      del(y) {
-        const p = this.find(y);
+      del(g) {
+        const p = this.find(g);
         return p ? (p === this.max && (this.max = (0, r.prev)(p)), p === this.min && (this.min = (0, r.next)(p)), this.root = u(this.root, p), this._size--, !0) : !1;
       }
       clear() {
         this._size = 0, this.root = this.min = this.max = void 0;
       }
-      has(y) {
-        return !!this.find(y);
+      has(g) {
+        return !!this.find(g);
       }
       size() {
         return this._size;
@@ -10074,14 +10074,14 @@ function hf() {
       isEmpty() {
         return !this.min;
       }
-      getOrNextLower(y) {
-        return (0, r.findOrNextLower)(this.root, y, this.comparator) || void 0;
+      getOrNextLower(g) {
+        return (0, r.findOrNextLower)(this.root, g, this.comparator) || void 0;
       }
-      forEach(y) {
+      forEach(g) {
         let p = this.first();
         if (p)
           do
-            y(p);
+            g(p);
           while (p = (0, r.next)(p));
       }
       first() {
@@ -10091,19 +10091,19 @@ function hf() {
         return this.max;
       }
       iterator0() {
-        let y = this.first();
+        let g = this.first();
         return () => {
-          if (!y)
+          if (!g)
             return;
-          const p = y;
-          return y = (0, r.next)(y), p;
+          const p = g;
+          return g = (0, r.next)(g), p;
         };
       }
       iterator() {
-        const y = this.iterator0();
+        const g = this.iterator0();
         return {
           next: () => {
-            const p = y();
+            const p = g();
             return { value: p, done: !p };
           }
         };
@@ -10111,18 +10111,18 @@ function hf() {
       entries() {
         return { [Symbol.iterator]: () => this.iterator() };
       }
-      toString(y) {
-        return this.constructor.name + (0, e.printTree)(y, [(p) => l(this.root, p)]);
+      toString(g) {
+        return this.constructor.name + (0, e.printTree)(g, [(p) => l(this.root, p)]);
       }
     }
     return c;
   };
   return wr.createMap = i, wr;
 }
-var Oc;
+var xc;
 function df() {
-  if (Oc) return jt;
-  Oc = 1, Object.defineProperty(jt, "__esModule", { value: !0 }), jt.AvlMap = jt.AvlNode = void 0;
+  if (xc) return jt;
+  xc = 1, Object.defineProperty(jt, "__esModule", { value: !0 }), jt.AvlMap = jt.AvlNode = void 0;
   const r = cf(), e = hf();
   class t {
     constructor(n, s) {
@@ -10131,10 +10131,10 @@ function df() {
   }
   return jt.AvlNode = t, jt.AvlMap = (0, e.createMap)(t, r.insert, r.insertLeft, r.insertRight, r.remove, r.print), jt;
 }
-var Sr = {}, ke = {}, xc;
-function gl() {
-  if (xc) return ke;
-  xc = 1, Object.defineProperty(ke, "__esModule", { value: !0 }), ke.remove2 = ke.insert2 = ke.prev2 = ke.next2 = ke.last2 = ke.first2 = void 0;
+var Sr = {}, ke = {}, Oc;
+function yl() {
+  if (Oc) return ke;
+  Oc = 1, Object.defineProperty(ke, "__esModule", { value: !0 }), ke.remove2 = ke.insert2 = ke.prev2 = ke.next2 = ke.last2 = ke.first2 = void 0;
   const r = (u) => {
     let l = u;
     for (; l; )
@@ -10190,11 +10190,11 @@ function gl() {
       return l;
     let h = u;
     for (; h; ) {
-      const y = c(l, h), p = y < 0 ? h.l2 : h.r2;
+      const g = c(l, h), p = g < 0 ? h.l2 : h.r2;
       if (p)
         h = p;
       else {
-        y < 0 ? s(l, h) : n(l, h);
+        g < 0 ? s(l, h) : n(l, h);
         break;
       }
     }
@@ -10202,19 +10202,19 @@ function gl() {
   };
   ke.insert2 = o;
   const a = (u, l) => {
-    const c = l.p2, h = l.l2, y = l.r2;
-    if (l.p2 = l.l2 = l.r2 = void 0, !h && !y) {
+    const c = l.p2, h = l.l2, g = l.r2;
+    if (l.p2 = l.l2 = l.r2 = void 0, !h && !g) {
       if (c)
         c.l2 === l ? c.l2 = void 0 : c.r2 = void 0;
       else return;
       return u;
-    } else if (h && y) {
+    } else if (h && g) {
       let b = h;
       for (; b.r2; )
         b = b.r2;
-      return b.r2 = y, y.p2 = b, c ? (c.l2 === l ? c.l2 = h : c.r2 = h, h.p2 = c, u) : (h.p2 = void 0, h);
+      return b.r2 = g, g.p2 = b, c ? (c.l2 === l ? c.l2 = h : c.r2 = h, h.p2 = c, u) : (h.p2 = void 0, h);
     }
-    const p = h || y;
+    const p = h || g;
     if (p.p2 = c, c)
       c.l2 === l ? c.l2 = p : c.r2 = p;
     else return p;
@@ -10226,7 +10226,7 @@ var Ic;
 function ff() {
   if (Ic) return Sr;
   Ic = 1, Object.defineProperty(Sr, "__esModule", { value: !0 }), Sr.cmpNode = void 0;
-  const r = xt(), e = Ot(), t = gl(), i = (s, o) => {
+  const r = Ot(), e = xt(), t = yl(), i = (s, o) => {
     const a = (0, t.last2)(s.ids), u = (0, t.last2)(o.ids);
     return a && u && !(0, e.equal)(a.id, u.id) ? !1 : s.length() === o.length() && s.size() === o.size();
   }, n = (s, o) => {
@@ -10245,8 +10245,8 @@ function ff() {
       if (l !== c)
         return !1;
       for (const h of a.keys()) {
-        const y = a.get(h), p = u.get(h);
-        if (!y || !p || !(0, e.equal)(y, p))
+        const g = a.get(h), p = u.get(h);
+        if (!g || !p || !(0, e.equal)(g, p))
           return !1;
       }
       return !0;
@@ -10260,11 +10260,11 @@ function ff() {
         if (l !== u.length)
           return !1;
         for (let c = 0; c < l; c++) {
-          const h = a[c], y = u[c];
+          const h = a[c], g = u[c];
           if (h) {
-            if (!y || !(0, e.equal)(h, y))
+            if (!g || !(0, e.equal)(h, g))
               return !1;
-          } else if (y)
+          } else if (g)
             return !1;
         }
         return !0;
@@ -10279,7 +10279,7 @@ var Cc;
 function po() {
   if (Cc) return Ct;
   Cc = 1, Object.defineProperty(Ct, "__esModule", { value: !0 }), Ct.Model = Ct.UNDEFINED = void 0;
-  const r = re, e = r.__importStar(ei()), t = r.__importStar(de()), i = Ld(), n = hl(), s = wi(), o = sf(), a = xt(), u = Si(), l = Ee(), c = of(), h = df(), y = Ot(), p = ff();
+  const r = re, e = r.__importStar(ei()), t = r.__importStar(de()), i = Ld(), n = hl(), s = wi(), o = sf(), a = Ot(), u = Si(), l = Ee(), c = of(), h = df(), g = xt(), p = ff();
   Ct.UNDEFINED = new u.ConNode(s.ORIGIN, void 0);
   let b = class Vs {
     /**
@@ -10312,8 +10312,8 @@ function po() {
       const d = m[0].getId().sid;
       if (!d)
         throw new Error("NO_SID");
-      const g = Vs.create(void 0, d);
-      return g.applyBatch(m), g;
+      const y = Vs.create(void 0, d);
+      return y.applyBatch(m), y;
     }
     constructor(m) {
       this.root = new a.RootNode(this, s.ORIGIN), this.index = new h.AvlMap(t.compare), this.ext = new c.Extensions(), this.tick = 0, this.onbeforepatch = void 0, this.onpatch = void 0, this.onbeforereset = void 0, this.onreset = void 0, this.clock = m, m.time || (m.time = 1);
@@ -10374,12 +10374,12 @@ function po() {
      * @param patch A patch to apply to the document.
      */
     applyPatch(m) {
-      var d, g;
+      var d, y;
       (d = this.onbeforepatch) == null || d.call(this, m);
       const _ = m.ops, { length: f } = _;
       for (let v = 0; v < f; v++)
         this.applyOperation(_[v]);
-      this.tick++, (g = this.onpatch) == null || g.call(this, m);
+      this.tick++, (y = this.onpatch) == null || y.call(this, m);
     }
     /**
      * Applies a single operation to the model. All mutations to the model must go
@@ -10414,33 +10414,33 @@ function po() {
         const f = m.id;
         _.get(f) || _.set(f, new u.ConNode(f, m.val));
       } else if (m instanceof e.InsObjOp) {
-        const f = _.get(m.obj), d = m.data, g = d.length;
+        const f = _.get(m.obj), d = m.data, y = d.length;
         if (f instanceof a.ObjNode)
-          for (let v = 0; v < g; v++) {
-            const w = d[v], O = _.get(w[1]);
-            if (!O || f.id.time >= w[1].time)
+          for (let v = 0; v < y; v++) {
+            const w = d[v], x = _.get(w[1]);
+            if (!x || f.id.time >= w[1].time)
               continue;
-            O.parent = f;
-            const I = f.put(w[0] + "", O.id);
+            x.parent = f;
+            const I = f.put(w[0] + "", x.id);
             I && this._gcTree(I);
           }
       } else if (m instanceof e.InsVecOp) {
-        const f = _.get(m.obj), d = m.data, g = d.length;
+        const f = _.get(m.obj), d = m.data, y = d.length;
         if (f instanceof a.VecNode)
-          for (let v = 0; v < g; v++) {
-            const w = d[v], O = _.get(w[1]);
-            if (!O || f.id.time >= w[1].time)
+          for (let v = 0; v < y; v++) {
+            const w = d[v], x = _.get(w[1]);
+            if (!x || f.id.time >= w[1].time)
               continue;
-            O.parent = f;
-            const I = f.put(Number(w[0]), O.id);
+            x.parent = f;
+            const I = f.put(Number(w[0]), x.id);
             I && this._gcTree(I);
           }
       } else if (m instanceof e.InsValOp) {
         const f = m.obj, d = f.sid === 0 && f.time === 0 ? this.root : _.get(f);
         if (d instanceof a.ValNode) {
-          const g = _.get(m.val);
-          if (g) {
-            g.parent = d;
+          const y = _.get(m.val);
+          if (y) {
+            y.parent = d;
             const v = d.set(m.val);
             v && this._gcTree(v);
           }
@@ -10448,19 +10448,19 @@ function po() {
       } else if (m instanceof e.InsArrOp) {
         const f = _.get(m.obj);
         if (f instanceof a.ArrNode) {
-          const d = [], g = m.data, v = g.length;
+          const d = [], y = m.data, v = y.length;
           for (let w = 0; w < v; w++) {
-            const O = g[w], I = _.get(O);
-            I && (f.id.time >= O.time || (d.push(O), I.parent = f));
+            const x = y[w], I = _.get(x);
+            I && (f.id.time >= x.time || (d.push(x), I.parent = f));
           }
           d.length && f.ins(m.ref, m.id, d);
         }
       } else if (m instanceof e.UpdArrOp) {
         const f = _.get(m.obj);
         if (f instanceof a.ArrNode) {
-          const d = m.val, g = _.get(d);
-          if (g) {
-            g.parent = f;
+          const d = m.val, y = _.get(d);
+          if (y) {
+            y.parent = f;
             const v = f.upd(m.ref, d);
             v && this._gcTree(v);
           }
@@ -10469,11 +10469,11 @@ function po() {
         const f = _.get(m.obj);
         if (f instanceof a.ArrNode) {
           const d = m.what.length;
-          for (let g = 0; g < d; g++) {
-            const v = m.what[g];
+          for (let y = 0; y < d; y++) {
+            const v = m.what[y];
             for (let w = 0; w < v.span; w++) {
-              const O = f.getById(new t.Timestamp(v.sid, v.time + w));
-              O && this._gcTree(O);
+              const x = f.getById(new t.Timestamp(v.sid, v.time + w));
+              x && this._gcTree(x);
             }
           }
           f.delete(m.what);
@@ -10503,7 +10503,7 @@ function po() {
         return;
       f.parent = void 0;
       const d = f.api;
-      d && d.events.handleDelete(), f.children((g) => this._gcTree(g.id)), this.index.del(m);
+      d && d.events.handleDelete(), f.children((y) => this._gcTree(y.id)), this.index.del(m);
     }
     /**
      * Creates a copy of this model with a new session ID. If the session ID is
@@ -10519,7 +10519,7 @@ function po() {
     fork(m = this.rndSid()) {
       const _ = this.clock instanceof t.ClockVector ? this.clock.fork(m) : this.clock.clone(), f = new Vs(_);
       f.ext = this.ext.clone();
-      const d = this.index, g = f.index;
+      const d = this.index, y = f.index;
       return d.forEach(({ v }) => {
         let w;
         if (v instanceof u.ConNode)
@@ -10538,7 +10538,7 @@ function po() {
           w = v.clone(f);
         else
           throw new Error("UNKNOWN_NODE");
-        g.set(w.id, w);
+        y.set(w.id, w);
       }), f.root = this.root.clone(f), f.tick = this.tick, f.linkParents(), f;
     }
     /**
@@ -10561,18 +10561,18 @@ function po() {
       i.decoder.decode(f, this), this.clock = m.clock.clone(), this.ext = m.ext.clone(), this.linkParents();
       const d = this._api;
       d && (d.flush(), d.builder.clock = this.clock, d.node = this.root);
-      const g = /* @__PURE__ */ new Set();
-      _.forEach(({ v: O }) => {
-        const I = O.api;
+      const y = /* @__PURE__ */ new Set();
+      _.forEach(({ v: x }) => {
+        const I = x.api;
         if (!I)
           return;
-        const C = this.index.get(O.id);
+        const C = this.index.get(x.id);
         if (!C) {
           I.events.handleDelete();
           return;
         }
-        I.node = C, C.api = I, O && C && !(0, p.cmpNode)(O, C) && g.add(C);
-      }), this.tick++, (w = this.onreset) == null || w.call(this, g);
+        I.node = C, C.api = I, x && C && !(0, p.cmpNode)(x, C) && y.add(C);
+      }), this.tick++, (w = this.onreset) == null || w.call(this, y);
     }
     /**
      * Returns the view of the model.
@@ -10587,7 +10587,7 @@ function po() {
      */
     linkParents() {
       const m = (f, d) => {
-        d.parent = f, d.children((g) => m(d, g));
+        d.parent = f, d.children((y) => m(d, y));
       }, _ = this.root;
       _.parent = void 0, _.children((f) => m(_, f));
     }
@@ -10613,8 +10613,8 @@ function po() {
     setSchema(m, _ = !0) {
       const f = this.clock;
       if (f.time === 1) {
-        const g = f.sid;
-        _ && (f.sid = 2), this.api.set(m), _ && this.setSid(g);
+        const y = f.sid;
+        _ && (f.sid = 2), this.api.set(m), _ && this.setSid(y);
       }
       return this;
     }
@@ -10640,12 +10640,12 @@ function po() {
         (d) => this.root.toString(d),
         _,
         (d) => {
-          const g = [];
-          return this.index.forEach((v) => g.push(v.v)), `index (${g.length} nodes)` + (g.length ? (0, l.printTree)(d, g.map((v) => (w) => `${v.name()} ${t.printTs(v.id)}`)) : "");
+          const y = [];
+          return this.index.forEach((v) => y.push(v.v)), `index (${y.length} nodes)` + (y.length ? (0, l.printTree)(d, y.map((v) => (w) => `${v.name()} ${t.printTs(v.id)}`)) : "");
         },
         _,
-        (d) => `view${(0, l.printTree)(d, [(g) => String(JSON.stringify(this.view(), null, 2)).replace(/\n/g, `
-` + g)])}`,
+        (d) => `view${(0, l.printTree)(d, [(y) => String(JSON.stringify(this.view(), null, 2)).replace(/\n/g, `
+` + y)])}`,
         _,
         (d) => this.clock.toString(d),
         f ? _ : null,
@@ -10655,7 +10655,7 @@ function po() {
   };
   return Ct.Model = b, b.sid = o.randomSessionId, b.create = (k, m = b.sid()) => {
     const _ = typeof m == "number" ? m === 1 ? new t.ServerClockVector(1, 1) : new t.ClockVector(m, 1) : m, f = new b(_);
-    return k !== void 0 && f.setSchema(k instanceof y.NodeBuilder ? k : y.s.json(k), !0), f;
+    return k !== void 0 && f.setSchema(k instanceof g.NodeBuilder ? k : g.s.json(k), !0), f;
   }, b.withServerClock = (k, m = 1) => b.create(k, new t.ServerClockVector(1, m)), b.fromBinary = (k) => i.decoder.decode(k), b.load = (k, m, _) => {
     const f = i.decoder.decode(k);
     return _ && f.setSchema(_, !0), typeof m == "number" && f.setSid(m), f;
@@ -10666,7 +10666,7 @@ function vl() {
   if (Nc) return rr;
   Nc = 1, Object.defineProperty(rr, "__esModule", { value: !0 }), rr.ValNode = void 0;
   const r = de(), e = Ee(), t = po();
-  let i = class yl {
+  let i = class gl {
     constructor(s, o, a) {
       this.doc = s, this.id = o, this.val = a, this.api = void 0, this.parent = void 0;
     }
@@ -10717,7 +10717,7 @@ function vl() {
     }
     /** @ignore */
     clone(s) {
-      return new yl(s, this.id, this.val);
+      return new gl(s, this.id, this.val);
     }
     // ---------------------------------------------------------------- Printable
     toString(s = "") {
@@ -10727,10 +10727,10 @@ function vl() {
   };
   return rr.ValNode = i, rr;
 }
-var Or = {}, Tc;
+var xr = {}, Tc;
 function pf() {
-  if (Tc) return Or;
-  Tc = 1, Object.defineProperty(Or, "__esModule", { value: !0 }), Or.RootNode = void 0;
+  if (Tc) return xr;
+  Tc = 1, Object.defineProperty(xr, "__esModule", { value: !0 }), xr.RootNode = void 0;
   const r = wi(), e = vl();
   let t = class ml extends e.ValNode {
     /**
@@ -10747,10 +10747,10 @@ function pf() {
       return new ml(n, this.val);
     }
   };
-  return Or.RootNode = t, Or;
+  return xr.RootNode = t, xr;
 }
-var xr = {}, Ir = {}, Ac;
-function gf() {
+var Or = {}, Ir = {}, Ac;
+function yf() {
   if (Ac) return Ir;
   Ac = 1, Object.defineProperty(Ir, "__esModule", { value: !0 }), Ir.CRDT_CONSTANTS = void 0;
   var r;
@@ -10759,10 +10759,10 @@ function gf() {
   })(r || (Ir.CRDT_CONSTANTS = r = {})), Ir;
 }
 var jc;
-function yf() {
-  if (jc) return xr;
-  jc = 1, Object.defineProperty(xr, "__esModule", { value: !0 }), xr.VecNode = void 0;
-  const r = Si(), e = gf(), t = Ee(), i = de();
+function gf() {
+  if (jc) return Or;
+  jc = 1, Object.defineProperty(Or, "__esModule", { value: !0 }), Or.VecNode = void 0;
+  const r = Si(), e = yf(), t = Ee(), i = de();
   let n = class bl {
     constructor(o, a) {
       this.doc = o, this.id = a, this.elements = [], this.__extNode = void 0, this._view = [], this.api = void 0, this.parent = void 0;
@@ -10857,8 +10857,8 @@ function yf() {
         const h = a[c];
         if (!h)
           continue;
-        const y = l.get(h);
-        y && o(y);
+        const g = l.get(h);
+        g && o(g);
       }
     }
     /** @ignore */
@@ -10867,8 +10867,8 @@ function yf() {
       if (o)
         return o.view();
       let a = !0;
-      const u = this._view, l = [], c = this.doc.index, h = this.elements, y = h.length;
-      for (let p = 0; p < y; p++) {
+      const u = this._view, l = [], c = this.doc.index, h = this.elements, g = h.length;
+      for (let p = 0; p < g; p++) {
         const b = h[p], k = b ? c.get(b) : void 0, m = k ? k.view() : void 0;
         u[p] !== m && (a = !1), l.push(m);
       }
@@ -10897,12 +10897,12 @@ function yf() {
         return this.child().toString(o, this.id);
       const l = this.doc.index;
       return u + (0, t.printTree)(o, [
-        ...this.elements.map((c, h) => (y) => `${h}: ${c && l.get(c) ? l.get(c).toString(y + "  " + " ".repeat(("" + h).length)) : "nil"}`),
+        ...this.elements.map((c, h) => (g) => `${h}: ${c && l.get(c) ? l.get(c).toString(g + "  " + " ".repeat(("" + h).length)) : "nil"}`),
         ...a ? [(c) => `${this.child().toString(c)}`] : []
       ]);
     }
   };
-  return xr.VecNode = n, xr;
+  return Or.VecNode = n, Or;
 }
 var Cr = {}, Ec;
 function vf() {
@@ -10976,14 +10976,14 @@ function vf() {
         return a;
       const u = {}, l = s.index;
       let c = !0;
-      return this.keys.forEach((h, y) => {
+      return this.keys.forEach((h, g) => {
         const p = l.get(h);
         if (!p) {
           c = !1;
           return;
         }
         const b = p.view();
-        b !== void 0 ? (a[y] !== b && (c = !1), u[y] = b) : a[y] !== void 0 && (c = !1);
+        b !== void 0 ? (a[g] !== b && (c = !1), u[g] = b) : a[g] !== void 0 && (c = !1);
       }), c ? a : (this._tick = o, this._view = u);
     }
     /** @ignore */
@@ -11015,7 +11015,7 @@ function mf() {
   };
   return Tr.printOctets = r, Tr;
 }
-var gs = {}, Rc;
+var ys = {}, Rc;
 function bf() {
   return Rc || (Rc = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.rlSplay = r.lrSplay = r.llSplay = r.rrSplay = r.lSplay = r.rSplay = r.splay = void 0;
@@ -11023,8 +11023,8 @@ function bf() {
       const h = l.p;
       if (!h)
         return u;
-      const y = h.p, p = h.l === l;
-      return y ? (y.l === h ? p ? u = (0, r.llSplay)(u, l, h, y) : u = (0, r.lrSplay)(u, l, h, y) : p ? u = (0, r.rlSplay)(u, l, h, y) : u = (0, r.rrSplay)(u, l, h, y), c > 1 ? (0, r.splay)(u, l, c - 1) : u) : (p ? (0, r.rSplay)(l, h) : (0, r.lSplay)(l, h), l);
+      const g = h.p, p = h.l === l;
+      return g ? (g.l === h ? p ? u = (0, r.llSplay)(u, l, h, g) : u = (0, r.lrSplay)(u, l, h, g) : p ? u = (0, r.rlSplay)(u, l, h, g) : u = (0, r.rrSplay)(u, l, h, g), c > 1 ? (0, r.splay)(u, l, c - 1) : u) : (p ? (0, r.rSplay)(l, h) : (0, r.lSplay)(l, h), l);
     };
     r.splay = e;
     const t = (u, l) => {
@@ -11038,28 +11038,28 @@ function bf() {
     };
     r.lSplay = i;
     const n = (u, l, c, h) => {
-      const y = c.l, p = l.l, b = h.p;
-      return l.p = b, l.l = c, c.p = l, c.l = h, c.r = p, h.p = c, h.r = y, y && (y.p = h), p && (p.p = c), b ? b.l === h ? b.l = l : b.r = l : u = l, u;
+      const g = c.l, p = l.l, b = h.p;
+      return l.p = b, l.l = c, c.p = l, c.l = h, c.r = p, h.p = c, h.r = g, g && (g.p = h), p && (p.p = c), b ? b.l === h ? b.l = l : b.r = l : u = l, u;
     };
     r.rrSplay = n;
     const s = (u, l, c, h) => {
-      const y = c.r, p = l.r, b = h.p;
-      return l.p = b, l.r = c, c.p = l, c.l = p, c.r = h, h.p = c, h.l = y, y && (y.p = h), p && (p.p = c), b ? b.l === h ? b.l = l : b.r = l : u = l, u;
+      const g = c.r, p = l.r, b = h.p;
+      return l.p = b, l.r = c, c.p = l, c.l = p, c.r = h, h.p = c, h.l = g, g && (g.p = h), p && (p.p = c), b ? b.l === h ? b.l = l : b.r = l : u = l, u;
     };
     r.llSplay = s;
     const o = (u, l, c, h) => {
-      const y = l.l, p = l.r, b = h.p;
-      return l.p = b, l.l = c, l.r = h, c.p = l, c.r = y, h.p = l, h.l = p, y && (y.p = c), p && (p.p = h), b ? b.l === h ? b.l = l : b.r = l : u = l, u;
+      const g = l.l, p = l.r, b = h.p;
+      return l.p = b, l.l = c, l.r = h, c.p = l, c.r = g, h.p = l, h.l = p, g && (g.p = c), p && (p.p = h), b ? b.l === h ? b.l = l : b.r = l : u = l, u;
     };
     r.lrSplay = o;
     const a = (u, l, c, h) => {
-      const y = l.r, p = l.l, b = h.p;
-      return l.p = b, l.l = h, l.r = c, c.p = l, c.l = y, h.p = l, h.r = p, y && (y.p = c), p && (p.p = h), b ? b.l === h ? b.l = l : b.r = l : u = l, u;
+      const g = l.r, p = l.l, b = h.p;
+      return l.p = b, l.l = h, l.r = c, c.p = l, c.l = g, h.p = l, h.r = p, g && (g.p = c), p && (p.p = h), b ? b.l === h ? b.l = l : b.r = l : u = l, u;
     };
     r.rlSplay = a;
-  })(gs)), gs;
+  })(ys)), ys;
 }
-var ys = {}, Vc;
+var gs = {}, Vc;
 function wf() {
   return Vc || (Vc = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.splay2 = void 0;
@@ -11067,8 +11067,8 @@ function wf() {
       const c = l.p2;
       if (!c)
         return u;
-      const h = c.p2, y = c.l2 === l;
-      return h ? (h.l2 === c ? y ? u = s(u, l, c, h) : u = o(u, l, c, h) : y ? u = a(u, l, c, h) : u = n(u, l, c, h), (0, r.splay2)(u, l)) : (y ? t(l, c) : i(l, c), l);
+      const h = c.p2, g = c.l2 === l;
+      return h ? (h.l2 === c ? g ? u = s(u, l, c, h) : u = o(u, l, c, h) : g ? u = a(u, l, c, h) : u = n(u, l, c, h), (0, r.splay2)(u, l)) : (g ? t(l, c) : i(l, c), l);
     };
     r.splay2 = e;
     const t = (u, l) => {
@@ -11078,19 +11078,19 @@ function wf() {
       const c = u.l2;
       u.p2 = void 0, u.l2 = l, l.p2 = u, l.r2 = c, c && (c.p2 = l);
     }, n = (u, l, c, h) => {
-      const y = c.l2, p = l.l2, b = h.p2;
-      return l.p2 = b, l.l2 = c, c.p2 = l, c.l2 = h, c.r2 = p, h.p2 = c, h.r2 = y, y && (y.p2 = h), p && (p.p2 = c), b ? b.l2 === h ? b.l2 = l : b.r2 = l : u = l, u;
+      const g = c.l2, p = l.l2, b = h.p2;
+      return l.p2 = b, l.l2 = c, c.p2 = l, c.l2 = h, c.r2 = p, h.p2 = c, h.r2 = g, g && (g.p2 = h), p && (p.p2 = c), b ? b.l2 === h ? b.l2 = l : b.r2 = l : u = l, u;
     }, s = (u, l, c, h) => {
-      const y = c.r2, p = l.r2, b = h.p2;
-      return l.p2 = b, l.r2 = c, c.p2 = l, c.l2 = p, c.r2 = h, h.p2 = c, h.l2 = y, y && (y.p2 = h), p && (p.p2 = c), b ? b.l2 === h ? b.l2 = l : b.r2 = l : u = l, u;
+      const g = c.r2, p = l.r2, b = h.p2;
+      return l.p2 = b, l.r2 = c, c.p2 = l, c.l2 = p, c.r2 = h, h.p2 = c, h.l2 = g, g && (g.p2 = h), p && (p.p2 = c), b ? b.l2 === h ? b.l2 = l : b.r2 = l : u = l, u;
     }, o = (u, l, c, h) => {
-      const y = l.l2, p = l.r2, b = h.p2;
-      return l.p2 = b, l.l2 = c, l.r2 = h, c.p2 = l, c.r2 = y, h.p2 = l, h.l2 = p, y && (y.p2 = c), p && (p.p2 = h), b ? b.l2 === h ? b.l2 = l : b.r2 = l : u = l, u;
+      const g = l.l2, p = l.r2, b = h.p2;
+      return l.p2 = b, l.l2 = c, l.r2 = h, c.p2 = l, c.r2 = g, h.p2 = l, h.l2 = p, g && (g.p2 = c), p && (p.p2 = h), b ? b.l2 === h ? b.l2 = l : b.r2 = l : u = l, u;
     }, a = (u, l, c, h) => {
-      const y = l.r2, p = l.l2, b = h.p2;
-      return l.p2 = b, l.l2 = h, l.r2 = c, c.p2 = l, c.l2 = y, h.p2 = l, h.r2 = p, y && (y.p2 = c), p && (p.p2 = h), b ? b.l2 === h ? b.l2 = l : b.r2 = l : u = l, u;
+      const g = l.r2, p = l.l2, b = h.p2;
+      return l.p2 = b, l.l2 = h, l.r2 = c, c.p2 = l, c.l2 = g, h.p2 = l, h.r2 = p, g && (g.p2 = c), p && (p.p2 = h), b ? b.l2 === h ? b.l2 = l : b.r2 = l : u = l, u;
     };
-  })(ys)), ys;
+  })(gs)), gs;
 }
 var Ar = {}, Bc = {}, Lc;
 function _f() {
@@ -11132,16 +11132,16 @@ function kf() {
   return Ar;
 }
 var Dc;
-function go() {
+function yo() {
   if (Dc) return Nr;
   Dc = 1, Object.defineProperty(Nr, "__esModule", { value: !0 }), Nr.AbstractRga = void 0;
-  const r = de(), e = ao(), t = mf(), i = bf(), n = wf(), s = gl(), o = wi(), a = Ee(), u = _i(), l = kf(), c = (_, f) => {
-    const d = _.id, g = f.id;
-    return d.sid - g.sid || d.time - g.time;
+  const r = de(), e = ao(), t = mf(), i = bf(), n = wf(), s = yl(), o = wi(), a = Ee(), u = _i(), l = kf(), c = (_, f) => {
+    const d = _.id, y = f.id;
+    return d.sid - y.sid || d.time - y.time;
   }, h = (_) => {
     const f = _.l, d = _.r;
     _.len = (_.del ? 0 : _.span) + (f ? f.len : 0) + (d ? d.len : 0);
-  }, y = (_) => {
+  }, g = (_) => {
     const f = _.l, d = _.r;
     _.len = _.span + (f ? f.len : 0) + (d ? d.len : 0);
   }, p = (_, f) => {
@@ -11151,9 +11151,9 @@ function go() {
     const f = _.r;
     if (f) {
       _ = f;
-      let g;
-      for (; g = _.l; )
-        _ = g;
+      let y;
+      for (; y = _.l; )
+        _ = y;
       return _;
     }
     let d = _.p;
@@ -11164,9 +11164,9 @@ function go() {
     const f = _.l;
     if (f) {
       _ = f;
-      let g;
-      for (; g = _.r; )
-        _ = g;
+      let y;
+      for (; y = _.r; )
+        _ = y;
       return _;
     }
     let d = _.p;
@@ -11179,18 +11179,18 @@ function go() {
       this.id = f, this.root = void 0, this.ids = void 0, this.count = 0;
     }
     // --------------------------------------------------------------- Public API
-    ins(f, d, g) {
-      const v = this.id, w = f.time, O = f.sid;
-      if (v.time === w && v.sid === O) {
-        this.insAfterRoot(f, d, g);
+    ins(f, d, y) {
+      const v = this.id, w = f.time, x = f.sid;
+      if (v.time === w && v.sid === x) {
+        this.insAfterRoot(f, d, y);
         return;
       }
       let C = this.ids, E = C;
       for (; C; ) {
         const V = C.id, z = V.sid;
-        if (z > O)
+        if (z > x)
           C = C.l2;
-        else if (z < O)
+        else if (z < x)
           E = C, C = C.r2;
         else {
           const J = V.time;
@@ -11206,25 +11206,25 @@ function go() {
       }
       if (!E)
         return;
-      const x = E.id, T = x.time, j = x.sid, P = E.span;
-      if (j !== O || w - T >= P)
+      const O = E.id, T = O.time, j = O.sid, P = E.span;
+      if (j !== x || w - T >= P)
         return;
       const M = w - T;
-      this.insAfterChunk(f, E, M, d, g);
+      this.insAfterChunk(f, E, M, d, y);
     }
-    insAt(f, d, g) {
+    insAt(f, d, y) {
       if (!f) {
         const E = this.id;
-        return this.insAfterRoot(E, d, g), E;
+        return this.insAfterRoot(E, d, y), E;
       }
       const v = this.findChunk(f - 1);
       if (!v)
         return;
-      const [w, O] = v, I = w.id, C = O === 0 ? I : new r.Timestamp(I.sid, I.time + O);
-      return this.insAfterChunk(C, w, O, d, g), C;
+      const [w, x] = v, I = w.id, C = x === 0 ? I : new r.Timestamp(I.sid, I.time + x);
+      return this.insAfterChunk(C, w, x, d, y), C;
     }
-    insAfterRoot(f, d, g) {
-      const v = this.createChunk(d, g), w = this.first();
+    insAfterRoot(f, d, y) {
+      const v = this.createChunk(d, y), w = this.first();
       if (!w)
         this.setRoot(v);
       else if ((0, r.compare)(w.id, d) < 0)
@@ -11235,75 +11235,75 @@ function go() {
         this.insertAfterRef(v, f, w);
       }
     }
-    insAfterChunk(f, d, g, v, w) {
-      const O = d.id, I = O.time, C = O.sid, E = d.span, x = this.createChunk(v, w);
-      if (g + 1 < E) {
+    insAfterChunk(f, d, y, v, w) {
+      const x = d.id, I = x.time, C = x.sid, E = d.span, O = this.createChunk(v, w);
+      if (y + 1 < E) {
         const j = v.sid, P = v.time;
         if (C === j && I <= P && I + E - 1 >= P)
           return;
         if (P > f.time + 1 || j > f.sid) {
-          this.insertInside(x, d, g + 1), this.splay(x);
+          this.insertInside(O, d, y + 1), this.splay(O);
           return;
         }
       }
-      this.insertAfterRef(x, f, d), this.splay(x);
+      this.insertAfterRef(O, f, d), this.splay(O);
     }
     delete(f) {
       const d = f.length;
-      for (let g = 0; g < d; g++)
-        this.deleteSpan(f[g]);
+      for (let y = 0; y < d; y++)
+        this.deleteSpan(f[y]);
       this.onChange();
     }
     deleteSpan(f) {
-      const d = f.span, g = f.time, v = g + d - 1, w = this.findById(f);
+      const d = f.span, y = f.time, v = y + d - 1, w = this.findById(f);
       if (!w)
         return;
-      let O = w, I = O;
-      for (; O; ) {
-        I = O;
-        const C = O.id, E = O.span, x = C.time, T = x + E - 1;
-        if (O.del) {
+      let x = w, I = x;
+      for (; x; ) {
+        I = x;
+        const C = x.id, E = x.span, O = C.time, T = O + E - 1;
+        if (x.del) {
           if (T >= v)
             break;
-          O = O.s;
+          x = x.s;
           continue;
         }
-        const j = g <= x, P = g <= T;
+        const j = y <= O, P = y <= T;
         if (j)
           if (v >= T) {
-            if (O.delete(), p(O, -O.span), v <= T)
+            if (x.delete(), p(x, -x.span), v <= T)
               break;
           } else {
-            const M = v - x + 1, V = this.split(O, M);
-            O.delete(), h(V), p(O, -O.span);
+            const M = v - O + 1, V = this.split(x, M);
+            x.delete(), h(V), p(x, -x.span);
             break;
           }
         else if (P)
           if (v >= T) {
-            const M = g - x, V = this.split(O, M);
-            if (V.delete(), V.len = V.r ? V.r.len : 0, p(O, -V.span), v <= T)
+            const M = y - O, V = this.split(x, M);
+            if (V.delete(), V.len = V.r ? V.r.len : 0, p(x, -V.span), v <= T)
               break;
           } else {
-            const M = this.split(O, v - x + 1), V = this.split(O, g - x);
-            V.delete(), h(M), h(V), p(O, -V.span);
+            const M = this.split(x, v - O + 1), V = this.split(x, y - O);
+            V.delete(), h(M), h(V), p(x, -V.span);
             break;
           }
-        O = O.s;
+        x = x.s;
       }
       I && this.mergeTombstones2(w, I);
     }
     find(f) {
       let d = this.root;
       for (; d; ) {
-        const g = d.l, v = g ? g.len : 0;
+        const y = d.l, v = y ? y.len : 0;
         let w;
         if (f < v)
-          d = g;
+          d = y;
         else if (d.del)
           f -= v, d = d.r;
         else if (f < v + (w = d.span)) {
-          const O = f - v, I = d.id;
-          return O ? new r.Timestamp(I.sid, I.time + O) : I;
+          const x = f - v, I = d.id;
+          return x ? new r.Timestamp(I.sid, I.time + x) : I;
         } else
           f -= v + w, d = d.r;
       }
@@ -11311,10 +11311,10 @@ function go() {
     findChunk(f) {
       let d = this.root;
       for (; d; ) {
-        const g = d.l, v = g ? g.len : 0;
+        const y = d.l, v = y ? y.len : 0;
         let w;
         if (f < v)
-          d = g;
+          d = y;
         else if (d.del)
           f -= v, d = d.r;
         else {
@@ -11325,9 +11325,9 @@ function go() {
       }
     }
     findInterval(f, d) {
-      const g = [];
+      const y = [];
       if (!d)
-        return g;
+        return y;
       let v = this.root, w = 0;
       for (; v; ) {
         const C = v.l ? v.l.len : 0;
@@ -11342,31 +11342,31 @@ function go() {
           f -= C + v.span, v = v.r;
       }
       if (!v)
-        return g;
+        return y;
       if (v.span >= d + w) {
         const C = v.id;
-        return g.push((0, r.tss)(C.sid, C.time + w, d)), g;
+        return y.push((0, r.tss)(C.sid, C.time + w, d)), y;
       }
-      const O = v.span - w, I = v.id;
-      if (g.push((0, r.tss)(I.sid, I.time + w, O)), d -= O, v = b(v), !v)
-        return g;
+      const x = v.span - w, I = v.id;
+      if (y.push((0, r.tss)(I.sid, I.time + w, x)), d -= x, v = b(v), !v)
+        return y;
       do {
         if (v.del)
           continue;
         const C = v.id, E = v.span;
         if (d <= E)
-          return g.push((0, r.tss)(C.sid, C.time, d)), g;
-        g.push((0, r.tss)(C.sid, C.time, E)), d -= E;
+          return y.push((0, r.tss)(C.sid, C.time, d)), y;
+        y.push((0, r.tss)(C.sid, C.time, E)), d -= E;
       } while ((v = b(v)) && d > 0);
-      return g;
+      return y;
     }
     /** Rename to .rangeX() method? */
     findInterval2(f, d) {
-      const g = [];
-      return this.range0(void 0, f, d, (v, w, O) => {
+      const y = [];
+      return this.range0(void 0, f, d, (v, w, x) => {
         const I = v.id;
-        g.push((0, r.tss)(I.sid, I.time + w, O));
-      }), g;
+        y.push((0, r.tss)(I.sid, I.time + w, x));
+      }), y;
     }
     /**
      * @note All ".rangeX()" method are not performance optimized. For hot paths
@@ -11381,28 +11381,28 @@ function go() {
      *     returns truthy value, the iteration will stop.
      * @returns Reference to the last chunk in the range.
      */
-    range0(f, d, g, v) {
+    range0(f, d, y, v) {
       let w = f || this.findById(d);
       if (f)
         for (; w && !(0, r.containsId)(w.id, w.span, d); )
           w = b(w);
       if (w) {
         if (w.del) {
-          if ((0, r.containsId)(w.id, w.span, g))
+          if ((0, r.containsId)(w.id, w.span, y))
             return;
         } else {
-          const O = d.time - w.id.time;
-          if ((0, r.containsId)(w.id, w.span, g)) {
-            const E = g.time - d.time + 1;
-            return v(w, O, E), w;
+          const x = d.time - w.id.time;
+          if ((0, r.containsId)(w.id, w.span, y)) {
+            const E = y.time - d.time + 1;
+            return v(w, x, E), w;
           }
-          const C = w.span - O;
-          if (v(w, O, C))
+          const C = w.span - x;
+          if (v(w, x, C))
             return w;
         }
         for (w = b(w); w; ) {
-          if ((0, r.containsId)(w.id, w.span, g))
-            return !w.del && v(w, 0, g.time - w.id.time + 1), w;
+          if ((0, r.containsId)(w.id, w.span, y))
+            return !w.del && v(w, 0, y.time - w.id.time + 1), w;
           if (!w.del && v(w, 0, w.span))
             return w;
           w = b(w);
@@ -11437,8 +11437,8 @@ function go() {
       const f = this.last();
       if (!f)
         return;
-      const d = f.id, g = f.span;
-      return g === 1 ? d : new r.Timestamp(d.sid, d.time + g - 1);
+      const d = f.id, y = f.span;
+      return y === 1 ? d : new r.Timestamp(d.sid, d.time + y - 1);
     }
     /** @todo Maybe use implementation from tree utils, if does not impact performance. */
     /** @todo Or better remove this method completely, as it does not require "this". */
@@ -11461,14 +11461,14 @@ function go() {
     }
     /** Returns the position of the first element in the chunk. */
     pos(f) {
-      const d = f.p, g = f.l;
+      const d = f.p, y = f.l;
       if (!d)
-        return g ? g.len : 0;
+        return y ? y.len : 0;
       const v = this.pos(d);
       if (d.r === f)
-        return v + (d.del ? 0 : d.span) + (g ? g.len : 0);
-      const O = f.r;
-      return v - (f.del ? 0 : f.span) - (O ? O.len : 0);
+        return v + (d.del ? 0 : d.span) + (y ? y.len : 0);
+      const x = f.r;
+      return v - (f.del ? 0 : f.span) - (x ? x.len : 0);
     }
     chunks0() {
       let f = this.first();
@@ -11485,45 +11485,45 @@ function go() {
       this.root = f, this.insertId(f), this.onChange();
     }
     insertBefore(f, d) {
-      const g = d.l;
-      d.l = f, f.l = g, f.p = d;
+      const y = d.l;
+      d.l = f, f.l = y, f.p = d;
       let v = 0;
-      g && (g.p = f, v = g.len), f.len = f.span + v, p(d, f.span), this.insertId(f), this.onChange();
+      y && (y.p = f, v = y.len), f.len = f.span + v, p(d, f.span), this.insertId(f), this.onChange();
     }
     insertAfter(f, d) {
-      const g = d.r;
-      d.r = f, f.r = g, f.p = d;
+      const y = d.r;
+      d.r = f, f.r = y, f.p = d;
       let v = 0;
-      g && (g.p = f, v = g.len), f.len = f.span + v, p(d, f.span), this.insertId(f), this.onChange();
+      y && (y.p = f, v = y.len), f.len = f.span + v, p(d, f.span), this.insertId(f), this.onChange();
     }
-    insertAfterRef(f, d, g) {
-      const v = f.id, w = v.sid, O = v.time;
+    insertAfterRef(f, d, y) {
+      const v = f.id, w = v.sid, x = v.time;
       let I = !1;
       for (; ; ) {
-        const C = g.id, E = C.time + g.span;
-        g.s || (I = C.sid === w && E === O && E - 1 === d.time, I && (g.s = f));
-        const x = b(g);
-        if (!x)
+        const C = y.id, E = C.time + y.span;
+        y.s || (I = C.sid === w && E === x && E - 1 === d.time, I && (y.s = f));
+        const O = b(y);
+        if (!O)
           break;
-        const T = x.id, j = T.time, P = T.sid;
-        if (j < O)
+        const T = O.id, j = T.time, P = T.sid;
+        if (j < x)
           break;
-        if (j === O) {
+        if (j === x) {
           if (P === w)
             return;
           if (P < w)
             break;
         }
-        g = x;
+        y = O;
       }
-      I && !g.del ? (this.mergeContent(g, f.data), g.s = void 0) : this.insertAfter(f, g);
+      I && !y.del ? (this.mergeContent(y, f.data), y.s = void 0) : this.insertAfter(f, y);
     }
     mergeContent(f, d) {
-      const g = f.span;
-      f.merge(d), p(f, f.span - g), this.onChange();
+      const y = f.span;
+      f.merge(d), p(f, f.span - y), this.onChange();
     }
-    insertInside(f, d, g) {
-      const v = d.p, w = d.l, O = d.r, I = d.s, C = d.len, E = d.split(g);
+    insertInside(f, d, y) {
+      const v = d.p, w = d.l, x = d.r, I = d.s, C = d.len, E = d.split(y);
       if (d.s = E, E.s = I, d.l = d.r = E.l = E.r = void 0, E.l = void 0, f.p = v, !w)
         f.l = d, d.p = f;
       else {
@@ -11531,37 +11531,37 @@ function go() {
         const j = w.r;
         w.r = d, d.p = w, d.l = j, j && (j.p = d);
       }
-      if (!O)
+      if (!x)
         f.r = E, E.p = f;
       else {
-        f.r = O, O.p = f;
-        const j = O.l;
-        O.l = E, E.p = O, E.r = j, j && (j.p = E);
+        f.r = x, x.p = f;
+        const j = x.l;
+        x.l = E, E.p = x, E.r = j, j && (j.p = E);
       }
-      v ? v.l === d ? v.l = f : v.r = f : this.root = f, h(d), h(E), w && (w.len = (w.l ? w.l.len : 0) + d.len + (w.del ? 0 : w.span)), O && (O.len = (O.r ? O.r.len : 0) + E.len + (O.del ? 0 : O.span)), f.len = C + f.span;
-      const x = f.span;
+      v ? v.l === d ? v.l = f : v.r = f : this.root = f, h(d), h(E), w && (w.len = (w.l ? w.l.len : 0) + d.len + (w.del ? 0 : w.span)), x && (x.len = (x.r ? x.r.len : 0) + E.len + (x.del ? 0 : x.span)), f.len = C + f.span;
+      const O = f.span;
       let T = f.p;
       for (; T; )
-        T.len += x, T = T.p;
+        T.len += O, T = T.p;
       this.insertId(E), this.insertIdFast(f), this.onChange();
     }
     split(f, d) {
-      const g = f.s, v = f.split(d), w = f.r;
-      return f.s = v, v.r = w, v.s = g, f.r = v, v.p = f, this.insertId(v), w && (w.p = v), v;
+      const y = f.s, v = f.split(d), w = f.r;
+      return f.s = v, v.r = w, v.s = y, f.r = v, v.p = f, this.insertId(v), w && (w.p = v), v;
     }
     mergeTombstones(f, d) {
       if (!f.del || !d.del)
         return !1;
-      const g = f.id, v = d.id;
-      return g.sid !== v.sid || g.time + f.span !== v.time ? !1 : (f.s = d.s, f.span += d.span, this.deleteChunk(d), !0);
+      const y = f.id, v = d.id;
+      return y.sid !== v.sid || y.time + f.span !== v.time ? !1 : (f.s = d.s, f.span += d.span, this.deleteChunk(d), !0);
     }
     mergeTombstones2(f, d) {
-      let g = f;
-      for (; g; ) {
-        const w = b(g);
+      let y = f;
+      for (; y; ) {
+        const w = b(y);
         if (!w)
           break;
-        if (!this.mergeTombstones(g, w)) {
+        if (!this.mergeTombstones(y, w)) {
           if (w === d) {
             if (w) {
               const I = b(w);
@@ -11569,7 +11569,7 @@ function go() {
             }
             break;
           }
-          g = g.s;
+          y = y.s;
         }
       }
       const v = k(f);
@@ -11580,25 +11580,25 @@ function go() {
       const d = [];
       for (; f; )
         f.del && d.push(f), f = b(f);
-      for (let g = 0; g < d.length; g++)
-        this.deleteChunk(d[g]);
+      for (let y = 0; y < d.length; y++)
+        this.deleteChunk(d[y]);
     }
     deleteChunk(f) {
       this.deleteId(f);
-      const d = f.p, g = f.l, v = f.r;
-      if (f.id = o.ORIGIN, !g && !v)
+      const d = f.p, y = f.l, v = f.r;
+      if (f.id = o.ORIGIN, !y && !v)
         d ? d.l === f ? d.l = void 0 : d.r = void 0 : this.root = void 0;
-      else if (g && v) {
-        let w = g;
+      else if (y && v) {
+        let w = y;
         for (; w.r; )
           w = w.r;
         w.r = v, v.p = w;
-        const O = v.len;
+        const x = v.len;
         let I;
-        for (I = w, d ? (d.l === f ? d.l = g : d.r = g, g.p = d) : (this.root = g, g.p = void 0); I && I !== d; )
-          I.len += O, I = I.p;
+        for (I = w, d ? (d.l === f ? d.l = y : d.r = y, y.p = d) : (this.root = y, y.p = void 0); I && I !== d; )
+          I.len += x, I = I.p;
       } else {
-        const w = g || v;
+        const w = y || v;
         w.p = d, d ? d.l === f ? d.l = w : d.r = w : this.root = w;
       }
     }
@@ -11612,7 +11612,7 @@ function go() {
       this.ids = (0, s.remove2)(this.ids, f), this.count--;
     }
     findById(f) {
-      const d = f.sid, g = f.time;
+      const d = f.sid, y = f.time;
       let v = this.ids, w = v;
       for (; v; ) {
         const T = v.id, j = T.sid;
@@ -11622,9 +11622,9 @@ function go() {
           w = v, v = v.r2;
         else {
           const P = T.time;
-          if (P > g)
+          if (P > y)
             v = v.l2;
-          else if (P < g)
+          else if (P < y)
             w = v, v = v.r2;
           else {
             w = v;
@@ -11634,16 +11634,16 @@ function go() {
       }
       if (!w)
         return;
-      const O = w.id, I = O.time, C = O.sid, E = w.span;
-      if (!(C !== d || g < I || g - I >= E))
+      const x = w.id, I = x.time, C = x.sid, E = w.span;
+      if (!(C !== d || y < I || y - I >= E))
         return w;
     }
     posById(f) {
       const d = this.findById(f);
       if (!d)
         return;
-      const g = this.pos(d);
-      return d.del ? g : g + (f.time - d.id.time);
+      const y = this.pos(d);
+      return d.del ? y : y + (f.time - d.id.time);
     }
     /**
      * @param id ID of character to start the search from.
@@ -11653,9 +11653,9 @@ function go() {
       let d = this.findById(f);
       if (!d)
         return;
-      const g = f.time;
-      if (d.id.time < g)
-        return new r.Timestamp(f.sid, g - 1);
+      const y = f.time;
+      if (d.id.time < y)
+        return new r.Timestamp(f.sid, y - 1);
       if (d = k(d), !d)
         return;
       const v = d.id;
@@ -11663,30 +11663,30 @@ function go() {
     }
     spanView(f) {
       const d = [];
-      let g = f.span;
+      let y = f.span;
       const v = f.time;
       let w = this.findById(f);
       if (!w)
         return d;
       if (!w.del)
-        if (w.span >= g + v - w.id.time) {
-          const O = v - w.id.time, I = O + g, C = w.view().slice(O, I);
+        if (w.span >= y + v - w.id.time) {
+          const x = v - w.id.time, I = x + y, C = w.view().slice(x, I);
           return d.push(C), d;
         } else {
-          const O = v - w.id.time, I = w.view().slice(O, f.span);
-          g -= w.span - O, d.push(I);
+          const x = v - w.id.time, I = w.view().slice(x, f.span);
+          y -= w.span - x, d.push(I);
         }
       for (; w = w.s; ) {
-        const O = w.span;
+        const x = w.span;
         if (!w.del) {
-          if (O > g) {
-            const I = w.view().slice(0, g);
+          if (x > y) {
+            const I = w.view().slice(0, y);
             d.push(I);
             break;
           }
           d.push(w.data);
         }
-        if (g -= O, g <= 0)
+        if (y -= x, y <= 0)
           break;
       }
       return d;
@@ -11696,12 +11696,12 @@ function go() {
       const d = f.p;
       if (!d)
         return;
-      const g = d.p, v = d.l === f;
-      if (!g) {
-        v ? (0, i.rSplay)(f, d) : (0, i.lSplay)(f, d), this.root = f, h(d), y(f);
+      const y = d.p, v = d.l === f;
+      if (!y) {
+        v ? (0, i.rSplay)(f, d) : (0, i.lSplay)(f, d), this.root = f, h(d), g(f);
         return;
       }
-      g.l === d ? v ? this.root = (0, i.llSplay)(this.root, f, d, g) : this.root = (0, i.lrSplay)(this.root, f, d, g) : v ? this.root = (0, i.rlSplay)(this.root, f, d, g) : this.root = (0, i.rrSplay)(this.root, f, d, g), h(g), h(d), y(f), this.splay(f);
+      y.l === d ? v ? this.root = (0, i.llSplay)(this.root, f, d, y) : this.root = (0, i.lrSplay)(this.root, f, d, y) : v ? this.root = (0, i.rlSplay)(this.root, f, d, y) : this.root = (0, i.rrSplay)(this.root, f, d, y), h(y), h(d), g(f), this.splay(f);
     }
     // ---------------------------------------------------------- Export / Import
     iterator() {
@@ -11714,19 +11714,19 @@ function go() {
     ingest(f, d) {
       if (f < 1)
         return;
-      const g = /* @__PURE__ */ new Map();
+      const y = /* @__PURE__ */ new Map();
       this.root = this._ingest(f, () => {
-        const v = d(), w = v.id, O = w.sid + "." + w.time, I = g.get(O);
-        I && (I.s = v, g.delete(O));
+        const v = d(), w = v.id, x = w.sid + "." + w.time, I = y.get(x);
+        I && (I.s = v, y.delete(x));
         const C = (0, r.tick)(w, v.span);
-        return g.set(C.sid + "." + C.time, v), v;
+        return y.set(C.sid + "." + C.time, v), v;
       });
     }
     _ingest(f, d) {
-      const g = f >> 1, v = f - g - 1, w = g > 0 ? this._ingest(g, d) : void 0, O = d();
-      w && (O.l = w, w.p = O);
+      const y = f >> 1, v = f - y - 1, w = y > 0 ? this._ingest(y, d) : void 0, x = d();
+      w && (x.l = w, w.p = x);
       const I = v > 0 ? this._ingest(v, d) : void 0;
-      return I && (O.r = I, I.p = O), h(O), this.insertId(O), O;
+      return I && (x.r = I, I.p = x), h(x), this.insertId(x), x;
     }
     // ---------------------------------------------------------------- Printable
     toStringName() {
@@ -11734,26 +11734,26 @@ function go() {
     }
     toString(f = "") {
       const d = this.view();
-      let g = "";
-      return (0, e.isUint8Array)(d) ? g += ` { ${(0, t.printOctets)(d) || "∅"} }` : typeof d == "string" && (g += `{ ${d.length > 32 ? JSON.stringify(d.substring(0, 32)) + " …" : JSON.stringify(d)} }`), `${this.toStringName()} ${(0, r.printTs)(this.id)} ${g}` + (0, a.printTree)(f, [(w) => this.root ? this.printChunk(w, this.root) : "∅"]);
+      let y = "";
+      return (0, e.isUint8Array)(d) ? y += ` { ${(0, t.printOctets)(d) || "∅"} }` : typeof d == "string" && (y += `{ ${d.length > 32 ? JSON.stringify(d.substring(0, 32)) + " …" : JSON.stringify(d)} }`), `${this.toStringName()} ${(0, r.printTs)(this.id)} ${y}` + (0, a.printTree)(f, [(w) => this.root ? this.printChunk(w, this.root) : "∅"]);
     }
     printChunk(f, d) {
       return this.formatChunk(d) + (0, u.printBinary)(f, [
-        d.l ? (g) => this.printChunk(g, d.l) : null,
-        d.r ? (g) => this.printChunk(g, d.r) : null
+        d.l ? (y) => this.printChunk(y, d.l) : null,
+        d.r ? (y) => this.printChunk(y, d.r) : null
       ]);
     }
     formatChunk(f) {
-      let g = `chunk ${(0, r.printTs)(f.id)}:${f.span} .${f.len}.`;
+      let y = `chunk ${(0, r.printTs)(f.id)}:${f.span} .${f.len}.`;
       if (f.del)
-        g += ` [${f.span}]`;
+        y += ` [${f.span}]`;
       else if ((0, e.isUint8Array)(f.data))
-        g += ` { ${(0, t.printOctets)(f.data) || "∅"} }`;
+        y += ` { ${(0, t.printOctets)(f.data) || "∅"} }`;
       else if (typeof f.data == "string") {
         const v = f.data.length > 32 ? JSON.stringify(f.data.substring(0, 32)) + " …" : JSON.stringify(f.data);
-        g += ` { ${v} }`;
+        y += ` { ${v} }`;
       }
-      return g;
+      return y;
     }
   };
   return Nr.AbstractRga = m, Nr;
@@ -11762,7 +11762,7 @@ var qc;
 function Sf() {
   if (qc) return Et;
   qc = 1, Object.defineProperty(Et, "__esModule", { value: !0 }), Et.ArrNode = Et.ArrChunk = void 0;
-  const r = go(), e = de(), t = _i(), i = Ee();
+  const r = yo(), e = de(), t = _i(), i = Ee();
   class n {
     constructor(a, u, l) {
       this.id = a, this.span = u, this.len = l ? u : 0, this.del = !l, this.p = void 0, this.l = void 0, this.r = void 0, this.s = void 0, this.data = l;
@@ -11855,9 +11855,9 @@ function Sf() {
       const c = l.data;
       if (!c)
         return;
-      const h = a.time - l.id.time, y = c[h];
-      if (!(y && (0, e.compare)(y, u) >= 0))
-        return c[h] = u, this.onChange(), y;
+      const h = a.time - l.id.time, g = c[h];
+      if (!(g && (0, e.compare)(g, u) >= 0))
+        return c[h] = u, this.onChange(), g;
     }
     // -------------------------------------------------------------- AbstractRga
     /** @ignore */
@@ -11886,19 +11886,19 @@ function Sf() {
       if (this._tick === u)
         return l;
       const c = [], h = a.index;
-      let y = !0;
+      let g = !0;
       for (let b = this.first(); b; b = this.next(b))
         if (!b.del)
           for (const k of b.data) {
             const m = h.get(k);
             if (!m) {
-              y = !1;
+              g = !1;
               continue;
             }
             const _ = m.view();
-            l[c.length] !== _ && (y = !1), c.push(_);
+            l[c.length] !== _ && (g = !1), c.push(_);
           }
-      return l.length !== c.length && (y = !1), y ? l : (this._tick = u, this._view = c);
+      return l.length !== c.length && (g = !1), g ? l : (this._tick = u, this._view = c);
     }
     /** @ignore */
     children(a) {
@@ -11908,8 +11908,8 @@ function Sf() {
         if (!c)
           continue;
         const h = c.length;
-        for (let y = 0; y < h; y++)
-          a(u.get(c[y]));
+        for (let g = 0; g < h; g++)
+          a(u.get(c[g]));
       }
     }
     /** @ignore */
@@ -11930,7 +11930,7 @@ function Sf() {
       let c = "";
       if (!u.del) {
         const h = this.doc.index;
-        c = (0, i.printTree)(a, u.data.map((y) => h.get(y)).filter((y) => !!y).map((y, p) => (b) => `[${l + p}]: ${y.toString(b + "    " + " ".repeat(String(p).length))}`));
+        c = (0, i.printTree)(a, u.data.map((g) => h.get(g)).filter((g) => !!g).map((g, p) => (b) => `[${l + p}]: ${g.toString(b + "    " + " ".repeat(String(p).length))}`));
       }
       return this.formatChunk(u) + c + (0, t.printBinary)(a, [
         u.l ? (h) => this.printChunk(h, u.l) : null,
@@ -11941,10 +11941,10 @@ function Sf() {
   return Et.ArrNode = s, Et;
 }
 var Pt = {}, Uc;
-function Of() {
+function xf() {
   if (Uc) return Pt;
   Uc = 1, Object.defineProperty(Pt, "__esModule", { value: !0 }), Pt.BinNode = Pt.BinChunk = void 0;
-  const r = de(), e = go();
+  const r = de(), e = yo();
   class t {
     constructor(s, o, a) {
       this.id = s, this.span = o, this.len = a ? o : 0, this.del = !a, this.p = void 0, this.l = void 0, this.r = void 0, this.s = void 0, this.data = a;
@@ -12029,10 +12029,10 @@ function Of() {
   return Pt.BinNode = i, Pt;
 }
 var Rt = {}, Fc;
-function xf() {
+function Of() {
   if (Fc) return Rt;
   Fc = 1, Object.defineProperty(Rt, "__esModule", { value: !0 }), Rt.StrNode = Rt.StrChunk = void 0;
-  const r = de(), e = go(), t = pl();
+  const r = de(), e = yo(), t = pl();
   class i {
     constructor(o, a, u) {
       this.id = o, this.span = a, this.len = u ? a : 0, this.del = !u, this.p = void 0, this.l = void 0, this.r = void 0, this.p2 = void 0, this.l2 = void 0, this.r2 = void 0, this.s = void 0, this.data = u;
@@ -12129,7 +12129,7 @@ function If() {
     Object.defineProperty(r, "RootNode", { enumerable: !0, get: function() {
       return i.RootNode;
     } });
-    var n = yf();
+    var n = gf();
     Object.defineProperty(r, "VecNode", { enumerable: !0, get: function() {
       return n.VecNode;
     } });
@@ -12143,13 +12143,13 @@ function If() {
     } }), Object.defineProperty(r, "ArrChunk", { enumerable: !0, get: function() {
       return o.ArrChunk;
     } });
-    var a = Of();
+    var a = xf();
     Object.defineProperty(r, "BinNode", { enumerable: !0, get: function() {
       return a.BinNode;
     } }), Object.defineProperty(r, "BinChunk", { enumerable: !0, get: function() {
       return a.BinChunk;
     } });
-    var u = xf();
+    var u = Of();
     Object.defineProperty(r, "StrNode", { enumerable: !0, get: function() {
       return u.StrNode;
     } }), Object.defineProperty(r, "StrChunk", { enumerable: !0, get: function() {
@@ -12158,7 +12158,7 @@ function If() {
   })(Ri)), Ri;
 }
 var zc;
-function xt() {
+function Ot() {
   return zc || (zc = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 });
     const e = re;
@@ -12181,14 +12181,14 @@ function Nf() {
   })(ms)), ms;
 }
 var Jc;
-function Ol() {
+function xl() {
   return Jc || (Jc = 1, (function(r) {
     Object.defineProperty(r, "__esModule", { value: !0 });
     const e = re;
-    e.__exportStar(xt(), r), e.__exportStar(Cf(), r), e.__exportStar(Nf(), r), e.__exportStar(Ot(), r);
+    e.__exportStar(Ot(), r), e.__exportStar(Cf(), r), e.__exportStar(Nf(), r), e.__exportStar(xt(), r);
   })(ji)), ji;
 }
-var Wc = Ol(), B = ki(), Tf = Ot(), we = Uint8Array, Ne = Uint16Array, yo = Int32Array, xi = new we([
+var Wc = xl(), B = ki(), Tf = xt(), we = Uint8Array, Ne = Uint16Array, go = Int32Array, Oi = new we([
   0,
   0,
   0,
@@ -12257,16 +12257,16 @@ var Wc = Ol(), B = ki(), Tf = Ot(), we = Uint8Array, Ne = Uint16Array, yo = Int3
   /* unused */
   0,
   0
-]), Bs = new we([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]), xl = function(r, e) {
+]), Bs = new we([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]), Ol = function(r, e) {
   for (var t = new Ne(31), i = 0; i < 31; ++i)
     t[i] = e += 1 << r[i - 1];
-  for (var n = new yo(t[30]), i = 1; i < 30; ++i)
+  for (var n = new go(t[30]), i = 1; i < 30; ++i)
     for (var s = t[i]; s < t[i + 1]; ++s)
       n[s] = s - t[i] << 5 | i;
   return { b: t, r: n };
-}, Il = xl(xi, 2), Cl = Il.b, Ls = Il.r;
+}, Il = Ol(Oi, 2), Cl = Il.b, Ls = Il.r;
 Cl[28] = 258, Ls[258] = 28;
-var Nl = xl(Ii, 0), Af = Nl.b, Gc = Nl.r, Ms = new Ne(32768);
+var Nl = Ol(Ii, 0), Af = Nl.b, Gc = Nl.r, Ms = new Ne(32768);
 for (var le = 0; le < 32768; ++le) {
   var ct = (le & 43690) >> 1 | (le & 21845) << 1;
   ct = (ct & 52428) >> 2 | (ct & 13107) << 2, ct = (ct & 61680) >> 4 | (ct & 3855) << 4, Ms[le] = ((ct & 65280) >> 8 | (ct & 255) << 8) >> 1;
@@ -12283,7 +12283,7 @@ var Ge = (function(r, e, t) {
     var u = 15 - e;
     for (n = 0; n < i; ++n)
       if (r[n])
-        for (var l = n << 4 | r[n], c = e - r[n], h = o[r[n] - 1]++ << c, y = h | (1 << c) - 1; h <= y; ++h)
+        for (var l = n << 4 | r[n], c = e - r[n], h = o[r[n] - 1]++ << c, g = h | (1 << c) - 1; h <= g; ++h)
           a[Ms[h] >> u] = l;
   } else
     for (a = new Ne(i), n = 0; n < i; ++n)
@@ -12348,7 +12348,7 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
       var Jt = new we(Math.max(An * 2, Tn));
       Jt.set(t), t = Jt;
     }
-  }, c = e.f || 0, h = e.p || 0, y = e.b || 0, p = e.l, b = e.d, k = e.m, m = e.n, _ = n * 8;
+  }, c = e.f || 0, h = e.p || 0, g = e.b || 0, p = e.l, b = e.d, k = e.m, m = e.n, _ = n * 8;
   do {
     if (!p) {
       c = Ve(r, h, 1);
@@ -12357,21 +12357,21 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
         if (f == 1)
           p = Ef, b = Rf, k = 9, m = 5;
         else if (f == 2) {
-          var w = Ve(r, h, 31) + 257, O = Ve(r, h + 10, 15) + 4, I = w + Ve(r, h + 5, 31) + 1;
+          var w = Ve(r, h, 31) + 257, x = Ve(r, h + 10, 15) + 4, I = w + Ve(r, h + 5, 31) + 1;
           h += 14;
-          for (var C = new we(I), E = new we(19), x = 0; x < O; ++x)
-            E[Bs[x]] = Ve(r, h + x * 3, 7);
-          h += O * 3;
-          for (var T = bs(E), j = (1 << T) - 1, P = Ge(E, T, 1), x = 0; x < I; ) {
+          for (var C = new we(I), E = new we(19), O = 0; O < x; ++O)
+            E[Bs[O]] = Ve(r, h + O * 3, 7);
+          h += x * 3;
+          for (var T = bs(E), j = (1 << T) - 1, P = Ge(E, T, 1), O = 0; O < I; ) {
             var R = P[Ve(r, h, j)];
             h += R & 15;
             var d = R >> 4;
             if (d < 16)
-              C[x++] = d;
+              C[O++] = d;
             else {
               var M = 0, V = 0;
-              for (d == 16 ? (V = 3 + Ve(r, h, 3), h += 2, M = C[x - 1]) : d == 17 ? (V = 3 + Ve(r, h, 7), h += 3) : d == 18 && (V = 11 + Ve(r, h, 127), h += 7); V--; )
-                C[x++] = M;
+              for (d == 16 ? (V = 3 + Ve(r, h, 3), h += 2, M = C[O - 1]) : d == 17 ? (V = 3 + Ve(r, h, 7), h += 3) : d == 18 && (V = 11 + Ve(r, h, 127), h += 7); V--; )
+                C[O++] = M;
             }
           }
           var z = C.subarray(0, w), J = C.subarray(w);
@@ -12379,12 +12379,12 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
         } else
           Le(1);
       else {
-        var d = vo(h) + 4, g = r[d - 4] | r[d - 3] << 8, v = d + g;
+        var d = vo(h) + 4, y = r[d - 4] | r[d - 3] << 8, v = d + y;
         if (v > n) {
           u && Le(0);
           break;
         }
-        a && l(y + g), t.set(r.subarray(d, v), y), e.b = y += g, e.p = h = v * 8, e.f = c;
+        a && l(g + y), t.set(r.subarray(d, v), g), e.b = g += y, e.p = h = v * 8, e.f = c;
         continue;
       }
       if (h > _) {
@@ -12392,7 +12392,7 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
         break;
       }
     }
-    a && l(y + 131072);
+    a && l(g + 131072);
     for (var he = (1 << k) - 1, Y = (1 << m) - 1, fe = h; ; fe = h) {
       var M = p[ws(r, h) & he], ce = M >> 4;
       if (h += M & 15, h > _) {
@@ -12400,18 +12400,18 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
         break;
       }
       if (M || Le(2), ce < 256)
-        t[y++] = ce;
+        t[g++] = ce;
       else if (ce == 256) {
         fe = h, p = null;
         break;
       } else {
         var oe = ce - 254;
         if (ce > 264) {
-          var x = ce - 257, ie = xi[x];
-          oe = Ve(r, h, (1 << ie) - 1) + Cl[x], h += ie;
+          var O = ce - 257, ie = Oi[O];
+          oe = Ve(r, h, (1 << ie) - 1) + Cl[O], h += ie;
         }
-        var Oe = b[ws(r, h) & Y], Zt = Oe >> 4;
-        Oe || Le(3), h += Oe & 15;
+        var xe = b[ws(r, h) & Y], Zt = xe >> 4;
+        xe || Le(3), h += xe & 15;
         var J = Af[Zt];
         if (Zt > 3) {
           var ie = Ii[Zt];
@@ -12421,20 +12421,20 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
           u && Le(0);
           break;
         }
-        a && l(y + 131072);
-        var Kt = y + oe;
-        if (y < J) {
+        a && l(g + 131072);
+        var Kt = g + oe;
+        if (g < J) {
           var ti = s - J, ni = Math.min(J, Kt);
-          for (ti + y < 0 && Le(3); y < ni; ++y)
-            t[y] = i[ti + y];
+          for (ti + g < 0 && Le(3); g < ni; ++g)
+            t[g] = i[ti + g];
         }
-        for (; y < Kt; ++y)
-          t[y] = t[y - J];
+        for (; g < Kt; ++g)
+          t[g] = t[g - J];
       }
     }
-    e.l = p, e.p = fe, e.b = y, e.f = c, p && (c = 1, e.m = k, e.d = b, e.n = m);
+    e.l = p, e.p = fe, e.b = g, e.f = c, p && (c = 1, e.m = k, e.d = b, e.n = m);
   } while (!c);
-  return y != t.length && o ? Tl(t, 0, y) : t.subarray(0, y);
+  return g != t.length && o ? Tl(t, 0, g) : t.subarray(0, g);
 }, Xe = function(r, e, t) {
   t <<= e & 7;
   var i = e / 8 | 0;
@@ -12459,13 +12459,13 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
   var a = t[0], u = t[1], l = 0, c = 1, h = 2;
   for (t[0] = { s: -1, f: a.f + u.f, l: a, r: u }; c != n - 1; )
     a = t[t[l].f < t[h].f ? l++ : h++], u = t[l != c && t[l].f < t[h].f ? l++ : h++], t[c++] = { s: -1, f: a.f + u.f, l: a, r: u };
-  for (var y = s[0].s, i = 1; i < n; ++i)
-    s[i].s > y && (y = s[i].s);
-  var p = new Ne(y + 1), b = Ds(t[c - 1], p, 0);
+  for (var g = s[0].s, i = 1; i < n; ++i)
+    s[i].s > g && (g = s[i].s);
+  var p = new Ne(g + 1), b = Ds(t[c - 1], p, 0);
   if (b > e) {
     var i = 0, k = 0, m = b - e, _ = 1 << m;
-    for (s.sort(function(w, O) {
-      return p[O.s] - p[w.s] || w.f - O.f;
+    for (s.sort(function(w, x) {
+      return p[x.s] - p[w.s] || w.f - x.f;
     }); i < n; ++i) {
       var f = s[i].s;
       if (p[f] > e)
@@ -12478,8 +12478,8 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
       p[d] < e ? k -= 1 << e - p[d]++ - 1 : ++i;
     }
     for (; i >= 0 && k; --i) {
-      var g = s[i].s;
-      p[g] == e && (--p[g], ++k);
+      var y = s[i].s;
+      p[y] == e && (--p[y], ++k);
     }
     b = e;
   }
@@ -12521,19 +12521,19 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
   return (n + 4 + i) * 8;
 }, Yc = function(r, e, t, i, n, s, o, a, u, l, c) {
   Xe(e, c++, t), ++n[256];
-  for (var h = _s(n, 15), y = h.t, p = h.l, b = _s(s, 15), k = b.t, m = b.l, _ = Xc(y), f = _.c, d = _.n, g = Xc(k), v = g.c, w = g.n, O = new Ne(19), I = 0; I < f.length; ++I)
-    ++O[f[I] & 31];
+  for (var h = _s(n, 15), g = h.t, p = h.l, b = _s(s, 15), k = b.t, m = b.l, _ = Xc(g), f = _.c, d = _.n, y = Xc(k), v = y.c, w = y.n, x = new Ne(19), I = 0; I < f.length; ++I)
+    ++x[f[I] & 31];
   for (var I = 0; I < v.length; ++I)
-    ++O[v[I] & 31];
-  for (var C = _s(O, 7), E = C.t, x = C.l, T = 19; T > 4 && !E[Bs[T - 1]]; --T)
+    ++x[v[I] & 31];
+  for (var C = _s(x, 7), E = C.t, O = C.l, T = 19; T > 4 && !E[Bs[T - 1]]; --T)
     ;
-  var j = l + 5 << 3, P = Er(n, St) + Er(s, zr) + o, R = Er(n, y) + Er(s, k) + o + 14 + 3 * T + Er(O, E) + 2 * O[16] + 3 * O[17] + 7 * O[18];
+  var j = l + 5 << 3, P = Er(n, St) + Er(s, zr) + o, R = Er(n, g) + Er(s, k) + o + 14 + 3 * T + Er(x, E) + 2 * x[16] + 3 * x[17] + 7 * x[18];
   if (u >= 0 && j <= P && j <= R)
     return Al(e, c, r.subarray(u, u + l));
   var M, V, z, J;
   if (Xe(e, c, 1 + (R < P)), c += 2, R < P) {
-    M = Ge(y, p, 0), V = y, z = Ge(k, m, 0), J = k;
-    var he = Ge(E, x, 0);
+    M = Ge(g, p, 0), V = g, z = Ge(k, m, 0), J = k;
+    var he = Ge(E, O, 0);
     Xe(e, c, d - 257), Xe(e, c + 5, w - 1), Xe(e, c + 10, T - 4), c += 14;
     for (var I = 0; I < T; ++I)
       Xe(e, c + 3 * I, E[Bs[I]]);
@@ -12549,25 +12549,25 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
     var ie = i[I];
     if (ie > 255) {
       var oe = ie >> 18 & 31;
-      jr(e, c, M[oe + 257]), c += V[oe + 257], oe > 7 && (Xe(e, c, ie >> 23 & 31), c += xi[oe]);
-      var Oe = ie & 31;
-      jr(e, c, z[Oe]), c += J[Oe], Oe > 3 && (jr(e, c, ie >> 5 & 8191), c += Ii[Oe]);
+      jr(e, c, M[oe + 257]), c += V[oe + 257], oe > 7 && (Xe(e, c, ie >> 23 & 31), c += Oi[oe]);
+      var xe = ie & 31;
+      jr(e, c, z[xe]), c += J[xe], xe > 3 && (jr(e, c, ie >> 5 & 8191), c += Ii[xe]);
     } else
       jr(e, c, M[ie]), c += V[ie];
   }
   return jr(e, c, M[256]), c + V[256];
-}, Lf = /* @__PURE__ */ new yo([65540, 131080, 131088, 131104, 262176, 1048704, 1048832, 2114560, 2117632]), jl = /* @__PURE__ */ new we(0), Mf = function(r, e, t, i, n, s) {
+}, Lf = /* @__PURE__ */ new go([65540, 131080, 131088, 131104, 262176, 1048704, 1048832, 2114560, 2117632]), jl = /* @__PURE__ */ new we(0), Mf = function(r, e, t, i, n, s) {
   var o = s.z || r.length, a = new we(i + o + 5 * (1 + Math.ceil(o / 7e3)) + n), u = a.subarray(i, a.length - n), l = s.l, c = (s.r || 0) & 7;
   if (e) {
     c && (u[0] = s.r >> 3);
-    for (var h = Lf[e - 1], y = h >> 13, p = h & 8191, b = (1 << t) - 1, k = s.p || new Ne(32768), m = s.h || new Ne(b + 1), _ = Math.ceil(t / 3), f = 2 * _, d = function(Ci) {
+    for (var h = Lf[e - 1], g = h >> 13, p = h & 8191, b = (1 << t) - 1, k = s.p || new Ne(32768), m = s.h || new Ne(b + 1), _ = Math.ceil(t / 3), f = 2 * _, d = function(Ci) {
       return (r[Ci] ^ r[Ci + 1] << _ ^ r[Ci + 2] << f) & b;
-    }, g = new yo(25e3), v = new Ne(288), w = new Ne(32), O = 0, I = 0, C = s.i || 0, E = 0, x = s.w || 0, T = 0; C + 2 < o; ++C) {
+    }, y = new go(25e3), v = new Ne(288), w = new Ne(32), x = 0, I = 0, C = s.i || 0, E = 0, O = s.w || 0, T = 0; C + 2 < o; ++C) {
       var j = d(C), P = C & 32767, R = m[j];
-      if (k[P] = R, m[j] = P, x <= C) {
+      if (k[P] = R, m[j] = P, O <= C) {
         var M = o - C;
-        if ((O > 7e3 || E > 24576) && (M > 423 || !l)) {
-          c = Yc(r, u, 0, g, v, w, I, E, T, C - T, c), E = O = I = 0, T = C;
+        if ((x > 7e3 || E > 24576) && (M > 423 || !l)) {
+          c = Yc(r, u, 0, y, v, w, I, E, T, C - T, c), E = x = I = 0, T = C;
           for (var V = 0; V < 286; ++V)
             v[V] = 0;
           for (var V = 0; V < 30; ++V)
@@ -12575,14 +12575,14 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
         }
         var z = 2, J = 0, he = p, Y = P - R & 32767;
         if (M > 2 && j == d(C - Y))
-          for (var fe = Math.min(y, M) - 1, ce = Math.min(32767, C), oe = Math.min(258, M); Y <= ce && --he && P != R; ) {
+          for (var fe = Math.min(g, M) - 1, ce = Math.min(32767, C), oe = Math.min(258, M); Y <= ce && --he && P != R; ) {
             if (r[C + z] == r[C + z - Y]) {
               for (var ie = 0; ie < oe && r[C + ie] == r[C + ie - Y]; ++ie)
                 ;
               if (ie > z) {
                 if (z = ie, J = Y, ie > fe)
                   break;
-                for (var Oe = Math.min(Y, ie - 2), Zt = 0, V = 0; V < Oe; ++V) {
+                for (var xe = Math.min(Y, ie - 2), Zt = 0, V = 0; V < xe; ++V) {
                   var Kt = C - Y + V & 32767, ti = k[Kt], ni = Kt - ti & 32767;
                   ni > Zt && (Zt = ni, R = Kt);
                 }
@@ -12591,16 +12591,16 @@ var jf = /* @__PURE__ */ Ge(St, 9, 0), Ef = /* @__PURE__ */ Ge(St, 9, 1), Pf = /
             P = R, R = k[P], Y += P - R & 32767;
           }
         if (J) {
-          g[E++] = 268435456 | Ls[z] << 18 | Gc[J];
+          y[E++] = 268435456 | Ls[z] << 18 | Gc[J];
           var Tn = Ls[z] & 31, An = Gc[J] & 31;
-          I += xi[Tn] + Ii[An], ++v[257 + Tn], ++w[An], x = C + z, ++O;
+          I += Oi[Tn] + Ii[An], ++v[257 + Tn], ++w[An], O = C + z, ++x;
         } else
-          g[E++] = r[C], ++v[r[C]];
+          y[E++] = r[C], ++v[r[C]];
       }
     }
-    for (C = Math.max(C, x); C < o; ++C)
-      g[E++] = r[C], ++v[r[C]];
-    c = Yc(r, u, l, g, v, w, I, E, T, C - T, c), l || (s.r = c & 7 | u[c / 8 | 0] << 3, c -= 7, s.h = m, s.p = k, s.i = C, s.w = x);
+    for (C = Math.max(C, O); C < o; ++C)
+      y[E++] = r[C], ++v[r[C]];
+    c = Yc(r, u, l, y, v, w, I, E, T, C - T, c), l || (s.r = c & 7 | u[c / 8 | 0] << 3, c -= 7, s.h = m, s.p = k, s.i = C, s.w = O);
   } else {
     for (var C = s.w || 0; C < o + l; C += 65535) {
       var Jt = C + 65535;
@@ -13125,14 +13125,14 @@ function Vl(r, e, t, i) {
       Vl(r.innerEntries[l], n, u[l], i);
   }
 }
-const Bl = gu().int().nonnegative().optional();
+const Bl = yu().int().nonnegative().optional();
 function Ss(r) {
   var t;
   const e = Bl.safeParse(r);
   if (!e.success)
     throw new ue("invalid-argument", ((t = e.error.issues[0]) == null ? void 0 : t.message) ?? "InsertionIndex must be a non-negative integer");
 }
-var $, Zr, rn, tt, Vt, Ie, dt, ft, ze, Ze, vi, sn, pt, on, Bt, an, A, Ll, Ml, Dl, ql, Fs, Hs, W, Se, Ul, Fl, zs, Hl, zl, xe, lt, Xt, Br, Yt, Lr, Qt, Zl, Zs, Kl, Ks, Js, Ws, Jl, Gf, G, Wl, Gl;
+var $, Zr, rn, tt, Vt, Ie, dt, ft, ze, Ze, vi, sn, pt, on, Bt, an, A, Ll, Ml, Dl, ql, Fs, Hs, W, Se, Ul, Fl, zs, Hl, zl, Oe, lt, Xt, Br, Yt, Lr, Qt, Zl, Zs, Kl, Ks, Js, Ws, Jl, Gf, G, Wl, Gl;
 const tn = class tn extends mh {
   //----------------------------------------------------------------------------//
   //                                Construction                                //
@@ -13157,7 +13157,7 @@ const tn = class tn extends mh {
     D(this, ze, /* @__PURE__ */ new Map());
     // LRU wrapper cache
     D(this, Ze, /* @__PURE__ */ new Map());
-    D(this, vi, gh);
+    D(this, vi, yh);
     // transaction nesting
     D(this, sn, 0);
     // ChangeSet accumulator inside a transaction
@@ -13227,7 +13227,7 @@ const tn = class tn extends mh {
         MIMEType: B.s.val(B.s.str(u)),
         ValueKind: B.s.val(B.s.str("none"))
       });
-      S(this, $).api.obj(["Entries"]).set({ [o]: l }), N(this, A, xe).call(this, i.Id, o), N(this, A, G).call(this, i.Id, "innerEntryList"), N(this, A, G).call(this, o, "outerItem");
+      S(this, $).api.obj(["Entries"]).set({ [o]: l }), N(this, A, Oe).call(this, i.Id, o), N(this, A, G).call(this, i.Id, "innerEntryList"), N(this, A, G).call(this, o, "outerItem");
     }), N(this, A, Se).call(this, o);
   }
   /**** newLinkAt — create new link in specified location ****/
@@ -13244,7 +13244,7 @@ const tn = class tn extends mh {
         Info: B.s.obj({}),
         TargetId: B.s.con(t.Id)
       });
-      S(this, $).api.obj(["Entries"]).set({ [s]: a }), N(this, A, xe).call(this, i.Id, s), N(this, A, Xt).call(this, t.Id, s), N(this, A, G).call(this, i.Id, "innerEntryList"), N(this, A, G).call(this, s, "outerItem");
+      S(this, $).api.obj(["Entries"]).set({ [s]: a }), N(this, A, Oe).call(this, i.Id, s), N(this, A, Xt).call(this, t.Id, s), N(this, A, G).call(this, i.Id, "innerEntryList"), N(this, A, G).call(this, s, "outerItem");
     }), N(this, A, Se).call(this, s);
   }
   /**** deserializeItemInto — import a serialised item subtree; always remaps IDs ****/
@@ -13278,7 +13278,7 @@ const tn = class tn extends mh {
       TargetId: B.s.con(s.TargetId)
     });
     return this.transact(() => {
-      S(this, $).api.obj(["Entries"]).set({ [o]: l }), N(this, A, xe).call(this, i.Id, o), N(this, A, Xt).call(this, s.TargetId, o), N(this, A, G).call(this, i.Id, "innerEntryList"), N(this, A, G).call(this, o, "outerItem");
+      S(this, $).api.obj(["Entries"]).set({ [o]: l }), N(this, A, Oe).call(this, i.Id, o), N(this, A, Xt).call(this, s.TargetId, o), N(this, A, G).call(this, i.Id, "innerEntryList"), N(this, A, G).call(this, o, "outerItem");
     }), N(this, A, Se).call(this, o);
   }
   /**** moveEntryTo — move entry to new location in tree ****/
@@ -13291,7 +13291,7 @@ const tn = class tn extends mh {
         const a = N(this, A, W).call(this).Entries[t.Id], u = a == null ? void 0 : a.Info;
         u != null && "_trashedAt" in u && (S(this, $).api.obj(["Entries", t.Id, "Info"]).del(["_trashedAt"]), N(this, A, G).call(this, t.Id, "Info._trashedAt"));
       }
-      s != null && (N(this, A, lt).call(this, s, t.Id), N(this, A, G).call(this, s, "innerEntryList")), N(this, A, xe).call(this, i.Id, t.Id), N(this, A, G).call(this, i.Id, "innerEntryList"), N(this, A, G).call(this, t.Id, "outerItem");
+      s != null && (N(this, A, lt).call(this, s, t.Id), N(this, A, G).call(this, s, "innerEntryList")), N(this, A, Oe).call(this, i.Id, t.Id), N(this, A, G).call(this, i.Id, "innerEntryList"), N(this, A, G).call(this, t.Id, "outerItem");
     });
   }
   /**** _rebalanceInnerEntriesOf — backend-specific raw rebalance; caller must hold a transaction ****/
@@ -13310,7 +13310,7 @@ const tn = class tn extends mh {
       throw new ue("delete-not-permitted", "this entry cannot be deleted");
     const i = this._outerItemIdOf(t.Id), n = N(this, A, Lr).call(this, ve), s = $e(n, null);
     this.transact(() => {
-      S(this, $).api.val(["Entries", t.Id, "outerPlacement"]).set(B.s.con({ outerItemId: ve, OrderKey: s })), N(this, A, Jl).call(this, t.Id), S(this, $).api.obj(["Entries", t.Id, "Info"]).set({ _trashedAt: B.s.val(B.s.json(Date.now())) }), i != null && (N(this, A, lt).call(this, i, t.Id), N(this, A, G).call(this, i, "innerEntryList")), N(this, A, xe).call(this, ve, t.Id), N(this, A, G).call(this, ve, "innerEntryList"), N(this, A, G).call(this, t.Id, "outerItem"), N(this, A, G).call(this, t.Id, "Info._trashedAt");
+      S(this, $).api.val(["Entries", t.Id, "outerPlacement"]).set(B.s.con({ outerItemId: ve, OrderKey: s })), N(this, A, Jl).call(this, t.Id), S(this, $).api.obj(["Entries", t.Id, "Info"]).set({ _trashedAt: B.s.val(B.s.json(Date.now())) }), i != null && (N(this, A, lt).call(this, i, t.Id), N(this, A, G).call(this, i, "innerEntryList")), N(this, A, Oe).call(this, ve, t.Id), N(this, A, G).call(this, ve, "innerEntryList"), N(this, A, G).call(this, t.Id, "outerItem"), N(this, A, G).call(this, t.Id, "Info._trashedAt");
     });
   }
   /**** purgeEntry — permanently delete entry from trash ****/
@@ -13426,7 +13426,7 @@ const tn = class tn extends mh {
         const a = (n = o.outerPlacement) == null ? void 0 : n.outerItemId;
         if (a && !i.has(a)) {
           const u = $e(N(this, A, Lr).call(this, Ae), null);
-          S(this, $).api.val(["Entries", s, "outerPlacement"]).set(B.s.con({ outerItemId: Ae, OrderKey: u })), N(this, A, lt).call(this, a, s), N(this, A, xe).call(this, Ae, s), N(this, A, G).call(this, a, "innerEntryList"), N(this, A, G).call(this, Ae, "innerEntryList"), N(this, A, G).call(this, s, "outerItem");
+          S(this, $).api.val(["Entries", s, "outerPlacement"]).set(B.s.con({ outerItemId: Ae, OrderKey: u })), N(this, A, lt).call(this, a, s), N(this, A, Oe).call(this, Ae, s), N(this, A, G).call(this, a, "innerEntryList"), N(this, A, G).call(this, Ae, "innerEntryList"), N(this, A, G).call(this, s, "outerItem");
         }
         if (o.Kind === "link") {
           const u = o.TargetId;
@@ -13439,7 +13439,7 @@ const tn = class tn extends mh {
               Info: B.s.obj({}),
               MIMEType: B.s.val(B.s.str("")),
               ValueKind: B.s.val(B.s.str("none"))
-            }) }), N(this, A, xe).call(this, Ae, u), i.add(u), N(this, A, G).call(this, Ae, "innerEntryList");
+            }) }), N(this, A, Oe).call(this, Ae, u), i.add(u), N(this, A, G).call(this, Ae, "innerEntryList");
           }
         }
       }
@@ -13512,7 +13512,7 @@ const tn = class tn extends mh {
   }
   /**** _setLabelOf — set entry label ****/
   _setLabelOf(t, i) {
-    yu(i), this.transact(() => {
+    gu(i), this.transact(() => {
       N(this, A, W).call(this).Entries[t] != null && (S(this, $).api.obj(["Entries", t]).set({ Label: i }), N(this, A, G).call(this, t, "Label"));
     });
   }
@@ -13757,7 +13757,7 @@ Hs = function(t, i, n, s) {
       Label: B.s.val(B.s.str(t.Label ?? "")),
       Info: B.s.obj(a),
       TargetId: B.s.con(c)
-    }) }), N(this, A, xe).call(this, i, o), N(this, A, Xt).call(this, c, o), N(this, A, G).call(this, i, "innerEntryList"), N(this, A, G).call(this, o, "outerItem");
+    }) }), N(this, A, Oe).call(this, i, o), N(this, A, Xt).call(this, c, o), N(this, A, G).call(this, i, "innerEntryList"), N(this, A, G).call(this, o, "outerItem");
     return;
   }
   const u = t.Type === Wt ? "" : t.Type, l = {
@@ -13776,7 +13776,7 @@ Hs = function(t, i, n, s) {
       l.binaryValue = B.s.con(hu(t.Value));
       break;
   }
-  if (S(this, $).api.obj(["Entries"]).set({ [o]: B.s.obj(l) }), N(this, A, xe).call(this, i, o), N(this, A, G).call(this, i, "innerEntryList"), N(this, A, G).call(this, o, "outerItem"), t.innerEntries.length > 0) {
+  if (S(this, $).api.obj(["Entries"]).set({ [o]: B.s.obj(l) }), N(this, A, Oe).call(this, i, o), N(this, A, G).call(this, i, "innerEntryList"), N(this, A, G).call(this, o, "outerItem"), t.innerEntries.length > 0) {
     const c = Us(null, null, t.innerEntries.length);
     for (let h = 0; h < t.innerEntries.length; h++)
       N(this, A, Hs).call(this, t.innerEntries[h], o, c[h], s);
@@ -13826,7 +13826,7 @@ Hl = function() {
   const t = N(this, A, W).call(this).Entries;
   for (const [n, s] of Object.entries(t)) {
     const o = (i = s.outerPlacement) == null ? void 0 : i.outerItemId;
-    if (o && N(this, A, xe).call(this, o, n), s.Kind === "link") {
+    if (o && N(this, A, Oe).call(this, o, n), s.Kind === "link") {
       const a = s.TargetId;
       a && N(this, A, Xt).call(this, a, n);
     }
@@ -13838,10 +13838,10 @@ zl = function() {
   for (const [a, u] of Object.entries(i)) {
     t.add(a);
     const l = (o = u.outerPlacement) == null ? void 0 : o.outerItemId, c = S(this, dt).get(a);
-    switch (l !== c && (c != null && (N(this, A, lt).call(this, c, a), N(this, A, G).call(this, c, "innerEntryList")), l != null && (N(this, A, xe).call(this, l, a), N(this, A, G).call(this, l, "innerEntryList")), N(this, A, G).call(this, a, "outerItem")), !0) {
+    switch (l !== c && (c != null && (N(this, A, lt).call(this, c, a), N(this, A, G).call(this, c, "innerEntryList")), l != null && (N(this, A, Oe).call(this, l, a), N(this, A, G).call(this, l, "innerEntryList")), N(this, A, G).call(this, a, "outerItem")), !0) {
       case u.Kind === "link": {
-        const h = u.TargetId, y = S(this, ze).get(a);
-        h !== y && (y != null && N(this, A, Br).call(this, y, a), h != null && N(this, A, Xt).call(this, h, a));
+        const h = u.TargetId, g = S(this, ze).get(a);
+        h !== g && (g != null && N(this, A, Br).call(this, g, a), h != null && N(this, A, Xt).call(this, h, a));
         break;
       }
       case S(this, ze).has(a):
@@ -13857,7 +13857,7 @@ zl = function() {
   for (const [a, u] of s)
     N(this, A, Br).call(this, u, a);
 }, /**** #addToReverseIndex — add entry to outer-data index ****/
-xe = function(t, i) {
+Oe = function(t, i) {
   let n = S(this, Ie).get(t);
   n == null && (n = /* @__PURE__ */ new Set(), S(this, Ie).set(t, n)), n.add(i), S(this, dt).set(i, t);
 }, /**** #removeFromReverseIndex — remove entry from outer-data index ****/
@@ -13887,7 +13887,7 @@ Yt = function(t, i) {
   };
   let s = N(this, A, Qt).call(this, t);
   const o = n(s);
-  return o.length <= yh ? o : (this._rebalanceInnerEntriesOf(t), n(N(this, A, Qt).call(this, t)));
+  return o.length <= gh ? o : (this._rebalanceInnerEntriesOf(t), n(N(this, A, Qt).call(this, t)));
 }, /**** #lastOrderKeyOf — get order key of last inner entry ****/
 Lr = function(t) {
   const i = N(this, A, Qt).call(this, t);
@@ -13973,7 +13973,7 @@ Js = function(t) {
       S(this, $).api.obj(["Entries", c, "outerPlacement"]).set({
         outerItemId: ve,
         OrderKey: h
-      }), N(this, A, lt).call(this, t, c), N(this, A, xe).call(this, ve, c), N(this, A, G).call(this, ve, "innerEntryList"), N(this, A, G).call(this, c, "outerItem");
+      }), N(this, A, lt).call(this, t, c), N(this, A, Oe).call(this, ve, c), N(this, A, G).call(this, ve, "innerEntryList"), N(this, A, G).call(this, c, "outerItem");
     } else
       N(this, A, Js).call(this, c);
   if (S(this, $).api.obj(["Entries"]).del([t]), s && (N(this, A, lt).call(this, s, t), N(this, A, G).call(this, s, "innerEntryList")), n === "link") {
@@ -14017,7 +14017,7 @@ Gl = function(t, i) {
 };
 let nu = tn;
 const ru = 1, iu = 2, su = 3, ou = 4, au = 5, He = 32, ui = 1024 * 1024;
-function Os(...r) {
+function xs(...r) {
   const e = r.reduce((n, s) => n + s.byteLength, 0), t = new Uint8Array(e);
   let i = 0;
   for (const n of r)
@@ -14086,12 +14086,12 @@ class b0 {
   sendValue(e, t) {
     const i = cu(e);
     if (t.byteLength <= ui)
-      N(this, pe, $t).call(this, Pr(iu, Os(i, t)));
+      N(this, pe, $t).call(this, Pr(iu, xs(i, t)));
     else {
       const n = Math.ceil(t.byteLength / ui);
       for (let s = 0; s < n; s++) {
         const o = s * ui, a = t.slice(o, o + ui), u = new Uint8Array(He + 8);
-        u.set(i, 0), new DataView(u.buffer).setUint32(He, s, !1), new DataView(u.buffer).setUint32(He + 4, n, !1), N(this, pe, $t).call(this, Pr(au, Os(u, a)));
+        u.set(i, 0), new DataView(u.buffer).setUint32(He, s, !1), new DataView(u.buffer).setUint32(He + 4, n, !1), N(this, pe, $t).call(this, Pr(au, xs(u, a)));
       }
     }
   }
@@ -14226,8 +14226,8 @@ Ql = function(e) {
       const n = uu(i.slice(0, He)), s = new DataView(i.buffer, i.byteOffset + He, 8), o = s.getUint32(0, !1), a = s.getUint32(4, !1), u = i.slice(He + 8);
       let l = S(this, dn).get(n);
       if (l == null && (l = { total: a, chunks: /* @__PURE__ */ new Map() }, S(this, dn).set(n, l)), l.chunks.set(o, u), l.chunks.size === l.total) {
-        const c = Os(
-          ...Array.from({ length: l.total }, (h, y) => l.chunks.get(y))
+        const c = xs(
+          ...Array.from({ length: l.total }, (h, g) => l.chunks.get(g))
         );
         S(this, dn).delete(n);
         for (const h of S(this, Mt))
@@ -14240,7 +14240,7 @@ Ql = function(e) {
     }
   }
 };
-var Wr, Me, _e, gt, Ke, De, yt, fn, pn, gn, Dt, yn, Ce, ne, Dr, qr, $l, eh, th, Xs, Ys, nh, Qs, rh;
+var Wr, Me, _e, yt, Ke, De, gt, fn, pn, yn, Dt, gn, Ce, ne, Dr, qr, $l, eh, th, Xs, Ys, nh, Qs, rh;
 class w0 {
   /**** Constructor ****/
   constructor(e, t = {}) {
@@ -14250,19 +14250,19 @@ class w0 {
     D(this, Me, crypto.randomUUID());
     D(this, _e);
     /**** Signalling WebSocket ****/
-    D(this, gt);
+    D(this, yt);
     /**** active RTCPeerConnection per remote PeerId ****/
     D(this, Ke, /* @__PURE__ */ new Map());
     D(this, De, /* @__PURE__ */ new Map());
     /**** Connection state ****/
-    D(this, yt, "disconnected");
+    D(this, gt, "disconnected");
     /**** Event Handlers ****/
     D(this, fn, /* @__PURE__ */ new Set());
     D(this, pn, /* @__PURE__ */ new Set());
-    D(this, gn, /* @__PURE__ */ new Set());
+    D(this, yn, /* @__PURE__ */ new Set());
     D(this, Dt, /* @__PURE__ */ new Set());
     /**** Presence Peer Set ****/
-    D(this, yn, /* @__PURE__ */ new Map());
+    D(this, gn, /* @__PURE__ */ new Map());
     /**** Fallback Mode ****/
     D(this, Ce, !1);
     this.StoreId = e, H(this, Wr, t), H(this, _e, t.Fallback ?? void 0);
@@ -14272,7 +14272,7 @@ class w0 {
   //----------------------------------------------------------------------------//
   /**** ConnectionState ****/
   get ConnectionState() {
-    return S(this, yt);
+    return S(this, gt);
   }
   /**** connect ****/
   async connect(e, t) {
@@ -14282,7 +14282,7 @@ class w0 {
       );
     return new Promise((i, n) => {
       const s = `${e}?token=${encodeURIComponent(t.Token)}`, o = new WebSocket(s);
-      H(this, gt, o), N(this, ne, Dr).call(this, "connecting"), o.onopen = () => {
+      H(this, yt, o), N(this, ne, Dr).call(this, "connecting"), o.onopen = () => {
         N(this, ne, Dr).call(this, "connected"), N(this, ne, qr).call(this, { type: "hello", from: S(this, Me) }), i();
       }, o.onerror = () => {
         if (!S(this, Ce) && S(this, _e) != null) {
@@ -14291,8 +14291,8 @@ class w0 {
         } else
           n(new Error("WebRTC signalling connection failed"));
       }, o.onclose = () => {
-        S(this, yt) !== "disconnected" && (N(this, ne, Dr).call(this, "reconnecting"), setTimeout(() => {
-          S(this, yt) === "reconnecting" && this.connect(e, t).catch(() => {
+        S(this, gt) !== "disconnected" && (N(this, ne, Dr).call(this, "reconnecting"), setTimeout(() => {
+          S(this, gt) === "reconnecting" && this.connect(e, t).catch(() => {
           });
         }, t.reconnectDelayMs ?? 2e3));
       }, o.onmessage = (a) => {
@@ -14307,7 +14307,7 @@ class w0 {
   /**** disconnect ****/
   disconnect() {
     var e;
-    N(this, ne, Dr).call(this, "disconnected"), (e = S(this, gt)) == null || e.close(), H(this, gt, void 0);
+    N(this, ne, Dr).call(this, "disconnected"), (e = S(this, yt)) == null || e.close(), H(this, yt, void 0);
     for (const t of S(this, Ke).values())
       t.close();
     S(this, Ke).clear(), S(this, De).clear(), S(this, Ce) && S(this, _e) != null && (S(this, _e).disconnect(), H(this, Ce, !1));
@@ -14374,8 +14374,8 @@ class w0 {
   }
   /**** onConnectionChange ****/
   onConnectionChange(e) {
-    return S(this, gn).add(e), () => {
-      S(this, gn).delete(e);
+    return S(this, yn).add(e), () => {
+      S(this, yn).delete(e);
     };
   }
   //----------------------------------------------------------------------------//
@@ -14405,17 +14405,17 @@ class w0 {
   }
   /**** PeerSet ****/
   get PeerSet() {
-    return S(this, yn);
+    return S(this, gn);
   }
 }
-Wr = new WeakMap(), Me = new WeakMap(), _e = new WeakMap(), gt = new WeakMap(), Ke = new WeakMap(), De = new WeakMap(), yt = new WeakMap(), fn = new WeakMap(), pn = new WeakMap(), gn = new WeakMap(), Dt = new WeakMap(), yn = new WeakMap(), Ce = new WeakMap(), ne = new WeakSet(), //----------------------------------------------------------------------------//
+Wr = new WeakMap(), Me = new WeakMap(), _e = new WeakMap(), yt = new WeakMap(), Ke = new WeakMap(), De = new WeakMap(), gt = new WeakMap(), fn = new WeakMap(), pn = new WeakMap(), yn = new WeakMap(), Dt = new WeakMap(), gn = new WeakMap(), Ce = new WeakMap(), ne = new WeakSet(), //----------------------------------------------------------------------------//
 //                                  Private                                   //
 //----------------------------------------------------------------------------//
 /**** #setState — updates the connection state and notifies all registered handlers ****/
 Dr = function(e) {
-  if (S(this, yt) !== e) {
-    H(this, yt, e);
-    for (const t of S(this, gn))
+  if (S(this, gt) !== e) {
+    H(this, gt, e);
+    for (const t of S(this, yn))
       try {
         t(e);
       } catch {
@@ -14424,7 +14424,7 @@ Dr = function(e) {
 }, /**** #sendSignal — sends a JSON signalling message over the signalling WebSocket ****/
 qr = function(e) {
   var t;
-  ((t = S(this, gt)) == null ? void 0 : t.readyState) === WebSocket.OPEN && S(this, gt).send(JSON.stringify(e));
+  ((t = S(this, yt)) == null ? void 0 : t.readyState) === WebSocket.OPEN && S(this, yt).send(JSON.stringify(e));
 }, $l = async function(e, t) {
   switch (e.type) {
     case "hello": {
@@ -14480,7 +14480,7 @@ Xs = function(e) {
     N(this, ne, Ys).call(this, n.channel, e), S(this, De).set(e, n.channel);
   }, i.onconnectionstatechange = () => {
     if (i.connectionState === "failed" || i.connectionState === "closed") {
-      S(this, Ke).delete(e), S(this, De).delete(e), S(this, yn).delete(e);
+      S(this, Ke).delete(e), S(this, De).delete(e), S(this, gn).delete(e);
       for (const n of S(this, Dt))
         try {
           n(e, void 0);
@@ -14524,7 +14524,7 @@ nh = function(e, t) {
         const s = JSON.parse(new TextDecoder().decode(n));
         if (typeof s.PeerId != "string")
           break;
-        s.lastSeen = Date.now(), S(this, yn).set(s.PeerId, s);
+        s.lastSeen = Date.now(), S(this, gn).set(s.PeerId, s);
         for (const o of S(this, Dt))
           try {
             o(s.PeerId, s);
@@ -14682,7 +14682,7 @@ it = new WeakMap(), qe = new WeakMap(), Gr = new WeakMap(), Ue = new WeakSet(), 
   });
 };
 const Xf = 512 * 1024;
-var be, ye, ae, qt, vn, mn, Xr, Yr, bn, wn, vt, _n, Ut, Ft, Ht, st, mt, Fe, Qr, kn, ot, Je, se, ih, sh, oh, ah, ch, $s, uh, eo, to, lh, no;
+var be, ge, ae, qt, vn, mn, Xr, Yr, bn, wn, vt, _n, Ut, Ft, Ht, st, mt, Fe, Qr, kn, ot, Je, se, ih, sh, oh, ah, ch, $s, uh, eo, to, lh, no;
 class k0 {
   //----------------------------------------------------------------------------//
   //                                Constructor                                 //
@@ -14690,7 +14690,7 @@ class k0 {
   constructor(e, t = {}) {
     D(this, se);
     D(this, be);
-    D(this, ye);
+    D(this, ge);
     D(this, ae);
     D(this, qt);
     D(this, vn);
@@ -14727,15 +14727,16 @@ class k0 {
     // tracks entryId → blob hash for all entries whose value is in a *-reference kind;
     // used to call releaseValue() when the entry's value changes or the entry is purged
     D(this, Je, /* @__PURE__ */ new Map());
-    H(this, be, e), H(this, ye, t.PersistenceProvider ?? void 0), H(this, ae, t.NetworkProvider ?? void 0), H(this, qt, t.PresenceProvider ?? t.NetworkProvider ?? void 0), H(this, vn, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && S(this, ae) != null && H(this, Fe, new BroadcastChannel(`sds:${S(this, ae).StoreId}`));
+    var n;
+    H(this, be, e), H(this, ge, t.PersistenceProvider ?? void 0), H(this, ae, t.NetworkProvider ?? void 0), H(this, qt, t.PresenceProvider ?? (typeof ((n = t.NetworkProvider) == null ? void 0 : n.onRemoteState) == "function" ? t.NetworkProvider : void 0)), H(this, vn, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && S(this, ae) != null && H(this, Fe, new BroadcastChannel(`sds:${S(this, ae).StoreId}`));
   }
   //----------------------------------------------------------------------------//
   //                                 Lifecycle                                  //
   //----------------------------------------------------------------------------//
   /**** start ****/
   async start() {
-    if (S(this, ye) != null) {
-      const e = S(this, ye);
+    if (S(this, ge) != null) {
+      const e = S(this, ge);
       S(this, be).setValueBlobLoader((t) => e.loadValue(t));
     }
     await N(this, se, ih).call(this), N(this, se, sh).call(this), N(this, se, oh).call(this), N(this, se, ah).call(this), N(this, se, ch).call(this), S(this, ae) != null && S(this, ae).onConnectionChange((e) => {
@@ -14761,7 +14762,7 @@ class k0 {
         n();
       } catch {
       }
-    H(this, ot, []), (e = S(this, Fe)) == null || e.close(), H(this, Fe, void 0), (t = S(this, ae)) == null || t.disconnect(), S(this, ye) != null && await N(this, se, $s).call(this), await ((i = S(this, ye)) == null ? void 0 : i.close());
+    H(this, ot, []), (e = S(this, Fe)) == null || e.close(), H(this, Fe, void 0), (t = S(this, ae)) == null || t.disconnect(), S(this, ge) != null && await N(this, se, $s).call(this), await ((i = S(this, ge)) == null ? void 0 : i.close());
   }
   //----------------------------------------------------------------------------//
   //                             Network Connection                             //
@@ -14826,11 +14827,11 @@ class k0 {
     };
   }
 }
-be = new WeakMap(), ye = new WeakMap(), ae = new WeakMap(), qt = new WeakMap(), vn = new WeakMap(), mn = new WeakMap(), Xr = new WeakMap(), Yr = new WeakMap(), bn = new WeakMap(), wn = new WeakMap(), vt = new WeakMap(), _n = new WeakMap(), Ut = new WeakMap(), Ft = new WeakMap(), Ht = new WeakMap(), st = new WeakMap(), mt = new WeakMap(), Fe = new WeakMap(), Qr = new WeakMap(), kn = new WeakMap(), ot = new WeakMap(), Je = new WeakMap(), se = new WeakSet(), ih = async function() {
-  if (S(this, ye) == null)
+be = new WeakMap(), ge = new WeakMap(), ae = new WeakMap(), qt = new WeakMap(), vn = new WeakMap(), mn = new WeakMap(), Xr = new WeakMap(), Yr = new WeakMap(), bn = new WeakMap(), wn = new WeakMap(), vt = new WeakMap(), _n = new WeakMap(), Ut = new WeakMap(), Ft = new WeakMap(), Ht = new WeakMap(), st = new WeakMap(), mt = new WeakMap(), Fe = new WeakMap(), Qr = new WeakMap(), kn = new WeakMap(), ot = new WeakMap(), Je = new WeakMap(), se = new WeakSet(), ih = async function() {
+  if (S(this, ge) == null)
     return;
-  await S(this, ye).loadSnapshot();
-  const e = await S(this, ye).loadPatchesSince(S(this, wn));
+  await S(this, ge).loadSnapshot();
+  const e = await S(this, ge).loadPatchesSince(S(this, wn));
   for (const t of e)
     try {
       S(this, be).applyRemotePatch(t);
@@ -14853,7 +14854,7 @@ sh = function() {
     const n = S(this, _n);
     ri(this, vt)._++;
     const s = S(this, be).exportPatch(n);
-    H(this, _n, S(this, be).currentCursor), s.byteLength !== 0 && (S(this, ye) != null && (S(this, ye).appendPatch(s, S(this, vt)).catch((u) => {
+    H(this, _n, S(this, be).currentCursor), s.byteLength !== 0 && (S(this, ge) != null && (S(this, ge).appendPatch(s, S(this, vt)).catch((u) => {
       console.error("[SDS] appendPatch failed:", u.message ?? u);
     }), H(this, bn, S(this, bn) + s.byteLength), S(this, bn) >= Xf && N(this, se, $s).call(this).catch((u) => {
       console.error("[SDS] checkpoint failed:", u.message ?? u);
@@ -14874,7 +14875,7 @@ oh = function() {
     S(this, ot).push(t);
     const i = S(this, ae).onValue(async (n, s) => {
       var o;
-      S(this, be).storeValueBlob(n, s), await ((o = S(this, ye)) == null ? void 0 : o.saveValue(n, s));
+      S(this, be).storeValueBlob(n, s), await ((o = S(this, ge)) == null ? void 0 : o.saveValue(n, s));
     });
     S(this, ot).push(i);
   }
@@ -14915,7 +14916,7 @@ ch = function() {
       }
   });
 }, $s = async function() {
-  S(this, ye) != null && (await S(this, ye).saveSnapshot(S(this, be).asBinary()), S(this, ae) != null && (await S(this, ye).prunePatches(S(this, vt)), H(this, wn, S(this, vt))), H(this, bn, 0));
+  S(this, ge) != null && (await S(this, ge).saveSnapshot(S(this, be).asBinary()), S(this, ae) != null && (await S(this, ge).prunePatches(S(this, vt)), H(this, wn, S(this, vt))), H(this, bn, 0));
 }, //----------------------------------------------------------------------------//
 //                            Offline Queue Flush                             //
 //----------------------------------------------------------------------------//
@@ -14934,20 +14935,20 @@ uh = function() {
   for (const [o, a] of Object.entries(e)) {
     const u = a;
     if (u.has("Existence")) {
-      const y = S(this, Je).get(o);
-      y != null && (await ((i = S(this, ye)) == null ? void 0 : i.releaseValue(y)), S(this, Je).delete(o));
+      const g = S(this, Je).get(o);
+      g != null && (await ((i = S(this, ge)) == null ? void 0 : i.releaseValue(g)), S(this, Je).delete(o));
     }
     if (!u.has("Value"))
       continue;
     const l = S(this, Je).get(o), c = S(this, be)._getValueRefOf(o), h = c == null ? void 0 : c.Hash;
-    if (l != null && l !== h && (await ((n = S(this, ye)) == null ? void 0 : n.releaseValue(l)), S(this, Je).delete(o)), c != null) {
+    if (l != null && l !== h && (await ((n = S(this, ge)) == null ? void 0 : n.releaseValue(l)), S(this, Je).delete(o)), c != null) {
       if (S(this, ae) == null) {
         S(this, Je).set(o, c.Hash);
         continue;
       }
       if (t === "send") {
-        const y = S(this, be).getValueBlobByHash(c.Hash);
-        y != null && (await ((s = S(this, ye)) == null ? void 0 : s.saveValue(c.Hash, y)), S(this, Je).set(o, c.Hash), S(this, ae).ConnectionState === "connected" && S(this, ae).sendValue(c.Hash, y));
+        const g = S(this, be).getValueBlobByHash(c.Hash);
+        g != null && (await ((s = S(this, ge)) == null ? void 0 : s.saveValue(c.Hash, g)), S(this, Je).set(o, c.Hash), S(this, ae).ConnectionState === "connected" && S(this, ae).sendValue(c.Hash, g));
       } else
         S(this, Je).set(o, c.Hash), !S(this, be).hasValueBlob(c.Hash) && S(this, ae).ConnectionState === "connected" && S(this, ae).requestValue(c.Hash);
     }

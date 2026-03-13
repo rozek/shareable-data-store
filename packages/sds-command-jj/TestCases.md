@@ -55,6 +55,7 @@ All tests spawn the built `dist/sds-command-jj.js` binary. Exit codes and stdout
 |---|---|---|
 | SY-06 | `store sync --timeout 0` | exits with `UsageError` (code 2); error mentions `--timeout` |
 | SY-07 | `store sync --timeout -1` | exits with `UsageError` (code 2); error mentions `--timeout` |
+| SY-08 | `--server http://bad` (invalid scheme) | exits with `UsageError` (code 2); error mentions `--server` |
 
 ## EC — Entry Create
 
@@ -179,13 +180,13 @@ All tests spawn the built `dist/sds-command-jj.js` binary. Exit codes and stdout
 | # | Description | Expected |
 |---|---|---|
 | TW-01 | text format | output starts with `root/` header |
-| TW-02 | JSON format (empty store) | `{ root: [] }` |
+| TW-02 | JSON format | output parses as JSON with a `root` array at the top level |
 | TW-03 | store with one item (JSON) | item appears in root array |
 | TW-04 | `--depth 1` | only direct inner entries of root; no deeper nodes |
 | TW-05 | `--depth` with non-integer | exits with `UsageError` (code 2) |
 | TW-06 | `tree show` on non-existent store | exits with `NotFound` (code 3) |
 | TW-07 | `--depth 0` with items present | exits with code 0; JSON root array is empty |
-| TW-08 | system containers excluded | TrashId and LostAndFoundId absent from JSON tree |
+| TW-08 | system containers included | TrashId and LostAndFoundId present in JSON tree at root level |
 
 ## RP — REPL
 

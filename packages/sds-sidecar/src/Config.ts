@@ -177,7 +177,7 @@ import { ExitCodes } from './ExitCodes.js'
       (Options['token']   ?? process.env['SDS_TOKEN']       ?? FileConfig['Token'])
     ) as string | undefined
     const PersistenceDir = (
-      (Options['persistDir'] ?? process.env['SDS_PERSISTENCE_DIR'] ?? FileConfig['PersistenceDir'])
+      (Options['persistenceDir'] ?? process.env['SDS_PERSISTENCE_DIR'] ?? FileConfig['PersistenceDir'])
     ) as string | undefined
     const WebHookToken = (
       (Options['webhookToken'] ?? process.env['SDS_WEBHOOK_TOKEN'] ?? FileConfig['WebHookToken'])

@@ -6,7 +6,7 @@ import g from "node:fs/promises";
 import { SDS_DesktopPersistenceProvider as q } from "@rozek/sds-persistence-node";
 import { SDS_SyncEngine as z } from "@rozek/sds-sync-engine";
 import { SDS_WebSocketProvider as oe } from "@rozek/sds-network-websocket";
-import { LostAndFoundId as L, TrashId as x, RootId as k } from "@rozek/sds-core";
+import { LostAndFoundId as P, TrashId as D, RootId as k } from "@rozek/sds-core";
 import K from "node:readline";
 const c = {
   OK: 0,
@@ -24,28 +24,34 @@ const c = {
   Forbidden: 6
   // operation not permitted for this scope
 };
-class R extends Error {
+class L extends Error {
   ExitCode;
   constructor(n, t = c.UsageError) {
     super(n), this.ExitCode = t;
   }
 }
 function w(e) {
-  const n = e.server ?? process.env.SDS_SERVER_URL, t = e.persistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? B.join(ne.homedir(), ".sds"), o = e.store ?? process.env.SDS_STORE_ID, r = e.token ?? process.env.SDS_TOKEN, s = e.adminToken ?? process.env.SDS_ADMIN_TOKEN, i = (e.format ?? "text").toLowerCase();
+  const n = e.server ?? process.env.SDS_SERVER_URL, t = e.persistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? B.join(ne.homedir(), ".sds"), o = e.store ?? process.env.SDS_STORE_ID, r = e.token ?? process.env.SDS_TOKEN, s = e.adminToken ?? process.env.SDS_ADMIN_TOKEN;
+  if (n != null && !/^wss?:\/\//.test(n))
+    throw new L(
+      `invalid '--server' URL '${n}' — must start with 'ws://' or 'wss://'`,
+      c.UsageError
+    );
+  const i = (e.format ?? "text").toLowerCase();
   if (i !== "text" && i !== "json")
-    throw new R(
+    throw new L(
       `'--format' accepts 'text' or 'json' — got '${e.format}'`,
       c.UsageError
     );
   const a = i, d = (e.onError ?? "stop").toLowerCase();
   if (d !== "stop" && d !== "continue" && d !== "ask")
-    throw new R(
+    throw new L(
       `'--on-error' accepts 'stop', 'continue', or 'ask' — got '${e.onError}'`,
       c.UsageError
     );
   return { ServerURL: n, PersistenceDir: t, StoreId: o, Token: r, AdminToken: s, Format: a, OnError: d };
 }
-function D(e, n) {
+function N(e, n) {
   const t = n.replace(/[^a-zA-Z0-9_-]/g, "_");
   return B.join(e.PersistenceDir, `${t}.db`);
 }
@@ -57,7 +63,7 @@ function re(e) {
   process.stdout.write(JSON.stringify(e, null, 2) + `
 `);
 }
-function P(e, n, t) {
+function R(e, n, t) {
   e.Format === "json" ? process.stderr.write(
     JSON.stringify({ error: n, exitCode: t ?? 1 }) + `
 `
@@ -96,22 +102,22 @@ function se(e, n, t, o, r, s) {
   return i.join("  ");
 }
 function H(e, n, t, o, r, s, i) {
-  const a = i ? "└── " : "├── ", d = t === "link" ? ` → ${o ?? "?"}` : "", u = n !== "" ? `  ${n}` : "", m = `${s}${a}${e}${u}${d}`, I = s + (i ? "    " : "│   "), T = [m];
-  for (let _ = 0; _ < r.length; _++) {
-    const $ = r[_], j = _ === r.length - 1;
-    T.push(
+  const a = i ? "└── " : "├── ", d = t === "link" ? ` → ${o ?? "?"}` : "", u = n !== "" ? `  ${n}` : "", m = `${s}${a}${e}${u}${d}`, I = s + (i ? "    " : "│   "), $ = [m];
+  for (let x = 0; x < r.length; x++) {
+    const T = r[x], j = x === r.length - 1;
+    $.push(
       ...H(
-        $.Id,
-        $.Label,
-        $.Kind,
-        $.TargetId,
-        $.Children,
+        T.Id,
+        T.Label,
+        T.Kind,
+        T.TargetId,
+        T.Children,
         I,
         j
       )
     );
   }
-  return T;
+  return $;
 }
 let U;
 function ie(e) {
@@ -134,7 +140,7 @@ async function y(e, n = !1) {
       c.UsageError
     );
   await g.mkdir(e.PersistenceDir, { recursive: !0 });
-  const o = D(e, t), r = new q(o, t);
+  const o = N(e, t), r = new q(o, t);
   let s;
   try {
     const a = await r.loadSnapshot();
@@ -189,32 +195,32 @@ async function Y(e, n = 5e3) {
       c.UsageError
     );
   await g.mkdir(e.PersistenceDir, { recursive: !0 });
-  const s = D(e, t), i = new q(s, t), a = await i.loadSnapshot(), d = a != null ? U.fromBinary(a) : U.fromScratch(), u = new oe(t), m = new z(d, {
+  const s = N(e, t), i = new q(s, t), a = await i.loadSnapshot(), d = a != null ? U.fromBinary(a) : U.fromScratch(), u = new oe(t), m = new z(d, {
     PersistenceProvider: i,
     NetworkProvider: u
   });
   await m.start();
-  let I = !1, T;
-  const _ = new Promise((b) => {
-    T = b;
-  }), $ = m.onConnectionChange((b) => {
-    b === "connected" && (I = !0, setTimeout(T, n)), b === "disconnected" && T();
+  let I = !1, $;
+  const x = new Promise((v) => {
+    $ = v;
+  }), T = m.onConnectionChange((v) => {
+    v === "connected" && (I = !0, setTimeout($, n)), v === "disconnected" && $();
   }), j = setTimeout(() => {
-    T();
+    $();
   }, n * 2);
   try {
     await m.connectTo(o, { Token: r });
-    const b = await i.loadPatchesSince(0);
-    for (const ee of b)
+    const v = await i.loadPatchesSince(0);
+    for (const ee of v)
       u.sendPatch(ee);
-    await _;
-  } catch (b) {
+    await x;
+  } catch (v) {
     throw new l(
-      `sync failed: ${b.message}`,
+      `sync failed: ${v.message}`,
       c.NetworkError
     );
   } finally {
-    clearTimeout(j), $(), await m.stop();
+    clearTimeout(j), T(), await m.stop();
   }
   return { Connected: I, StoreId: t, ServerURL: o };
 }
@@ -222,7 +228,7 @@ async function ce(e) {
   const n = e.StoreId;
   if (n == null)
     return !1;
-  const t = D(e, n);
+  const t = N(e, n);
   try {
     return await g.access(t), !0;
   } catch {
@@ -236,7 +242,7 @@ async function le(e) {
       "no store ID — set SDS_STORE_ID or use --store",
       c.UsageError
     );
-  const t = D(e, n);
+  const t = N(e, n);
   try {
     await g.unlink(t), await g.unlink(t + "-wal").catch(() => {
     }), await g.unlink(t + "-shm").catch(() => {
@@ -257,15 +263,15 @@ function S(e) {
     case "root":
       return k;
     case "trash":
-      return x;
+      return D;
     case "lost-and-found":
     case "lostandfound":
-      return L;
+      return P;
     default:
       return e;
   }
 }
-function v(e, n) {
+function b(e, n) {
   const t = parseInt(e, 10);
   if (isNaN(t))
     throw new l(
@@ -292,7 +298,7 @@ function F(e) {
       c.UsageError
     );
 }
-function N(e) {
+function _(e) {
   const n = [], t = {}, o = [];
   let r = 0;
   for (; r < e.length; ) {
@@ -572,7 +578,7 @@ function Ie(e) {
     const r = w(o.optsWithGlobals());
     await Ee(r);
   }), n.command("sync").description("connect to server, exchange CRDT patches, and disconnect").option("--timeout <ms>", "milliseconds to wait after connecting", "5000").action(async (t, o) => {
-    const r = w(o.optsWithGlobals()), s = v(t.timeout, "--timeout");
+    const r = w(o.optsWithGlobals()), s = b(t.timeout, "--timeout");
     if (s <= 0)
       throw new l(
         `'--timeout' must be a positive integer — got ${s}`,
@@ -584,10 +590,10 @@ function Ie(e) {
     await ke(r);
   }), n.command("export").description("export the current store snapshot").option("--encoding <enc>", "serialisation encoding: json | binary", "json").option("--output <file>", "destination file (default: stdout)").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
-    await be(r, t.encoding, t.output);
+    await ve(r, t.encoding, t.output);
   }), n.command("import").description("CRDT-merge a snapshot file into the local store").requiredOption("--input <file>", "source file to import").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
-    await ve(r, t.input);
+    await be(r, t.input);
   });
 }
 async function Se(e) {
@@ -603,13 +609,13 @@ async function Se(e) {
   }
   const o = await y(e);
   try {
-    const r = Te(o.Store);
+    const r = $e(o.Store);
     e.Format === "json" ? h(e, {
       storeId: n,
       exists: !0,
       entryCount: r,
-      dbPath: D(e, n)
-    }) : (f(`store:       ${n}`), f(`entries:     ${r}`), f(`db path:     ${D(e, n)}`));
+      dbPath: N(e, n)
+    }) : (f(`store:       ${n}`), f(`entries:     ${r}`), f(`db path:     ${N(e, n)}`));
   } finally {
     await p(o);
   }
@@ -653,7 +659,7 @@ async function ge(e, n) {
 async function ke(e) {
   await le(e), e.Format === "json" ? h(e, { storeId: e.StoreId, destroyed: !0 }) : f(`store '${e.StoreId}': deleted`);
 }
-async function be(e, n, t) {
+async function ve(e, n, t) {
   const o = n.toLowerCase();
   if (o !== "json" && o !== "binary")
     throw new l(
@@ -670,7 +676,7 @@ async function be(e, n, t) {
     await p(r);
   }
 }
-async function ve(e, n) {
+async function be(e, n) {
   const t = await A(n), o = t.toString("utf8").trimStart(), r = o.startsWith("{") || o.startsWith("["), s = await y(e, !0);
   try {
     if (r) {
@@ -698,13 +704,13 @@ async function ve(e, n) {
   }
 }
 function M(e, n) {
-  const t = n, o = /* @__PURE__ */ new Set([k, x, L]), r = t.innerEntries;
+  const t = n, o = /* @__PURE__ */ new Set([k, D, P]), r = t.innerEntries;
   if (r != null)
     for (const s of r)
       o.has(s.Id) || e.newEntryFromJSONat(s, e.RootItem);
 }
-function Te(e) {
-  const n = /* @__PURE__ */ new Set([k, x, L]);
+function $e(e) {
+  const n = /* @__PURE__ */ new Set([k, D, P]);
   let t = 0;
   function o(r) {
     for (const s of e._innerEntriesOf(r))
@@ -712,23 +718,23 @@ function Te(e) {
   }
   return o(k), t;
 }
-function $e(e, n) {
+function Te(e, n) {
   const t = e.command("entry").description("operations on entries (items and links)");
   t.command("create").description("create a new item (default) or link (with --target)").option("--target <itemId>", "link target — creates a link instead of an item").option("--container <itemId>", "container item (default: root)").option("--at <index>", "insertion index (default: append)").option("--label <label>", "initial label").option("--mime <type>", "MIME type (default: text/plain, items only)").option("--value <string>", "initial text value (items only)").option("--file <path>", "read initial value from file (items only)").option("--info <json>", "initial info map as JSON object").option("--info.<key>", "set a single info entry, e.g. --info.author").option("--info-delete.<key>", "remove a single info entry, e.g. --info-delete.author").action(async (o, r) => {
-    const s = w(r.optsWithGlobals()), { InfoEntries: i, InfoDeleteKeys: a } = N(n);
+    const s = w(r.optsWithGlobals()), { InfoEntries: i, InfoDeleteKeys: a } = _(n);
     await xe(s, o, i, a);
   }), t.command("get <id>").description("display all or selected fields of an entry").option("--kind", "include entry kind (item or link)").option("--label", "include label").option("--mime", "include MIME type (items only)").option("--value", "include value (items only)").option("--info", "include full info map").option("--info.<key>", "include only the named info entry, e.g. --info.author").option("--target", "include link target ID (links only)").action(async (o, r, s) => {
-    const i = w(s.optsWithGlobals()), { InfoEntries: a } = N(n), d = Object.keys(a)[0];
+    const i = w(s.optsWithGlobals()), { InfoEntries: a } = _(n), d = Object.keys(a)[0];
     await _e(i, o, r, d);
   }), t.command("list <id>").description("list entries in a container item (only IDs by default)").option("--recursive", "traverse inner containers recursively").option("--depth <n>", "maximum recursion depth").option("--only <kind>", "filter by kind: items | links").option("--label", "include label").option("--mime", "include MIME type (items only)").option("--value", "include value (items only)").option("--info", "include info map").option("--info.<key>", "include only the named info entry, e.g. --info.author").action(async (o, r, s) => {
-    const i = w(s.optsWithGlobals()), { InfoEntries: a } = N(n), d = Object.keys(a)[0];
+    const i = w(s.optsWithGlobals()), { InfoEntries: a } = _(n), d = Object.keys(a)[0];
     await Ne(i, o, r, d);
   }), t.command("update <id>").description("update entry properties (works on both items and links)").option("--label <label>", "new label (items and links)").option("--mime <type>", "new MIME type (items only)").option("--value <string>", "new text value (items only)").option("--file <path>", "read new value from file (items only)").option("--info <json>", "merge info map from JSON object").option("--info.<key>", "set a single info entry, e.g. --info.author").option("--info-delete.<key>", "remove a single info entry, e.g. --info-delete.author").action(async (o, r, s) => {
-    const i = w(s.optsWithGlobals()), { InfoEntries: a, InfoDeleteKeys: d } = N(n);
+    const i = w(s.optsWithGlobals()), { InfoEntries: a, InfoDeleteKeys: d } = _(n);
     await Pe(i, o, r, a, d);
   }), t.command("move <id>").description("move an entry to a different container").requiredOption("--to <targetId>", "destination container item ID").option("--at <index>", "insertion index (default: append)").action(async (o, r, s) => {
     const i = w(s.optsWithGlobals());
-    await Ue(i, o, r.to, r.at);
+    await De(i, o, r.to, r.at);
   }), t.command("delete <id>").description("soft-delete: move entry to the trash").action(async (o, r, s) => {
     const i = w(s.optsWithGlobals());
     await Le(i, o);
@@ -764,7 +770,7 @@ async function xe(e, n, t, o) {
       );
     const r = await y(e);
     try {
-      const s = S(n.target), i = S(n.container ?? k), a = n.at != null ? v(n.at, "--at") : void 0;
+      const s = S(n.target), i = S(n.container ?? k), a = n.at != null ? b(n.at, "--at") : void 0;
       if (a != null && a < 0)
         throw new l(
           `'--at' must be a non-negative integer — got ${a}`,
@@ -800,7 +806,7 @@ async function xe(e, n, t, o) {
           `container '${s}' not found or is not an item`,
           c.NotFound
         );
-      const a = n.at != null ? v(n.at, "--at") : void 0;
+      const a = n.at != null ? b(n.at, "--at") : void 0;
       if (a != null && a < 0)
         throw new l(
           `'--at' must be a non-negative integer — got ${a}`,
@@ -851,7 +857,7 @@ async function Ne(e, n, t, o) {
         `container '${i}' not found or is not an item`,
         c.NotFound
       );
-    const d = t.depth != null ? v(t.depth, "--depth") : 1 / 0, u = {
+    const d = t.depth != null ? b(t.depth, "--depth") : 1 / 0, u = {
       showLabel: t.label,
       showMIME: t.mime,
       showValue: t.value,
@@ -867,10 +873,10 @@ async function Ne(e, n, t, o) {
     await p(s);
   }
 }
-const De = /* @__PURE__ */ new Set([x, L]);
+const Ue = /* @__PURE__ */ new Set([D, P]);
 function Q(e, n, t, o, r, s, i, a, d) {
   for (const u of e._innerEntriesOf(n)) {
-    if (De.has(u.Id))
+    if (Ue.has(u.Id))
       continue;
     const m = u.isItem ? "item" : "link";
     if (s == null || s === m + "s" || s === m)
@@ -899,10 +905,10 @@ function Q(e, n, t, o, r, s, i, a, d) {
     t && u.isItem && r < o && Q(e, u.Id, t, o, r + 1, s, i, a, d);
   }
 }
-async function Ue(e, n, t, o) {
+async function De(e, n, t, o) {
   const r = await y(e);
   try {
-    const s = S(n), i = S(t), a = o != null ? v(o, "--at") : void 0;
+    const s = S(n), i = S(t), a = o != null ? b(o, "--at") : void 0;
     if (a != null && a < 0)
       throw new l(
         `'--at' must be a non-negative integer — got ${a}`,
@@ -945,7 +951,7 @@ async function Le(e, n) {
 async function Fe(e, n, t, o) {
   const r = await y(e);
   try {
-    const s = S(n), i = S(t ?? k), a = o != null ? v(o, "--at") : void 0;
+    const s = S(n), i = S(t ?? k), a = o != null ? b(o, "--at") : void 0;
     if (a != null && a < 0)
       throw new l(
         `'--at' must be a non-negative integer — got ${a}`,
@@ -954,7 +960,7 @@ async function Fe(e, n, t, o) {
     const d = r.Store.EntryWithId(s), u = r.Store.EntryWithId(i);
     if (d == null)
       throw new l(`entry '${s}' not found`, c.NotFound);
-    if (d.outerItemId !== x)
+    if (d.outerItemId !== D)
       throw new l(
         `entry '${s}' is not in the trash — use 'entry move' to relocate live entries`,
         c.Forbidden
@@ -975,7 +981,7 @@ async function Re(e, n) {
     const o = S(n), r = t.Store.EntryWithId(o);
     if (r == null)
       throw new l(`entry '${o}' not found`, c.NotFound);
-    if (r.outerItemId !== x)
+    if (r.outerItemId !== D)
       throw new l(
         `entry '${o}' is not in the trash — delete it first`,
         c.Forbidden
@@ -1097,7 +1103,7 @@ function Ke(e) {
     const r = w(o.optsWithGlobals());
     await Ge(r);
   }), n.command("purge-expired").description("permanently delete trash entries older than --ttl milliseconds").option("--ttl <ms>", "TTL in milliseconds (default: 30 days)", String(We)).action(async (t, o) => {
-    const r = w(o.optsWithGlobals()), s = v(t.ttl, "--ttl");
+    const r = w(o.optsWithGlobals()), s = b(t.ttl, "--ttl");
     if (s <= 0)
       throw new l(
         `'--ttl' must be a positive integer — got ${s}`,
@@ -1164,7 +1170,7 @@ async function Je(e, n) {
 }
 function Me(e) {
   e.command("tree").description("tree display").command("show").description("display the store tree").option("--depth <n>", "maximum display depth (default: unlimited)").action(async (t, o) => {
-    const r = w(o.optsWithGlobals()), s = t.depth != null ? v(t.depth, "--depth") : 1 / 0;
+    const r = w(o.optsWithGlobals()), s = t.depth != null ? b(t.depth, "--depth") : 1 / 0;
     await Ve(r, s);
   });
 }
@@ -1196,14 +1202,11 @@ async function Ve(e, n) {
     await p(t);
   }
 }
-const Be = /* @__PURE__ */ new Set([x, L]);
 function W(e, n, t, o) {
   if (o >= t)
     return [];
   const r = [];
   for (const s of e._innerEntriesOf(n)) {
-    if (Be.has(s.Id))
-      continue;
     const i = s.isItem ? "item" : "link", a = s.isLink ? e._TargetOf(s.Id).Id : void 0, d = s.isItem && o + 1 < t ? W(e, s.Id, t, o + 1) : [];
     r.push({ Id: s.Id, Kind: i, Label: s.Label, TargetId: a, Children: d });
   }
@@ -1213,7 +1216,7 @@ let E = "sds", X = "0.0.0";
 function O(e, n = !1) {
   const t = new te(E);
   return t.description("shareable-data-store CLI").version(X, "--version", "print version").allowUnknownOption(!1).configureOutput({ writeErr: () => {
-  } }).option("--server <url>", "WebSocket server URL (env: SDS_SERVER_URL)").option("--store <id>", "store identifier (env: SDS_STORE_ID)").option("--token <jwt>", "client JWT — read/write (env: SDS_TOKEN)").option("--admin-token <jwt>", "admin JWT (env: SDS_ADMIN_TOKEN)").option("--persistence-dir <path>", "directory for local SQLite files (env: SDS_PERSISTENCE_DIR)").option("--format <fmt>", "output format: text | json (default: text)").option("--on-error <action>", "error mode: stop | continue | ask (default: stop)"), we(t), Ie(t), $e(t, e), Ke(t), Me(t), n || (t.command("shell").description("start an interactive REPL").action(async (o, r) => {
+  } }).option("--server <url>", "WebSocket server URL (env: SDS_SERVER_URL)").option("--store <id>", "store identifier (env: SDS_STORE_ID)").option("--token <jwt>", "client JWT — read/write (env: SDS_TOKEN)").option("--admin-token <jwt>", "admin JWT (env: SDS_ADMIN_TOKEN)").option("--persistence-dir <path>", "directory for local SQLite files (env: SDS_PERSISTENCE_DIR)").option("--format <fmt>", "output format: text | json (default: text)").option("--on-error <action>", "error mode: stop | continue | ask (default: stop)"), we(t), Ie(t), Te(t, e), Ke(t), Me(t), n || (t.command("shell").description("start an interactive REPL").action(async (o, r) => {
     const s = w(r.optsWithGlobals());
     await ue((i) => V(i, s));
   }), t.option("--script <file>", "run commands from file (use - for stdin)").action(async (o) => {
@@ -1231,14 +1234,14 @@ function G(e) {
   for (const n of e.commands)
     G(n);
 }
-function qe(e) {
+function Be(e) {
   const n = [];
   return e.ServerURL != null && n.push("--server", e.ServerURL), e.StoreId != null && n.push("--store", e.StoreId), e.Token != null && n.push("--token", e.Token), e.AdminToken != null && n.push("--admin-token", e.AdminToken), n.push("--persistence-dir", e.PersistenceDir), e.Format !== "text" && n.push("--format", e.Format), n;
 }
 async function V(e, n) {
   if (e.length === 0)
     return c.OK;
-  const { CleanArgv: t, InfoEntries: o } = N(e), r = n != null ? qe(n) : [], s = O(
+  const { CleanArgv: t, InfoEntries: o } = _(e), r = n != null ? Be(n) : [], s = O(
     Object.entries(o).flatMap(([i, a]) => [
       `--info.${i}`,
       JSON.stringify(a)
@@ -1253,12 +1256,12 @@ async function V(e, n) {
     const a = i;
     return a.code === "commander.help" || a.code === "commander.helpDisplayed" || a.code === "commander.version" ? c.OK : a.code === "commander.unknownCommand" ? (process.stderr.write(`${E}: unknown command '${t[0]}' — try '${E} help'
 `), c.UsageError) : a.code === "commander.unknownOption" || a.code === "commander.missingArgument" || a.code === "commander.missingMandatoryOptionValue" ? (process.stderr.write(`${E}: ${a.message}
-`), c.UsageError) : i instanceof R ? (process.stderr.write(`${E}: ${i.message}
-`), i.ExitCode) : i instanceof l ? (P(n ?? { Format: "text" }, i.message, i.ExitCode), i.ExitCode) : (P(n ?? { Format: "text" }, i.message ?? String(i)), c.GeneralError);
+`), c.UsageError) : i instanceof L ? (process.stderr.write(`${E}: ${i.message}
+`), i.ExitCode) : i instanceof l ? (R(n ?? { Format: "text" }, i.message, i.ExitCode), i.ExitCode) : (R(n ?? { Format: "text" }, i.message ?? String(i)), c.GeneralError);
   }
 }
-async function ze() {
-  const { CleanArgv: e, InfoEntries: n, InfoDeleteKeys: t } = N(process.argv.slice(2)), o = [
+async function qe() {
+  const { CleanArgv: e, InfoEntries: n, InfoDeleteKeys: t } = _(process.argv.slice(2)), o = [
     ...Object.entries(n).flatMap(([s, i]) => [
       `--info.${s}`,
       JSON.stringify(i)
@@ -1272,18 +1275,18 @@ async function ze() {
     const i = s;
     if ((i.code === "commander.help" || i.code === "commander.helpDisplayed" || i.code === "commander.version") && process.exit(c.OK), (i.code === "commander.unknownCommand" || i.code === "commander.unknownOption" || i.code === "commander.missingArgument" || i.code === "commander.missingMandatoryOptionValue") && (process.stderr.write(`${E}: ${i.message}
 
-`), process.stderr.write(r.helpInformation()), process.exit(c.UsageError)), s instanceof R && (process.stderr.write(`${E}: ${s.message}
+`), process.stderr.write(r.helpInformation()), process.exit(c.UsageError)), s instanceof L && (process.stderr.write(`${E}: ${s.message}
 `), process.exit(s.ExitCode)), s instanceof l) {
       const d = w({});
-      P(d, s.message, s.ExitCode), process.exit(s.ExitCode);
+      R(d, s.message, s.ExitCode), process.exit(s.ExitCode);
     }
     const a = w({});
-    P(a, s.message ?? String(s)), process.exit(c.GeneralError);
+    R(a, s.message ?? String(s)), process.exit(c.GeneralError);
   }
 }
-async function ot(e, n = "sds", t = "0.0.0") {
-  return E = n, X = t, ie(e), ze();
+async function nt(e, n = "sds", t = "0.0.0") {
+  return E = n, X = t, ie(e), qe();
 }
 export {
-  ot as runCommand
+  nt as runCommand
 };

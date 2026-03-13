@@ -179,11 +179,11 @@ All tools are called via the MCP protocol through `StdioClientTransport`. Every 
 | # | Description | Expected |
 |---|---|---|
 | TW-01 | populated store | `Root` non-empty; each node has `Id`, `Kind`, `Label`; item nodes also have `innerEntries` |
-| TW-02 | empty store | `Root: []` |
+| TW-02 | empty store (no user entries) | `Root` contains exactly 2 system containers (Trash, LostAndFound) |
 | TW-03 | `Depth: 1` | `innerEntries` of every root item node is `[]` |
 | TW-04 | `Depth: 0` | `Root: []` |
 | TW-04b | `Depth: -1` (negative) | `isError: true`; message contains `'Depth'` |
-| TW-05 | Trash absent | Trash ID not in any node of tree |
+| TW-05 | system containers present | Trash ID and LostAndFoundId appear at root level of tree |
 | TW-06 | link node | node has `TargetId` field; link nodes have no `innerEntries` field |
 
 ## TI — `sds_token_issue`

@@ -128,7 +128,15 @@ function parseArgs (Argv:string[]):Partial<MCPConfig> {
 /**** main — starts the MCP server on stdio ****/
 
 async function main ():Promise<void> {
-  setServerDefaults(parseArgs(process.argv.slice(2)))
+  const Defaults = parseArgs(process.argv.slice(2))
+  if (Defaults.ServerURL != null && ! /^wss?:\/\//.test(Defaults.ServerURL)) {
+    process.stderr.write(
+      `sds-mcp-server: invalid '--server' URL '${Defaults.ServerURL}' — ` +
+      `must start with 'ws://' or 'wss://'\n`
+    )
+    process.exit(2)
+  }
+  setServerDefaults(Defaults)
   const MCPServer = buildServer()
   const Transport = new StdioServerTransport()
   await MCPServer.connect(Transport)

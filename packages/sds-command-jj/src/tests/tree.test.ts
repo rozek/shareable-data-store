@@ -141,7 +141,7 @@ describe('tree show (TW)', () => {
     }
   })
 
-  it('TW-08: tree show does not include system containers (trash, lost-and-found)', async () => {
+  it('TW-08: tree show includes system containers (trash, lost-and-found) at root level', async () => {
     const PersistenceDir8 = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-tw8-'))
     try {
       // create one user item so the store file exists
@@ -154,9 +154,9 @@ describe('tree show (TW)', () => {
       expect(Result.ExitCode).toBe(0)
       const Json = JSON.parse(Result.Stdout)
       const AllIds = JSON.stringify(Json)
-      // well-known system IDs must never appear in tree output
-      expect(AllIds).not.toContain('00000000-0000-4000-8000-000000000001')  // TrashId
-      expect(AllIds).not.toContain('00000000-0000-4000-8000-000000000002')  // LostAndFoundId
+      // well-known system IDs must appear in tree output
+      expect(AllIds).toContain('00000000-0000-4000-8000-000000000001')  // TrashId
+      expect(AllIds).toContain('00000000-0000-4000-8000-000000000002')  // LostAndFoundId
     } finally {
       await fs.rm(PersistenceDir8, { recursive:true, force:true })
     }

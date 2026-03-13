@@ -86,4 +86,14 @@ describe('resolveConfig / DBPathFor', () => {
   it('CF-10: rejects an invalid --on-error value with SDS_ConfigError', () => {
     expect(() => resolveConfig({ onError:'unknown' })).toThrow(SDS_ConfigError)
   })
+
+  it('CF-11: rejects an invalid --server URL (not ws:// or wss://) with SDS_ConfigError', () => {
+    expect(() => resolveConfig({ server:'http://localhost:3000' })).toThrow(SDS_ConfigError)
+    expect(() => resolveConfig({ server:'ftp://relay.example.com' })).toThrow(SDS_ConfigError)
+  })
+
+  it('CF-12: accepts valid --server URLs (ws:// and wss://)', () => {
+    expect(() => resolveConfig({ server:'ws://localhost:3000' })).not.toThrow()
+    expect(() => resolveConfig({ server:'wss://relay.example.com' })).not.toThrow()
+  })
 })

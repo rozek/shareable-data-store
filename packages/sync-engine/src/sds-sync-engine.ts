@@ -105,8 +105,9 @@ export class SDS_SyncEngine {
     this.#Persistence = Options.PersistenceProvider ?? undefined
     this.#Network     = Options.NetworkProvider     ?? undefined
     this.#Presence    = Options.PresenceProvider
-      ?? (Options.NetworkProvider as unknown as SDS_PresenceProvider | undefined)
-      ?? undefined
+      ?? (typeof (Options.NetworkProvider as any)?.onRemoteState === 'function'
+          ? (Options.NetworkProvider as unknown as SDS_PresenceProvider)
+          : undefined)
     this.#PresenceTimeoutMs = Options.PresenceTimeoutMs ?? 120_000
 
     const useBroadcastChannel =

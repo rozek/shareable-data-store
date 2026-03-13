@@ -7,7 +7,7 @@
 // tree show — visual tree of the entire store
 
 import type { Command } from 'commander'
-import { RootId, TrashId, LostAndFoundId } from '@rozek/sds-core'
+import { RootId } from '@rozek/sds-core'
 
 import { resolveConfig, type SDSConfig }  from '../Config.js'
 import { printResult, printLine, TreeLines, type TreeNode } from '../Output.js'
@@ -68,8 +68,6 @@ async function cmdTreeShow (Config:SDSConfig, MaxDepth:number):Promise<void> {
 
 /**** buildTreeNodes — recursive conversion of store entries to TreeNode ****/
 
-const SystemTreeIds = new Set([ TrashId, LostAndFoundId ])
-
 function buildTreeNodes (
   Store:import('@rozek/sds-core').SDS_DataStore,
   ItemId:string, MaxDepth:number, Depth:number
@@ -78,7 +76,6 @@ function buildTreeNodes (
 
   const Result:TreeNode[] = []
   for (const Entry of Store._innerEntriesOf(ItemId)) {
-    if (SystemTreeIds.has(Entry.Id)) { continue }  // hide system containers from tree output
     const Kind     = Entry.isItem ? 'item' as const : 'link' as const
     const TargetId = Entry.isLink ? Store._TargetOf(Entry.Id).Id : undefined
     const Children = (Entry.isItem && (Depth+1 < MaxDepth))

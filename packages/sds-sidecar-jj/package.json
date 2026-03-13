@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-sidecar-jj",
   "description": "sidecar daemon for shareable-data-store (json-joy CRDT backend)",
-  "version": "0.0.1",
+  "version": "0.0.10",
   "author": "Andreas Rozek",
   "homepage": "https://github.com/rozek/shareable-data-store#readme",
   "repository": {

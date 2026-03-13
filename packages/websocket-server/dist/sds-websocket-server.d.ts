@@ -23,7 +23,7 @@ export declare class LiveStore {
     removeClient(Client: LiveClient): void;
     /**** isEmpty ****/
     isEmpty(): boolean;
-    /**** broadcast — sends Data to all clients in this store except Sender ****/
+    /**** broadcast — relays Data to all clients except Sender ****/
     broadcast(Data: Uint8Array, Sender: LiveClient): void;
 }
 

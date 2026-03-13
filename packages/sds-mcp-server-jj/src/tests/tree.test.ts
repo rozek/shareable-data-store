@@ -33,7 +33,8 @@ describe('tree show (TW)', () => {
   let LinkId:string
 
   // well-known system IDs
-  const TrashId = '00000000-0000-4000-8000-000000000001'
+  const TrashId        = '00000000-0000-4000-8000-000000000001'
+  const LostAndFoundId = '00000000-0000-4000-8000-000000000002'
 
   beforeAll(async () => {
     PersistenceDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-tw-'))
@@ -78,12 +79,10 @@ describe('tree show (TW)', () => {
     }
   })
 
-  it('TW-02: empty store → Root: []', async () => {
+  it('TW-02: empty store (no user entries) → Root contains only system containers', async () => {
     const EmptyDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sds-tw02-'))
     try {
-      // create a store with only the seed entry — then destroy it and recreate empty
-      // easier: use a store ID that has never had entries written
-      // actually we need at least the store to exist, so create it via entry create then purge all
+      // create a store with only the seed entry — then destroy it so no user entries remain
       const Create = await callTool(MCPClient, 'sds_entry_create', {
         StoreId: 'tw02-empty',
         PersistenceDir: EmptyDir,
@@ -98,9 +97,13 @@ describe('tree show (TW)', () => {
         PersistenceDir: EmptyDir,
       })
       expect(Result.isError).toBe(false)
-      const Root = (Result.Result as Record<string,unknown>)['Root'] as unknown[]
+      const Root = (Result.Result as Record<string,unknown>)['Root'] as Array<Record<string,unknown>>
       expect(Array.isArray(Root)).toBe(true)
-      expect(Root.length).toBe(0)
+      expect(Root.length).toBe(2)
+
+      const RootIds = Root.map((N) => N['Id'] as string)
+      expect(RootIds).toContain(TrashId)
+      expect(RootIds).toContain(LostAndFoundId)
     } finally {
       await fs.rm(EmptyDir, { recursive:true, force:true })
     }
@@ -156,7 +159,7 @@ describe('tree show (TW)', () => {
     expect(Result.Error).toMatch(/'Depth'/i)
   })
 
-  it('TW-05: Trash absent → Trash ID not in any node of the tree', async () => {
+  it('TW-05: system containers present → Trash ID and LostAndFoundId appear at root level', async () => {
     const Result = await callTool(MCPClient, 'sds_tree_show', {
       StoreId: 'tw-test',
       PersistenceDir,
@@ -164,18 +167,9 @@ describe('tree show (TW)', () => {
     expect(Result.isError).toBe(false)
     const Root = (Result.Result as Record<string,unknown>)['Root'] as Array<Record<string,unknown>>
 
-    function collectIds (Nodes:Array<Record<string,unknown>>):string[] {
-      const Ids:string[] = []
-      for (const N of Nodes) {
-        Ids.push(N['Id'] as string)
-        const Inner = N['innerEntries'] as Array<Record<string,unknown>> | undefined
-        if (Inner != null) { Ids.push(...collectIds(Inner)) }
-      }
-      return Ids
-    }
-
-    const AllIds = collectIds(Root)
-    expect(AllIds).not.toContain(TrashId)
+    const RootIds = Root.map((N) => N['Id'] as string)
+    expect(RootIds).toContain(TrashId)
+    expect(RootIds).toContain(LostAndFoundId)
   })
 
   it('TW-06: link node has TargetId field; no innerEntries for link nodes', async () => {

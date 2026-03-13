@@ -52,7 +52,7 @@ Both positional arguments may also be supplied through environment variables or 
 
 | Option | Description |
 | --- | --- |
-| `--persist-dir <path>` | directory for the local SQLite database (env: `SDS_PERSISTENCE_DIR`, default: `~/.sds`) |
+| `--persistence-dir <path>` | directory for the local SQLite database (env: `SDS_PERSISTENCE_DIR`, default: `~/.sds`) |
 
 ### Inline webhook
 

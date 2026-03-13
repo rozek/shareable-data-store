@@ -15,10 +15,10 @@ This package contains the **full integration test suite** for the `sds` CLI tool
 **In scope:**
 - Binary launch: `--help`, `--version`, unknown options, usage-error output ordering
 - All `store` sub-commands: `info`, `destroy`, `export`, `import` (including JSON and binary round-trips)
-- `store sync --timeout` validation
+- `store sync --timeout` validation and `--server` URL scheme validation
 - All `entry` sub-commands: `create`, `get`, `list`, `update`, `move`, `delete`, `restore`, `purge`
 - All `trash` sub-commands: `list`, `purge-all`, `purge-expired`
-- `tree show` — depth limit, system-container exclusion
+- `tree show` — depth limit, system-container inclusion
 - REPL (`sds shell`) — blank lines, comments, `exit`/`quit`, error recovery, `help`
 - Script runner (`sds --script`) — `--on-error` modes (`stop`, `continue`, `ask`)
 - Duplicate-option last-wins behaviour
@@ -117,6 +117,7 @@ This package contains the **full integration test suite** for the `sds` CLI tool
 
 - **SY-06** — `store sync --timeout 0` exits with `UsageError` (code 2); error mentions `--timeout`
 - **SY-07** — `store sync --timeout -1` exits with `UsageError` (code 2); error mentions `--timeout`
+- **SY-08** — `--server` with an invalid scheme (e.g. `http://bad`) exits with `UsageError` (code 2); error mentions `--server`
 
 ---
 
@@ -243,7 +244,7 @@ This package contains the **full integration test suite** for the `sds` CLI tool
 - **TW-05** — `--depth` with non-integer → `UsageError` (code 2)
 - **TW-06** — `tree show` on non-existent store → `NotFound` (code 3)
 - **TW-07** — `--depth 0` → empty root array in JSON
-- **TW-08** — System containers (Trash, LostAndFound) never appear in output
+- **TW-08** — System containers (Trash, LostAndFound) appear at root level in output
 
 ---
 

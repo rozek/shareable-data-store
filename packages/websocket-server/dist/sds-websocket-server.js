@@ -2,8 +2,7 @@ import { Hono as W } from "hono";
 import { serve as j } from "@hono/node-server";
 import { createNodeWebSocket as A } from "@hono/node-ws";
 import { jwtVerify as C, SignJWT as q } from "jose";
-const D = 1, I = 2, J = 5;
-class M {
+class D {
   StoreId;
   #e = /* @__PURE__ */ new Set();
   constructor(e) {
@@ -21,7 +20,7 @@ class M {
   isEmpty() {
     return this.#e.size === 0;
   }
-  /**** broadcast — sends Data to all clients in this store except Sender ****/
+  /**** broadcast — relays Data to all clients except Sender ****/
   broadcast(e, n) {
     for (const o of this.#e)
       if (o !== n)
@@ -34,7 +33,7 @@ class M {
 const g = /* @__PURE__ */ new Map();
 function b(t) {
   let e = g.get(t);
-  return e == null && (e = new M(t), g.set(t, e)), e;
+  return e == null && (e = new D(t), g.set(t, e)), e;
 }
 function v(t, e) {
   const n = g.get(t);
@@ -57,12 +56,13 @@ async function w(t, e, n) {
     iss: o.iss
   };
 }
-async function U(t, e, n, o, u, f) {
+async function I(t, e, n, o, u, f) {
   const S = new q({ sub: e, aud: n, scope: o }).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime(Math.floor(Date.now() / 1e3) + Math.round(u / 1e3));
   return f != null && S.setIssuer(f), S.sign(t);
 }
+const J = 1, M = 2, U = 5;
 function O(t) {
-  return t === D || t === I || t === J;
+  return t === J || t === M || t === U;
 }
 function P(t) {
   const e = t?.JWTSecret ?? process.env.SDS_JWT_SECRET ?? "", n = t?.Issuer || process.env.SDS_ISSUER || void 0, o = t?.Port ?? parseInt(process.env.SDS_PORT ?? "3000", 10), u = t?.Host ?? process.env.SDS_HOST ?? "127.0.0.1";
@@ -187,7 +187,7 @@ function P(t) {
     }
     if (typeof a.sub != "string" || typeof a.scope != "string")
       return s.json({ error: "sub and scope required" }, 400);
-    const m = R(a.exp ?? "24h"), p = await U(
+    const m = R(a.exp ?? "24h"), p = await I(
       f,
       a.sub,
       i.aud,
@@ -226,7 +226,7 @@ if (process.argv[1]?.endsWith("sds-websocket-server.js")) {
   t();
 }
 export {
-  M as LiveStore,
+  D as LiveStore,
   P as createSDSServer,
   O as rejectWriteFrame
 };

@@ -11390,7 +11390,8 @@ class yg {
     // tracks entryId → blob hash for all entries whose value is in a *-reference kind;
     // used to call releaseValue() when the entry's value changes or the entry is purged
     _(this, it, /* @__PURE__ */ new Map());
-    I(this, he, e), I(this, G, t.PersistenceProvider ?? void 0), I(this, B, t.NetworkProvider ?? void 0), I(this, cn, t.PresenceProvider ?? t.NetworkProvider ?? void 0), I(this, Wn, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && l(this, B) != null && I(this, qe, new BroadcastChannel(`sds:${l(this, B).StoreId}`));
+    var r;
+    I(this, he, e), I(this, G, t.PersistenceProvider ?? void 0), I(this, B, t.NetworkProvider ?? void 0), I(this, cn, t.PresenceProvider ?? (typeof ((r = t.NetworkProvider) == null ? void 0 : r.onRemoteState) == "function" ? t.NetworkProvider : void 0)), I(this, Wn, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && l(this, B) != null && I(this, qe, new BroadcastChannel(`sds:${l(this, B).StoreId}`));
   }
   //----------------------------------------------------------------------------//
   //                                 Lifecycle                                  //
