@@ -11,7 +11,7 @@ var jt = (s, e, t, r) => ({
     return g(s, e, r);
   }
 });
-import { SDS_DataStore as sn, DefaultWrapperCacheSize as an, DefaultLiteralSizeLimit as on, RootId as ue, TrashId as Z, LostAndFoundId as fe, SDS_Error as W, expectValidMIMEType as dr, DefaultMIMEType as He, SDS_Item as ur, SDS_Link as fr, maxOrderKeyLength as cn, expectValidLabel as ln, DefaultBinarySizeLimit as dn, expectValidInfoKey as un, checkInfoValueSize as fn, _base64ToUint8Array as jr } from "@rozek/sds-core";
+import { SDS_DataStore as sn, DefaultWrapperCacheSize as an, DefaultLiteralSizeLimit as on, RootId as ue, TrashId as V, LostAndFoundId as fe, SDS_Error as W, expectValidMIMEType as dr, DefaultMIMEType as He, SDS_Item as ur, SDS_Link as fr, maxOrderKeyLength as cn, expectValidLabel as ln, DefaultBinarySizeLimit as dn, expectValidInfoKey as un, checkInfoValueSize as fn, _base64ToUint8Array as jr } from "@rozek/sds-core";
 import { SDS_Entry as fs, SDS_Error as hs, SDS_Item as ms, SDS_Link as gs } from "@rozek/sds-core";
 import { Loro as Kt, LoroMap as E, LoroText as j, VersionVector as hn } from "loro-crdt";
 var S;
@@ -2790,19 +2790,19 @@ var Pn = /* @__PURE__ */ be($e, 9, 0), Bn = /* @__PURE__ */ be($e, 9, 1), Fn = /
         else if (re == 2) {
           var G = ve(s, m, 31) + 257, z = ve(s, m + 10, 15) + 4, C = G + ve(s, m + 5, 31) + 1;
           m += 14;
-          for (var k = new J(C), P = new J(19), V = 0; V < z; ++V)
-            P[qt[V]] = ve(s, m + V * 3, 7);
+          for (var k = new J(C), P = new J(19), Z = 0; Z < z; ++Z)
+            P[qt[Z]] = ve(s, m + Z * 3, 7);
           m += z * 3;
-          for (var H = Dt(P), Ee = (1 << H) - 1, ne = be(P, H, 1), V = 0; V < C; ) {
+          for (var H = Dt(P), Ee = (1 << H) - 1, ne = be(P, H, 1), Z = 0; Z < C; ) {
             var X = ne[ve(s, m, Ee)];
             m += X & 15;
             var D = X >> 4;
             if (D < 16)
-              k[V++] = D;
+              k[Z++] = D;
             else {
               var B = 0, M = 0;
-              for (D == 16 ? (M = 3 + ve(s, m, 3), m += 2, B = k[V - 1]) : D == 17 ? (M = 3 + ve(s, m, 7), m += 3) : D == 18 && (M = 11 + ve(s, m, 127), m += 7); M--; )
-                k[V++] = B;
+              for (D == 16 ? (M = 3 + ve(s, m, 3), m += 2, B = k[Z - 1]) : D == 17 ? (M = 3 + ve(s, m, 7), m += 3) : D == 18 && (M = 11 + ve(s, m, 127), m += 7); M--; )
+                k[Z++] = B;
             }
           }
           var ee = k.subarray(0, G), F = k.subarray(G);
@@ -2838,8 +2838,8 @@ var Pn = /* @__PURE__ */ be($e, 9, 0), Bn = /* @__PURE__ */ be($e, 9, 1), Fn = /
       } else {
         var ae = se - 254;
         if (se > 264) {
-          var V = se - 257, R = Mt[V];
-          ae = ve(s, m, (1 << R) - 1) + Br[V], m += R;
+          var Z = se - 257, R = Mt[Z];
+          ae = ve(s, m, (1 << R) - 1) + Br[Z], m += R;
         }
         var ye = $[zt(s, m) & de], We = ye >> 4;
         ye || pe(3), m += ye & 15;
@@ -2956,7 +2956,7 @@ var Pn = /* @__PURE__ */ be($e, 9, 0), Bn = /* @__PURE__ */ be($e, 9, 1), Fn = /
     ++z[re[C] & 31];
   for (var C = 0; C < q.length; ++C)
     ++z[q[C] & 31];
-  for (var k = Pt(z, 7), P = k.t, V = k.l, H = 19; H > 4 && !P[qt[H - 1]]; --H)
+  for (var k = Pt(z, 7), P = k.t, Z = k.l, H = 19; H > 4 && !P[qt[H - 1]]; --H)
     ;
   var Ee = u + 5 << 3, ne = ht(n, $e) + ht(a, kt) + i, X = ht(n, x) + ht(a, N) + i + 14 + 3 * H + ht(z, P) + 2 * z[16] + 3 * z[17] + 7 * z[18];
   if (c >= 0 && Ee <= ne && Ee <= X)
@@ -2964,7 +2964,7 @@ var Pn = /* @__PURE__ */ be($e, 9, 0), Bn = /* @__PURE__ */ be($e, 9, 1), Fn = /
   var B, M, ee, F;
   if (Te(e, f, 1 + (X < ne)), f += 2, X < ne) {
     B = be(x, A, 0), M = x, ee = be(N, Q, 0), F = N;
-    var lt = be(P, V, 0);
+    var lt = be(P, Z, 0);
     Te(e, f, D - 257), Te(e, f + 5, G - 1), Te(e, f + 10, H - 4), f += 14;
     for (var C = 0; C < H; ++C)
       Te(e, f + 3 * C, P[qt[C]]);
@@ -2993,9 +2993,9 @@ var Pn = /* @__PURE__ */ be($e, 9, 0), Bn = /* @__PURE__ */ be($e, 9, 1), Fn = /
     f && (c[0] = a.r >> 3);
     for (var m = qn[e - 1], x = m >> 13, A = m & 8191, $ = (1 << t) - 1, N = a.p || new ce(32768), Q = a.h || new ce($ + 1), me = Math.ceil(t / 3), re = 2 * me, D = function(Vt) {
       return (s[Vt] ^ s[Vt + 1] << me ^ s[Vt + 2] << re) & $;
-    }, Y = new or(25e3), q = new ce(288), G = new ce(32), z = 0, C = 0, k = a.i || 0, P = 0, V = a.w || 0, H = 0; k + 2 < i; ++k) {
+    }, Y = new or(25e3), q = new ce(288), G = new ce(32), z = 0, C = 0, k = a.i || 0, P = 0, Z = a.w || 0, H = 0; k + 2 < i; ++k) {
       var Ee = D(k), ne = k & 32767, X = Q[Ee];
-      if (N[ne] = X, Q[Ee] = ne, V <= k) {
+      if (N[ne] = X, Q[Ee] = ne, Z <= k) {
         var B = i - k;
         if ((z > 7e3 || P > 24576) && (B > 423 || !u)) {
           f = Lr(s, c, 0, Y, q, G, C, P, H, k - H, f), P = z = C = 0, H = k;
@@ -3024,14 +3024,14 @@ var Pn = /* @__PURE__ */ be($e, 9, 0), Bn = /* @__PURE__ */ be($e, 9, 1), Fn = /
         if (F) {
           Y[P++] = 268435456 | Ht[ee] << 18 | Er[F];
           var dt = Ht[ee] & 31, ut = Er[F] & 31;
-          C += Mt[dt] + Rt[ut], ++q[257 + dt], ++G[ut], V = k + ee, ++z;
+          C += Mt[dt] + Rt[ut], ++q[257 + dt], ++G[ut], Z = k + ee, ++z;
         } else
           Y[P++] = s[k], ++q[s[k]];
       }
     }
-    for (k = Math.max(k, V); k < i; ++k)
+    for (k = Math.max(k, Z); k < i; ++k)
       Y[P++] = s[k], ++q[s[k]];
-    f = Lr(s, c, u, Y, q, G, C, P, H, k - H, f), u || (a.r = f & 7 | c[f / 8 | 0] << 3, f -= 7, a.h = Q, a.p = N, a.i = k, a.w = V);
+    f = Lr(s, c, u, Y, q, G, C, P, H, k - H, f), u || (a.r = f & 7 | c[f / 8 | 0] << 3, f -= 7, a.h = Q, a.p = N, a.i = k, a.w = Z);
   } else {
     for (var k = a.w || 0; k < i + u; k += 65535) {
       var qe = k + 65535;
@@ -3312,7 +3312,7 @@ const ze = class ze extends sn {
   static fromScratch(t) {
     const r = new Kt(), n = r.getMap("Entries"), a = n.setContainer(ue, new E());
     a.set("Kind", "item"), a.set("outerItemId", ""), a.set("OrderKey", ""), a.setContainer("Label", new j()), a.setContainer("Info", new E()), a.set("MIMEType", ""), a.set("ValueKind", "none");
-    const i = n.setContainer(Z, new E());
+    const i = n.setContainer(V, new E());
     i.set("Kind", "item"), i.set("outerItemId", ue), i.set("OrderKey", "a0"), i.setContainer("Label", new j()).insert(0, "trash"), i.setContainer("Info", new E()), i.set("MIMEType", ""), i.set("ValueKind", "none");
     const c = n.setContainer(fe, new E());
     return c.set("Kind", "item"), c.set("outerItemId", ue), c.set("OrderKey", "a1"), c.setContainer("Label", new j()).insert(0, "lost-and-found"), c.setContainer("Info", new E()), c.set("MIMEType", ""), c.set("ValueKind", "none"), r.commit(), new ze(r, t);
@@ -3335,7 +3335,7 @@ const ze = class ze extends sn {
     return d(this, l, Le).call(this, ue);
   }
   get TrashItem() {
-    return d(this, l, Le).call(this, Z);
+    return d(this, l, Le).call(this, V);
   }
   get LostAndFoundItem() {
     return d(this, l, Le).call(this, fe);
@@ -3421,7 +3421,7 @@ const ze = class ze extends sn {
     const a = this._outerItemIdOf(t.Id), i = d(this, l, Xe).call(this, r.Id, n);
     this.transact(() => {
       const o = d(this, l, T).call(this, t.Id);
-      if (o.set("outerItemId", r.Id), o.set("OrderKey", i), a === Z && r.Id !== Z) {
+      if (o.set("outerItemId", r.Id), o.set("OrderKey", i), a === V && r.Id !== V) {
         const c = o.get("Info");
         c instanceof E && c.get("_trashedAt") != null && (c.delete("_trashedAt"), d(this, l, I).call(this, t.Id, "Info._trashedAt"));
       }
@@ -3443,17 +3443,17 @@ const ze = class ze extends sn {
   deleteEntry(t) {
     if (!this._mayDeleteEntry(t.Id))
       throw new W("delete-not-permitted", "this entry cannot be deleted");
-    const r = this._outerItemIdOf(t.Id), n = Oe(d(this, l, _t).call(this, Z), null);
+    const r = this._outerItemIdOf(t.Id), n = Oe(d(this, l, _t).call(this, V), null);
     this.transact(() => {
       const a = d(this, l, T).call(this, t.Id);
-      a.set("outerItemId", Z), a.set("OrderKey", n);
+      a.set("outerItemId", V), a.set("OrderKey", n);
       let i = a.get("Info");
-      i instanceof E || (i = a.setContainer("Info", new E())), i.set("_trashedAt", Date.now()), r != null && (d(this, l, De).call(this, r, t.Id), d(this, l, I).call(this, r, "innerEntryList")), d(this, l, ie).call(this, Z, t.Id), d(this, l, I).call(this, Z, "innerEntryList"), d(this, l, I).call(this, t.Id, "outerItem"), d(this, l, I).call(this, t.Id, "Info._trashedAt");
+      i instanceof E || (i = a.setContainer("Info", new E())), i.set("_trashedAt", Date.now()), r != null && (d(this, l, De).call(this, r, t.Id), d(this, l, I).call(this, r, "innerEntryList")), d(this, l, ie).call(this, V, t.Id), d(this, l, I).call(this, V, "innerEntryList"), d(this, l, I).call(this, t.Id, "outerItem"), d(this, l, I).call(this, t.Id, "Info._trashedAt");
     });
   }
   /**** purgeEntry — permanently delete a trash entry ****/
   purgeEntry(t) {
-    if (this._outerItemIdOf(t.Id) !== Z)
+    if (this._outerItemIdOf(t.Id) !== V)
       throw new W(
         "purge-not-in-trash",
         "only direct children of TrashItem can be purged"
@@ -3475,11 +3475,11 @@ const ze = class ze extends sn {
     const r = t ?? g(this, rt);
     if (r == null)
       return 0;
-    const n = Date.now(), a = Array.from(g(this, oe).get(Z) ?? /* @__PURE__ */ new Set());
+    const n = Date.now(), a = Array.from(g(this, oe).get(V) ?? /* @__PURE__ */ new Set());
     let i = 0;
     for (const o of a) {
       const c = d(this, l, T).call(this, o);
-      if (c == null || c.get("outerItemId") !== Z)
+      if (c == null || c.get("outerItemId") !== V)
         continue;
       const u = c.get("Info"), f = u instanceof E ? u.get("_trashedAt") : void 0;
       if (typeof f == "number" && !(n - f < r))
@@ -3811,11 +3811,11 @@ const ze = class ze extends sn {
   }
   /**** _mayMoveEntryTo — check if entry can be moved without cycles ****/
   _mayMoveEntryTo(t, r, n) {
-    return t === ue || t === r ? !1 : t === Z || t === fe ? r === ue : !d(this, l, nn).call(this, r, t);
+    return t === ue || t === r ? !1 : t === V || t === fe ? r === ue : !d(this, l, nn).call(this, r, t);
   }
   /**** _mayDeleteEntry — check if entry is deletable ****/
   _mayDeleteEntry(t) {
-    return t !== ue && t !== Z && t !== fe;
+    return t !== ue && t !== V && t !== fe;
   }
   /**** _TargetOf — get the target data for a link ****/
   _TargetOf(t) {
@@ -3964,7 +3964,7 @@ en = function(t) {
   let a = !0;
   for (; a; ) {
     a = !1;
-    for (const i of g(this, oe).get(Z) ?? /* @__PURE__ */ new Set())
+    for (const i of g(this, oe).get(V) ?? /* @__PURE__ */ new Set())
       n.has(i) || d(this, l, tr).call(this, i, r, n) && (n.add(i), a = !0);
   }
   return n.has(t);
@@ -3993,23 +3993,24 @@ tn = function(t) {
   let r = t;
   for (; r != null; ) {
     const n = this._outerItemIdOf(r);
-    if (n === Z)
+    if (n === V)
       return r;
     if (n === ue || n == null)
       return null;
     r = n;
   }
   return null;
-}, /**** #reachableFromRoot — get all entries reachable from root ****/
+}, /**** #reachableFromRoot — compute live-tree entries reachable from root ****/
+// TrashItem is included (it is a direct child of Root) but its subtree is
+// NOT traversed — entries inside Trash are not considered "live" and must
+// not protect other entries from being purged.
 rr = function() {
   const t = /* @__PURE__ */ new Set(), r = [ue];
   for (; r.length > 0; ) {
     const n = r.pop();
-    if (!t.has(n)) {
-      t.add(n);
+    if (!t.has(n) && (t.add(n), n !== V))
       for (const a of g(this, oe).get(n) ?? /* @__PURE__ */ new Set())
         t.has(a) || r.push(a);
-    }
   }
   return t;
 }, /**** #purgeSubtree — recursively delete entry and unprotected children ****/
@@ -4020,8 +4021,8 @@ nr = function(t) {
   const n = r.get("Kind"), a = r.get("outerItemId"), i = d(this, l, rr).call(this), o = /* @__PURE__ */ new Set(), c = Array.from(g(this, oe).get(t) ?? /* @__PURE__ */ new Set());
   for (const u of c)
     if (d(this, l, tr).call(this, u, i, o)) {
-      const f = d(this, l, T).call(this, u), m = Oe(d(this, l, _t).call(this, Z), null);
-      f.set("outerItemId", Z), f.set("OrderKey", m), d(this, l, De).call(this, t, u), d(this, l, ie).call(this, Z, u), d(this, l, I).call(this, Z, "innerEntryList"), d(this, l, I).call(this, u, "outerItem");
+      const f = d(this, l, T).call(this, u), m = Oe(d(this, l, _t).call(this, V), null);
+      f.set("outerItemId", V), f.set("OrderKey", m), d(this, l, De).call(this, t, u), d(this, l, ie).call(this, V, u), d(this, l, I).call(this, V, "innerEntryList"), d(this, l, I).call(this, u, "outerItem");
     } else
       d(this, l, nr).call(this, u);
   if (d(this, l, I).call(this, t, "Existence"), r.set("outerItemId", ""), r.set("OrderKey", ""), a && (d(this, l, De).call(this, a, t), d(this, l, I).call(this, a, "innerEntryList")), n === "link") {

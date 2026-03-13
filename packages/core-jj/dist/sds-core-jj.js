@@ -2,7 +2,7 @@ var or = (n) => {
   throw TypeError(n);
 };
 var Lt = (n, e, t) => e.has(n) || or("Cannot " + t);
-var m = (n, e, t) => (Lt(n, e, "read from private field"), t ? t.call(n) : e.get(n)), D = (n, e, t) => e.has(n) ? or("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(n) : e.set(n, t), he = (n, e, t, r) => (Lt(n, e, "write to private field"), r ? r.call(n, t) : e.set(n, t), t), u = (n, e, t) => (Lt(n, e, "access private method"), t);
+var m = (n, e, t) => (Lt(n, e, "read from private field"), t ? t.call(n) : e.get(n)), $ = (n, e, t) => e.has(n) ? or("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(n) : e.set(n, t), he = (n, e, t, r) => (Lt(n, e, "write to private field"), r ? r.call(n, t) : e.set(n, t), t), u = (n, e, t) => (Lt(n, e, "access private method"), t);
 var Rt = (n, e, t, r) => ({
   set _(s) {
     he(n, e, s, t);
@@ -11,7 +11,7 @@ var Rt = (n, e, t, r) => ({
     return m(n, e, r);
   }
 });
-import { SDS_DataStore as fn, DefaultWrapperCacheSize as hn, DefaultLiteralSizeLimit as mn, RootId as Fe, TrashId as $, LostAndFoundId as me, SDS_Error as Y, expectValidMIMEType as lr, DefaultMIMEType as We, expectValidLabel as vn, DefaultBinarySizeLimit as pn, expectValidInfoKey as gn, checkInfoValueSize as yn, _base64ToUint8Array as Mr, SDS_Item as cr, SDS_Link as ur, maxOrderKeyLength as _n } from "@rozek/sds-core";
+import { SDS_DataStore as fn, DefaultWrapperCacheSize as hn, DefaultLiteralSizeLimit as mn, RootId as Fe, TrashId as N, LostAndFoundId as me, SDS_Error as Y, expectValidMIMEType as lr, DefaultMIMEType as We, expectValidLabel as vn, DefaultBinarySizeLimit as pn, expectValidInfoKey as gn, checkInfoValueSize as yn, _base64ToUint8Array as Mr, SDS_Item as cr, SDS_Link as ur, maxOrderKeyLength as _n } from "@rozek/sds-core";
 import { SDS_Entry as bs, SDS_Error as ks, SDS_Item as xs, SDS_Link as Is } from "@rozek/sds-core";
 import { Model as dr } from "json-joy/lib/json-crdt/index.js";
 import { s as h } from "json-joy/lib/json-crdt-patch/schema.js";
@@ -193,12 +193,12 @@ var kn = /* @__PURE__ */ we(Ze, 9, 0), xn = /* @__PURE__ */ we(Ze, 9, 1), In = /
           for (var H = Vt(K), Oe = (1 << H) - 1, ne = we(K, H, 1), M = 0; M < A; ) {
             var J = ne[ve(n, p, Oe)];
             p += J & 15;
-            var P = J >> 4;
-            if (P < 16)
-              x[M++] = P;
+            var D = J >> 4;
+            if (D < 16)
+              x[M++] = D;
             else {
               var B = 0, V = 0;
-              for (P == 16 ? (V = 3 + ve(n, p, 3), p += 2, B = x[M - 1]) : P == 17 ? (V = 3 + ve(n, p, 7), p += 3) : P == 18 && (V = 11 + ve(n, p, 127), p += 7); V--; )
+              for (D == 16 ? (V = 3 + ve(n, p, 3), p += 2, B = x[M - 1]) : D == 17 ? (V = 3 + ve(n, p, 7), p += 3) : D == 18 && (V = 11 + ve(n, p, 127), p += 7); V--; )
                 x[M++] = B;
             }
           }
@@ -207,12 +207,12 @@ var kn = /* @__PURE__ */ we(Ze, 9, 0), xn = /* @__PURE__ */ we(Ze, 9, 1), In = /
         } else
           pe(1);
       else {
-        var P = ar(p) + 4, G = n[P - 4] | n[P - 3] << 8, q = P + G;
+        var D = ar(p) + 4, G = n[D - 4] | n[D - 3] << 8, q = D + G;
         if (q > s) {
           c && pe(0);
           break;
         }
-        o && d(k + G), t.set(n.subarray(P, q), k), e.b = k += G, e.p = p = q * 8, e.f = f;
+        o && d(k + G), t.set(n.subarray(D, q), k), e.b = k += G, e.p = p = q * 8, e.f = f;
         continue;
       }
       if (p > fe) {
@@ -302,8 +302,8 @@ var kn = /* @__PURE__ */ we(Ze, 9, 0), xn = /* @__PURE__ */ we(Ze, 9, 1), In = /
         break;
     }
     for (R >>= X; R > 0; ) {
-      var P = a[r].s;
-      j[P] < e ? R -= 1 << e - j[P]++ - 1 : ++r;
+      var D = a[r].s;
+      j[D] < e ? R -= 1 << e - j[D]++ - 1 : ++r;
     }
     for (; r >= 0 && R; --r) {
       var G = a[r].s;
@@ -349,7 +349,7 @@ var kn = /* @__PURE__ */ we(Ze, 9, 0), xn = /* @__PURE__ */ we(Ze, 9, 1), In = /
   return (s + 4 + r) * 8;
 }, mr = function(n, e, t, r, s, a, i, o, c, d, f) {
   xe(e, f++, t), ++s[256];
-  for (var p = Mt(s, 15), k = p.t, j = p.l, W = Mt(a, 15), R = W.t, X = W.l, fe = hr(k), re = fe.c, P = fe.n, G = hr(R), q = G.c, Q = G.n, z = new le(19), A = 0; A < re.length; ++A)
+  for (var p = Mt(s, 15), k = p.t, j = p.l, W = Mt(a, 15), R = W.t, X = W.l, fe = hr(k), re = fe.c, D = fe.n, G = hr(R), q = G.c, Q = G.n, z = new le(19), A = 0; A < re.length; ++A)
     ++z[re[A] & 31];
   for (var A = 0; A < q.length; ++A)
     ++z[q[A] & 31];
@@ -362,7 +362,7 @@ var kn = /* @__PURE__ */ we(Ze, 9, 0), xn = /* @__PURE__ */ we(Ze, 9, 1), In = /
   if (xe(e, f, 1 + (J < ne)), f += 2, J < ne) {
     B = we(k, j, 0), V = k, ee = we(R, X, 0), U = R;
     var lt = we(K, M, 0);
-    xe(e, f, P - 257), xe(e, f + 5, Q - 1), xe(e, f + 10, H - 4), f += 14;
+    xe(e, f, D - 257), xe(e, f + 5, Q - 1), xe(e, f + 10, H - 4), f += 14;
     for (var A = 0; A < H; ++A)
       xe(e, f + 3 * A, K[$t[A]]);
     f += 3 * H;
@@ -388,10 +388,10 @@ var kn = /* @__PURE__ */ we(Ze, 9, 0), xn = /* @__PURE__ */ we(Ze, 9, 1), In = /
   var i = a.z || n.length, o = new F(r + i + 5 * (1 + Math.ceil(i / 7e3)) + s), c = o.subarray(r, o.length - s), d = a.l, f = (a.r || 0) & 7;
   if (e) {
     f && (c[0] = a.r >> 3);
-    for (var p = Sn[e - 1], k = p >> 13, j = p & 8191, W = (1 << t) - 1, R = a.p || new le(32768), X = a.h || new le(W + 1), fe = Math.ceil(t / 3), re = 2 * fe, P = function(jt) {
+    for (var p = Sn[e - 1], k = p >> 13, j = p & 8191, W = (1 << t) - 1, R = a.p || new le(32768), X = a.h || new le(W + 1), fe = Math.ceil(t / 3), re = 2 * fe, D = function(jt) {
       return (n[jt] ^ n[jt + 1] << fe ^ n[jt + 2] << re) & W;
     }, G = new sr(25e3), q = new le(288), Q = new le(32), z = 0, A = 0, x = a.i || 0, K = 0, M = a.w || 0, H = 0; x + 2 < i; ++x) {
-      var Oe = P(x), ne = x & 32767, J = X[Oe];
+      var Oe = D(x), ne = x & 32767, J = X[Oe];
       if (R[ne] = J, X[Oe] = ne, M <= x) {
         var B = i - x;
         if ((z > 7e3 || K > 24576) && (B > 423 || !d)) {
@@ -402,7 +402,7 @@ var kn = /* @__PURE__ */ we(Ze, 9, 0), xn = /* @__PURE__ */ we(Ze, 9, 1), In = /
             Q[V] = 0;
         }
         var ee = 2, U = 0, lt = j, ue = ne - J & 32767;
-        if (B > 2 && Oe == P(x - ue))
+        if (B > 2 && Oe == D(x - ue))
           for (var ke = Math.min(k, B) - 1, se = Math.min(32767, x), ae = Math.min(258, B); ue <= se && --lt && ne != J; ) {
             if (n[x + ee] == n[x + ee - ue]) {
               for (var Z = 0; Z < ae && n[x + Z] == n[x + Z - ue]; ++Z)
@@ -2196,13 +2196,13 @@ be.create = (n, e) => new be({
   ...T(e)
 });
 function qe(n) {
-  if (n instanceof N) {
+  if (n instanceof P) {
     const e = {};
     for (const t in n.shape) {
       const r = n.shape[t];
       e[t] = Ve.create(qe(r));
     }
-    return new N({
+    return new P({
       ...n._def,
       shape: () => e
     });
@@ -2211,7 +2211,7 @@ function qe(n) {
     type: qe(n.element)
   }) : n instanceof Ve ? Ve.create(qe(n.unwrap())) : n instanceof ot ? ot.create(qe(n.unwrap())) : n instanceof ze ? ze.create(n.items.map((e) => qe(e))) : n;
 }
-class N extends S {
+class P extends S {
   constructor() {
     super(...arguments), this._cached = null, this.nonstrict = this.passthrough, this.augment = this.extend;
   }
@@ -2288,7 +2288,7 @@ class N extends S {
     return this._def.shape();
   }
   strict(e) {
-    return _.errToObj, new N({
+    return _.errToObj, new P({
       ...this._def,
       unknownKeys: "strict",
       ...e !== void 0 ? {
@@ -2305,13 +2305,13 @@ class N extends S {
     });
   }
   strip() {
-    return new N({
+    return new P({
       ...this._def,
       unknownKeys: "strip"
     });
   }
   passthrough() {
-    return new N({
+    return new P({
       ...this._def,
       unknownKeys: "passthrough"
     });
@@ -2334,7 +2334,7 @@ class N extends S {
   //     }) as any;
   //   };
   extend(e) {
-    return new N({
+    return new P({
       ...this._def,
       shape: () => ({
         ...this._def.shape(),
@@ -2348,7 +2348,7 @@ class N extends S {
    * upgrade if you are experiencing issues.
    */
   merge(e) {
-    return new N({
+    return new P({
       unknownKeys: e._def.unknownKeys,
       catchall: e._def.catchall,
       shape: () => ({
@@ -2418,7 +2418,7 @@ class N extends S {
   //   return merged;
   // }
   catchall(e) {
-    return new N({
+    return new P({
       ...this._def,
       catchall: e
     });
@@ -2427,7 +2427,7 @@ class N extends S {
     const t = {};
     for (const r of C.objectKeys(e))
       e[r] && this.shape[r] && (t[r] = this.shape[r]);
-    return new N({
+    return new P({
       ...this._def,
       shape: () => t
     });
@@ -2436,7 +2436,7 @@ class N extends S {
     const t = {};
     for (const r of C.objectKeys(this.shape))
       e[r] || (t[r] = this.shape[r]);
-    return new N({
+    return new P({
       ...this._def,
       shape: () => t
     });
@@ -2453,7 +2453,7 @@ class N extends S {
       const s = this.shape[r];
       e && !e[r] ? t[r] = s : t[r] = s.optional();
     }
-    return new N({
+    return new P({
       ...this._def,
       shape: () => t
     });
@@ -2469,7 +2469,7 @@ class N extends S {
           a = a._def.innerType;
         t[r] = a;
       }
-    return new N({
+    return new P({
       ...this._def,
       shape: () => t
     });
@@ -2478,21 +2478,21 @@ class N extends S {
     return Yr(C.objectKeys(this.shape));
   }
 }
-N.create = (n, e) => new N({
+P.create = (n, e) => new P({
   shape: () => n,
   unknownKeys: "strip",
   catchall: Ne.create(),
   typeName: b.ZodObject,
   ...T(e)
 });
-N.strictCreate = (n, e) => new N({
+P.strictCreate = (n, e) => new P({
   shape: () => n,
   unknownKeys: "strict",
   catchall: Ne.create(),
   typeName: b.ZodObject,
   ...T(e)
 });
-N.lazycreate = (n, e) => new N({
+P.lazycreate = (n, e) => new P({
   shape: n,
   unknownKeys: "strip",
   catchall: Ne.create(),
@@ -3573,34 +3573,34 @@ const Xe = class Xe extends fn {
   /**** constructor — initialize store with model and configuration ****/
   constructor(t, r) {
     super();
-    D(this, l);
+    $(this, l);
     /**** private state ****/
-    D(this, O);
-    D(this, wt);
-    D(this, Je);
-    D(this, Ee, null);
-    D(this, De, /* @__PURE__ */ new Set());
+    $(this, O);
+    $(this, wt);
+    $(this, Je);
+    $(this, Ee, null);
+    $(this, De, /* @__PURE__ */ new Set());
     // reverse index: outerItemId → Set<entryId>
-    D(this, oe, /* @__PURE__ */ new Map());
+    $(this, oe, /* @__PURE__ */ new Map());
     // forward index: entryId → outerItemId (kept in sync with #ReverseIndex)
-    D(this, je, /* @__PURE__ */ new Map());
+    $(this, je, /* @__PURE__ */ new Map());
     // incoming link index: targetId → Set<linkId>
-    D(this, Le, /* @__PURE__ */ new Map());
+    $(this, Le, /* @__PURE__ */ new Map());
     // link forward index: linkId → targetId (kept in sync with #LinkTargetIndex)
-    D(this, ye, /* @__PURE__ */ new Map());
+    $(this, ye, /* @__PURE__ */ new Map());
     // LRU wrapper cache
-    D(this, _e, /* @__PURE__ */ new Map());
-    D(this, St, hn);
+    $(this, _e, /* @__PURE__ */ new Map());
+    $(this, St, hn);
     // transaction nesting
-    D(this, et, 0);
+    $(this, et, 0);
     // ChangeSet accumulator inside a transaction
-    D(this, Re, {});
+    $(this, Re, {});
     // patch log for exportPatch() — only locally generated patches (as binaries)
-    D(this, tt, []);
+    $(this, tt, []);
     // suppress index updates / change tracking when applying remote patches
-    D(this, $e, !1);
+    $(this, $e, !1);
     // optional observer called when applyRemotePatch() catches an internal error
-    D(this, rt);
+    $(this, rt);
     he(this, O, t), he(this, wt, (r == null ? void 0 : r.LiteralSizeLimit) ?? mn), he(this, Je, (r == null ? void 0 : r.TrashTTLms) ?? 2592e6), he(this, rt, r == null ? void 0 : r.onApplyPatchError), u(this, l, sn).call(this);
     const s = (r == null ? void 0 : r.TrashCheckIntervalMs) ?? Math.min(Math.floor(m(this, Je) / 4), 36e5);
     he(this, Ee, setInterval(
@@ -3632,7 +3632,7 @@ const Xe = class Xe extends fn {
     return u(this, l, te).call(this, Fe);
   }
   get TrashItem() {
-    return u(this, l, te).call(this, $);
+    return u(this, l, te).call(this, N);
   }
   get LostAndFoundItem() {
     return u(this, l, te).call(this, me);
@@ -3720,7 +3720,7 @@ const Xe = class Xe extends fn {
       throw new Y("move-would-cycle", "cannot move an entry into one of its own descendants");
     const a = this._outerItemIdOf(t.Id), i = u(this, l, Ye).call(this, r.Id, s);
     this.transact(() => {
-      if (m(this, O).api.val(["Entries", t.Id, "outerPlacement"]).set(h.con({ outerItemId: r.Id, OrderKey: i })), a === $ && r.Id !== $) {
+      if (m(this, O).api.val(["Entries", t.Id, "outerPlacement"]).set(h.con({ outerItemId: r.Id, OrderKey: i })), a === N && r.Id !== N) {
         const o = u(this, l, I).call(this).Entries[t.Id], c = o == null ? void 0 : o.Info;
         c != null && "_trashedAt" in c && (m(this, O).api.obj(["Entries", t.Id, "Info"]).del(["_trashedAt"]), u(this, l, E).call(this, t.Id, "Info._trashedAt"));
       }
@@ -3741,14 +3741,14 @@ const Xe = class Xe extends fn {
   deleteEntry(t) {
     if (!this._mayDeleteEntry(t.Id))
       throw new Y("delete-not-permitted", "this entry cannot be deleted");
-    const r = this._outerItemIdOf(t.Id), s = u(this, l, pt).call(this, $), a = Ie(s, null);
+    const r = this._outerItemIdOf(t.Id), s = u(this, l, pt).call(this, N), a = Ie(s, null);
     this.transact(() => {
-      m(this, O).api.val(["Entries", t.Id, "outerPlacement"]).set(h.con({ outerItemId: $, OrderKey: a })), u(this, l, cn).call(this, t.Id), m(this, O).api.obj(["Entries", t.Id, "Info"]).set({ _trashedAt: h.val(h.json(Date.now())) }), r != null && (u(this, l, Ce).call(this, r, t.Id), u(this, l, E).call(this, r, "innerEntryList")), u(this, l, ie).call(this, $, t.Id), u(this, l, E).call(this, $, "innerEntryList"), u(this, l, E).call(this, t.Id, "outerItem"), u(this, l, E).call(this, t.Id, "Info._trashedAt");
+      m(this, O).api.val(["Entries", t.Id, "outerPlacement"]).set(h.con({ outerItemId: N, OrderKey: a })), u(this, l, cn).call(this, t.Id), m(this, O).api.obj(["Entries", t.Id, "Info"]).set({ _trashedAt: h.val(h.json(Date.now())) }), r != null && (u(this, l, Ce).call(this, r, t.Id), u(this, l, E).call(this, r, "innerEntryList")), u(this, l, ie).call(this, N, t.Id), u(this, l, E).call(this, N, "innerEntryList"), u(this, l, E).call(this, t.Id, "outerItem"), u(this, l, E).call(this, t.Id, "Info._trashedAt");
     });
   }
   /**** purgeEntry — permanently delete entry from trash ****/
   purgeEntry(t) {
-    if (this._outerItemIdOf(t.Id) !== $)
+    if (this._outerItemIdOf(t.Id) !== N)
       throw new Y("purge-not-in-trash", "only direct children of TrashItem can be purged");
     if (u(this, l, on).call(this, t.Id))
       throw new Y("purge-protected", "entry is protected by incoming links and cannot be purged");
@@ -3762,11 +3762,11 @@ const Xe = class Xe extends fn {
     const r = t ?? m(this, Je);
     if (r == null)
       return 0;
-    const s = Date.now(), a = u(this, l, I).call(this), i = Array.from(m(this, oe).get($) ?? /* @__PURE__ */ new Set());
+    const s = Date.now(), a = u(this, l, I).call(this), i = Array.from(m(this, oe).get(N) ?? /* @__PURE__ */ new Set());
     let o = 0;
     for (const f of i) {
       const p = a.Entries[f];
-      if (p == null || ((c = p.outerPlacement) == null ? void 0 : c.outerItemId) !== $)
+      if (p == null || ((c = p.outerPlacement) == null ? void 0 : c.outerItemId) !== N)
         continue;
       const j = (d = p.Info) == null ? void 0 : d._trashedAt;
       if (typeof j == "number" && !(s - j < r))
@@ -4138,11 +4138,11 @@ const Xe = class Xe extends fn {
   }
   /**** _mayMoveEntryTo — check if move is valid ****/
   _mayMoveEntryTo(t, r, s) {
-    return !(t === Fe || (t === $ || t === me) && r !== Fe || u(this, l, dn).call(this, t, r));
+    return !(t === Fe || (t === N || t === me) && r !== Fe || u(this, l, dn).call(this, t, r));
   }
   /**** _mayDeleteEntry — check if entry can be deleted ****/
   _mayDeleteEntry(t) {
-    return !(t === Fe || t === $ || t === me);
+    return !(t === Fe || t === N || t === me);
   }
 };
 O = new WeakMap(), wt = new WeakMap(), Je = new WeakMap(), Ee = new WeakMap(), De = new WeakMap(), oe = new WeakMap(), je = new WeakMap(), Le = new WeakMap(), ye = new WeakMap(), _e = new WeakMap(), St = new WeakMap(), et = new WeakMap(), Re = new WeakMap(), tt = new WeakMap(), $e = new WeakMap(), rt = new WeakMap(), l = new WeakSet(), /**** #encodeUint32 — encode 32-bit integer as bytes ****/
@@ -4345,7 +4345,7 @@ on = function(t) {
   let a = !0;
   for (; a; ) {
     a = !1;
-    for (const i of m(this, oe).get($) ?? /* @__PURE__ */ new Set())
+    for (const i of m(this, oe).get(N) ?? /* @__PURE__ */ new Set())
       s.has(i) || u(this, l, er).call(this, i, r, s) && (s.add(i), a = !0);
   }
   return s.has(t);
@@ -4374,23 +4374,24 @@ ln = function(t) {
   let r = t;
   for (; r != null; ) {
     const s = this._outerItemIdOf(r);
-    if (s === $)
+    if (s === N)
       return r;
     if (s === Fe || s == null)
       return null;
     r = s;
   }
   return null;
-}, /**** #reachableFromRoot — compute reachable entries from root ****/
+}, /**** #reachableFromRoot — compute live-tree entries reachable from root ****/
+// TrashItem is included (it is a direct child of Root) but its subtree is
+// NOT traversed — entries inside Trash are not considered "live" and must
+// not protect other entries from being purged.
 tr = function() {
   const t = /* @__PURE__ */ new Set(), r = [Fe];
   for (; r.length > 0; ) {
     const s = r.pop();
-    if (!t.has(s)) {
-      t.add(s);
+    if (!t.has(s) && (t.add(s), s !== N))
       for (const a of m(this, oe).get(s) ?? /* @__PURE__ */ new Set())
         t.has(a) || r.push(a);
-    }
   }
   return t;
 }, /**** #purgeSubtree — recursively purge entry and children ****/
@@ -4402,11 +4403,11 @@ rr = function(t) {
   const s = r.Kind, a = (d = r.outerPlacement) == null ? void 0 : d.outerItemId, i = u(this, l, tr).call(this), o = /* @__PURE__ */ new Set(), c = Array.from(m(this, oe).get(t) ?? /* @__PURE__ */ new Set());
   for (const f of c)
     if (u(this, l, er).call(this, f, i, o)) {
-      const p = Ie(u(this, l, pt).call(this, $), null);
+      const p = Ie(u(this, l, pt).call(this, N), null);
       m(this, O).api.obj(["Entries", f, "outerPlacement"]).set({
-        outerItemId: $,
+        outerItemId: N,
         OrderKey: p
-      }), u(this, l, Ce).call(this, t, f), u(this, l, ie).call(this, $, f), u(this, l, E).call(this, $, "innerEntryList"), u(this, l, E).call(this, f, "outerItem");
+      }), u(this, l, Ce).call(this, t, f), u(this, l, ie).call(this, N, f), u(this, l, E).call(this, N, "innerEntryList"), u(this, l, E).call(this, f, "outerItem");
     } else
       u(this, l, rr).call(this, f);
   if (m(this, O).api.obj(["Entries"]).del([t]), a && (u(this, l, Ce).call(this, a, t), u(this, l, E).call(this, a, "innerEntryList")), s === "link") {

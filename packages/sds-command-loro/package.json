@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-command-loro",
   "description": "CLI tool for shareable-data-store (Loro CRDT backend)",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "keywords": [
     "crdt",
     "loro",

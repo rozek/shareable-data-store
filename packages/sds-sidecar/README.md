@@ -17,9 +17,9 @@ Use `@rozek/sds-sidecar` directly only when implementing support for a custom CR
 ## Prerequisites
 
 - **Node.js** 22.5 or later
-- A running **SDS WebSocket relay server** reachable at a `ws://` or `wss://` URL
-- A valid **JWT** with at minimum `read` scope and an `aud` claim matching the target store ID
-- All clients connected to the same relay must use the **same CRDT backend**. Patch and snapshot bytes are backend-specific binary formats; mixing backends causes silent data corruption
+- a running **SDS WebSocket relay server** reachable at a `ws://` or `wss://` URL
+- a valid **JWT** with at minimum `read` scope and an `aud` claim matching the target store ID
+- all clients connected to the same relay must use the **same CRDT backend**. Patch and snapshot bytes are backend-specific binary formats; mixing backends causes silent data corruption
 
 ---
 
@@ -127,6 +127,12 @@ Both positional arguments may also be supplied through environment variables or 
 | --- | --- |
 | `--on-auth-error <url>` | webhook URL to notify when the server rejects the token (uses `--webhook-token` too) |
 
+#### Logging
+
+| Option | Description |
+| --- | --- |
+| `--verbose` | log incoming patches and store changes (env: `SDS_VERBOSE=1`) |
+
 #### Reconnect tuning
 
 | Option | Default | Description |
@@ -144,9 +150,10 @@ Both positional arguments may also be supplied through environment variables or 
 | `SDS_SERVER_URL` | WebSocket base URL — must start with `ws://` or `wss://` (overridden by positional `<ws-url>`) |
 | `SDS_STORE_ID` | store identifier (overridden by positional `<store-id>`) |
 | `SDS_TOKEN` | JWT for the WebSocket server |
-| `SDS_WEBHOOK_TOKEN` | Bearer token for all outgoing webhook HTTP calls |
+| `SDS_WEBHOOK_TOKEN` | bearer token for all outgoing webhook HTTP calls |
 | `SDS_PERSISTENCE_DIR` | directory for the local SQLite database |
-| `SDS_ON_AUTH_ERROR` | Webhook URL to notify when the server rejects the token |
+| `SDS_ON_AUTH_ERROR` | webhook URL to notify when the server rejects the token |
+| `SDS_VERBOSE` | set to `1` to log incoming patches and store changes |
 
 ---
 
@@ -162,6 +169,7 @@ When `--config <file>` is given, options are read from a JSON file. CLI options 
   "PersistenceDir": "/var/lib/sds",
   "WebHookToken":  "<bearer-token>",
   "onAuthError":   "https://admin.example.com/auth-error",
+  "Verbose":       true,
 
   "reconnect": {
     "initialDelay": 1000,

@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-sidecar",
   "description": "backend-agnostic sidecar library for shareable-data-store — persistent sync + WebHook notifications",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "keywords": [
     "crdt",
     "sidecar",

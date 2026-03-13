@@ -26,6 +26,9 @@ export default defineConfig({
         '@hono/node-ws',
         'jose',
       ],
+      output: {
+        banner: '#!/usr/bin/env -S node --no-warnings',
+      },
     },
   },
   plugins: [ dts({ rollupTypes:true }) ],

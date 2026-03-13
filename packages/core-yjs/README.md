@@ -19,11 +19,11 @@ This package is isomorphic. All runtime dependencies (`yjs`, `fflate`, `fraction
 
 Choose `@rozek/sds-core-yjs` when:
 
-- You already use Y.js elsewhere in your stack and want a consistent CRDT model.
-- You need character-level collaborative text editing on data values (`Y.Text`).
-- You prefer Y.js's large ecosystem and tooling (y-websocket, y-indexeddb, …).
-- You do **not** need the canonical-snapshot guarantee of the json-joy backend.
-- You do **not** need to exchange patches with stores built on the json-joy or Loro backends.
+- you already use Y.js elsewhere in your stack and want a consistent CRDT model.
+- you need character-level collaborative text editing on data values (`Y.Text`).
+- you prefer Y.js's large ecosystem and tooling (y-websocket, y-indexeddb, …).
+- you do **not** need the canonical-snapshot guarantee of the json-joy backend.
+- you do **not** need to exchange patches with stores built on the json-joy or Loro backends.
 
 Choose one of the alternative backend packages when you need a different CRDT library or want to migrate an existing store.
 

@@ -13948,16 +13948,17 @@ Kl = function(t) {
     i = n;
   }
   return null;
-}, /**** #reachableFromRoot — compute reachable entries from root ****/
+}, /**** #reachableFromRoot — compute live-tree entries reachable from root ****/
+// TrashItem is included (it is a direct child of Root) but its subtree is
+// NOT traversed — entries inside Trash are not considered "live" and must
+// not protect other entries from being purged.
 Ks = function() {
   const t = /* @__PURE__ */ new Set(), i = [$e];
   for (; i.length > 0; ) {
     const n = i.pop();
-    if (!t.has(n)) {
-      t.add(n);
+    if (!t.has(n) && (t.add(n), n !== ve))
       for (const s of k(this, Ie).get(n) ?? /* @__PURE__ */ new Set())
         t.has(s) || i.push(s);
-    }
   }
   return t;
 }, /**** #purgeSubtree — recursively purge entry and children ****/

@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-command",
   "description": "CLI tool for shareable-data-store — interactive REPL, one-shot and batch commands",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "keywords": [
     "crdt",
     "cli",

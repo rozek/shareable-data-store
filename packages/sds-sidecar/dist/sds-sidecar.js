@@ -1,13 +1,13 @@
-import A from "node:fs/promises";
-import { Command as K } from "commander";
-import { SDS_DesktopPersistenceProvider as C } from "@rozek/sds-persistence-node";
-import { SDS_SyncEngine as B } from "@rozek/sds-sync-engine";
-import I from "node:path";
-import V from "node:os";
-import { TrashId as T } from "@rozek/sds-core";
-const G = "0.0.12", N = {
-  version: G
-}, y = {
+import L from "node:fs/promises";
+import { Command as V } from "commander";
+import { SDS_DesktopPersistenceProvider as B } from "@rozek/sds-persistence-node";
+import { SDS_SyncEngine as C } from "@rozek/sds-sync-engine";
+import D from "node:path";
+import G from "node:os";
+import { TrashId as R } from "@rozek/sds-core";
+const j = "0.0.13", F = {
+  version: j
+}, b = {
   OK: 0,
   // success (clean shutdown)
   GeneralError: 1,
@@ -23,52 +23,52 @@ const G = "0.0.12", N = {
 };
 class h extends Error {
   ExitCode;
-  constructor(e, t = y.UsageError) {
+  constructor(e, t = b.UsageError) {
     super(e), this.name = "SDS_SidecarError", this.ExitCode = t;
   }
 }
-function L(n) {
+function P(r) {
   switch (!0) {
-    case n === "change":
+    case r === "change":
       return { Kind: "change" };
-    case n === "create":
+    case r === "create":
       return { Kind: "create" };
-    case n === "delete":
+    case r === "delete":
       return { Kind: "delete" };
-    case n === "value":
+    case r === "value":
       return { Kind: "value" };
-    case n.startsWith("value:"): {
-      const e = n.slice(6).trim();
+    case r.startsWith("value:"): {
+      const e = r.slice(6).trim();
       if (e.length === 0)
-        throw new h(`invalid --on value '${n}' — expected 'value:<mime-glob>'`);
+        throw new h(`invalid --on value '${r}' — expected 'value:<mime-glob>'`);
       return { Kind: "value", MIMEGlob: e };
     }
-    case n.startsWith("info:"): {
-      const e = n.slice(5), t = e.indexOf("=");
+    case r.startsWith("info:"): {
+      const e = r.slice(5), t = e.indexOf("=");
       if (t < 1)
         throw new h(
-          `invalid --on value '${n}' — expected 'info:<key>=<value>'`
+          `invalid --on value '${r}' — expected 'info:<key>=<value>'`
         );
-      const o = e.slice(0, t).trim(), r = e.slice(t + 1);
+      const o = e.slice(0, t).trim(), n = e.slice(t + 1);
       if (o.length === 0)
         throw new h(
-          `invalid --on value '${n}' — info key must not be empty`
+          `invalid --on value '${r}' — info key must not be empty`
         );
-      return { Kind: "info", Key: o, Value: r };
+      return { Kind: "info", Key: o, Value: n };
     }
     default:
       throw new h(
-        `unknown trigger '${n}' — valid values: change, create, delete, value, value:<mime-glob>, info:<key>=<value>`
+        `unknown trigger '${r}' — valid values: change, create, delete, value, value:<mime-glob>, info:<key>=<value>`
       );
   }
 }
-function F(n, e) {
-  if (n == null || typeof n != "object" || Array.isArray(n))
+function J(r, e) {
+  if (r == null || typeof r != "object" || Array.isArray(r))
     throw new h(`WebHooks[${e}]: expected an object`);
-  const t = n;
+  const t = r;
   if (typeof t.URL != "string" || t.URL.trim().length === 0)
     throw new h(`WebHooks[${e}].URL: expected a non-empty string`);
-  const o = t.URL.trim(), r = t.Topic != null ? String(t.Topic) : void 0, s = t.Watch != null ? String(t.Watch) : void 0, c = t.maxDepth != null ? Number(t.maxDepth) : void 0;
+  const o = t.URL.trim(), n = t.Topic != null ? String(t.Topic) : void 0, s = t.Watch != null ? String(t.Watch) : void 0, c = t.maxDepth != null ? Number(t.maxDepth) : void 0;
   if (c != null && (!Number.isInteger(c) || c < 0))
     throw new h(`WebHooks[${e}].maxDepth: expected a non-negative integer`);
   const i = t.on;
@@ -76,35 +76,35 @@ function F(n, e) {
     throw new h(`WebHooks[${e}].on: expected a non-empty array`);
   const f = i.map((l, u) => {
     try {
-      return L(String(l));
-    } catch (S) {
-      throw new h(`WebHooks[${e}].on[${u}]: ${S.message}`);
+      return P(String(l));
+    } catch (p) {
+      throw new h(`WebHooks[${e}].on[${u}]: ${p.message}`);
     }
   });
-  return { URL: o, Topic: r, Watch: s, maxDepth: c, on: f };
+  return { URL: o, Topic: n, Watch: s, maxDepth: c, on: f };
 }
-async function j(n) {
+async function N(r) {
   let e = {};
-  const t = n.config;
+  const t = r.config;
   if (t != null) {
-    let p;
+    let w;
     try {
-      p = await A.readFile(I.resolve(t), "utf-8");
-    } catch (E) {
+      w = await L.readFile(D.resolve(t), "utf-8");
+    } catch (v) {
       throw new h(
-        `cannot read config file '${t}': ${E.message}`,
-        y.NotFound
+        `cannot read config file '${t}': ${v.message}`,
+        b.NotFound
       );
     }
     try {
-      e = JSON.parse(p);
-    } catch (E) {
+      e = JSON.parse(w);
+    } catch (v) {
       throw new h(
-        `config file '${t}' contains invalid JSON: ${E.message}`
+        `config file '${t}' contains invalid JSON: ${v.message}`
       );
     }
   }
-  const o = n.server ?? process.env.SDS_SERVER_URL ?? e.ServerURL, r = n.store ?? process.env.SDS_STORE_ID ?? e.StoreId, s = n.token ?? process.env.SDS_TOKEN ?? e.Token, c = n.persistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? e.PersistenceDir, i = n.webhookToken ?? process.env.SDS_WEBHOOK_TOKEN ?? e.WebHookToken, f = n.onAuthError ?? process.env.SDS_ON_AUTH_ERROR ?? e.onAuthError;
+  const o = r.server ?? process.env.SDS_SERVER_URL ?? e.ServerURL, n = r.store ?? process.env.SDS_STORE_ID ?? e.StoreId, s = r.token ?? process.env.SDS_TOKEN ?? e.Token, c = r.persistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? e.PersistenceDir, i = r.webhookToken ?? process.env.SDS_WEBHOOK_TOKEN ?? e.WebHookToken, f = r.onAuthError ?? process.env.SDS_ON_AUTH_ERROR ?? e.onAuthError, l = r.verbose === !0 || process.env.SDS_VERBOSE === "1" || e.Verbose === !0;
   if (o == null || o.trim().length === 0)
     throw new h(
       'no server URL — set SDS_SERVER_URL, use --server, or set "ServerURL" in config file'
@@ -113,7 +113,7 @@ async function j(n) {
     throw new h(
       `invalid server URL '${o}' — must start with 'ws://' or 'wss://'`
     );
-  if (r == null || r.trim().length === 0)
+  if (n == null || n.trim().length === 0)
     throw new h(
       'no store ID — set SDS_STORE_ID, use --store, or set "StoreId" in config file'
     );
@@ -121,69 +121,70 @@ async function j(n) {
     throw new h(
       'no token — set SDS_TOKEN, use --token, or set "Token" in config file'
     );
-  const l = e.reconnect ?? {}, u = Number(n.reconnectInitial ?? l.initialDelay ?? 1e3), S = Number(n.reconnectMax ?? l.maxDelay ?? 6e4), d = Number(n.reconnectJitter ?? l.Jitter ?? 0.1);
-  if (!isFinite(u) || u < 100)
+  const u = e.reconnect ?? {}, p = Number(r.reconnectInitial ?? u.initialDelay ?? 1e3), g = Number(r.reconnectMax ?? u.maxDelay ?? 6e4), S = Number(r.reconnectJitter ?? u.Jitter ?? 0.1);
+  if (!isFinite(p) || p < 100)
     throw new h("--reconnect-initial must be at least 100 ms");
-  if (!isFinite(S) || S < u)
+  if (!isFinite(g) || g < p)
     throw new h("--reconnect-max must be >= --reconnect-initial");
-  if (!isFinite(d) || d < 0 || d > 1)
+  if (!isFinite(S) || S < 0 || S > 1)
     throw new h("--reconnect-jitter must be between 0 and 1");
-  const w = c != null ? I.resolve(c) : I.join(V.homedir(), ".sds"), v = [], m = n.webhookUrl;
-  if (m != null) {
-    const p = n.on ?? [];
-    if (p.length === 0)
+  const m = c != null ? D.resolve(c) : D.join(G.homedir(), ".sds"), $ = [], a = r.webhookUrl;
+  if (a != null) {
+    const w = r.on ?? [];
+    if (w.length === 0)
       throw new h("--webhook-url given without any --on trigger");
-    const E = p.map((O) => L(O)), P = n.topic, M = n.watch, $ = n.depth != null ? Number(n.depth) : void 0;
-    if ($ != null && (!Number.isInteger($) || $ < 0))
+    const v = w.map((K) => P(K)), M = r.topic, O = r.watch, I = r.depth != null ? Number(r.depth) : void 0;
+    if (I != null && (!Number.isInteger(I) || I < 0))
       throw new h("--depth must be a non-negative integer");
-    v.push({ URL: m, Topic: P, Watch: M, maxDepth: $, on: E });
+    $.push({ URL: a, Topic: M, Watch: O, maxDepth: I, on: v });
   }
-  const a = [], g = e.WebHooks;
-  if (Array.isArray(g))
-    for (let p = 0; p < g.length; p++)
-      a.push(F(g[p], p));
-  const k = [...v, ...a];
+  const d = [], y = e.WebHooks;
+  if (Array.isArray(y))
+    for (let w = 0; w < y.length; w++)
+      d.push(J(y[w], w));
+  const k = [...$, ...d];
   return {
     ServerURL: o.trim(),
-    StoreId: r.trim(),
+    StoreId: n.trim(),
     Token: s.trim(),
-    PersistenceDir: w,
+    PersistenceDir: m,
     WebHookToken: i,
     onAuthError: f,
-    reconnect: { initialDelay: u, maxDelay: S, Jitter: d },
+    Verbose: l,
+    reconnect: { initialDelay: p, maxDelay: g, Jitter: S },
     WebHooks: k
   };
 }
-function J(n, e) {
+function z(r, e) {
   const t = e.replace(/[^a-zA-Z0-9_-]/g, "_");
-  return I.join(n, `${t}.db`);
+  return D.join(r, `${t}.db`);
 }
-const U = 1, R = 2, z = 3, q = 5, b = 32;
-function W(...n) {
-  const e = n.reduce((r, s) => r + s.byteLength, 0), t = new Uint8Array(e);
+const U = 1, _ = 2, q = 3, Q = 5, E = 32;
+function W(...r) {
+  const e = r.reduce((n, s) => n + s.byteLength, 0), t = new Uint8Array(e);
   let o = 0;
-  for (const r of n)
-    t.set(r, o), o += r.byteLength;
+  for (const n of r)
+    t.set(n, o), o += n.byteLength;
   return t;
 }
-function _(n) {
-  const e = new Uint8Array(n.length / 2);
-  for (let t = 0; t < n.length; t += 2)
-    e[t / 2] = parseInt(n.slice(t, t + 2), 16);
+function H(r) {
+  const e = new Uint8Array(r.length / 2);
+  for (let t = 0; t < r.length; t += 2)
+    e[t / 2] = parseInt(r.slice(t, t + 2), 16);
   return e;
 }
-function H(n) {
-  return Array.from(n).map((e) => e.toString(16).padStart(2, "0")).join("");
+function x(r) {
+  return Array.from(r).map((e) => e.toString(16).padStart(2, "0")).join("");
 }
-function D(n, e) {
+function T(r, e) {
   const t = new Uint8Array(1 + e.byteLength);
-  return t[0] = n, t.set(e, 1), t;
+  return t[0] = r, t.set(e, 1), t;
 }
-class Q {
+class Z {
   StoreId;
   #t = "disconnected";
   #e = void 0;
-  #r = "";
+  #n = "";
   #i = "";
   // exponential backoff state
   #o = 0;
@@ -193,7 +194,7 @@ class Q {
   #l;
   #h;
   // value-chunk reassembly buffer: hash → { total, chunks }
-  #n = /* @__PURE__ */ new Map();
+  #r = /* @__PURE__ */ new Map();
   // subscriber sets
   #d = /* @__PURE__ */ new Set();
   #u = /* @__PURE__ */ new Set();
@@ -215,24 +216,24 @@ class Q {
       throw new TypeError(
         `SidecarNetworkProvider: invalid server URL '${e}' — expected ws:// or wss://`
       );
-    return this.#r = e, this.#i = t.Token, this.#o = 0, this.#S();
+    return this.#n = e, this.#i = t.Token, this.#o = 0, this.#S();
   }
   /**** disconnect ****/
   disconnect() {
-    this.#y(), this.#c("disconnected"), this.#e?.close(), this.#e = void 0, this.#n.clear();
+    this.#y(), this.#c("disconnected"), this.#e?.close(), this.#e = void 0, this.#r.clear();
   }
   /**** sendPatch ****/
   sendPatch(e) {
-    this.#g(D(U, e));
+    this.#g(T(U, e));
   }
   /**** sendValue ****/
   sendValue(e, t) {
-    const o = _(e);
-    this.#g(D(R, W(o, t)));
+    const o = H(e);
+    this.#g(T(_, W(o, t)));
   }
   /**** requestValue ****/
   requestValue(e) {
-    this.#g(D(z, _(e)));
+    this.#g(T(q, H(e)));
   }
   /**** onPatch ****/
   onPatch(e) {
@@ -267,14 +268,14 @@ class Q {
   /**** #doConnect ****/
   #S() {
     return new Promise((e, t) => {
-      const r = `${this.#r.replace(/\/+$/, "")}/ws/${this.StoreId}?token=${encodeURIComponent(this.#i)}`, s = new WebSocket(r);
+      const n = `${this.#n.replace(/\/+$/, "")}/ws/${this.StoreId}?token=${encodeURIComponent(this.#i)}`, s = new WebSocket(n);
       s.binaryType = "arraybuffer", this.#e = s, this.#c("connecting"), s.onopen = () => {
         this.#o = 0, this.#c("connected"), e();
       }, s.onerror = () => {
         this.#t === "connecting" && t(new Error("WebSocket connection failed"));
       }, s.onclose = (c) => {
         if (this.#e = void 0, c.code === 4001 || c.code === 4003) {
-          this.#n.clear(), this.#c("disconnected");
+          this.#r.clear(), this.#c("disconnected");
           for (const i of this.#p)
             try {
               i(c.code, c.reason);
@@ -282,7 +283,7 @@ class Q {
             }
           return;
         }
-        this.#t !== "disconnected" && (this.#n.clear(), this.#c("reconnecting"), this.#w());
+        this.#t !== "disconnected" && (this.#r.clear(), this.#c("reconnecting"), this.#w());
       }, s.onmessage = (c) => {
         c.data instanceof ArrayBuffer && this.#b(new Uint8Array(c.data));
       };
@@ -322,48 +323,48 @@ class Q {
     const t = e[0], o = e.slice(1);
     switch (!0) {
       case t === U: {
-        for (const r of this.#d)
+        for (const n of this.#d)
           try {
-            r(o);
+            n(o);
           } catch {
           }
         break;
       }
-      case t === R: {
-        if (o.byteLength < b)
+      case t === _: {
+        if (o.byteLength < E)
           return;
-        const r = H(o.slice(0, b)), s = o.slice(b);
+        const n = x(o.slice(0, E)), s = o.slice(E);
         for (const c of this.#u)
           try {
-            c(r, s);
+            c(n, s);
           } catch {
           }
         break;
       }
-      case t === q: {
-        if (o.byteLength < b + 8)
+      case t === Q: {
+        if (o.byteLength < E + 8)
           return;
-        const r = H(o.slice(0, b)), s = new DataView(o.buffer, o.byteOffset + b, 8), c = s.getUint32(0, !1), i = s.getUint32(4, !1), f = o.slice(b + 8);
-        let l = this.#n.get(r);
-        if (l == null && (l = { total: i, chunks: /* @__PURE__ */ new Map() }, this.#n.set(r, l)), l.chunks.set(c, f), l.chunks.size < l.total)
+        const n = x(o.slice(0, E)), s = new DataView(o.buffer, o.byteOffset + E, 8), c = s.getUint32(0, !1), i = s.getUint32(4, !1), f = o.slice(E + 8);
+        let l = this.#r.get(n);
+        if (l == null && (l = { total: i, chunks: /* @__PURE__ */ new Map() }, this.#r.set(n, l)), l.chunks.set(c, f), l.chunks.size < l.total)
           break;
         let u = !0;
-        for (let d = 0; d < l.total; d++)
-          if (!l.chunks.has(d)) {
+        for (let g = 0; g < l.total; g++)
+          if (!l.chunks.has(g)) {
             u = !1;
             break;
           }
         if (!u) {
-          this.#n.delete(r);
+          this.#r.delete(n);
           break;
         }
-        this.#n.delete(r);
-        const S = W(
-          ...Array.from({ length: l.total }, (d, w) => l.chunks.get(w))
+        this.#r.delete(n);
+        const p = W(
+          ...Array.from({ length: l.total }, (g, S) => l.chunks.get(S))
         );
-        for (const d of this.#u)
+        for (const g of this.#u)
           try {
-            d(r, S);
+            g(n, p);
           } catch {
           }
         break;
@@ -371,18 +372,18 @@ class Q {
     }
   }
 }
-const Z = 1e4;
-function X(n, e) {
+const X = 1e4;
+function Y(r, e) {
   const t = e.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*").replace(/\?/g, ".");
-  return new RegExp(`^${t}$`, "i").test(n);
+  return new RegExp(`^${t}$`, "i").test(r);
 }
-class Y {
+class ee {
   #t;
   #e;
-  #r;
+  #n;
   #i;
-  constructor(e, t, o, r) {
-    this.#t = e, this.#e = t, this.#i = o, this.#r = r;
+  constructor(e, t, o, n) {
+    this.#t = e, this.#e = t, this.#i = o, this.#n = n;
   }
   /**** processChangeSet — evaluates the changeset against all rules; fires matching hooks ****/
   async processChangeSet(e, t) {
@@ -391,25 +392,25 @@ class Y {
     const o = Object.keys(t);
     if (o.length === 0)
       return;
-    const r = [];
+    const n = [];
     for (const s of this.#t) {
       const c = this.#o(s, t, o);
       for (const { Trigger: i, EntryIds: f } of c) {
         const l = {
           StoreId: this.#i,
-          Trigger: ee(i),
+          Trigger: te(i),
           changedEntries: f,
           Timestamp: (/* @__PURE__ */ new Date()).toISOString()
         };
-        s.Topic != null && (l.Topic = s.Topic), r.push(this.#h(s.URL, l));
+        s.Topic != null && (l.Topic = s.Topic), n.push(this.#h(s.URL, l));
       }
     }
-    await Promise.allSettled(r);
+    await Promise.allSettled(n);
   }
   /**** #matchConfig — returns each trigger that fires for this config + the matching IDs ****/
   #o(e, t, o) {
-    const r = e.Watch != null ? this.#a(e.Watch) : void 0, s = r != null ? o.filter(
-      (i) => this.#l(i, r, e.maxDepth ?? 1 / 0)
+    const n = e.Watch != null ? this.#a(e.Watch) : void 0, s = n != null ? o.filter(
+      (i) => this.#l(i, n, e.maxDepth ?? 1 / 0)
     ) : o;
     if (s.length === 0)
       return [];
@@ -426,33 +427,33 @@ class Y {
       case "change":
         return t;
       case "create":
-        return t.filter((r) => {
-          if (!o[r]?.has("outerItem"))
+        return t.filter((n) => {
+          if (!o[n]?.has("outerItem"))
             return !1;
-          const c = this.#e.EntryWithId(r);
+          const c = this.#e.EntryWithId(n);
           if (c == null)
             return !1;
           const i = c.outerItemId;
-          return i != null && i !== T;
+          return i != null && i !== R;
         });
       case "delete":
-        return t.filter((r) => {
-          if (!o[r]?.has("outerItem"))
+        return t.filter((n) => {
+          if (!o[n]?.has("outerItem"))
             return !1;
-          const c = this.#e.EntryWithId(r);
-          return c == null ? !0 : c.outerItemId === T;
+          const c = this.#e.EntryWithId(n);
+          return c == null ? !0 : c.outerItemId === R;
         });
       case "value":
-        return e.MIMEGlob == null ? t.filter((r) => o[r]?.has("Value")) : t.filter((r) => {
-          if (!o[r]?.has("Value"))
+        return e.MIMEGlob == null ? t.filter((n) => o[n]?.has("Value")) : t.filter((n) => {
+          if (!o[n]?.has("Value"))
             return !1;
-          const s = this.#e.EntryWithId(r);
-          return s == null || !s.isItem ? !1 : X(s.Type, e.MIMEGlob);
+          const s = this.#e.EntryWithId(n);
+          return s == null || !s.isItem ? !1 : Y(s.Type, e.MIMEGlob);
         });
       case "info": {
-        const r = `Info.${e.Key}`;
+        const n = `Info.${e.Key}`;
         return t.filter((s) => {
-          if (!o[s]?.has(r))
+          if (!o[s]?.has(n))
             return !1;
           const c = this.#e.EntryWithId(s);
           if (c == null)
@@ -475,10 +476,10 @@ class Y {
   #l(e, t, o) {
     if (e === t)
       return !0;
-    const r = this.#e.EntryWithId(e);
-    if (r == null)
+    const n = this.#e.EntryWithId(e);
+    if (n == null)
       return !1;
-    const s = r.outerItemChain;
+    const s = n.outerItemChain;
     for (let c = 0; c < s.length; c++)
       if (s[c].Id === t)
         return c + 1 <= o;
@@ -489,28 +490,28 @@ class Y {
     const o = {
       "Content-Type": "application/json"
     };
-    this.#r != null && (o.Authorization = `Bearer ${this.#r}`);
+    this.#n != null && (o.Authorization = `Bearer ${this.#n}`);
     try {
-      const r = await fetch(e, {
+      const n = await fetch(e, {
         method: "POST",
         headers: o,
         body: JSON.stringify(t),
-        signal: AbortSignal.timeout(Z)
+        signal: AbortSignal.timeout(X)
       });
-      r.ok || process.stderr.write(
-        `[sds-sidecar] webhook ${e} returned ${r.status} ${r.statusText}
+      n.ok || process.stderr.write(
+        `[sds-sidecar] webhook ${e} returned ${n.status} ${n.statusText}
 `
       );
-    } catch (r) {
+    } catch (n) {
       process.stderr.write(
-        `[sds-sidecar] webhook ${e} failed: ${r.message}
+        `[sds-sidecar] webhook ${e} failed: ${n.message}
 `
       );
     }
   }
 }
-function ee(n) {
-  switch (n.Kind) {
+function te(r) {
+  switch (r.Kind) {
     case "change":
       return "change";
     case "create":
@@ -518,108 +519,128 @@ function ee(n) {
     case "delete":
       return "delete";
     case "value":
-      return n.MIMEGlob != null ? `value:${n.MIMEGlob}` : "value";
+      return r.MIMEGlob != null ? `value:${r.MIMEGlob}` : "value";
     case "info":
-      return `info:${n.Key}=${n.Value}`;
+      return `info:${r.Key}=${r.Value}`;
   }
 }
-function te(n) {
-  const e = new K(n);
-  return e.description("shareable-data-store sidecar — persistent sync + webhook notifications").version(N.version, "--version", "print version").allowUnknownOption(!1).configureOutput({ writeErr: () => {
-  } }).argument("[ws-url]", "WebSocket server URL (env: SDS_SERVER_URL)").argument("[store-id]", "store identifier     (env: SDS_STORE_ID)").option("--token <jwt>", "JWT for the WebSocket server (env: SDS_TOKEN)").option("--config <file>", "JSON config file path").option("--persistence-dir <path>", "directory for local SQLite DB (env: SDS_PERSISTENCE_DIR)").option("--webhook-url <url>", "webhook endpoint URL").option("--webhook-token <token>", "bearer token for webhook calls (env: SDS_WEBHOOK_TOKEN)").option("--topic <string>", "opaque string echoed in the webhook payload").option("--watch <uuid>", "UUID of the subtree root to observe").option("--depth <n>", "max watch depth (default: unlimited)").option("--on <trigger>", "trigger condition (repeatable)", ne, []).option("--on-auth-error <url>", "webhook URL to notify on auth errors").option("--reconnect-initial <ms>", "initial reconnect delay in ms (default: 1000)").option("--reconnect-max <ms>", "max reconnect delay in ms     (default: 60000)").option("--reconnect-jitter <f>", "jitter fraction 0..1          (default: 0.1)"), e;
+function re(r) {
+  const e = new V(r);
+  return e.description("shareable-data-store sidecar — persistent sync + webhook notifications").version(F.version, "--version", "print version").allowUnknownOption(!1).configureOutput({ writeErr: () => {
+  } }).argument("[ws-url]", "WebSocket server URL (env: SDS_SERVER_URL)").argument("[store-id]", "store identifier     (env: SDS_STORE_ID)").option("--token <jwt>", "JWT for the WebSocket server (env: SDS_TOKEN)").option("--config <file>", "JSON config file path").option("--persistence-dir <path>", "directory for local SQLite DB (env: SDS_PERSISTENCE_DIR)").option("--webhook-url <url>", "webhook endpoint URL").option("--webhook-token <token>", "bearer token for webhook calls (env: SDS_WEBHOOK_TOKEN)").option("--topic <string>", "opaque string echoed in the webhook payload").option("--watch <uuid>", "UUID of the subtree root to observe").option("--depth <n>", "max watch depth (default: unlimited)").option("--on <trigger>", "trigger condition (repeatable)", ne, []).option("--on-auth-error <url>", "webhook URL to notify on auth errors").option("--verbose", "log incoming patches and store changes (env: SDS_VERBOSE=1)").option("--reconnect-initial <ms>", "initial reconnect delay in ms (default: 1000)").option("--reconnect-max <ms>", "max reconnect delay in ms     (default: 60000)").option("--reconnect-jitter <f>", "jitter fraction 0..1          (default: 0.1)"), e;
 }
-function ne(n, e) {
-  return [...e, n];
+function ne(r, e) {
+  return [...e, r];
 }
-async function ue(n, e = "sds-sidecar") {
-  const t = te(e);
+async function de(r, e = "sds-sidecar") {
+  const t = re(e);
   t.exitOverride(), t.configureOutput({ writeErr: () => {
   } });
   let o;
   try {
     await t.parseAsync(process.argv), o = { args: t.args, opts: t.opts() };
   } catch (a) {
-    const g = a;
+    const d = a;
     switch (!0) {
-      case g.code === "commander.helpDisplayed":
-      case g.code === "commander.version":
-        process.exit(y.OK);
+      case d.code === "commander.helpDisplayed":
+      case d.code === "commander.version":
+        process.exit(b.OK);
       default:
-        process.stderr.write(`${e}: ${g.message}
+        process.stderr.write(`${e}: ${d.message}
 
-`), process.stderr.write(t.helpInformation()), process.exit(y.UsageError);
+`), process.stderr.write(t.helpInformation()), process.exit(b.UsageError);
     }
   }
-  const [r, s] = o.args, c = {
+  const [n, s] = o.args, c = {
     ...o.opts,
-    ...r != null ? { server: r } : {},
+    ...n != null ? { server: n } : {},
     ...s != null ? { store: s } : {}
   };
   let i;
   try {
-    i = await j(c);
+    i = await N(c);
   } catch (a) {
     throw a instanceof h && (process.stderr.write(`${e}: ${a.message}
 `), process.exit(a.ExitCode)), a;
   }
-  await A.mkdir(i.PersistenceDir, { recursive: !0 });
-  const f = J(i.PersistenceDir, i.StoreId), l = new C(f, i.StoreId);
+  await L.mkdir(i.PersistenceDir, { recursive: !0 });
+  const f = z(i.PersistenceDir, i.StoreId), l = new B(f, i.StoreId);
   let u;
   try {
     const a = await l.loadSnapshot();
-    u = a != null ? n.fromBinary(a) : n.fromScratch();
+    u = a != null ? r.fromBinary(a) : r.fromScratch(), i.Verbose && (a != null ? process.stderr.write(
+      `[${e}] snapshot loaded (${a.byteLength} bytes)
+`
+    ) : process.stderr.write(`[${e}] no snapshot found — created fresh store
+`));
   } catch (a) {
     process.stderr.write(
       `${e}: failed to load store '${i.StoreId}': ${a.message}
 `
     ), await l.close().catch(() => {
-    }), process.exit(y.GeneralError);
+    }), process.exit(b.GeneralError);
   }
-  const S = new Q(i.StoreId, i.reconnect), d = i.WebHooks.length > 0 ? new Y(i.WebHooks, u, i.StoreId, i.WebHookToken) : void 0, w = new B(u, {
+  const p = new Z(i.StoreId, i.reconnect), g = i.WebHooks.length > 0 ? new ee(i.WebHooks, u, i.StoreId, i.WebHookToken) : void 0, S = new C(u, {
     PersistenceProvider: l,
-    NetworkProvider: S,
+    NetworkProvider: p,
     BroadcastChannel: !1
   });
-  await w.start();
-  const v = d != null ? u.onChangeInvoke((a, g) => {
-    d.processChangeSet(a, g).catch((k) => {
+  await S.start();
+  const m = g != null ? u.onChangeInvoke((a, d) => {
+    g.processChangeSet(a, d).catch((y) => {
       process.stderr.write(
-        `[${e}] webhook error: ${k.message}
+        `[${e}] webhook error: ${y.message}
 `
       );
     });
   }) : () => {
   };
-  S.onAuthError(async (a, g) => {
-    const k = a === 4001 ? "Unauthorized" : "Forbidden";
+  i.Verbose && (p.onPatch((a) => {
     process.stderr.write(
-      `[${e}] AUTH ERROR ${a} ${k}: ${g || "(no reason given)"}
+      `[${e}] patch received (${a.byteLength} bytes)
+`
+    );
+  }), u.onChangeInvoke((a, d) => {
+    if (a !== "external")
+      return;
+    const y = Object.keys(d), k = /* @__PURE__ */ new Set();
+    for (const w of y)
+      for (const v of d[w])
+        k.add(v);
+    process.stderr.write(
+      `[${e}] remote change: ${y.length} entries affected (${[...k].join(", ")})
+`
+    );
+  })), p.onAuthError(async (a, d) => {
+    const y = a === 4001 ? "Unauthorized" : "Forbidden";
+    process.stderr.write(
+      `[${e}] AUTH ERROR ${a} ${y}: ${d || "(no reason given)"}
 [${e}] reconnect suppressed — check SDS_TOKEN or --token
 `
-    ), i.onAuthError != null && await re(i.onAuthError, i.WebHookToken, {
+    ), i.onAuthError != null && await oe(i.onAuthError, i.WebHookToken, {
       StoreId: i.StoreId,
       ServerURL: i.ServerURL,
       Code: a,
-      Reason: g || k
-    }, e).catch((p) => {
+      Reason: d || y
+    }, e).catch((k) => {
       process.stderr.write(
-        `[${e}] auth-error webhook failed: ${p.message ?? p}
+        `[${e}] auth-error webhook failed: ${k.message ?? k}
 `
       );
-    }), await x(w, v, l), process.exit(a === 4001 ? y.Unauthorized : y.Forbidden);
+    }), await A(S, m, l), process.exit(a === 4001 ? b.Unauthorized : b.Forbidden);
   }), process.stderr.write(
     `[${e}] connecting to ${i.ServerURL} (store: ${i.StoreId})
 `
   );
   try {
-    await w.connectTo(i.ServerURL, { Token: i.Token });
+    await S.connectTo(i.ServerURL, { Token: i.Token });
   } catch (a) {
     process.stderr.write(
       `[${e}] initial connection failed: ${a.message}
 `
     );
   }
-  S.onConnectionChange((a) => {
+  p.onConnectionChange((a) => {
     switch (a) {
       case "connected":
         process.stderr.write(`[${e}] connected
@@ -635,22 +656,22 @@ async function ue(n, e = "sds-sidecar") {
         break;
     }
   });
-  const m = async (a) => {
+  const $ = async (a) => {
     process.stderr.write(`
 [${e}] received ${a} — shutting down
-`), await x(w, v, l), process.exit(y.OK);
+`), await A(S, m, l), process.exit(b.OK);
   };
   process.once("SIGINT", () => {
-    m("SIGINT").catch(() => process.exit(1));
+    $("SIGINT").catch(() => process.exit(1));
   }), process.once("SIGTERM", () => {
-    m("SIGTERM").catch(() => process.exit(1));
+    $("SIGTERM").catch(() => process.exit(1));
   }), process.stderr.write(`[${e}] running (press Ctrl+C to stop)
 `);
 }
-async function x(n, e, t) {
+async function A(r, e, t) {
   e();
   try {
-    await n.stop();
+    await r.stop();
   } catch {
   }
   try {
@@ -658,12 +679,12 @@ async function x(n, e, t) {
   } catch {
   }
 }
-async function re(n, e, t, o) {
-  const r = { "Content-Type": "application/json" };
-  e != null && (r.Authorization = `Bearer ${e}`);
-  const s = await fetch(n, {
+async function oe(r, e, t, o) {
+  const n = { "Content-Type": "application/json" };
+  e != null && (n.Authorization = `Bearer ${e}`);
+  const s = await fetch(r, {
     method: "POST",
-    headers: r,
+    headers: n,
     body: JSON.stringify(t),
     signal: AbortSignal.timeout(1e4)
   });
@@ -673,5 +694,5 @@ async function re(n, e, t, o) {
   );
 }
 export {
-  ue as runSidecar
+  de as runSidecar
 };

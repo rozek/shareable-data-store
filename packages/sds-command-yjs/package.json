@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-command-yjs",
   "description": "CLI tool for shareable-data-store (Y.js CRDT backend)",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "keywords": [
     "crdt",
     "yjs",

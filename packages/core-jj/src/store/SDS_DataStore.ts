@@ -1485,7 +1485,10 @@ export class SDS_DataStore extends SDS_StoreBase {
     return null
   }
 
-/**** #reachableFromRoot — compute reachable entries from root ****/
+/**** #reachableFromRoot — compute live-tree entries reachable from root ****/
+// TrashItem is included (it is a direct child of Root) but its subtree is
+// NOT traversed — entries inside Trash are not considered "live" and must
+// not protect other entries from being purged.
 
   #reachableFromRoot ():Set<string> {
     const Reachable = new Set<string>()
@@ -1496,6 +1499,10 @@ export class SDS_DataStore extends SDS_StoreBase {
         continue
       }
       Reachable.add(Id)
+      // do not descend into Trash — its children are not live
+      if (Id === TrashId) {
+        continue
+      }
       for (const innerEntryId of this.#ReverseIndex.get(Id) ?? new Set()) {
         if (! Reachable.has(innerEntryId)) {
           Queue.push(innerEntryId)

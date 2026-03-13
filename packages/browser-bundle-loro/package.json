@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-browser-bundle-loro",
   "description": "Self-contained browser bundle for shareable-data-store \u2014 Loro CRDT backend, single-file ESM (loro-crdt external)",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "keywords": [
     "crdt",
     "items",

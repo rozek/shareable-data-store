@@ -19,10 +19,10 @@ This package is isomorphic. The Loro CRDT engine (`loro-crdt`) ships as a WebAss
 
 Choose `@rozek/sds-core-loro` when:
 
-- You want a high-performance, memory-efficient CRDT backend powered by Rust and WebAssembly.
-- You need character-level collaborative text editing via Loro's native `LoroText` containers.
-- You do not require the canonical-snapshot guarantee of the json-joy backend (see [Loro-specific details](#loro-specific-details)).
-- You do not need cross-backend patch compatibility with the json-joy or Y.js binary formats.
+- you want a high-performance, memory-efficient CRDT backend powered by Rust and WebAssembly.
+- you need character-level collaborative text editing via Loro's native `LoroText` containers.
+- you do not require the canonical-snapshot guarantee of the json-joy backend (see [Loro-specific details](#loro-specific-details)).
+- you do not need cross-backend patch compatibility with the json-joy or Y.js binary formats.
 
 Choose one of the alternative backend packages when you need a different CRDT library or want to migrate an existing store.
 

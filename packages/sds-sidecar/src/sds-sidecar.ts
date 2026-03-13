@@ -19,6 +19,7 @@
 //   SDS_WEBHOOK_TOKEN — bearer token for outgoing webhook calls
 //   SDS_PERSISTENCE_DIR — directory for the local SQLite DB
 //   SDS_ON_AUTH_ERROR — webhook URL to notify on auth errors
+//   SDS_VERBOSE       — set to '1' to log incoming patches and store changes
 
 import fs from 'node:fs/promises'
 
@@ -80,6 +81,9 @@ import { WebHookManager }                    from './WebHookManager.js'
 
         // auth-error webhook
         .option('--on-auth-error <url>',    'webhook URL to notify on auth errors')
+
+        // logging
+        .option('--verbose',                'log incoming patches and store changes (env: SDS_VERBOSE=1)')
 
         // reconnect tuning
         .option('--reconnect-initial <ms>', 'initial reconnect delay in ms (default: 1000)')
@@ -159,6 +163,15 @@ import { WebHookManager }                    from './WebHookManager.js'
       Store = (Snapshot != null)
         ? Factory.fromBinary(Snapshot)
         : Factory.fromScratch()
+      if (Config.Verbose) {
+        if (Snapshot != null) {
+          process.stderr.write(
+            `[${CommandName}] snapshot loaded (${Snapshot.byteLength} bytes)\n`
+          )
+        } else {
+          process.stderr.write(`[${CommandName}] no snapshot found — created fresh store\n`)
+        }
+      }
     } catch (Signal) {
       process.stderr.write(
         `${CommandName}: failed to load store '${Config.StoreId}': ${(Signal as Error).message}\n`
@@ -194,6 +207,27 @@ import { WebHookManager }                    from './WebHookManager.js'
           })
         })
       : () => {}
+
+    // verbose logging — incoming network patches and resulting store changes
+    if (Config.Verbose) {
+      Network.onPatch((Patch) => {
+        process.stderr.write(
+          `[${CommandName}] patch received (${Patch.byteLength} bytes)\n`
+        )
+      })
+      Store.onChangeInvoke((Origin, ChangeSet) => {
+        if (Origin !== 'external') { return }
+        const EntryIds = Object.keys(ChangeSet)
+        const Props    = new Set<string>()
+        for (const EntryId of EntryIds) {
+          for (const Prop of ChangeSet[EntryId]) { Props.add(Prop) }
+        }
+        process.stderr.write(
+          `[${CommandName}] remote change: ${EntryIds.length} entries affected` +
+          ` (${[ ...Props ].join(', ')})\n`
+        )
+      })
+    }
 
     // auth-error handler — fire optional webhook, then shut down
     Network.onAuthError(async (Code, Reason) => {

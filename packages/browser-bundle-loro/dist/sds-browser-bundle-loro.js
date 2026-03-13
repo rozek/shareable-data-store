@@ -21,7 +21,7 @@ class P extends Error {
     this.code = t, this.name = "SDS_Error";
   }
 }
-const ae = "00000000-0000-4000-8000-000000000000", U = "00000000-0000-4000-8000-000000000001", ge = "00000000-0000-4000-8000-000000000002", Nt = "text/plain", di = 131072, ui = 2048, hi = 5e3, jr = 1024, Zr = 256, Kr = 1024, $r = 262144, fi = 200;
+const ae = "00000000-0000-4000-8000-000000000000", $ = "00000000-0000-4000-8000-000000000001", ge = "00000000-0000-4000-8000-000000000002", Nt = "text/plain", di = 131072, ui = 2048, hi = 5e3, jr = 1024, Zr = 256, Kr = 1024, $r = 262144, fi = 200;
 function mi(i) {
   const e = globalThis.Buffer;
   if (e != null)
@@ -2852,7 +2852,7 @@ class Cs {
     return this.Id === ae;
   }
   get isTrashItem() {
-    return this.Id === U;
+    return this.Id === $;
   }
   get isLostAndFoundItem() {
     return this.Id === ge;
@@ -3709,7 +3709,7 @@ const pt = class pt extends gi {
   static fromScratch(t) {
     const n = new er(), r = n.getMap("Entries"), s = r.setContainer(ae, new N());
     s.set("Kind", "item"), s.set("outerItemId", ""), s.set("OrderKey", ""), s.setContainer("Label", new F()), s.setContainer("Info", new N()), s.set("MIMEType", ""), s.set("ValueKind", "none");
-    const a = r.setContainer(U, new N());
+    const a = r.setContainer($, new N());
     a.set("Kind", "item"), a.set("outerItemId", ae), a.set("OrderKey", "a0"), a.setContainer("Label", new F()).insert(0, "trash"), a.setContainer("Info", new N()), a.set("MIMEType", ""), a.set("ValueKind", "none");
     const l = r.setContainer(ge, new N());
     return l.set("Kind", "item"), l.set("outerItemId", ae), l.set("OrderKey", "a1"), l.setContainer("Label", new F()).insert(0, "lost-and-found"), l.setContainer("Info", new N()), l.set("MIMEType", ""), l.set("ValueKind", "none"), n.commit(), new pt(n, t);
@@ -3732,7 +3732,7 @@ const pt = class pt extends gi {
     return d(this, h, rt).call(this, ae);
   }
   get TrashItem() {
-    return d(this, h, rt).call(this, U);
+    return d(this, h, rt).call(this, $);
   }
   get LostAndFoundItem() {
     return d(this, h, rt).call(this, ge);
@@ -3818,7 +3818,7 @@ const pt = class pt extends gi {
     const s = this._outerItemIdOf(t.Id), a = d(this, h, Pt).call(this, n.Id, r);
     this.transact(() => {
       const c = d(this, h, O).call(this, t.Id);
-      if (c.set("outerItemId", n.Id), c.set("OrderKey", a), s === U && n.Id !== U) {
+      if (c.set("outerItemId", n.Id), c.set("OrderKey", a), s === $ && n.Id !== $) {
         const l = c.get("Info");
         l instanceof N && l.get("_trashedAt") != null && (l.delete("_trashedAt"), d(this, h, T).call(this, t.Id, "Info._trashedAt"));
       }
@@ -3840,17 +3840,17 @@ const pt = class pt extends gi {
   deleteEntry(t) {
     if (!this._mayDeleteEntry(t.Id))
       throw new P("delete-not-permitted", "this entry cannot be deleted");
-    const n = this._outerItemIdOf(t.Id), r = Fe(d(this, h, bn).call(this, U), null);
+    const n = this._outerItemIdOf(t.Id), r = Fe(d(this, h, bn).call(this, $), null);
     this.transact(() => {
       const s = d(this, h, O).call(this, t.Id);
-      s.set("outerItemId", U), s.set("OrderKey", r);
+      s.set("outerItemId", $), s.set("OrderKey", r);
       let a = s.get("Info");
-      a instanceof N || (a = s.setContainer("Info", new N())), a.set("_trashedAt", Date.now()), n != null && (d(this, h, yt).call(this, n, t.Id), d(this, h, T).call(this, n, "innerEntryList")), d(this, h, ye).call(this, U, t.Id), d(this, h, T).call(this, U, "innerEntryList"), d(this, h, T).call(this, t.Id, "outerItem"), d(this, h, T).call(this, t.Id, "Info._trashedAt");
+      a instanceof N || (a = s.setContainer("Info", new N())), a.set("_trashedAt", Date.now()), n != null && (d(this, h, yt).call(this, n, t.Id), d(this, h, T).call(this, n, "innerEntryList")), d(this, h, ye).call(this, $, t.Id), d(this, h, T).call(this, $, "innerEntryList"), d(this, h, T).call(this, t.Id, "outerItem"), d(this, h, T).call(this, t.Id, "Info._trashedAt");
     });
   }
   /**** purgeEntry — permanently delete a trash entry ****/
   purgeEntry(t) {
-    if (this._outerItemIdOf(t.Id) !== U)
+    if (this._outerItemIdOf(t.Id) !== $)
       throw new P(
         "purge-not-in-trash",
         "only direct children of TrashItem can be purged"
@@ -3872,11 +3872,11 @@ const pt = class pt extends gi {
     const n = t ?? o(this, Kt);
     if (n == null)
       return 0;
-    const r = Date.now(), s = Array.from(o(this, pe).get(U) ?? /* @__PURE__ */ new Set());
+    const r = Date.now(), s = Array.from(o(this, pe).get($) ?? /* @__PURE__ */ new Set());
     let a = 0;
     for (const c of s) {
       const l = d(this, h, O).call(this, c);
-      if (l == null || l.get("outerItemId") !== U)
+      if (l == null || l.get("outerItemId") !== $)
         continue;
       const u = l.get("Info"), f = u instanceof N ? u.get("_trashedAt") : void 0;
       if (typeof f == "number" && !(r - f < n))
@@ -4208,11 +4208,11 @@ const pt = class pt extends gi {
   }
   /**** _mayMoveEntryTo — check if entry can be moved without cycles ****/
   _mayMoveEntryTo(t, n, r) {
-    return t === ae || t === n ? !1 : t === U || t === ge ? n === ae : !d(this, h, Fs).call(this, n, t);
+    return t === ae || t === n ? !1 : t === $ || t === ge ? n === ae : !d(this, h, Fs).call(this, n, t);
   }
   /**** _mayDeleteEntry — check if entry is deletable ****/
   _mayDeleteEntry(t) {
-    return t !== ae && t !== U && t !== ge;
+    return t !== ae && t !== $ && t !== ge;
   }
   /**** _TargetOf — get the target data for a link ****/
   _TargetOf(t) {
@@ -4361,7 +4361,7 @@ $s = function(t) {
   let s = !0;
   for (; s; ) {
     s = !1;
-    for (const a of o(this, pe).get(U) ?? /* @__PURE__ */ new Set())
+    for (const a of o(this, pe).get($) ?? /* @__PURE__ */ new Set())
       r.has(a) || d(this, h, Sr).call(this, a, n, r) && (r.add(a), s = !0);
   }
   return r.has(t);
@@ -4390,23 +4390,24 @@ Us = function(t) {
   let n = t;
   for (; n != null; ) {
     const r = this._outerItemIdOf(n);
-    if (r === U)
+    if (r === $)
       return n;
     if (r === ae || r == null)
       return null;
     n = r;
   }
   return null;
-}, /**** #reachableFromRoot — get all entries reachable from root ****/
+}, /**** #reachableFromRoot — compute live-tree entries reachable from root ****/
+// TrashItem is included (it is a direct child of Root) but its subtree is
+// NOT traversed — entries inside Trash are not considered "live" and must
+// not protect other entries from being purged.
 Ir = function() {
   const t = /* @__PURE__ */ new Set(), n = [ae];
   for (; n.length > 0; ) {
     const r = n.pop();
-    if (!t.has(r)) {
-      t.add(r);
+    if (!t.has(r) && (t.add(r), r !== $))
       for (const s of o(this, pe).get(r) ?? /* @__PURE__ */ new Set())
         t.has(s) || n.push(s);
-    }
   }
   return t;
 }, /**** #purgeSubtree — recursively delete entry and unprotected children ****/
@@ -4417,8 +4418,8 @@ xr = function(t) {
   const r = n.get("Kind"), s = n.get("outerItemId"), a = d(this, h, Ir).call(this), c = /* @__PURE__ */ new Set(), l = Array.from(o(this, pe).get(t) ?? /* @__PURE__ */ new Set());
   for (const u of l)
     if (d(this, h, Sr).call(this, u, a, c)) {
-      const f = d(this, h, O).call(this, u), g = Fe(d(this, h, bn).call(this, U), null);
-      f.set("outerItemId", U), f.set("OrderKey", g), d(this, h, yt).call(this, t, u), d(this, h, ye).call(this, U, u), d(this, h, T).call(this, U, "innerEntryList"), d(this, h, T).call(this, u, "outerItem");
+      const f = d(this, h, O).call(this, u), g = Fe(d(this, h, bn).call(this, $), null);
+      f.set("outerItemId", $), f.set("OrderKey", g), d(this, h, yt).call(this, t, u), d(this, h, ye).call(this, $, u), d(this, h, T).call(this, $, "innerEntryList"), d(this, h, T).call(this, u, "outerItem");
     } else
       d(this, h, xr).call(this, u);
   if (d(this, h, T).call(this, t, "Existence"), n.set("outerItemId", ""), n.set("OrderKey", ""), s && (d(this, h, yt).call(this, s, t), d(this, h, T).call(this, s, "innerEntryList")), r === "link") {
@@ -5153,7 +5154,7 @@ Ge = new WeakMap(), Ee = new WeakMap(), Vn = new WeakMap(), Le = new WeakSet(), 
   });
 };
 const ba = 512 * 1024;
-var H, $, M, It, Yt, Xt, Rn, Mn, en, tn, Ae, xt, kt, Tt, Ot, Qe, dt, Ne, Pn, nn, Ye, je, V, ei, ti, ni, ri, si, Ar, ii, Nr, Vr, ai, Rr;
+var H, U, M, It, Yt, Xt, Rn, Mn, en, tn, Ae, xt, kt, Tt, Ot, Qe, dt, Ne, Pn, nn, Ye, je, V, ei, ti, ni, ri, si, Ar, ii, Nr, Vr, ai, Rr;
 class Ca {
   //----------------------------------------------------------------------------//
   //                                Constructor                                 //
@@ -5161,7 +5162,7 @@ class Ca {
   constructor(e, t = {}) {
     y(this, V);
     y(this, H);
-    y(this, $);
+    y(this, U);
     y(this, M);
     y(this, It);
     y(this, Yt);
@@ -5199,15 +5200,15 @@ class Ca {
     // used to call releaseValue() when the entry's value changes or the entry is purged
     y(this, je, /* @__PURE__ */ new Map());
     var r;
-    w(this, H, e), w(this, $, t.PersistenceProvider ?? void 0), w(this, M, t.NetworkProvider ?? void 0), w(this, It, t.PresenceProvider ?? (typeof ((r = t.NetworkProvider) == null ? void 0 : r.onRemoteState) == "function" ? t.NetworkProvider : void 0)), w(this, Yt, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && o(this, M) != null && w(this, Ne, new BroadcastChannel(`sds:${o(this, M).StoreId}`));
+    w(this, H, e), w(this, U, t.PersistenceProvider ?? void 0), w(this, M, t.NetworkProvider ?? void 0), w(this, It, t.PresenceProvider ?? (typeof ((r = t.NetworkProvider) == null ? void 0 : r.onRemoteState) == "function" ? t.NetworkProvider : void 0)), w(this, Yt, t.PresenceTimeoutMs ?? 12e4), (t.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && o(this, M) != null && w(this, Ne, new BroadcastChannel(`sds:${o(this, M).StoreId}`));
   }
   //----------------------------------------------------------------------------//
   //                                 Lifecycle                                  //
   //----------------------------------------------------------------------------//
   /**** start ****/
   async start() {
-    if (o(this, $) != null) {
-      const e = o(this, $);
+    if (o(this, U) != null) {
+      const e = o(this, U);
       o(this, H).setValueBlobLoader((t) => e.loadValue(t));
     }
     await d(this, V, ei).call(this), d(this, V, ti).call(this), d(this, V, ni).call(this), d(this, V, ri).call(this), d(this, V, si).call(this), o(this, M) != null && o(this, M).onConnectionChange((e) => {
@@ -5233,7 +5234,7 @@ class Ca {
         r();
       } catch {
       }
-    w(this, Ye, []), (e = o(this, Ne)) == null || e.close(), w(this, Ne, void 0), (t = o(this, M)) == null || t.disconnect(), o(this, $) != null && await d(this, V, Ar).call(this), await ((n = o(this, $)) == null ? void 0 : n.close());
+    w(this, Ye, []), (e = o(this, Ne)) == null || e.close(), w(this, Ne, void 0), (t = o(this, M)) == null || t.disconnect(), o(this, U) != null && await d(this, V, Ar).call(this), await ((n = o(this, U)) == null ? void 0 : n.close());
   }
   //----------------------------------------------------------------------------//
   //                             Network Connection                             //
@@ -5298,11 +5299,11 @@ class Ca {
     };
   }
 }
-H = new WeakMap(), $ = new WeakMap(), M = new WeakMap(), It = new WeakMap(), Yt = new WeakMap(), Xt = new WeakMap(), Rn = new WeakMap(), Mn = new WeakMap(), en = new WeakMap(), tn = new WeakMap(), Ae = new WeakMap(), xt = new WeakMap(), kt = new WeakMap(), Tt = new WeakMap(), Ot = new WeakMap(), Qe = new WeakMap(), dt = new WeakMap(), Ne = new WeakMap(), Pn = new WeakMap(), nn = new WeakMap(), Ye = new WeakMap(), je = new WeakMap(), V = new WeakSet(), ei = async function() {
-  if (o(this, $) == null)
+H = new WeakMap(), U = new WeakMap(), M = new WeakMap(), It = new WeakMap(), Yt = new WeakMap(), Xt = new WeakMap(), Rn = new WeakMap(), Mn = new WeakMap(), en = new WeakMap(), tn = new WeakMap(), Ae = new WeakMap(), xt = new WeakMap(), kt = new WeakMap(), Tt = new WeakMap(), Ot = new WeakMap(), Qe = new WeakMap(), dt = new WeakMap(), Ne = new WeakMap(), Pn = new WeakMap(), nn = new WeakMap(), Ye = new WeakMap(), je = new WeakMap(), V = new WeakSet(), ei = async function() {
+  if (o(this, U) == null)
     return;
-  await o(this, $).loadSnapshot();
-  const e = await o(this, $).loadPatchesSince(o(this, tn));
+  await o(this, U).loadSnapshot();
+  const e = await o(this, U).loadPatchesSince(o(this, tn));
   for (const t of e)
     try {
       o(this, H).applyRemotePatch(t);
@@ -5325,7 +5326,7 @@ ti = function() {
     const r = o(this, xt);
     Zn(this, Ae)._++;
     const s = o(this, H).exportPatch(r);
-    w(this, xt, o(this, H).currentCursor), s.byteLength !== 0 && (o(this, $) != null && (o(this, $).appendPatch(s, o(this, Ae)).catch((l) => {
+    w(this, xt, o(this, H).currentCursor), s.byteLength !== 0 && (o(this, U) != null && (o(this, U).appendPatch(s, o(this, Ae)).catch((l) => {
       console.error("[SDS] appendPatch failed:", l.message ?? l);
     }), w(this, en, o(this, en) + s.byteLength), o(this, en) >= ba && d(this, V, Ar).call(this).catch((l) => {
       console.error("[SDS] checkpoint failed:", l.message ?? l);
@@ -5346,7 +5347,7 @@ ni = function() {
     o(this, Ye).push(t);
     const n = o(this, M).onValue(async (r, s) => {
       var a;
-      o(this, H).storeValueBlob(r, s), await ((a = o(this, $)) == null ? void 0 : a.saveValue(r, s));
+      o(this, H).storeValueBlob(r, s), await ((a = o(this, U)) == null ? void 0 : a.saveValue(r, s));
     });
     o(this, Ye).push(n);
   }
@@ -5387,15 +5388,15 @@ si = function() {
       }
   });
 }, Ar = async function() {
-  if (o(this, $) == null)
+  if (o(this, U) == null)
     return;
-  const e = await o(this, $).loadPatchesSince(o(this, Ae));
+  const e = await o(this, U).loadPatchesSince(o(this, Ae));
   for (const t of e)
     try {
       o(this, H).applyRemotePatch(t);
     } catch {
     }
-  e.length > 0 && (w(this, Ae, o(this, Ae) + e.length), w(this, xt, o(this, H).currentCursor)), await o(this, $).saveSnapshot(o(this, H).asBinary(), o(this, Ae)), o(this, M) != null && (await o(this, $).prunePatches(o(this, Ae)), w(this, tn, o(this, Ae))), w(this, en, 0);
+  e.length > 0 && (w(this, Ae, o(this, Ae) + e.length), w(this, xt, o(this, H).currentCursor)), await o(this, U).saveSnapshot(o(this, H).asBinary(), o(this, Ae)), o(this, M) != null && (await o(this, U).prunePatches(o(this, Ae)), w(this, tn, o(this, Ae))), w(this, en, 0);
 }, //----------------------------------------------------------------------------//
 //                            Offline Queue Flush                             //
 //----------------------------------------------------------------------------//
@@ -5415,19 +5416,19 @@ ii = function() {
     const l = c;
     if (l.has("Existence")) {
       const b = o(this, je).get(a);
-      b != null && (await ((n = o(this, $)) == null ? void 0 : n.releaseValue(b)), o(this, je).delete(a));
+      b != null && (await ((n = o(this, U)) == null ? void 0 : n.releaseValue(b)), o(this, je).delete(a));
     }
     if (!l.has("Value"))
       continue;
     const u = o(this, je).get(a), f = o(this, H)._getValueRefOf(a), g = f == null ? void 0 : f.Hash;
-    if (u != null && u !== g && (await ((r = o(this, $)) == null ? void 0 : r.releaseValue(u)), o(this, je).delete(a)), f != null) {
+    if (u != null && u !== g && (await ((r = o(this, U)) == null ? void 0 : r.releaseValue(u)), o(this, je).delete(a)), f != null) {
       if (o(this, M) == null) {
         o(this, je).set(a, f.Hash);
         continue;
       }
       if (t === "send") {
         const b = o(this, H).getValueBlobByHash(f.Hash);
-        b != null && (await ((s = o(this, $)) == null ? void 0 : s.saveValue(f.Hash, b)), o(this, je).set(a, f.Hash), o(this, M).ConnectionState === "connected" && o(this, M).sendValue(f.Hash, b));
+        b != null && (await ((s = o(this, U)) == null ? void 0 : s.saveValue(f.Hash, b)), o(this, je).set(a, f.Hash), o(this, M).ConnectionState === "connected" && o(this, M).sendValue(f.Hash, b));
       } else
         o(this, je).set(a, f.Hash), !o(this, H).hasValueBlob(f.Hash) && o(this, M).ConnectionState === "connected" && o(this, M).requestValue(f.Hash);
     }

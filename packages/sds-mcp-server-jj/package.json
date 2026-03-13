@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-mcp-server-jj",
   "description": "MCP server for shareable-data-store (json-joy CRDT backend)",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "keywords": [
     "crdt",
     "json-joy",

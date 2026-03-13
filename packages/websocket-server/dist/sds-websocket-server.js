@@ -1,3 +1,4 @@
+#!/usr/bin/env -S node --no-warnings
 import { Hono as W } from "hono";
 import { serve as j } from "@hono/node-server";
 import { createNodeWebSocket as A } from "@hono/node-ws";
@@ -30,14 +31,14 @@ class D {
         }
   }
 }
-const g = /* @__PURE__ */ new Map();
+const y = /* @__PURE__ */ new Map();
 function b(t) {
-  let e = g.get(t);
-  return e == null && (e = new D(t), g.set(t, e)), e;
+  let e = y.get(t);
+  return e == null && (e = new D(t), y.set(t, e)), e;
 }
 function v(t, e) {
-  const n = g.get(t);
-  n != null && (n.removeClient(e), n.isEmpty() && g.delete(t));
+  const n = y.get(t);
+  n != null && (n.removeClient(e), n.isEmpty() && y.delete(t));
 }
 async function w(t, e, n) {
   const { payload: o } = await C(t, e, {
@@ -57,8 +58,8 @@ async function w(t, e, n) {
   };
 }
 async function I(t, e, n, o, u, f) {
-  const S = new q({ sub: e, aud: n, scope: o }).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime(Math.floor(Date.now() / 1e3) + Math.round(u / 1e3));
-  return f != null && S.setIssuer(f), S.sign(t);
+  const p = new q({ sub: e, aud: n, scope: o }).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime(Math.floor(Date.now() / 1e3) + Math.round(u / 1e3));
+  return f != null && p.setIssuer(f), p.sign(t);
 }
 const J = 1, M = 2, U = 5;
 function O(t) {
@@ -74,8 +75,8 @@ function P(t) {
     throw new TypeError(
       "SDS_JWT_SECRET must be at least 32 characters long to provide sufficient entropy for HS256"
     );
-  const f = new TextEncoder().encode(e), S = new W(), { injectWebSocket: E, upgradeWebSocket: T } = A({ app: S });
-  S.get("/ws/:storeId", T(async (s) => {
+  const f = new TextEncoder().encode(e), p = new W(), { injectWebSocket: E, upgradeWebSocket: T } = A({ app: p });
+  p.get("/ws/:storeId", T(async (s) => {
     const l = s.req.param("storeId"), h = s.req.query("token") ?? "";
     let i;
     try {
@@ -95,7 +96,7 @@ function P(t) {
       };
     const a = b(l);
     let m;
-    const p = {
+    const S = {
       send: (r) => {
         m.send(r);
       },
@@ -103,23 +104,23 @@ function P(t) {
     };
     return {
       onOpen: (r, c) => {
-        m = c, a.addClient(p);
+        m = c, a.addClient(S);
       },
       onMessage: (r, c) => {
         const d = r.data;
         if (!(d instanceof ArrayBuffer))
           return;
-        const y = new Uint8Array(d);
-        if (y.byteLength < 1)
+        const g = new Uint8Array(d);
+        if (g.byteLength < 1)
           return;
-        const k = y[0];
-        i.scope === "read" && O(k) || a.broadcast(y, p);
+        const k = g[0];
+        i.scope === "read" && O(k) || a.broadcast(g, S);
       },
       onClose: () => {
-        v(l, p);
+        v(l, S);
       }
     };
-  })), S.get("/signal/:storeId", T(async (s) => {
+  })), p.get("/signal/:storeId", T(async (s) => {
     const l = s.req.param("storeId"), h = s.req.query("token") ?? "";
     let i;
     try {
@@ -139,7 +140,7 @@ function P(t) {
       };
     const a = b(`signal:${l}`);
     let m;
-    const p = {
+    const S = {
       send: (r) => {
         m.send(r);
       },
@@ -147,26 +148,26 @@ function P(t) {
     };
     return {
       onOpen: (r, c) => {
-        m = c, a.addClient(p);
+        m = c, a.addClient(S);
       },
       onMessage: (r, c) => {
         const d = r.data;
         switch (!0) {
           case d instanceof ArrayBuffer:
-            a.broadcast(new Uint8Array(d), p);
+            a.broadcast(new Uint8Array(d), S);
             break;
           case typeof d == "string": {
-            const y = new TextEncoder().encode(d);
-            a.broadcast(y, p);
+            const g = new TextEncoder().encode(d);
+            a.broadcast(g, S);
             break;
           }
         }
       },
       onClose: () => {
-        v(`signal:${l}`, p);
+        v(`signal:${l}`, S);
       }
     };
-  })), S.post("/api/token", async (s) => {
+  })), p.post("/api/token", async (s) => {
     const l = s.req.header("Authorization") ?? "";
     if (!l.startsWith("Bearer "))
       return s.json({ error: "missing token" }, 401);
@@ -187,7 +188,7 @@ function P(t) {
     }
     if (typeof a.sub != "string" || typeof a.scope != "string")
       return s.json({ error: "sub and scope required" }, 400);
-    const m = R(a.exp ?? "24h"), p = await I(
+    const m = R(a.exp ?? "24h"), S = await I(
       f,
       a.sub,
       i.aud,
@@ -195,13 +196,13 @@ function P(t) {
       m,
       n
     );
-    return s.json({ token: p });
+    return s.json({ token: S });
   });
   function _() {
-    const s = j({ fetch: S.fetch, port: o, hostname: u });
+    const s = j({ fetch: p.fetch, port: o, hostname: u });
     E(s);
   }
-  return { app: S, start: _ };
+  return { app: p, start: _ };
 }
 function R(t) {
   const e = /^(\d+)(s|m|h|d)$/.exec(t);

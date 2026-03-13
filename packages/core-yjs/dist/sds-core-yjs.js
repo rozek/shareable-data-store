@@ -13,7 +13,7 @@ var zr = (n, e, t, r) => ({
     return m(n, e, r);
   }
 });
-import { SDS_DataStore as Fa, DefaultWrapperCacheSize as Ka, DefaultLiteralSizeLimit as Ba, RootId as Ue, TrashId as z, LostAndFoundId as Ce, SDS_Error as re, expectValidMIMEType as oi, DefaultMIMEType as jt, SDS_Item as ai, SDS_Link as ci, maxOrderKeyLength as za, expectValidLabel as Pa, DefaultBinarySizeLimit as Ja, expectValidInfoKey as Wa, checkInfoValueSize as Ga, _base64ToUint8Array as so } from "@rozek/sds-core";
+import { SDS_DataStore as Fa, DefaultWrapperCacheSize as Ka, DefaultLiteralSizeLimit as Ba, RootId as Ue, TrashId as K, LostAndFoundId as Ce, SDS_Error as re, expectValidMIMEType as oi, DefaultMIMEType as jt, SDS_Item as ai, SDS_Link as ci, maxOrderKeyLength as za, expectValidLabel as Pa, DefaultBinarySizeLimit as Ja, expectValidInfoKey as Wa, checkInfoValueSize as Ga, _base64ToUint8Array as so } from "@rozek/sds-core";
 import { SDS_Entry as rd, SDS_Error as sd, SDS_Item as id, SDS_Link as od } from "@rozek/sds-core";
 const Re = () => /* @__PURE__ */ new Map(), as = (n) => {
   const e = Re();
@@ -795,8 +795,8 @@ class Fs extends le {
     return !r && (t == null || t.extend(null, this.shape.name, e == null ? void 0 : e.constructor.name, (e == null ? void 0 : e.constructor) !== this.shape ? "Constructor match failed" : "Check failed")), r;
   }
 }
-const K = (n, e = null) => new Fs(n, e);
-K(Fs);
+const B = (n, e = null) => new Fs(n, e);
+B(Fs);
 class Ks extends le {
   /**
    * @param {(o:any) => boolean} check
@@ -815,7 +815,7 @@ class Ks extends le {
   }
 }
 const Y = (n) => new Ks(n);
-K(Ks);
+B(Ks);
 class Or extends le {
   /**
    * @param {Array<T>} literals
@@ -834,7 +834,7 @@ class Or extends le {
     return !r && (t == null || t.extend(null, this.shape.join(" | "), e.toString())), r;
   }
 }
-const Dr = (...n) => new Or(n), yo = K(Or), nl = (
+const Dr = (...n) => new Or(n), yo = B(Or), nl = (
   /** @type {any} */
   RegExp.escape || /** @type {(str:string) => string} */
   ((n) => n.replace(/[().|&,$^[\]]/g, (e) => "\\" + e))
@@ -871,7 +871,7 @@ class rl extends le {
     return !r && (t == null || t.extend(null, this._r.toString(), e.toString(), "String doesn't match string template.")), r;
   }
 }
-K(rl);
+B(rl);
 const sl = Symbol("optional");
 class _o extends le {
   /**
@@ -893,7 +893,7 @@ class _o extends le {
     return !0;
   }
 }
-const il = K(_o);
+const il = B(_o);
 class ol extends le {
   /**
    * @param {any} _o
@@ -904,7 +904,7 @@ class ol extends le {
     return t == null || t.extend(null, "never", typeof e), !1;
   }
 }
-K(ol);
+B(ol);
 const xr = class xr extends le {
   /**
    * @param {S} shape
@@ -936,7 +936,7 @@ let ar = xr;
 const al = (n) => (
   /** @type {any} */
   new ar(n)
-), cl = K(ar), ll = Y((n) => n != null && (n.constructor === Object || n.constructor == null));
+), cl = B(ar), ll = Y((n) => n != null && (n.constructor === Object || n.constructor == null));
 class vo extends le {
   /**
    * @param {Keys} keys
@@ -960,7 +960,7 @@ class vo extends le {
     });
   }
 }
-const ko = (n, e) => new vo(n, e), hl = K(vo);
+const ko = (n, e) => new vo(n, e), hl = B(vo);
 class bo extends le {
   /**
    * @param {S} shape
@@ -984,7 +984,7 @@ class bo extends le {
   }
 }
 const ul = (...n) => new bo(n);
-K(bo);
+B(bo);
 class xo extends le {
   /**
    * @param {Array<S>} v
@@ -1002,7 +1002,7 @@ class xo extends le {
     return !r && (t == null || t.extend(null, "Array", "")), r;
   }
 }
-const So = (...n) => new xo(n), dl = K(xo), fl = Y((n) => Ir(n));
+const So = (...n) => new xo(n), dl = B(xo), fl = Y((n) => Ir(n));
 class Io extends le {
   /**
    * @param {new (...args:any) => T} constructor
@@ -1022,7 +1022,7 @@ class Io extends le {
   }
 }
 const gl = (n, e = null) => new Io(n, e);
-K(Io);
+B(Io);
 const pl = gl(le);
 class ml extends le {
   /**
@@ -1041,7 +1041,7 @@ class ml extends le {
     return !r && (t == null || t.extend(null, "function", typeof e)), r;
   }
 }
-const yl = K(ml), wl = Y((n) => typeof n == "function");
+const yl = B(ml), wl = Y((n) => typeof n == "function");
 class _l extends le {
   /**
    * @param {T} v
@@ -1059,7 +1059,7 @@ class _l extends le {
     return !r && (t == null || t.extend(null, "Intersectinon", typeof e)), r;
   }
 }
-K(_l, (n) => n.shape.length > 0);
+B(_l, (n) => n.shape.length > 0);
 class Lr extends le {
   /**
    * @param {Array<Schema<S>>} v
@@ -1080,10 +1080,10 @@ class Lr extends le {
 Gn(Lr, "_dilutes", !0);
 const un = (...n) => n.findIndex((e) => cr.check(e)) >= 0 ? un(...n.map((e) => Ln(e)).map((e) => cr.check(e) ? e.shape : [e]).flat(1)) : n.length === 1 ? n[0] : new Lr(n), cr = (
   /** @type {Schema<$Union<any>>} */
-  K(Lr)
+  B(Lr)
 ), Co = () => !0, lr = Y(Co), vl = (
   /** @type {Schema<Schema<any>>} */
-  K(Ks, (n) => n.shape === Co)
+  B(Ks, (n) => n.shape === Co)
 ), Bs = Y((n) => typeof n == "bigint"), kl = (
   /** @type {Schema<Schema<BigInt>>} */
   Y((n) => n === Bs)
@@ -1099,14 +1099,14 @@ const Ht = Y((n) => typeof n == "number"), Ao = (
   /** @type {Schema<Schema<Boolean>>} */
   Y((n) => n === Nr)
 ), Oo = Dr(void 0);
-K(Or, (n) => n.shape.length === 1 && n.shape[0] === void 0);
+B(Or, (n) => n.shape.length === 1 && n.shape[0] === void 0);
 Dr(void 0);
 const Mr = Dr(null), xl = (
   /** @type {Schema<Schema<null>>} */
-  K(Or, (n) => n.shape.length === 1 && n.shape[0] === null)
+  B(Or, (n) => n.shape.length === 1 && n.shape[0] === null)
 );
-K(Uint8Array);
-K(Fs, (n) => n.shape === Uint8Array);
+B(Uint8Array);
+B(Fs, (n) => n.shape === Uint8Array);
 const Sl = un(Ht, tn, Mr, Oo, Bs, Nr, Eo);
 (() => {
   const n = (
@@ -1146,7 +1146,7 @@ const Ln = (n) => {
     if (wl.check(n))
       return (
         /** @type {any} */
-        K(
+        B(
           /** @type {any} */
           n
         )
@@ -9014,19 +9014,19 @@ var Mu = /* @__PURE__ */ Pe(vt, 9, 0), Ru = /* @__PURE__ */ Pe(vt, 9, 1), Vu = /
         else if (ge == 2) {
           var ue = Ne(n, u, 31) + 257, X = Ne(n, u + 10, 15) + 4, R = ue + Ne(n, u + 5, 31) + 1;
           u += 14;
-          for (var C = new se(R), Q = new se(19), B = 0; B < X; ++B)
-            Q[ks[B]] = Ne(n, u + B * 3, 7);
+          for (var C = new se(R), Q = new se(19), z = 0; z < X; ++z)
+            Q[ks[z]] = Ne(n, u + z * 3, 7);
           u += X * 3;
-          for (var ae = ss(Q), it = (1 << ae) - 1, pe = Pe(Q, ae, 1), B = 0; B < R; ) {
+          for (var ae = ss(Q), it = (1 << ae) - 1, pe = Pe(Q, ae, 1), z = 0; z < R; ) {
             var de = pe[Ne(n, u, it)];
             u += de & 15;
             var G = de >> 4;
             if (G < 16)
-              C[B++] = G;
+              C[z++] = G;
             else {
               var ee = 0, j = 0;
-              for (G == 16 ? (j = 3 + Ne(n, u, 3), u += 2, ee = C[B - 1]) : G == 17 ? (j = 3 + Ne(n, u, 7), u += 3) : G == 18 && (j = 11 + Ne(n, u, 127), u += 7); j--; )
-                C[B++] = ee;
+              for (G == 16 ? (j = 3 + Ne(n, u, 3), u += 2, ee = C[z - 1]) : G == 17 ? (j = 3 + Ne(n, u, 7), u += 3) : G == 18 && (j = 11 + Ne(n, u, 127), u += 7); j--; )
+                C[z++] = ee;
             }
           }
           var fe = C.subarray(0, ue), te = C.subarray(ue);
@@ -9062,8 +9062,8 @@ var Mu = /* @__PURE__ */ Pe(vt, 9, 0), Ru = /* @__PURE__ */ Pe(vt, 9, 1), Vu = /
       } else {
         var ye = me - 254;
         if (me > 264) {
-          var B = me - 257, Z = Zr[B];
-          ye = Ne(n, u, (1 << Z) - 1) + Sa[B], u += Z;
+          var z = me - 257, Z = Zr[z];
+          ye = Ne(n, u, (1 << Z) - 1) + Sa[z], u += Z;
         }
         var $e = w[is(n, u) & Ie], Rt = $e >> 4;
         $e || Me(3), u += $e & 15;
@@ -9180,7 +9180,7 @@ var Mu = /* @__PURE__ */ Pe(vt, 9, 0), Ru = /* @__PURE__ */ Pe(vt, 9, 1), Vu = /
     ++X[ge[R] & 31];
   for (var R = 0; R < oe.length; ++R)
     ++X[oe[R] & 31];
-  for (var C = os(X, 7), Q = C.t, B = C.l, ae = 19; ae > 4 && !Q[ks[ae - 1]]; --ae)
+  for (var C = os(X, 7), Q = C.t, z = C.l, ae = 19; ae > 4 && !Q[ks[ae - 1]]; --ae)
     ;
   var it = l + 5 << 3, pe = wn(s, vt) + wn(i, Un) + o, de = wn(s, f) + wn(i, b) + o + 14 + 3 * ae + wn(X, Q) + 2 * X[16] + 3 * X[17] + 7 * X[18];
   if (c >= 0 && it <= pe && it <= de)
@@ -9188,7 +9188,7 @@ var Mu = /* @__PURE__ */ Pe(vt, 9, 0), Ru = /* @__PURE__ */ Pe(vt, 9, 1), Vu = /
   var ee, j, fe, te;
   if (Xe(e, h, 1 + (de < pe)), h += 2, de < pe) {
     ee = Pe(f, p, 0), j = f, fe = Pe(b, F, 0), te = b;
-    var gn = Pe(Q, B, 0);
+    var gn = Pe(Q, z, 0);
     Xe(e, h, G - 257), Xe(e, h + 5, ue - 1), Xe(e, h + 10, ae - 4), h += 14;
     for (var R = 0; R < ae; ++R)
       Xe(e, h + 3 * R, Q[ks[R]]);
@@ -9217,9 +9217,9 @@ var Mu = /* @__PURE__ */ Pe(vt, 9, 0), Ru = /* @__PURE__ */ Pe(vt, 9, 1), Vu = /
     h && (c[0] = i.r >> 3);
     for (var u = Zu[e - 1], f = u >> 13, p = u & 8191, w = (1 << t) - 1, b = i.p || new be(32768), F = i.h || new be(w + 1), De = Math.ceil(t / 3), ge = 2 * De, G = function(Kr) {
       return (n[Kr] ^ n[Kr + 1] << De ^ n[Kr + 2] << ge) & w;
-    }, he = new ri(25e3), oe = new be(288), ue = new be(32), X = 0, R = 0, C = i.i || 0, Q = 0, B = i.w || 0, ae = 0; C + 2 < o; ++C) {
+    }, he = new ri(25e3), oe = new be(288), ue = new be(32), X = 0, R = 0, C = i.i || 0, Q = 0, z = i.w || 0, ae = 0; C + 2 < o; ++C) {
       var it = G(C), pe = C & 32767, de = F[it];
-      if (b[pe] = de, F[it] = pe, B <= C) {
+      if (b[pe] = de, F[it] = pe, z <= C) {
         var ee = o - C;
         if ((X > 7e3 || Q > 24576) && (ee > 423 || !l)) {
           h = Xi(n, c, 0, he, oe, ue, R, Q, ae, C - ae, h), Q = X = R = 0, ae = C;
@@ -9248,14 +9248,14 @@ var Mu = /* @__PURE__ */ Pe(vt, 9, 0), Ru = /* @__PURE__ */ Pe(vt, 9, 1), Vu = /
         if (te) {
           he[Q++] = 268435456 | bs[fe] << 18 | qi[te];
           var pn = bs[fe] & 31, mn = qi[te] & 31;
-          R += Zr[pn] + Fr[mn], ++oe[257 + pn], ++ue[mn], B = C + fe, ++X;
+          R += Zr[pn] + Fr[mn], ++oe[257 + pn], ++ue[mn], z = C + fe, ++X;
         } else
           he[Q++] = n[C], ++oe[n[C]];
       }
     }
-    for (C = Math.max(C, B); C < o; ++C)
+    for (C = Math.max(C, z); C < o; ++C)
       he[Q++] = n[C], ++oe[n[C]];
-    h = Xi(n, c, l, he, oe, ue, R, Q, ae, C - ae, h), l || (i.r = h & 7 | c[h / 8 | 0] << 3, h -= 7, i.h = F, i.p = b, i.i = C, i.w = B);
+    h = Xi(n, c, l, he, oe, ue, R, Q, ae, C - ae, h), l || (i.r = h & 7 | c[h / 8 | 0] << 3, h -= 7, i.h = F, i.p = b, i.i = C, i.w = z);
   } else {
     for (var C = i.w || 0; C < o + l; C += 65535) {
       var $t = C + 65535;
@@ -9537,7 +9537,7 @@ const xt = class xt extends Fa {
       const i = new D();
       i.set("Kind", "item"), i.set("outerItemId", ""), i.set("OrderKey", ""), i.set("Label", new $()), i.set("Info", new D()), i.set("MIMEType", ""), i.set("ValueKind", "none"), s.set(Ue, i);
       const o = new D();
-      o.set("Kind", "item"), o.set("outerItemId", Ue), o.set("OrderKey", "a0"), o.set("Label", new $("trash")), o.set("Info", new D()), o.set("MIMEType", ""), o.set("ValueKind", "none"), s.set(z, o);
+      o.set("Kind", "item"), o.set("outerItemId", Ue), o.set("OrderKey", "a0"), o.set("Label", new $("trash")), o.set("Info", new D()), o.set("MIMEType", ""), o.set("ValueKind", "none"), s.set(K, o);
       const a = new D();
       a.set("Kind", "item"), a.set("outerItemId", Ue), a.set("OrderKey", "a1"), a.set("Label", new $("lost-and-found")), a.set("Info", new D()), a.set("MIMEType", ""), a.set("ValueKind", "none"), s.set(Ce, a);
     }), new xt(r, t);
@@ -9562,7 +9562,7 @@ const xt = class xt extends Fa {
     return g(this, d, at).call(this, Ue);
   }
   get TrashItem() {
-    return g(this, d, at).call(this, z);
+    return g(this, d, at).call(this, K);
   }
   get LostAndFoundItem() {
     return g(this, d, at).call(this, Ce);
@@ -9647,7 +9647,7 @@ const xt = class xt extends Fa {
     const i = this._outerItemIdOf(t.Id), o = g(this, d, zt).call(this, r.Id, s);
     this.transact(() => {
       const a = m(this, x).get(t.Id);
-      if (a.set("outerItemId", r.Id), a.set("OrderKey", o), i === z && r.Id !== z) {
+      if (a.set("outerItemId", r.Id), a.set("OrderKey", o), i === K && r.Id !== K) {
         const c = a.get("Info");
         c instanceof D && c.has("_trashedAt") && (c.delete("_trashedAt"), g(this, d, O).call(this, t.Id, "Info._trashedAt"));
       }
@@ -9669,17 +9669,17 @@ const xt = class xt extends Fa {
   deleteEntry(t) {
     if (!this._mayDeleteEntry(t.Id))
       throw new re("delete-not-permitted", "this entry cannot be deleted");
-    const r = this._outerItemIdOf(t.Id), s = Qe(g(this, d, Sn).call(this, z), null);
+    const r = this._outerItemIdOf(t.Id), s = Qe(g(this, d, Sn).call(this, K), null);
     this.transact(() => {
       const i = m(this, x).get(t.Id);
-      i.set("outerItemId", z), i.set("OrderKey", s);
+      i.set("outerItemId", K), i.set("OrderKey", s);
       let o = i.get("Info");
-      o instanceof D || (o = new D(), i.set("Info", o)), o.set("_trashedAt", Date.now()), r != null && (g(this, d, bt).call(this, r, t.Id), g(this, d, O).call(this, r, "innerEntryList")), g(this, d, we).call(this, z, t.Id), g(this, d, O).call(this, z, "innerEntryList"), g(this, d, O).call(this, t.Id, "outerItem"), g(this, d, O).call(this, t.Id, "Info._trashedAt");
+      o instanceof D || (o = new D(), i.set("Info", o)), o.set("_trashedAt", Date.now()), r != null && (g(this, d, bt).call(this, r, t.Id), g(this, d, O).call(this, r, "innerEntryList")), g(this, d, we).call(this, K, t.Id), g(this, d, O).call(this, K, "innerEntryList"), g(this, d, O).call(this, t.Id, "outerItem"), g(this, d, O).call(this, t.Id, "Info._trashedAt");
     });
   }
   /**** purgeEntry — permanently delete entry and subtree ****/
   purgeEntry(t) {
-    if (this._outerItemIdOf(t.Id) !== z)
+    if (this._outerItemIdOf(t.Id) !== K)
       throw new re(
         "purge-not-in-trash",
         "only direct children of TrashItem can be purged"
@@ -9701,11 +9701,11 @@ const xt = class xt extends Fa {
     const r = t ?? m(this, Xt);
     if (r == null)
       return 0;
-    const s = Date.now(), i = Array.from(m(this, ke).get(z) ?? /* @__PURE__ */ new Set());
+    const s = Date.now(), i = Array.from(m(this, ke).get(K) ?? /* @__PURE__ */ new Set());
     let o = 0;
     for (const a of i) {
       const c = m(this, x).get(a);
-      if (c == null || c.get("outerItemId") !== z)
+      if (c == null || c.get("outerItemId") !== K)
         continue;
       const l = c.get("Info"), h = l instanceof D ? l.get("_trashedAt") : void 0;
       if (typeof h == "number" && !(s - h < r))
@@ -10014,11 +10014,11 @@ const xt = class xt extends Fa {
   }
   /**** _mayMoveEntryTo — check move validity ****/
   _mayMoveEntryTo(t, r, s) {
-    return t === Ue || t === r ? !1 : t === z || t === Ce ? r === Ue : !g(this, d, Ua).call(this, r, t);
+    return t === Ue || t === r ? !1 : t === K || t === Ce ? r === Ue : !g(this, d, Ua).call(this, r, t);
   }
   /**** _mayDeleteEntry — check delete validity ****/
   _mayDeleteEntry(t) {
-    return t !== Ue && t !== z && t !== Ce;
+    return t !== Ue && t !== K && t !== Ce;
   }
   /**** _TargetOf — get link target data ****/
   _TargetOf(t) {
@@ -10162,7 +10162,7 @@ Ra = function(t) {
   let i = !0;
   for (; i; ) {
     i = !1;
-    for (const o of m(this, ke).get(z) ?? /* @__PURE__ */ new Set())
+    for (const o of m(this, ke).get(K) ?? /* @__PURE__ */ new Set())
       s.has(o) || g(this, d, As).call(this, o, r, s) && (s.add(o), i = !0);
   }
   return s.has(t);
@@ -10191,23 +10191,24 @@ Va = function(t) {
   let r = t;
   for (; r != null; ) {
     const s = this._outerItemIdOf(r);
-    if (s === z)
+    if (s === K)
       return r;
     if (s === Ue || s == null)
       return null;
     r = s;
   }
   return null;
-}, /**** #reachableFromRoot — get all entries reachable from root ****/
+}, /**** #reachableFromRoot — compute live-tree entries reachable from root ****/
+// TrashItem is included (it is a direct child of Root) but its subtree is
+// NOT traversed — entries inside Trash are not considered "live" and must
+// not protect other entries from being purged.
 Ts = function() {
   const t = /* @__PURE__ */ new Set(), r = [Ue];
   for (; r.length > 0; ) {
     const s = r.pop();
-    if (!t.has(s)) {
-      t.add(s);
+    if (!t.has(s) && (t.add(s), s !== K))
       for (const i of m(this, ke).get(s) ?? /* @__PURE__ */ new Set())
         t.has(i) || r.push(i);
-    }
   }
   return t;
 }, /**** #purgeSubtree — recursively delete entry and unprotected children ****/
@@ -10218,8 +10219,8 @@ Os = function(t) {
   const s = r.get("Kind"), i = r.get("outerItemId"), o = g(this, d, Ts).call(this), a = /* @__PURE__ */ new Set(), c = Array.from(m(this, ke).get(t) ?? /* @__PURE__ */ new Set());
   for (const l of c)
     if (g(this, d, As).call(this, l, o, a)) {
-      const h = m(this, x).get(l), u = Qe(g(this, d, Sn).call(this, z), null);
-      h.set("outerItemId", z), h.set("OrderKey", u), g(this, d, bt).call(this, t, l), g(this, d, we).call(this, z, l), g(this, d, O).call(this, z, "innerEntryList"), g(this, d, O).call(this, l, "outerItem");
+      const h = m(this, x).get(l), u = Qe(g(this, d, Sn).call(this, K), null);
+      h.set("outerItemId", K), h.set("OrderKey", u), g(this, d, bt).call(this, t, l), g(this, d, we).call(this, K, l), g(this, d, O).call(this, K, "innerEntryList"), g(this, d, O).call(this, l, "outerItem");
     } else
       g(this, d, Os).call(this, l);
   if (g(this, d, O).call(this, t, "Existence"), m(this, x).delete(t), i && (g(this, d, bt).call(this, i, t), g(this, d, O).call(this, i, "innerEntryList")), s === "link") {

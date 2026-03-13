@@ -60,6 +60,7 @@ import { ExitCodes } from './ExitCodes.js'
     PersistenceDir?:   string         // directory for local SQLite DB
     WebHookToken?: string            // bearer token for outgoing webhook calls
     onAuthError?:  string            // webhook URL to call on auth errors
+    Verbose:       boolean           // log incoming patches and store changes
     reconnect:     ReconnectOptions
     WebHooks:      WebHookConfig[]
   }
@@ -185,6 +186,11 @@ import { ExitCodes } from './ExitCodes.js'
     const OnAuthError = (
       (Options['onAuthError'] ?? process.env['SDS_ON_AUTH_ERROR'] ?? FileConfig['onAuthError'])
     ) as string | undefined
+    const Verbose = (
+      Options['verbose'] === true ||
+      process.env['SDS_VERBOSE'] === '1' ||
+      FileConfig['Verbose'] === true
+    )
 
     if (ServerURL == null || ServerURL.trim().length === 0) {
       throw new SDS_SidecarError(
@@ -266,6 +272,7 @@ import { ExitCodes } from './ExitCodes.js'
       PersistenceDir:   ResolvedPersistenceDir,
       WebHookToken: WebHookToken,
       onAuthError:  OnAuthError,
+      Verbose,
       reconnect:    { initialDelay: InitialDelay, maxDelay: MaxDelay, Jitter },
       WebHooks,
     }
