@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --no-warnings
 import { SDS_DataStore as r } from "@rozek/sds-core-jj";
 import { runCommand as o } from "@rozek/sds-command";
-const e = "0.0.10", n = {
+const e = "0.0.11", n = {
   version: e
 }, t = {
   fromScratch: () => r.fromScratch(),

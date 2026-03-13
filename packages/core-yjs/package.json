@@ -1,7 +1,7 @@
 {
   "name": "@rozek/sds-core-yjs",
   "description": "Y.js CRDT backend for shareable-data-store",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "keywords": [
     "crdt",
     "items",

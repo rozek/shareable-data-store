@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --no-warnings
 import { SDS_DataStore as s } from "@rozek/sds-core-yjs";
 import { runMCPServer as o } from "@rozek/sds-mcp-server";
-const e = "0.0.10", t = {
+const e = "0.0.11", t = {
   version: e
 }, c = {
   fromScratch: () => s.fromScratch(),

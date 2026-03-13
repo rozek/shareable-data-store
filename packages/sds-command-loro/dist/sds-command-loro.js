@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --no-warnings
 import { SDS_DataStore as o } from "@rozek/sds-core-loro";
 import { runCommand as s } from "@rozek/sds-command";
-const e = "0.0.10", n = {
+const e = "0.0.11", n = {
   version: e
 }, t = {
   fromScratch: () => o.fromScratch(),

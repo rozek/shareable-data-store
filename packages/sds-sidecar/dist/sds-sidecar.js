@@ -5,7 +5,7 @@ import { SDS_SyncEngine as B } from "@rozek/sds-sync-engine";
 import I from "node:path";
 import V from "node:os";
 import { TrashId as T } from "@rozek/sds-core";
-const G = "0.0.10", N = {
+const G = "0.0.11", N = {
   version: G
 }, y = {
   OK: 0,
