@@ -12,7 +12,7 @@ import { SDS_SyncEngine }            from '../sds-sync-engine.js'
 
 function makeMockNetwork (storeId = 'store-1') {
   let connState = 'disconnected'
-  const handlers: Record<string, Function[]> = { patch:[], value:[], conn:[] }
+  const handlers: Record<string, Function[]> = { patch:[], value:[], conn:[], syncReq:[] }
   return {
     StoreId: storeId,
     get ConnectionState () { return connState as any },
@@ -21,9 +21,11 @@ function makeMockNetwork (storeId = 'store-1') {
     sendPatch: vi.fn(),
     sendValue: vi.fn(),
     requestValue: vi.fn(),
+    sendSyncRequest: vi.fn(),
     onPatch: vi.fn((cb: Function) => { handlers.patch.push(cb); return () => {} }),
     onValue: vi.fn((cb: Function) => { handlers.value.push(cb); return () => {} }),
     onConnectionChange: vi.fn((cb: Function) => { handlers.conn.push(cb); return () => {} }),
+    onSyncRequest: vi.fn((cb: Function) => { handlers.syncReq.push(cb); return () => {} }),
     sendLocalState: vi.fn(),
     onRemoteState: vi.fn().mockReturnValue(() => {}),
     get PeerSet () { return new Map() },
@@ -81,6 +83,81 @@ describe('SDS_SyncEngine — Network', () => {
     expect(Network.sendPatch).toHaveBeenCalledOnce()
 
     await Engine.stop()
+  })
+
+  it('SR-01: on connection, engine sends a sync request with the current cursor', async () => {
+    const Store   = SDS_DataStore.fromScratch()
+    const Network = makeMockNetwork()
+    const Engine  = new SDS_SyncEngine(Store, { NetworkProvider:Network as any })
+    await Engine.start()
+    Network._triggerConn('connected')
+
+    expect(Network.sendSyncRequest).toHaveBeenCalledOnce()
+    const SentCursor = Network.sendSyncRequest.mock.calls[0][0] as Uint8Array
+    expect(SentCursor).toBeInstanceOf(Uint8Array)
+
+    await Engine.stop()
+  })
+
+  it('SR-02: incoming sync request triggers a full-state response after a random delay', async () => {
+    vi.useFakeTimers()
+    try {
+      const Store   = SDS_DataStore.fromScratch()
+      Store.newItemAt(undefined, Store.RootItem) // ensure store has exportable data
+      const Network = makeMockNetwork()
+      const Engine  = new SDS_SyncEngine(Store, { NetworkProvider:Network as any })
+      await Engine.start()
+      Network._triggerConn('connected')
+
+      // reset sendPatch calls from the connect phase
+      Network.sendPatch.mockClear()
+
+      // simulate an incoming sync request from another peer
+      const SyncReqHandler = Network.onSyncRequest.mock.calls[0][0]
+      SyncReqHandler(new Uint8Array(0))
+
+      // sendPatch should not fire immediately (random delay 50–300 ms)
+      expect(Network.sendPatch).not.toHaveBeenCalled()
+
+      // advance past the maximum delay
+      vi.advanceTimersByTime(300)
+
+      expect(Network.sendPatch).toHaveBeenCalledOnce()
+      const SentPatch = Network.sendPatch.mock.calls[0][0] as Uint8Array
+      expect(SentPatch).toBeInstanceOf(Uint8Array)
+      expect(SentPatch.byteLength).toBeGreaterThan(0)
+
+      await Engine.stop()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('SR-03: sync response timer is cleared on stop()', async () => {
+    vi.useFakeTimers()
+    try {
+      const Store   = SDS_DataStore.fromScratch()
+      Store.newItemAt(undefined, Store.RootItem)
+      const Network = makeMockNetwork()
+      const Engine  = new SDS_SyncEngine(Store, { NetworkProvider:Network as any })
+      await Engine.start()
+      Network._triggerConn('connected')
+
+      Network.sendPatch.mockClear()
+
+      // trigger a sync request — starts the delayed response timer
+      const SyncReqHandler = Network.onSyncRequest.mock.calls[0][0]
+      SyncReqHandler(new Uint8Array(0))
+
+      // stop before the timer fires
+      await Engine.stop()
+
+      // advance past the delay — sendPatch must NOT fire
+      vi.advanceTimersByTime(300)
+      expect(Network.sendPatch).not.toHaveBeenCalled()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('SN-05: incoming network patch triggers store.applyRemotePatch', async () => {

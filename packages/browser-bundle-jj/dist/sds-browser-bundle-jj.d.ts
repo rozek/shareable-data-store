@@ -417,6 +417,10 @@ export declare interface SDS_NetworkProvider {
     onValue(Callback: (ValueHash: string, Value: Uint8Array) => void): () => void;
     /**** onConnectionChange — subscribe to connection-state changes; returns unsubscribe fn ****/
     onConnectionChange(Callback: (ConnectionState: SDS_ConnectionState) => void): () => void;
+    /**** sendSyncRequest — broadcast a sync request with the local CRDT cursor ****/
+    sendSyncRequest(Cursor: Uint8Array): void;
+    /**** onSyncRequest — subscribe to incoming sync requests; returns unsubscribe fn ****/
+    onSyncRequest(Callback: (Cursor: Uint8Array) => void): () => void;
 }
 
 export declare type SDS_PatchSeqNumber = number;
@@ -520,6 +524,10 @@ export declare class SDS_WebRTCProvider implements SDS_NetworkProvider, SDS_Pres
     onValue(Callback: (Hash: string, Data: Uint8Array) => void): () => void;
     /**** onConnectionChange ****/
     onConnectionChange(Callback: (State: SDS_ConnectionState) => void): () => void;
+    /**** sendSyncRequest ****/
+    sendSyncRequest(Cursor: Uint8Array): void;
+    /**** onSyncRequest ****/
+    onSyncRequest(Callback: (Cursor: Uint8Array) => void): () => void;
     /**** sendLocalState ****/
     sendLocalState(State: SDS_LocalPresenceState): void;
     /**** onRemoteState ****/
@@ -556,6 +564,10 @@ export declare class SDS_WebSocketProvider implements SDS_NetworkProvider, SDS_P
     onValue(Callback: (ValueHash: string, Value: Uint8Array) => void): () => void;
     /**** onConnectionChange ****/
     onConnectionChange(Callback: (State: SDS_ConnectionState) => void): () => void;
+    /**** sendSyncRequest ****/
+    sendSyncRequest(Cursor: Uint8Array): void;
+    /**** onSyncRequest ****/
+    onSyncRequest(Callback: (Cursor: Uint8Array) => void): () => void;
     /**** sendLocalState ****/
     sendLocalState(State: SDS_LocalPresenceState): void;
     /**** onRemoteState ****/

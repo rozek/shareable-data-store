@@ -16,6 +16,7 @@
 //   0x03  REQ_VALUE    — 32-byte SHA-256 hash (request missing value)
 //   0x04  PRESENCE     — UTF-8 JSON of SDS_PresenceState
 //   0x05  VALUE_CHUNK  — 32-byte hash + 4-byte chunk-index + 4-byte total-chunks + chunk bytes
+//   0x06  SYNC_REQ     — opaque CRDT cursor bytes (may be empty for a fresh peer)
 
 import type {
   SDS_NetworkProvider,
@@ -35,6 +36,7 @@ import type {
   const MSG_REQ_VALUE   = 0x03
   const MSG_PRESENCE    = 0x04
   const MSG_VALUE_CHUNK = 0x05
+  const MSG_SYNC_REQ    = 0x06
 
   const HASH_SIZE       = 32  // SHA-256 in bytes
   const MAX_CHUNK_SIZE  = 1024*1024  // 1 MB
@@ -100,6 +102,7 @@ export class SDS_WebSocketProvider
   #ValueHandlers:             Set<(Hash:string, Data:Uint8Array) => void> = new Set()
   #ConnectionChangeHandlers:  Set<(State:SDS_ConnectionState) => void> = new Set()
   #PresenceHandlers:          Set<(PeerId:string, State:SDS_RemotePresenceState | undefined) => void> = new Set()
+  #SyncRequestHandlers:       Set<(Cursor:Uint8Array) => void> = new Set()
 
   // incoming value chunk reassembly: hash → chunks array
   #ChunkBuffer: Map<string, { total:number; chunks:Map<number,Uint8Array> }> = new Map()
@@ -233,6 +236,19 @@ export class SDS_WebSocketProvider
     return () => { this.#ConnectionChangeHandlers.delete(Callback) }
   }
 
+/**** sendSyncRequest ****/
+
+  sendSyncRequest (Cursor:Uint8Array):void {
+    this.#send(encodeFrame(MSG_SYNC_REQ, Cursor))
+  }
+
+/**** onSyncRequest ****/
+
+  onSyncRequest (Callback:(Cursor:Uint8Array) => void):() => void {
+    this.#SyncRequestHandlers.add(Callback)
+    return () => { this.#SyncRequestHandlers.delete(Callback) }
+  }
+
 //----------------------------------------------------------------------------//
 //                            SDS_PresenceProvider                            //
 //----------------------------------------------------------------------------//
@@ -338,6 +354,12 @@ export class SDS_WebSocketProvider
             try { Handler(State.PeerId, State) } catch (_Signal) {}
           }
         } catch (_Signal) {}
+        break
+      }
+      case MSG_SYNC_REQ: {
+        for (const Handler of this.#SyncRequestHandlers) {
+          try { Handler(Payload) } catch (_Signal) {}
+        }
         break
       }
       case MSG_VALUE_CHUNK: {

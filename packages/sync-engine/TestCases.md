@@ -32,6 +32,14 @@
 | SN-04 | when disconnected, internal store change → patch queued; flushes on reconnect | sendPatch() called after reconnect |
 | SN-05 | incoming network patch → applied to store | patched data's Label readable in store after patch delivery |
 
+## SR — Sync Request
+
+| # | Description | Expected |
+|---|---|---|
+| SR-01 | on connection, engine sends a sync request with the current cursor | `sendSyncRequest()` called with `Store.currentCursor` after `'connected'` fires |
+| SR-02 | incoming sync request triggers a full-state response after a random delay | `sendPatch()` called with non-empty `exportPatch()` data within 50–300 ms |
+| SR-03 | sync response timer is cleared on stop() | no pending timer after `stop()` completes |
+
 ## SS — Presence
 
 | # | Description | Expected |

@@ -1,136 +1,138 @@
-var se = Object.defineProperty;
-var F = (h) => {
-  throw TypeError(h);
+var ie = Object.defineProperty;
+var G = (a) => {
+  throw TypeError(a);
 };
-var ie = (h, t, s) => t in h ? se(h, t, { enumerable: !0, configurable: !0, writable: !0, value: s }) : h[t] = s;
-var G = (h, t, s) => ie(h, typeof t != "symbol" ? t + "" : t, s), A = (h, t, s) => t.has(h) || F("Cannot " + s);
-var e = (h, t, s) => (A(h, t, "read from private field"), s ? s.call(h) : t.get(h)), r = (h, t, s) => t.has(h) ? F("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(h) : t.set(h, s), c = (h, t, s, i) => (A(h, t, "write to private field"), i ? i.call(h, s) : t.set(h, s), s), p = (h, t, s) => (A(h, t, "access private method"), s);
-var J = (h, t, s, i) => ({
-  set _(o) {
-    c(h, t, o, s);
+var oe = (a, t, s) => t in a ? ie(a, t, { enumerable: !0, configurable: !0, writable: !0, value: s }) : a[t] = s;
+var J = (a, t, s) => oe(a, typeof t != "symbol" ? t + "" : t, s), Q = (a, t, s) => t.has(a) || G("Cannot " + s);
+var e = (a, t, s) => (Q(a, t, "read from private field"), s ? s.call(a) : t.get(a)), c = (a, t, s) => t.has(a) ? G("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(a) : t.set(a, s), r = (a, t, s, i) => (Q(a, t, "write to private field"), i ? i.call(a, s) : t.set(a, s), s), p = (a, t, s) => (Q(a, t, "access private method"), s);
+var K = (a, t, s, i) => ({
+  set _(n) {
+    r(a, t, n, s);
   },
   get _() {
-    return e(h, t, i);
+    return e(a, t, i);
   }
 });
-import { SDS_Error as E } from "@rozek/sds-core";
-const oe = 512 * 1024;
-var l, d, a, H, D, I, N, x, L, M, w, T, B, b, k, g, C, S, _, R, m, y, n, K, W, X, Y, Z, Q, O, j, $, ee, z;
-class ae {
+import { SDS_Error as U } from "@rozek/sds-core";
+const ne = 512 * 1024;
+var d, l, o, H, R, M, N, _, L, q, P, B, k, V, D, T, b, S, E, x, g, m, C, h, W, X, Y, Z, O, j, ee, F, $, te, z;
+class re {
   //----------------------------------------------------------------------------//
   //                                Constructor                                 //
   //----------------------------------------------------------------------------//
   constructor(t, s = {}) {
-    r(this, n);
-    r(this, l);
-    r(this, d);
-    r(this, a);
-    r(this, H);
-    r(this, D);
-    G(this, "PeerId", crypto.randomUUID());
-    r(this, I);
-    r(this, N);
-    r(this, x, []);
+    c(this, h);
+    c(this, d);
+    c(this, l);
+    c(this, o);
+    c(this, H);
+    c(this, R);
+    J(this, "PeerId", crypto.randomUUID());
+    c(this, M);
+    c(this, N);
+    c(this, _, []);
     // outgoing patch queue (patches created while disconnected)
-    r(this, L, 0);
+    c(this, L, 0);
     // accumulated patch bytes since last checkpoint
-    r(this, M, 0);
+    c(this, q, 0);
     // sequence number of the last saved snapshot
-    r(this, w, 0);
+    c(this, P, 0);
     // current patch sequence # (append-monotonic counter, managed by SyncEngine)
     // CRDT cursor captured after the last processed local change;
     // passed to Store.exportPatch() to retrieve exactly that one change.
     // Initialised to an empty cursor; updated in #loadAndRestore and after
     // each local mutation.  Backend-agnostic: the DataStore owns the format.
-    r(this, T, new Uint8Array(0));
+    c(this, B, new Uint8Array(0));
     // heartbeat timer
-    r(this, B);
-    r(this, b);
+    c(this, k);
+    c(this, V);
     // presence peer tracking
-    r(this, k, /* @__PURE__ */ new Map());
-    r(this, g, /* @__PURE__ */ new Map());
-    r(this, C, /* @__PURE__ */ new Set());
+    c(this, D, /* @__PURE__ */ new Map());
+    c(this, T, /* @__PURE__ */ new Map());
+    c(this, b, /* @__PURE__ */ new Set());
     // BroadcastChannel (optional, browser/tauri only)
-    r(this, S);
+    c(this, S);
     // connection state mirror
-    r(this, _, "disconnected");
-    r(this, R, /* @__PURE__ */ new Set());
+    c(this, E, "disconnected");
+    c(this, x, /* @__PURE__ */ new Set());
+    // pending sync-response timer (random delay before answering a sync request)
+    c(this, g);
     // unsubscribe functions for registered handlers
-    r(this, m, []);
+    c(this, m, []);
     // tracks entryId → blob hash for all entries whose value is in a *-reference kind;
     // used to call releaseValue() when the entry's value changes or the entry is purged
-    r(this, y, /* @__PURE__ */ new Map());
-    var o;
-    c(this, l, t), c(this, d, s.PersistenceProvider ?? void 0), c(this, a, s.NetworkProvider ?? void 0), c(this, H, s.PresenceProvider ?? (typeof ((o = s.NetworkProvider) == null ? void 0 : o.onRemoteState) == "function" ? s.NetworkProvider : void 0)), c(this, D, s.PresenceTimeoutMs ?? 12e4), (s.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && e(this, a) != null && c(this, S, new BroadcastChannel(`sds:${e(this, a).StoreId}`));
+    c(this, C, /* @__PURE__ */ new Map());
+    var n;
+    r(this, d, t), r(this, l, s.PersistenceProvider ?? void 0), r(this, o, s.NetworkProvider ?? void 0), r(this, H, s.PresenceProvider ?? (typeof ((n = s.NetworkProvider) == null ? void 0 : n.onRemoteState) == "function" ? s.NetworkProvider : void 0)), r(this, R, s.PresenceTimeoutMs ?? 12e4), (s.BroadcastChannel ?? !0) && typeof BroadcastChannel < "u" && e(this, o) != null && r(this, S, new BroadcastChannel(`sds:${e(this, o).StoreId}`));
   }
   //----------------------------------------------------------------------------//
   //                                 Lifecycle                                  //
   //----------------------------------------------------------------------------//
   /**** start ****/
   async start() {
-    if (e(this, d) != null) {
-      const t = e(this, d);
-      e(this, l).setValueBlobLoader((s) => t.loadValue(s));
+    if (e(this, l) != null) {
+      const t = e(this, l);
+      e(this, d).setValueBlobLoader((s) => t.loadValue(s));
     }
-    await p(this, n, K).call(this), p(this, n, W).call(this), p(this, n, X).call(this), p(this, n, Y).call(this), p(this, n, Z).call(this), e(this, a) != null && e(this, a).onConnectionChange((t) => {
-      c(this, _, t);
-      for (const s of e(this, R))
+    await p(this, h, W).call(this), p(this, h, X).call(this), p(this, h, Y).call(this), p(this, h, Z).call(this), p(this, h, O).call(this), e(this, o) != null && e(this, o).onConnectionChange((t) => {
+      r(this, E, t);
+      for (const s of e(this, x))
         try {
           s(t);
         } catch (i) {
           console.error("[SDS] connection-change handler threw:", i.message ?? i);
         }
-      t === "connected" && p(this, n, O).call(this);
+      t === "connected" && (p(this, h, ee).call(this), e(this, o).sendSyncRequest(e(this, d).currentCursor));
     });
   }
   /**** stop ****/
   async stop() {
     var t, s, i;
-    e(this, B) != null && (clearInterval(e(this, B)), c(this, B, void 0));
-    for (const o of e(this, g).values())
-      clearTimeout(o);
-    e(this, g).clear();
-    for (const o of e(this, m))
+    e(this, g) != null && (clearTimeout(e(this, g)), r(this, g, void 0)), e(this, k) != null && (clearInterval(e(this, k)), r(this, k, void 0));
+    for (const n of e(this, T).values())
+      clearTimeout(n);
+    e(this, T).clear();
+    for (const n of e(this, m))
       try {
-        o();
+        n();
       } catch {
       }
-    c(this, m, []), (t = e(this, S)) == null || t.close(), c(this, S, void 0), (s = e(this, a)) == null || s.disconnect(), e(this, d) != null && await p(this, n, Q).call(this), await ((i = e(this, d)) == null ? void 0 : i.close());
+    r(this, m, []), (t = e(this, S)) == null || t.close(), r(this, S, void 0), (s = e(this, o)) == null || s.disconnect(), e(this, l) != null && await p(this, h, j).call(this), await ((i = e(this, l)) == null ? void 0 : i.close());
   }
   //----------------------------------------------------------------------------//
   //                             Network Connection                             //
   //----------------------------------------------------------------------------//
   /**** connectTo ****/
   async connectTo(t, s) {
-    if (e(this, a) == null)
-      throw new E("no-network-provider", "no NetworkProvider configured");
-    c(this, I, t), c(this, N, s), await e(this, a).connect(t, s);
+    if (e(this, o) == null)
+      throw new U("no-network-provider", "no NetworkProvider configured");
+    r(this, M, t), r(this, N, s), await e(this, o).connect(t, s);
   }
   /**** disconnect ****/
   disconnect() {
-    if (e(this, a) == null)
-      throw new E("no-network-provider", "no NetworkProvider configured");
-    e(this, a).disconnect();
+    if (e(this, o) == null)
+      throw new U("no-network-provider", "no NetworkProvider configured");
+    e(this, o).disconnect();
   }
   /**** reconnect ****/
   async reconnect() {
-    if (e(this, a) == null)
-      throw new E("no-network-provider", "no NetworkProvider configured");
-    if (e(this, I) == null)
-      throw new E(
+    if (e(this, o) == null)
+      throw new U("no-network-provider", "no NetworkProvider configured");
+    if (e(this, M) == null)
+      throw new U(
         "not-yet-connected",
         "connectTo() has not been called yet; cannot reconnect"
       );
-    await e(this, a).connect(e(this, I), e(this, N));
+    await e(this, o).connect(e(this, M), e(this, N));
   }
   /**** ConnectionState ****/
   get ConnectionState() {
-    return e(this, _);
+    return e(this, E);
   }
   /**** onConnectionChange ****/
   onConnectionChange(t) {
-    return e(this, R).add(t), () => {
-      e(this, R).delete(t);
+    return e(this, x).add(t), () => {
+      e(this, x).delete(t);
     };
   }
   //----------------------------------------------------------------------------//
@@ -138,11 +140,11 @@ class ae {
   //----------------------------------------------------------------------------//
   /**** setPresenceTo ****/
   setPresenceTo(t) {
-    var i, o;
-    c(this, b, t);
+    var i, n;
+    r(this, V, t);
     const s = { ...t, PeerId: this.PeerId };
-    (i = e(this, H)) == null || i.sendLocalState(t), (o = e(this, S)) == null || o.postMessage({ type: "presence", payload: s, senderId: this.PeerId });
-    for (const u of e(this, C))
+    (i = e(this, H)) == null || i.sendLocalState(t), (n = e(this, S)) == null || n.postMessage({ type: "presence", payload: s, senderId: this.PeerId });
+    for (const u of e(this, b))
       try {
         u(this.PeerId, s, "local");
       } catch (f) {
@@ -151,147 +153,158 @@ class ae {
   }
   /**** PeerSet (remote peers only) ****/
   get PeerSet() {
-    return e(this, k);
+    return e(this, D);
   }
   /**** onPresenceChange ****/
   onPresenceChange(t) {
-    return e(this, C).add(t), () => {
-      e(this, C).delete(t);
+    return e(this, b).add(t), () => {
+      e(this, b).delete(t);
     };
   }
 }
-l = new WeakMap(), d = new WeakMap(), a = new WeakMap(), H = new WeakMap(), D = new WeakMap(), I = new WeakMap(), N = new WeakMap(), x = new WeakMap(), L = new WeakMap(), M = new WeakMap(), w = new WeakMap(), T = new WeakMap(), B = new WeakMap(), b = new WeakMap(), k = new WeakMap(), g = new WeakMap(), C = new WeakMap(), S = new WeakMap(), _ = new WeakMap(), R = new WeakMap(), m = new WeakMap(), y = new WeakMap(), n = new WeakSet(), K = async function() {
-  if (e(this, d) == null)
+d = new WeakMap(), l = new WeakMap(), o = new WeakMap(), H = new WeakMap(), R = new WeakMap(), M = new WeakMap(), N = new WeakMap(), _ = new WeakMap(), L = new WeakMap(), q = new WeakMap(), P = new WeakMap(), B = new WeakMap(), k = new WeakMap(), V = new WeakMap(), D = new WeakMap(), T = new WeakMap(), b = new WeakMap(), S = new WeakMap(), E = new WeakMap(), x = new WeakMap(), g = new WeakMap(), m = new WeakMap(), C = new WeakMap(), h = new WeakSet(), W = async function() {
+  if (e(this, l) == null)
     return;
-  await e(this, d).loadSnapshot();
-  const t = await e(this, d).loadPatchesSince(e(this, M));
+  await e(this, l).loadSnapshot();
+  const t = await e(this, l).loadPatchesSince(e(this, q));
   for (const s of t)
     try {
-      e(this, l).applyRemotePatch(s);
+      e(this, d).applyRemotePatch(s);
     } catch {
     }
-  t.length > 0 && c(this, w, e(this, M) + t.length), c(this, T, e(this, l).currentCursor);
+  t.length > 0 && r(this, P, e(this, q) + t.length), r(this, B, e(this, d).currentCursor);
 }, //----------------------------------------------------------------------------//
 //                                   Wiring                                   //
 //----------------------------------------------------------------------------//
 /**** #wireStoreToProviders — subscribes to local store changes and routes them to persistence and network ****/
-W = function() {
-  const t = e(this, l).onChangeInvoke((s, i) => {
-    var f, q;
+X = function() {
+  const t = e(this, d).onChangeInvoke((s, i) => {
+    var f, w;
     if (s === "external") {
-      p(this, n, j).call(this, i, "request").catch((v) => {
+      p(this, h, F).call(this, i, "request").catch((v) => {
         console.error("[SDS] value-request failed:", v.message ?? v);
       });
       return;
     }
-    const o = e(this, T);
-    J(this, w)._++;
-    const u = e(this, l).exportPatch(o);
-    c(this, T, e(this, l).currentCursor), u.byteLength !== 0 && (e(this, d) != null && (e(this, d).appendPatch(u, e(this, w)).catch((v) => {
+    const n = e(this, B);
+    K(this, P)._++;
+    const u = e(this, d).exportPatch(n);
+    r(this, B, e(this, d).currentCursor), u.byteLength !== 0 && (e(this, l) != null && (e(this, l).appendPatch(u, e(this, P)).catch((v) => {
       console.error("[SDS] appendPatch failed:", v.message ?? v);
-    }), c(this, L, e(this, L) + u.byteLength), e(this, L) >= oe && p(this, n, Q).call(this).catch((v) => {
+    }), r(this, L, e(this, L) + u.byteLength), e(this, L) >= ne && p(this, h, j).call(this).catch((v) => {
       console.error("[SDS] checkpoint failed:", v.message ?? v);
-    })), ((f = e(this, a)) == null ? void 0 : f.ConnectionState) === "connected" ? (e(this, a).sendPatch(u), (q = e(this, S)) == null || q.postMessage({ type: "patch", payload: u, senderId: this.PeerId })) : e(this, x).push(u), p(this, n, j).call(this, i, "send").catch((v) => {
+    })), ((f = e(this, o)) == null ? void 0 : f.ConnectionState) === "connected" ? (e(this, o).sendPatch(u), (w = e(this, S)) == null || w.postMessage({ type: "patch", payload: u, senderId: this.PeerId })) : e(this, _).push(u), p(this, h, F).call(this, i, "send").catch((v) => {
       console.error("[SDS] value-send failed:", v.message ?? v);
     }));
   });
   e(this, m).push(t);
 }, /**** #wireNetworkToStore — subscribes to incoming network patches and presence events ****/
-X = function() {
-  if (e(this, a) != null) {
-    const s = e(this, a).onPatch((o) => {
+Y = function() {
+  if (e(this, o) != null) {
+    const s = e(this, o).onPatch((u) => {
       try {
-        e(this, l).applyRemotePatch(o);
+        e(this, d).applyRemotePatch(u);
       } catch {
       }
     });
     e(this, m).push(s);
-    const i = e(this, a).onValue(async (o, u) => {
-      var f;
-      e(this, l).storeValueBlob(o, u), await ((f = e(this, d)) == null ? void 0 : f.saveValue(o, u));
+    const i = e(this, o).onValue(async (u, f) => {
+      var w;
+      e(this, d).storeValueBlob(u, f), await ((w = e(this, l)) == null ? void 0 : w.saveValue(u, f));
     });
     e(this, m).push(i);
+    const n = e(this, o).onSyncRequest((u) => {
+      e(this, g) != null && clearTimeout(e(this, g));
+      const f = 50 + Math.floor(Math.random() * 250);
+      r(this, g, setTimeout(() => {
+        var v;
+        r(this, g, void 0);
+        const w = e(this, d).exportPatch();
+        w.byteLength > 0 && ((v = e(this, o)) == null || v.sendPatch(w));
+      }, f));
+    });
+    e(this, m).push(n);
   }
   const t = e(this, H);
   if (t != null) {
-    const s = t.onRemoteState((i, o) => {
-      p(this, n, $).call(this, i, o);
+    const s = t.onRemoteState((i, n) => {
+      p(this, h, $).call(this, i, n);
     });
     e(this, m).push(s);
   }
 }, /**** #wirePresenceHeartbeat — starts a periodic timer to re-broadcast local presence state ****/
-Y = function() {
-  const t = e(this, D) / 4;
-  c(this, B, setInterval(() => {
+Z = function() {
+  const t = e(this, R) / 4;
+  r(this, k, setInterval(() => {
     var s, i;
-    if (e(this, b) != null) {
-      (s = e(this, H)) == null || s.sendLocalState(e(this, b));
-      const o = { ...e(this, b), PeerId: this.PeerId };
-      (i = e(this, S)) == null || i.postMessage({ type: "presence", payload: o, senderId: this.PeerId });
+    if (e(this, V) != null) {
+      (s = e(this, H)) == null || s.sendLocalState(e(this, V));
+      const n = { ...e(this, V), PeerId: this.PeerId };
+      (i = e(this, S)) == null || i.postMessage({ type: "presence", payload: n, senderId: this.PeerId });
     }
   }, t));
 }, /**** #wireBroadcastChannel — wires the BroadcastChannel for cross-tab patch and presence relay ****/
-Z = function() {
+O = function() {
   e(this, S) != null && (e(this, S).onmessage = (t) => {
     const s = t.data;
     if (s.senderId !== this.PeerId)
       switch (!0) {
         case s.type === "patch":
           try {
-            e(this, l).applyRemotePatch(s.payload);
+            e(this, d).applyRemotePatch(s.payload);
           } catch (i) {
             console.error("[SDS] failed to apply BC patch:", i.message ?? i);
           }
           break;
         case s.type === "presence":
-          p(this, n, $).call(this, s.payload.PeerId ?? s.senderId ?? "unknown", s.payload);
+          p(this, h, $).call(this, s.payload.PeerId ?? s.senderId ?? "unknown", s.payload);
           break;
       }
   });
-}, Q = async function() {
-  if (e(this, d) == null)
+}, j = async function() {
+  if (e(this, l) == null)
     return;
-  const t = await e(this, d).loadPatchesSince(e(this, w));
+  const t = await e(this, l).loadPatchesSince(e(this, P));
   for (const s of t)
     try {
-      e(this, l).applyRemotePatch(s);
+      e(this, d).applyRemotePatch(s);
     } catch {
     }
-  t.length > 0 && (c(this, w, e(this, w) + t.length), c(this, T, e(this, l).currentCursor)), await e(this, d).saveSnapshot(e(this, l).asBinary(), e(this, w)), e(this, a) != null && (await e(this, d).prunePatches(e(this, w)), c(this, M, e(this, w))), c(this, L, 0);
+  t.length > 0 && (r(this, P, e(this, P) + t.length), r(this, B, e(this, d).currentCursor)), await e(this, l).saveSnapshot(e(this, d).asBinary(), e(this, P)), e(this, o) != null && (await e(this, l).prunePatches(e(this, P)), r(this, q, e(this, P))), r(this, L, 0);
 }, //----------------------------------------------------------------------------//
 //                            Offline Queue Flush                             //
 //----------------------------------------------------------------------------//
 /**** #flushOfflineQueue — sends all queued offline patches to the network ****/
-O = function() {
+ee = function() {
   var s;
-  const t = e(this, x).splice(0);
+  const t = e(this, _).splice(0);
   for (const i of t)
     try {
-      (s = e(this, a)) == null || s.sendPatch(i);
-    } catch (o) {
-      console.error("SDS: failed to send queued patch", o);
+      (s = e(this, o)) == null || s.sendPatch(i);
+    } catch (n) {
+      console.error("SDS: failed to send queued patch", n);
     }
-}, j = async function(t, s) {
-  var i, o, u;
-  for (const [f, q] of Object.entries(t)) {
-    const v = q;
+}, F = async function(t, s) {
+  var i, n, u;
+  for (const [f, w] of Object.entries(t)) {
+    const v = w;
     if (v.has("Existence")) {
-      const V = e(this, y).get(f);
-      V != null && (await ((i = e(this, d)) == null ? void 0 : i.releaseValue(V)), e(this, y).delete(f));
+      const I = e(this, C).get(f);
+      I != null && (await ((i = e(this, l)) == null ? void 0 : i.releaseValue(I)), e(this, C).delete(f));
     }
     if (!v.has("Value"))
       continue;
-    const U = e(this, y).get(f), P = e(this, l)._getValueRefOf(f), te = P == null ? void 0 : P.Hash;
-    if (U != null && U !== te && (await ((o = e(this, d)) == null ? void 0 : o.releaseValue(U)), e(this, y).delete(f)), P != null) {
-      if (e(this, a) == null) {
-        e(this, y).set(f, P.Hash);
+    const A = e(this, C).get(f), y = e(this, d)._getValueRefOf(f), se = y == null ? void 0 : y.Hash;
+    if (A != null && A !== se && (await ((n = e(this, l)) == null ? void 0 : n.releaseValue(A)), e(this, C).delete(f)), y != null) {
+      if (e(this, o) == null) {
+        e(this, C).set(f, y.Hash);
         continue;
       }
       if (s === "send") {
-        const V = e(this, l).getValueBlobByHash(P.Hash);
-        V != null && (await ((u = e(this, d)) == null ? void 0 : u.saveValue(P.Hash, V)), e(this, y).set(f, P.Hash), e(this, a).ConnectionState === "connected" && e(this, a).sendValue(P.Hash, V));
+        const I = e(this, d).getValueBlobByHash(y.Hash);
+        I != null && (await ((u = e(this, l)) == null ? void 0 : u.saveValue(y.Hash, I)), e(this, C).set(f, y.Hash), e(this, o).ConnectionState === "connected" && e(this, o).sendValue(y.Hash, I));
       } else
-        e(this, y).set(f, P.Hash), !e(this, l).hasValueBlob(P.Hash) && e(this, a).ConnectionState === "connected" && e(this, a).requestValue(P.Hash);
+        e(this, C).set(f, y.Hash), !e(this, d).hasValueBlob(y.Hash) && e(this, o).ConnectionState === "connected" && e(this, o).requestValue(y.Hash);
     }
   }
 }, //----------------------------------------------------------------------------//
@@ -300,42 +313,42 @@ O = function() {
 /**** #handleRemotePresence — updates the peer set and notifies handlers when a presence update arrives ****/
 $ = function(t, s) {
   if (s == null) {
-    p(this, n, z).call(this, t);
+    p(this, h, z).call(this, t);
     return;
   }
   const i = { ...s, _lastSeen: Date.now() };
-  e(this, k).set(t, i), p(this, n, ee).call(this, t);
-  for (const o of e(this, C))
+  e(this, D).set(t, i), p(this, h, te).call(this, t);
+  for (const n of e(this, b))
     try {
-      o(t, s, "remote");
+      n(t, s, "remote");
     } catch (u) {
       console.error("SDS: presence handler failed", u);
     }
 }, /**** #resetPeerTimeout — arms a timeout to remove a peer if no heartbeat arrives within PresenceTimeoutMs ****/
-ee = function(t) {
-  const s = e(this, g).get(t);
+te = function(t) {
+  const s = e(this, T).get(t);
   s != null && clearTimeout(s);
   const i = setTimeout(
     () => {
-      p(this, n, z).call(this, t);
+      p(this, h, z).call(this, t);
     },
-    e(this, D)
+    e(this, R)
   );
-  e(this, g).set(t, i);
+  e(this, T).set(t, i);
 }, /**** #removePeer — removes a peer from the peer set and notifies presence change handlers ****/
 z = function(t) {
-  if (!e(this, k).has(t))
+  if (!e(this, D).has(t))
     return;
-  e(this, k).delete(t);
-  const s = e(this, g).get(t);
-  s != null && (clearTimeout(s), e(this, g).delete(t));
-  for (const i of e(this, C))
+  e(this, D).delete(t);
+  const s = e(this, T).get(t);
+  s != null && (clearTimeout(s), e(this, T).delete(t));
+  for (const i of e(this, b))
     try {
       i(t, void 0, "remote");
-    } catch (o) {
-      console.error("SDS: presence handler failed", o);
+    } catch (n) {
+      console.error("SDS: presence handler failed", n);
     }
 };
 export {
-  ae as SDS_SyncEngine
+  re as SDS_SyncEngine
 };

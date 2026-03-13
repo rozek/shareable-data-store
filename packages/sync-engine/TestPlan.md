@@ -123,7 +123,31 @@ Verify that `SDS_SyncEngine` correctly coordinates `SDS_DataStore` with persiste
 
 ---
 
-## Part IV — Presence
+## Part IV — Sync Request
+
+When a peer connects (or reconnects) it broadcasts a `MSG_SYNC_REQUEST` carrying its current CRDT cursor. Every other connected peer that receives the request responds after a random delay (50–300 ms) by sending a full-state `exportPatch()` via `sendPatch()`. The random delay avoids a thundering-herd problem when many peers are online. Because cross-peer cursors are not portable across all backends (json-joy uses a local patch index), the response always contains the full CRDT state; CRDT idempotent merge makes duplicate data harmless.
+
+### 1. Outgoing sync request on connect
+
+#### 1.1 Automatic request after connection
+
+- **TC-SR-1** — When the network connection transitions to `'connected'`, the engine immediately calls `sendSyncRequest(Store.currentCursor)` so that existing peers can provide their state
+
+### 2. Incoming sync request handling
+
+#### 2.1 Full-state response with random delay
+
+- **TC-SR-2** — When the engine receives a sync request via `onSyncRequest`, it waits a random delay (50–300 ms) and then calls `sendPatch()` with the full CRDT state from `Store.exportPatch()`
+
+### 3. Cleanup
+
+#### 3.1 Timer cleanup on stop
+
+- **TC-SR-3** — If a sync-response timer is pending when `stop()` is called, the timer is cleared and no delayed `sendPatch()` fires
+
+---
+
+## Part V — Presence
 
 ### 1. Outgoing presence
 

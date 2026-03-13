@@ -12,10 +12,10 @@ The CRDT engine is **pluggable**: choose from three ready-made backends or write
 
 Next steps:
 
-- \[x\] CLI Interface - access your stores from the command line
-- \[x\] MCP Server - access your stores from any MCP-capable AI
-- \[x\] Sidecar - tracks Store changes and persists them, triggers WebHooks on specific changes
-- \[ \] Applications - some concrete applications (e.g., a shareable notebook similar Obsidian or Notion)
+- \[x\] CLI interface - access your stores from the command line
+- \[x\] MCP server - access your stores from any MCP-capable AI
+- \[x\] sidecar - tracks store changes and persists them, triggers WebHooks on specific changes
+- \[ \] applications - some concrete applications (e.g., a shareable notebook similar to Obsidian or Notion)
 - \[ \] (an AI-driven “HyperCard on steroids”, backed by SDS and generating WebApps for SDS)
 
 ---
@@ -117,7 +117,7 @@ import { SDS_DataStore } from '@rozek/sds-core-loro'
 
 The examples below use `@rozek/sds-core-jj` but work identically with any backend.
 
-### Local-only — no Network, no Server
+### Local-only — no network, no server
 
 ```typescript
 import { SDS_DataStore } from '@rozek/sds-core-jj'
@@ -133,7 +133,7 @@ const StoreSnapshot = DataStore.asBinary()
 const restoredStore = SDS_DataStore.fromBinary(StoreSnapshot)
 ```
 
-### Browser PWA — offline-first with WebSocket Sync
+### Browser PWA — offline-first with WebSocket sync
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core-jj'
@@ -162,7 +162,7 @@ const DataItem = DataStore.newItemAt(undefined, DataStore.RootItem)
 DataItem.Label = 'Hello from the browser!'
 ```
 
-### Node.js / Electron — SQLite Persistence
+### Node.js / Electron — SQLite persistence
 
 ```typescript
 import { SDS_DataStore }                  from '@rozek/sds-core-jj'
@@ -206,7 +206,7 @@ Engine.onPresenceChange((PeerId, State, Origin) => {
 })
 ```
 
-### Running the Relay Server
+### Running the relay server
 
 ```typescript
 import { createSDSServer } from '@rozek/sds-websocket-server'

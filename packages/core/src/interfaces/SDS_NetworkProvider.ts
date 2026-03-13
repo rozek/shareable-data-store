@@ -52,4 +52,12 @@ export interface SDS_NetworkProvider {
 /**** onConnectionChange — subscribe to connection-state changes; returns unsubscribe fn ****/
 
   onConnectionChange (Callback:(ConnectionState:SDS_ConnectionState) => void):() => void
+
+/**** sendSyncRequest — broadcast a sync request with the local CRDT cursor ****/
+
+  sendSyncRequest (Cursor:Uint8Array):void
+
+/**** onSyncRequest — subscribe to incoming sync requests; returns unsubscribe fn ****/
+
+  onSyncRequest (Callback:(Cursor:Uint8Array) => void):() => void
 }

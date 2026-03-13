@@ -89,6 +89,9 @@ export class SDS_SyncEngine {
   #ConnectionState: SDS_ConnectionState = 'disconnected'
   #ConnectionChangeHandlers: Set<(State:SDS_ConnectionState) => void> = new Set()
 
+  // pending sync-response timer (random delay before answering a sync request)
+  #SyncResponseTimer: ReturnType<typeof setTimeout> | undefined = undefined
+
   // unsubscribe functions for registered handlers
   #Unsubs: Array<() => void> = []
 
@@ -152,6 +155,7 @@ export class SDS_SyncEngine {
         }
         if (State === 'connected') {
           this.#flushOfflineQueue()
+          this.#Network!.sendSyncRequest(this.#Store.currentCursor)
         }
       })
     }
@@ -160,6 +164,10 @@ export class SDS_SyncEngine {
 /**** stop ****/
 
   async stop ():Promise<void> {
+    if (this.#SyncResponseTimer != undefined) {
+      clearTimeout(this.#SyncResponseTimer)
+      this.#SyncResponseTimer = undefined
+    }
     if (this.#HeartbeatTimer != undefined) {
       clearInterval(this.#HeartbeatTimer)
       this.#HeartbeatTimer = undefined
@@ -365,6 +373,24 @@ export class SDS_SyncEngine {
         await this.#Persistence?.saveValue(Hash, Data)
       })
       this.#Unsubs.push(unsubValue)
+
+      const unsubSyncReq = this.#Network.onSyncRequest((_Cursor) => {
+        // respond after a random delay (50–300 ms) to avoid thundering-herd
+        // when multiple peers are connected.  We always send the full CRDT
+        // state because cross-peer cursors are not portable across all
+        // backends (json-joy uses a local patch index).  CRDTs handle
+        // duplicate data via idempotent merge, so multiple responders are safe.
+        if (this.#SyncResponseTimer != undefined) { clearTimeout(this.#SyncResponseTimer) }
+        const DelayMs = 50+Math.floor(Math.random()*250)
+        this.#SyncResponseTimer = setTimeout(() => {
+          this.#SyncResponseTimer = undefined
+          const FullState = this.#Store.exportPatch()
+          if (FullState.byteLength > 0) {
+            this.#Network?.sendPatch(FullState)
+          }
+        }, DelayMs)
+      })
+      this.#Unsubs.push(unsubSyncReq)
     }
 
     // presence — may be a dedicated PresenceProvider or the NetworkProvider

@@ -28,6 +28,10 @@ export declare class SDS_WebSocketProvider implements SDS_NetworkProvider, SDS_P
     onValue(Callback: (ValueHash: string, Value: Uint8Array) => void): () => void;
     /**** onConnectionChange ****/
     onConnectionChange(Callback: (State: SDS_ConnectionState) => void): () => void;
+    /**** sendSyncRequest ****/
+    sendSyncRequest(Cursor: Uint8Array): void;
+    /**** onSyncRequest ****/
+    onSyncRequest(Callback: (Cursor: Uint8Array) => void): () => void;
     /**** sendLocalState ****/
     sendLocalState(State: SDS_LocalPresenceState): void;
     /**** onRemoteState ****/

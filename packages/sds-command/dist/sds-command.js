@@ -1,12 +1,12 @@
 #!/usr/bin/env -S node --no-warnings
-import { Command as te } from "commander";
-import ne from "node:os";
+import { Command as ee } from "commander";
+import te from "node:os";
 import B from "node:path";
-import g from "node:fs/promises";
+import k from "node:fs/promises";
 import { SDS_DesktopPersistenceProvider as q } from "@rozek/sds-persistence-node";
 import { SDS_SyncEngine as z } from "@rozek/sds-sync-engine";
-import { SDS_WebSocketProvider as oe } from "@rozek/sds-network-websocket";
-import { LostAndFoundId as P, TrashId as D, RootId as k } from "@rozek/sds-core";
+import { SDS_WebSocketProvider as ne } from "@rozek/sds-network-websocket";
+import { LostAndFoundId as P, TrashId as D, RootId as b } from "@rozek/sds-core";
 import K from "node:readline";
 const c = {
   OK: 0,
@@ -31,7 +31,7 @@ class L extends Error {
   }
 }
 function w(e) {
-  const n = e.server ?? process.env.SDS_SERVER_URL, t = e.persistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? B.join(ne.homedir(), ".sds"), o = e.store ?? process.env.SDS_STORE_ID, r = e.token ?? process.env.SDS_TOKEN, s = e.adminToken ?? process.env.SDS_ADMIN_TOKEN;
+  const n = e.server ?? process.env.SDS_SERVER_URL, t = e.persistenceDir ?? process.env.SDS_PERSISTENCE_DIR ?? B.join(te.homedir(), ".sds"), o = e.store ?? process.env.SDS_STORE_ID, r = e.token ?? process.env.SDS_TOKEN, s = e.adminToken ?? process.env.SDS_ADMIN_TOKEN;
   if (n != null && !/^wss?:\/\//.test(n))
     throw new L(
       `invalid '--server' URL '${n}' — must start with 'ws://' or 'wss://'`,
@@ -59,7 +59,7 @@ function f(e = "") {
   process.stdout.write(e + `
 `);
 }
-function re(e) {
+function oe(e) {
   process.stdout.write(JSON.stringify(e, null, 2) + `
 `);
 }
@@ -72,7 +72,7 @@ function R(e, n, t) {
 }
 function h(e, n) {
   if (e.Format === "json") {
-    re(n);
+    oe(n);
     return;
   }
   switch (!0) {
@@ -89,7 +89,7 @@ function h(e, n) {
       f(JSON.stringify(n));
   }
 }
-function se(e, n, t, o, r, s) {
+function re(e, n, t, o, r, s) {
   const i = [e];
   switch (s.showLabel && i.push(n !== "" ? n : "(no label)"), s.showMIME && i.push(t), s.showValue && i.push(o != null ? String(o) : "(no value)"), !0) {
     case s.InfoKey != null:
@@ -120,10 +120,10 @@ function H(e, n, t, o, r, s, i) {
   return $;
 }
 let U;
-function ie(e) {
+function se(e) {
   U = e;
 }
-function ae(e) {
+function ie(e) {
   return U.fromBinary(e);
 }
 class l extends Error {
@@ -139,7 +139,7 @@ async function y(e, n = !1) {
       "no store ID — set SDS_STORE_ID or use --store",
       c.UsageError
     );
-  await g.mkdir(e.PersistenceDir, { recursive: !0 });
+  await k.mkdir(e.PersistenceDir, { recursive: !0 });
   const o = N(e, t), r = new q(o, t);
   let s;
   try {
@@ -194,29 +194,27 @@ async function Y(e, n = 5e3) {
       "no client token — set SDS_TOKEN or use --token",
       c.UsageError
     );
-  await g.mkdir(e.PersistenceDir, { recursive: !0 });
-  const s = N(e, t), i = new q(s, t), a = await i.loadSnapshot(), d = a != null ? U.fromBinary(a) : U.fromScratch(), u = new oe(t), m = new z(d, {
+  await k.mkdir(e.PersistenceDir, { recursive: !0 });
+  const s = N(e, t), i = new q(s, t), a = await i.loadSnapshot(), d = a != null ? U.fromBinary(a) : U.fromScratch(), u = new ne(t), m = new z(d, {
     PersistenceProvider: i,
     NetworkProvider: u
   });
   await m.start();
   let I = !1, $;
-  const x = new Promise((v) => {
-    $ = v;
-  }), T = m.onConnectionChange((v) => {
-    v === "connected" && (I = !0, setTimeout($, n)), v === "disconnected" && $();
+  const x = new Promise((E) => {
+    $ = E;
+  }), T = m.onConnectionChange((E) => {
+    E === "connected" && (I = !0, setTimeout($, n)), E === "disconnected" && $();
   }), j = setTimeout(() => {
     $();
   }, n * 2);
   try {
     await m.connectTo(o, { Token: r });
-    const v = await i.loadPatchesSince(0);
-    for (const ee of v)
-      u.sendPatch(ee);
-    await x;
-  } catch (v) {
+    const E = d.exportPatch();
+    E.byteLength > 0 && u.sendPatch(E), await x;
+  } catch (E) {
     throw new l(
-      `sync failed: ${v.message}`,
+      `sync failed: ${E.message}`,
       c.NetworkError
     );
   } finally {
@@ -224,18 +222,18 @@ async function Y(e, n = 5e3) {
   }
   return { Connected: I, StoreId: t, ServerURL: o };
 }
-async function ce(e) {
+async function ae(e) {
   const n = e.StoreId;
   if (n == null)
     return !1;
   const t = N(e, n);
   try {
-    return await g.access(t), !0;
+    return await k.access(t), !0;
   } catch {
     return !1;
   }
 }
-async function le(e) {
+async function ce(e) {
   const n = e.StoreId;
   if (n == null)
     throw new l(
@@ -244,8 +242,8 @@ async function le(e) {
     );
   const t = N(e, n);
   try {
-    await g.unlink(t), await g.unlink(t + "-wal").catch(() => {
-    }), await g.unlink(t + "-shm").catch(() => {
+    await k.unlink(t), await k.unlink(t + "-wal").catch(() => {
+    }), await k.unlink(t + "-shm").catch(() => {
     });
   } catch (o) {
     const r = o;
@@ -261,7 +259,7 @@ async function le(e) {
 function S(e) {
   switch (e.toLowerCase()) {
     case "root":
-      return k;
+      return b;
     case "trash":
       return D;
     case "lost-and-found":
@@ -271,7 +269,7 @@ function S(e) {
       return e;
   }
 }
-function b(e, n) {
+function v(e, n) {
   const t = parseInt(e, 10);
   if (isNaN(t))
     throw new l(
@@ -282,7 +280,7 @@ function b(e, n) {
 }
 async function A(e) {
   try {
-    return await g.readFile(e);
+    return await k.readFile(e);
   } catch (n) {
     throw n.code === "ENOENT" ? new l(
       `file not found: '${e}'`,
@@ -290,9 +288,9 @@ async function A(e) {
     ) : n;
   }
 }
-const de = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+const le = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
 function F(e) {
-  if (!de.test(e))
+  if (!le.test(e))
     throw new l(
       `invalid info key ${JSON.stringify(e)} — keys must be valid JavaScript identifiers`,
       c.UsageError
@@ -402,7 +400,7 @@ function Z(e) {
   }
   return t.length > 0 && n.push(t), n;
 }
-async function ue(e) {
+async function de(e) {
   const n = process.stdin.isTTY, t = n ? "\x1B[1msds>\x1B[0m " : "sds> ", o = K.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -436,13 +434,13 @@ async function ue(e) {
   }
   o.close();
 }
-async function fe(e, n, t) {
+async function ue(e, n, t) {
   let o;
   if (n === "-")
     o = process.stdin;
   else
     try {
-      o = (await g.open(n)).createReadStream();
+      o = (await k.open(n)).createReadStream();
     } catch {
       throw new l(
         `cannot open script file '${n}'`,
@@ -476,7 +474,7 @@ async function fe(e, n, t) {
           break;
         // keep executing
         case "ask": {
-          if (!await me())
+          if (!await fe())
             return r.close(), u;
           break;
         }
@@ -484,7 +482,7 @@ async function fe(e, n, t) {
   }
   return r.close(), s;
 }
-async function me() {
+async function fe() {
   return process.stdin.isTTY ? new Promise((n) => {
     const t = K.createInterface({ input: process.stdin, output: process.stdout });
     t.question("error — continue? [y/N] ", (o) => {
@@ -492,14 +490,14 @@ async function me() {
     });
   }) : !1;
 }
-function we(e) {
+function me(e) {
   e.command("token").description("manage authentication tokens (requires admin token)").command("issue").description("request a new JWT from the server").requiredOption("--sub <subject>", "user identifier (e.g. email address)").requiredOption("--scope <scope>", "token scope: read | write | admin").option("--exp <duration>", "expiry duration, e.g. 24h or 7d", "24h").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
-    await pe(r, t);
+    await ye(r, t);
   });
 }
-const he = /* @__PURE__ */ new Set(["read", "write", "admin"]), ye = /^(\d+)(s|m|h|d)$/;
-async function pe(e, n) {
+const we = /* @__PURE__ */ new Set(["read", "write", "admin"]), he = /^(\d+)(s|m|h|d)$/;
+async function ye(e, n) {
   const { ServerURL: t, AdminToken: o } = e;
   if (o == null)
     throw new l(
@@ -516,12 +514,12 @@ async function pe(e, n) {
       `invalid server URL '${t}' — must start with 'ws://' or 'wss://'`,
       c.UsageError
     );
-  if (!he.has(n.scope))
+  if (!we.has(n.scope))
     throw new l(
       `invalid scope '${n.scope}' — must be read, write, or admin`,
       c.UsageError
     );
-  if (!ye.test(n.exp))
+  if (!he.test(n.exp))
     throw new l(
       `invalid expiry '${n.exp}' — use a number followed by s, m, h, or d`,
       c.UsageError
@@ -569,16 +567,16 @@ async function pe(e, n) {
     );
   e.Format === "json" ? h(e, { token: d, sub: n.sub, scope: n.scope, exp: n.exp }) : h(e, d);
 }
-function Ie(e) {
+function pe(e) {
   const n = e.command("store").description("store lifecycle operations");
   n.command("info").description("show local store metadata (existence, entry count, DB path)").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
-    await Se(r);
+    await Ie(r);
   }), n.command("ping").description("check connectivity to the WebSocket server").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
-    await Ee(r);
+    await Se(r);
   }), n.command("sync").description("connect to server, exchange CRDT patches, and disconnect").option("--timeout <ms>", "milliseconds to wait after connecting", "5000").action(async (t, o) => {
-    const r = w(o.optsWithGlobals()), s = b(t.timeout, "--timeout");
+    const r = w(o.optsWithGlobals()), s = v(t.timeout, "--timeout");
     if (s <= 0)
       throw new l(
         `'--timeout' must be a positive integer — got ${s}`,
@@ -587,29 +585,29 @@ function Ie(e) {
     await ge(r, s);
   }), n.command("destroy").description("permanently delete the local store database").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
-    await ke(r);
+    await Ee(r);
   }), n.command("export").description("export the current store snapshot").option("--encoding <enc>", "serialisation encoding: json | binary", "json").option("--output <file>", "destination file (default: stdout)").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
-    await ve(r, t.encoding, t.output);
+    await ke(r, t.encoding, t.output);
   }), n.command("import").description("CRDT-merge a snapshot file into the local store").requiredOption("--input <file>", "source file to import").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
     await be(r, t.input);
   });
 }
-async function Se(e) {
+async function Ie(e) {
   const n = e.StoreId;
   if (n == null)
     throw new l(
       "no store ID — set SDS_STORE_ID or use --store",
       c.UsageError
     );
-  if (!await ce(e)) {
+  if (!await ae(e)) {
     e.Format === "json" ? h(e, { storeId: n, exists: !1 }) : f(`store '${n}': not found in '${e.PersistenceDir}'`);
     return;
   }
   const o = await y(e);
   try {
-    const r = $e(o.Store);
+    const r = ve(o.Store);
     e.Format === "json" ? h(e, {
       storeId: n,
       exists: !0,
@@ -620,7 +618,7 @@ async function Se(e) {
     await p(o);
   }
 }
-async function Ee(e) {
+async function Se(e) {
   const n = e.ServerURL, t = e.Token;
   if (n == null)
     throw new l(
@@ -656,10 +654,10 @@ async function ge(e, n) {
     f(`store '${t.StoreId}': ${o}`);
   }
 }
-async function ke(e) {
-  await le(e), e.Format === "json" ? h(e, { storeId: e.StoreId, destroyed: !0 }) : f(`store '${e.StoreId}': deleted`);
+async function Ee(e) {
+  await ce(e), e.Format === "json" ? h(e, { storeId: e.StoreId, destroyed: !0 }) : f(`store '${e.StoreId}': deleted`);
 }
-async function ve(e, n, t) {
+async function ke(e, n, t) {
   const o = n.toLowerCase();
   if (o !== "json" && o !== "binary")
     throw new l(
@@ -669,7 +667,7 @@ async function ve(e, n, t) {
   const r = await y(e);
   try {
     const s = o === "binary", i = s ? r.Store.asBinary() : JSON.stringify(r.Store.asJSON(), null, 2);
-    t != null ? (await g.writeFile(t, s ? i : i + `
+    t != null ? (await k.writeFile(t, s ? i : i + `
 `), e.Format === "json" ? h(e, { exported: !0, file: t, format: o }) : f(`exported to '${t}'`)) : s ? process.stdout.write(i) : process.stdout.write(i + `
 `);
   } finally {
@@ -691,7 +689,7 @@ async function be(e, n) {
       }
       M(s.Store, i);
     } else {
-      const i = ae(new Uint8Array(t));
+      const i = ie(new Uint8Array(t));
       try {
         M(s.Store, i.asJSON());
       } finally {
@@ -704,49 +702,49 @@ async function be(e, n) {
   }
 }
 function M(e, n) {
-  const t = n, o = /* @__PURE__ */ new Set([k, D, P]), r = t.innerEntries;
+  const t = n, o = /* @__PURE__ */ new Set([b, D, P]), r = t.innerEntries;
   if (r != null)
     for (const s of r)
       o.has(s.Id) || e.newEntryFromJSONat(s, e.RootItem);
 }
-function $e(e) {
-  const n = /* @__PURE__ */ new Set([k, D, P]);
+function ve(e) {
+  const n = /* @__PURE__ */ new Set([b, D, P]);
   let t = 0;
   function o(r) {
     for (const s of e._innerEntriesOf(r))
       n.has(s.Id) || (t++, s.isItem && o(s.Id));
   }
-  return o(k), t;
+  return o(b), t;
 }
-function Te(e, n) {
+function $e(e, n) {
   const t = e.command("entry").description("operations on entries (items and links)");
   t.command("create").description("create a new item (default) or link (with --target)").option("--target <itemId>", "link target — creates a link instead of an item").option("--container <itemId>", "container item (default: root)").option("--at <index>", "insertion index (default: append)").option("--label <label>", "initial label").option("--mime <type>", "MIME type (default: text/plain, items only)").option("--value <string>", "initial text value (items only)").option("--file <path>", "read initial value from file (items only)").option("--info <json>", "initial info map as JSON object").option("--info.<key>", "set a single info entry, e.g. --info.author").option("--info-delete.<key>", "remove a single info entry, e.g. --info-delete.author").action(async (o, r) => {
     const s = w(r.optsWithGlobals()), { InfoEntries: i, InfoDeleteKeys: a } = _(n);
-    await xe(s, o, i, a);
+    await Te(s, o, i, a);
   }), t.command("get <id>").description("display all or selected fields of an entry").option("--kind", "include entry kind (item or link)").option("--label", "include label").option("--mime", "include MIME type (items only)").option("--value", "include value (items only)").option("--info", "include full info map").option("--info.<key>", "include only the named info entry, e.g. --info.author").option("--target", "include link target ID (links only)").action(async (o, r, s) => {
     const i = w(s.optsWithGlobals()), { InfoEntries: a } = _(n), d = Object.keys(a)[0];
-    await _e(i, o, r, d);
+    await xe(i, o, r, d);
   }), t.command("list <id>").description("list entries in a container item (only IDs by default)").option("--recursive", "traverse inner containers recursively").option("--depth <n>", "maximum recursion depth").option("--only <kind>", "filter by kind: items | links").option("--label", "include label").option("--mime", "include MIME type (items only)").option("--value", "include value (items only)").option("--info", "include info map").option("--info.<key>", "include only the named info entry, e.g. --info.author").action(async (o, r, s) => {
     const i = w(s.optsWithGlobals()), { InfoEntries: a } = _(n), d = Object.keys(a)[0];
-    await Ne(i, o, r, d);
+    await _e(i, o, r, d);
   }), t.command("update <id>").description("update entry properties (works on both items and links)").option("--label <label>", "new label (items and links)").option("--mime <type>", "new MIME type (items only)").option("--value <string>", "new text value (items only)").option("--file <path>", "read new value from file (items only)").option("--info <json>", "merge info map from JSON object").option("--info.<key>", "set a single info entry, e.g. --info.author").option("--info-delete.<key>", "remove a single info entry, e.g. --info-delete.author").action(async (o, r, s) => {
     const i = w(s.optsWithGlobals()), { InfoEntries: a, InfoDeleteKeys: d } = _(n);
-    await Pe(i, o, r, a, d);
+    await Re(i, o, r, a, d);
   }), t.command("move <id>").description("move an entry to a different container").requiredOption("--to <targetId>", "destination container item ID").option("--at <index>", "insertion index (default: append)").action(async (o, r, s) => {
     const i = w(s.optsWithGlobals());
-    await De(i, o, r.to, r.at);
+    await Ue(i, o, r.to, r.at);
   }), t.command("delete <id>").description("soft-delete: move entry to the trash").action(async (o, r, s) => {
     const i = w(s.optsWithGlobals());
-    await Le(i, o);
+    await De(i, o);
   }), t.command("restore <id>").description("restore a trashed entry (moves to root or --to target)").option("--to <targetId>", "destination container item ID (default: root)").option("--at <index>", "insertion index (default: append)").action(async (o, r, s) => {
     const i = w(s.optsWithGlobals());
-    await Fe(i, o, r.to, r.at);
+    await Le(i, o, r.to, r.at);
   }), t.command("purge <id>").description("permanently delete an entry (must be in the trash)").action(async (o, r, s) => {
     const i = w(s.optsWithGlobals());
-    await Re(i, o);
+    await Fe(i, o);
   });
 }
-async function xe(e, n, t, o) {
+async function Te(e, n, t, o) {
   if (n.value != null && n.file != null)
     throw new l(
       "'--value' and '--file' are mutually exclusive — specify at most one",
@@ -770,7 +768,7 @@ async function xe(e, n, t, o) {
       );
     const r = await y(e);
     try {
-      const s = S(n.target), i = S(n.container ?? k), a = n.at != null ? b(n.at, "--at") : void 0;
+      const s = S(n.target), i = S(n.container ?? b), a = n.at != null ? v(n.at, "--at") : void 0;
       if (a != null && a < 0)
         throw new l(
           `'--at' must be a non-negative integer — got ${a}`,
@@ -800,13 +798,13 @@ async function xe(e, n, t, o) {
   } else {
     const r = await y(e, !0);
     try {
-      const s = S(n.container ?? k), i = r.Store.EntryWithId(s);
+      const s = S(n.container ?? b), i = r.Store.EntryWithId(s);
       if (i == null || !i.isItem)
         throw new l(
           `container '${s}' not found or is not an item`,
           c.NotFound
         );
-      const a = n.at != null ? b(n.at, "--at") : void 0;
+      const a = n.at != null ? v(n.at, "--at") : void 0;
       if (a != null && a < 0)
         throw new l(
           `'--at' must be a non-negative integer — got ${a}`,
@@ -830,19 +828,19 @@ async function xe(e, n, t, o) {
     }
   }
 }
-async function _e(e, n, t, o) {
+async function xe(e, n, t, o) {
   const r = await y(e);
   try {
     const s = S(n), i = r.Store.EntryWithId(s);
     if (i == null)
       throw new l(`entry '${s}' not found`, c.NotFound);
     const d = !(t.kind || t.label || t.mime || t.value || t.info || t.target || o != null) ? "all" : { ...t, InfoKey: o };
-    e.Format === "json" ? h(e, je(i, r.Store, d)) : Ce(i, r.Store, d);
+    e.Format === "json" ? h(e, Pe(i, r.Store, d)) : je(i, r.Store, d);
   } finally {
     await p(r);
   }
 }
-async function Ne(e, n, t, o) {
+async function _e(e, n, t, o) {
   const r = t.only?.toLowerCase();
   if (r != null && !["item", "items", "link", "links"].includes(r))
     throw new l(
@@ -857,7 +855,7 @@ async function Ne(e, n, t, o) {
         `container '${i}' not found or is not an item`,
         c.NotFound
       );
-    const d = t.depth != null ? b(t.depth, "--depth") : 1 / 0, u = {
+    const d = t.depth != null ? v(t.depth, "--depth") : 1 / 0, u = {
       showLabel: t.label,
       showMIME: t.mime,
       showValue: t.value,
@@ -873,10 +871,10 @@ async function Ne(e, n, t, o) {
     await p(s);
   }
 }
-const Ue = /* @__PURE__ */ new Set([D, P]);
+const Ne = /* @__PURE__ */ new Set([D, P]);
 function Q(e, n, t, o, r, s, i, a, d) {
   for (const u of e._innerEntriesOf(n)) {
-    if (Ue.has(u.Id))
+    if (Ne.has(u.Id))
       continue;
     const m = u.isItem ? "item" : "link";
     if (s == null || s === m + "s" || s === m)
@@ -894,7 +892,7 @@ function Q(e, n, t, o, r, s, i, a, d) {
         }
         a.push(I);
       } else
-        a.push(se(
+        a.push(re(
           u.Id,
           i.showLabel ? u.Label : "",
           i.showMIME && u.isItem ? e._TypeOf(u.Id) : "",
@@ -905,10 +903,10 @@ function Q(e, n, t, o, r, s, i, a, d) {
     t && u.isItem && r < o && Q(e, u.Id, t, o, r + 1, s, i, a, d);
   }
 }
-async function De(e, n, t, o) {
+async function Ue(e, n, t, o) {
   const r = await y(e);
   try {
-    const s = S(n), i = S(t), a = o != null ? b(o, "--at") : void 0;
+    const s = S(n), i = S(t), a = o != null ? v(o, "--at") : void 0;
     if (a != null && a < 0)
       throw new l(
         `'--at' must be a non-negative integer — got ${a}`,
@@ -932,7 +930,7 @@ async function De(e, n, t, o) {
     await p(r);
   }
 }
-async function Le(e, n) {
+async function De(e, n) {
   const t = await y(e);
   try {
     const o = S(n), r = t.Store.EntryWithId(o);
@@ -948,10 +946,10 @@ async function Le(e, n) {
     await p(t);
   }
 }
-async function Fe(e, n, t, o) {
+async function Le(e, n, t, o) {
   const r = await y(e);
   try {
-    const s = S(n), i = S(t ?? k), a = o != null ? b(o, "--at") : void 0;
+    const s = S(n), i = S(t ?? b), a = o != null ? v(o, "--at") : void 0;
     if (a != null && a < 0)
       throw new l(
         `'--at' must be a non-negative integer — got ${a}`,
@@ -975,7 +973,7 @@ async function Fe(e, n, t, o) {
     await p(r);
   }
 }
-async function Re(e, n) {
+async function Fe(e, n) {
   const t = await y(e);
   try {
     const o = S(n), r = t.Store.EntryWithId(o);
@@ -991,7 +989,7 @@ async function Re(e, n) {
     await p(t);
   }
 }
-async function Pe(e, n, t, o, r) {
+async function Re(e, n, t, o, r) {
   const s = await y(e);
   try {
     const i = S(n), a = s.Store.EntryWithId(i);
@@ -1043,7 +1041,7 @@ async function Pe(e, n, t, o, r) {
     await p(s);
   }
 }
-function je(e, n, t) {
+function Pe(e, n, t) {
   const o = t === "all", r = { id: e.Id };
   if ((o || t.kind) && (r.kind = e.isItem ? "item" : "link"), (o || t.label) && (r.label = e.Label), e.isItem) {
     const i = e;
@@ -1066,7 +1064,7 @@ function je(e, n, t) {
   }
   return r;
 }
-function Ce(e, n, t) {
+function je(e, n, t) {
   const o = t === "all";
   if (f(`id:    ${e.Id}`), (o || t.kind) && f(`kind:  ${e.isItem ? "item" : "link"}`), (o || t.label) && f(`label: ${e.Label}`), e.isItem) {
     const s = e;
@@ -1093,26 +1091,26 @@ function Ce(e, n, t) {
     }
   }
 }
-const We = 720 * 60 * 60 * 1e3;
-function Ke(e) {
+const Ce = 720 * 60 * 60 * 1e3;
+function We(e) {
   const n = e.command("trash").description("trash inspection and cleanup");
   n.command("list").description("list all entries currently in the trash").option("--only <kind>", "filter by kind: items | links").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
-    await Ae(r, t.only);
+    await Ke(r, t.only);
   }), n.command("purge-all").description("permanently delete every entry in the trash").action(async (t, o) => {
     const r = w(o.optsWithGlobals());
-    await Ge(r);
-  }), n.command("purge-expired").description("permanently delete trash entries older than --ttl milliseconds").option("--ttl <ms>", "TTL in milliseconds (default: 30 days)", String(We)).action(async (t, o) => {
-    const r = w(o.optsWithGlobals()), s = b(t.ttl, "--ttl");
+    await Ae(r);
+  }), n.command("purge-expired").description("permanently delete trash entries older than --ttl milliseconds").option("--ttl <ms>", "TTL in milliseconds (default: 30 days)", String(Ce)).action(async (t, o) => {
+    const r = w(o.optsWithGlobals()), s = v(t.ttl, "--ttl");
     if (s <= 0)
       throw new l(
         `'--ttl' must be a positive integer — got ${s}`,
         c.UsageError
       );
-    await Je(r, s);
+    await Ge(r, s);
   });
 }
-async function Ae(e, n) {
+async function Ke(e, n) {
   const t = n?.toLowerCase();
   if (t != null && !["item", "items", "link", "links"].includes(t))
     throw new l(
@@ -1144,7 +1142,7 @@ async function Ae(e, n) {
     await p(o);
   }
 }
-async function Ge(e) {
+async function Ae(e) {
   const n = await y(e);
   try {
     const t = n.Store.TrashItem, o = [...n.Store._innerEntriesOf(t.Id)];
@@ -1159,7 +1157,7 @@ async function Ge(e) {
     await p(n);
   }
 }
-async function Je(e, n) {
+async function Ge(e, n) {
   const t = await y(e);
   try {
     const o = t.Store.purgeExpiredTrashEntries(n);
@@ -1168,21 +1166,21 @@ async function Je(e, n) {
     await p(t);
   }
 }
-function Me(e) {
+function Je(e) {
   e.command("tree").description("tree display").command("show").description("display the store tree").option("--depth <n>", "maximum display depth (default: unlimited)").action(async (t, o) => {
-    const r = w(o.optsWithGlobals()), s = t.depth != null ? b(t.depth, "--depth") : 1 / 0;
-    await Ve(r, s);
+    const r = w(o.optsWithGlobals()), s = t.depth != null ? v(t.depth, "--depth") : 1 / 0;
+    await Me(r, s);
   });
 }
-async function Ve(e, n) {
+async function Me(e, n) {
   const t = await y(e);
   try {
     if (e.Format === "json") {
-      const o = W(t.Store, k, n, 0);
+      const o = W(t.Store, b, n, 0);
       h(e, { root: o });
     } else {
       f("root/");
-      const o = W(t.Store, k, n, 0);
+      const o = W(t.Store, b, n, 0);
       for (let r = 0; r < o.length; r++) {
         const s = o[r], i = r === o.length - 1, a = H(
           s.Id,
@@ -1212,17 +1210,17 @@ function W(e, n, t, o) {
   }
   return r;
 }
-let E = "sds", X = "0.0.0";
+let g = "sds", X = "0.0.0";
 function O(e, n = !1) {
-  const t = new te(E);
+  const t = new ee(g);
   return t.description("shareable-data-store CLI").version(X, "--version", "print version").allowUnknownOption(!1).configureOutput({ writeErr: () => {
-  } }).option("--server <url>", "WebSocket server URL (env: SDS_SERVER_URL)").option("--store <id>", "store identifier (env: SDS_STORE_ID)").option("--token <jwt>", "client JWT — read/write (env: SDS_TOKEN)").option("--admin-token <jwt>", "admin JWT (env: SDS_ADMIN_TOKEN)").option("--persistence-dir <path>", "directory for local SQLite files (env: SDS_PERSISTENCE_DIR)").option("--format <fmt>", "output format: text | json (default: text)").option("--on-error <action>", "error mode: stop | continue | ask (default: stop)"), we(t), Ie(t), Te(t, e), Ke(t), Me(t), n || (t.command("shell").description("start an interactive REPL").action(async (o, r) => {
+  } }).option("--server <url>", "WebSocket server URL (env: SDS_SERVER_URL)").option("--store <id>", "store identifier (env: SDS_STORE_ID)").option("--token <jwt>", "client JWT — read/write (env: SDS_TOKEN)").option("--admin-token <jwt>", "admin JWT (env: SDS_ADMIN_TOKEN)").option("--persistence-dir <path>", "directory for local SQLite files (env: SDS_PERSISTENCE_DIR)").option("--format <fmt>", "output format: text | json (default: text)").option("--on-error <action>", "error mode: stop | continue | ask (default: stop)"), me(t), pe(t), $e(t, e), We(t), Je(t), n || (t.command("shell").description("start an interactive REPL").action(async (o, r) => {
     const s = w(r.optsWithGlobals());
-    await ue((i) => V(i, s));
+    await de((i) => V(i, s));
   }), t.option("--script <file>", "run commands from file (use - for stdin)").action(async (o) => {
     const r = w(o);
     if (o.script != null) {
-      const s = await fe(r, o.script, V);
+      const s = await ue(r, o.script, V);
       process.exit(s);
     } else
       process.stdout.write(t.helpInformation()), process.exit(c.OK);
@@ -1234,14 +1232,14 @@ function G(e) {
   for (const n of e.commands)
     G(n);
 }
-function Be(e) {
+function Ve(e) {
   const n = [];
   return e.ServerURL != null && n.push("--server", e.ServerURL), e.StoreId != null && n.push("--store", e.StoreId), e.Token != null && n.push("--token", e.Token), e.AdminToken != null && n.push("--admin-token", e.AdminToken), n.push("--persistence-dir", e.PersistenceDir), e.Format !== "text" && n.push("--format", e.Format), n;
 }
 async function V(e, n) {
   if (e.length === 0)
     return c.OK;
-  const { CleanArgv: t, InfoEntries: o } = _(e), r = n != null ? Be(n) : [], s = O(
+  const { CleanArgv: t, InfoEntries: o } = _(e), r = n != null ? Ve(n) : [], s = O(
     Object.entries(o).flatMap(([i, a]) => [
       `--info.${i}`,
       JSON.stringify(a)
@@ -1251,16 +1249,16 @@ async function V(e, n) {
   );
   G(s);
   try {
-    return await s.parseAsync(["node", E, ...r, ...t]), c.OK;
+    return await s.parseAsync(["node", g, ...r, ...t]), c.OK;
   } catch (i) {
     const a = i;
-    return a.code === "commander.help" || a.code === "commander.helpDisplayed" || a.code === "commander.version" ? c.OK : a.code === "commander.unknownCommand" ? (process.stderr.write(`${E}: unknown command '${t[0]}' — try '${E} help'
-`), c.UsageError) : a.code === "commander.unknownOption" || a.code === "commander.missingArgument" || a.code === "commander.missingMandatoryOptionValue" ? (process.stderr.write(`${E}: ${a.message}
-`), c.UsageError) : i instanceof L ? (process.stderr.write(`${E}: ${i.message}
+    return a.code === "commander.help" || a.code === "commander.helpDisplayed" || a.code === "commander.version" ? c.OK : a.code === "commander.unknownCommand" ? (process.stderr.write(`${g}: unknown command '${t[0]}' — try '${g} help'
+`), c.UsageError) : a.code === "commander.unknownOption" || a.code === "commander.missingArgument" || a.code === "commander.missingMandatoryOptionValue" ? (process.stderr.write(`${g}: ${a.message}
+`), c.UsageError) : i instanceof L ? (process.stderr.write(`${g}: ${i.message}
 `), i.ExitCode) : i instanceof l ? (R(n ?? { Format: "text" }, i.message, i.ExitCode), i.ExitCode) : (R(n ?? { Format: "text" }, i.message ?? String(i)), c.GeneralError);
   }
 }
-async function qe() {
+async function Be() {
   const { CleanArgv: e, InfoEntries: n, InfoDeleteKeys: t } = _(process.argv.slice(2)), o = [
     ...Object.entries(n).flatMap(([s, i]) => [
       `--info.${s}`,
@@ -1270,12 +1268,12 @@ async function qe() {
   ], r = O(o);
   G(r);
   try {
-    await r.parseAsync(["node", E, ...e]);
+    await r.parseAsync(["node", g, ...e]);
   } catch (s) {
     const i = s;
-    if ((i.code === "commander.help" || i.code === "commander.helpDisplayed" || i.code === "commander.version") && process.exit(c.OK), (i.code === "commander.unknownCommand" || i.code === "commander.unknownOption" || i.code === "commander.missingArgument" || i.code === "commander.missingMandatoryOptionValue") && (process.stderr.write(`${E}: ${i.message}
+    if ((i.code === "commander.help" || i.code === "commander.helpDisplayed" || i.code === "commander.version") && process.exit(c.OK), (i.code === "commander.unknownCommand" || i.code === "commander.unknownOption" || i.code === "commander.missingArgument" || i.code === "commander.missingMandatoryOptionValue") && (process.stderr.write(`${g}: ${i.message}
 
-`), process.stderr.write(r.helpInformation()), process.exit(c.UsageError)), s instanceof L && (process.stderr.write(`${E}: ${s.message}
+`), process.stderr.write(r.helpInformation()), process.exit(c.UsageError)), s instanceof L && (process.stderr.write(`${g}: ${s.message}
 `), process.exit(s.ExitCode)), s instanceof l) {
       const d = w({});
       R(d, s.message, s.ExitCode), process.exit(s.ExitCode);
@@ -1284,9 +1282,9 @@ async function qe() {
     R(a, s.message ?? String(s)), process.exit(c.GeneralError);
   }
 }
-async function nt(e, n = "sds", t = "0.0.0") {
-  return E = n, X = t, ie(e), qe();
+async function tt(e, n = "sds", t = "0.0.0") {
+  return g = n, X = t, se(e), Be();
 }
 export {
-  nt as runCommand
+  tt as runCommand
 };

@@ -27,7 +27,7 @@ function makeMockPersistence () {
 /**** makeMockNetwork — creates a fully-mocked network provider with trigger helpers ****/
 
 function makeMockNetwork (storeId = 'store-1') {
-  const handlers: Record<string, Function[]> = { patch:[], value:[], conn:[] }
+  const handlers: Record<string, Function[]> = { patch:[], value:[], conn:[], syncReq:[] }
   return {
     StoreId: storeId,
     get ConnectionState () { return 'disconnected' as const },
@@ -36,9 +36,11 @@ function makeMockNetwork (storeId = 'store-1') {
     sendPatch:        vi.fn(),
     sendValue:        vi.fn(),
     requestValue:     vi.fn(),
+    sendSyncRequest:  vi.fn(),
     onPatch:          vi.fn((cb: Function) => { handlers.patch.push(cb); return () => {} }),
     onValue:          vi.fn((cb: Function) => { handlers.value.push(cb); return () => {} }),
     onConnectionChange:vi.fn((cb: Function) => { handlers.conn.push(cb); return () => {} }),
+    onSyncRequest:    vi.fn((cb: Function) => { handlers.syncReq.push(cb); return () => {} }),
     sendLocalState:   vi.fn(),
     onRemoteState:    vi.fn().mockReturnValue(() => {}),
     get PeerSet ()  { return new Map() },

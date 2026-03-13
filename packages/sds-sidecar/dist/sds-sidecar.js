@@ -1,12 +1,12 @@
-import L from "node:fs/promises";
-import { Command as V } from "commander";
-import { SDS_DesktopPersistenceProvider as B } from "@rozek/sds-persistence-node";
-import { SDS_SyncEngine as C } from "@rozek/sds-sync-engine";
-import D from "node:path";
-import G from "node:os";
+import P from "node:fs/promises";
+import { Command as B } from "commander";
+import { SDS_DesktopPersistenceProvider as C } from "@rozek/sds-persistence-node";
+import { SDS_SyncEngine as G } from "@rozek/sds-sync-engine";
+import T from "node:path";
+import j from "node:os";
 import { TrashId as R } from "@rozek/sds-core";
-const j = "0.0.13", F = {
-  version: j
+const F = "0.0.13", N = {
+  version: F
 }, b = {
   OK: 0,
   // success (clean shutdown)
@@ -27,7 +27,7 @@ class h extends Error {
     super(e), this.name = "SDS_SidecarError", this.ExitCode = t;
   }
 }
-function P(r) {
+function M(r) {
   switch (!0) {
     case r === "change":
       return { Kind: "change" };
@@ -76,20 +76,20 @@ function J(r, e) {
     throw new h(`WebHooks[${e}].on: expected a non-empty array`);
   const f = i.map((l, u) => {
     try {
-      return P(String(l));
+      return M(String(l));
     } catch (p) {
       throw new h(`WebHooks[${e}].on[${u}]: ${p.message}`);
     }
   });
   return { URL: o, Topic: n, Watch: s, maxDepth: c, on: f };
 }
-async function N(r) {
+async function z(r) {
   let e = {};
   const t = r.config;
   if (t != null) {
     let w;
     try {
-      w = await L.readFile(D.resolve(t), "utf-8");
+      w = await P.readFile(T.resolve(t), "utf-8");
     } catch (v) {
       throw new h(
         `cannot read config file '${t}': ${v.message}`,
@@ -128,15 +128,15 @@ async function N(r) {
     throw new h("--reconnect-max must be >= --reconnect-initial");
   if (!isFinite(S) || S < 0 || S > 1)
     throw new h("--reconnect-jitter must be between 0 and 1");
-  const m = c != null ? D.resolve(c) : D.join(G.homedir(), ".sds"), $ = [], a = r.webhookUrl;
+  const m = c != null ? T.resolve(c) : T.join(j.homedir(), ".sds"), $ = [], a = r.webhookUrl;
   if (a != null) {
     const w = r.on ?? [];
     if (w.length === 0)
       throw new h("--webhook-url given without any --on trigger");
-    const v = w.map((K) => P(K)), M = r.topic, O = r.watch, I = r.depth != null ? Number(r.depth) : void 0;
+    const v = w.map((V) => M(V)), O = r.topic, K = r.watch, I = r.depth != null ? Number(r.depth) : void 0;
     if (I != null && (!Number.isInteger(I) || I < 0))
       throw new h("--depth must be a non-negative integer");
-    $.push({ URL: a, Topic: M, Watch: O, maxDepth: I, on: v });
+    $.push({ URL: a, Topic: O, Watch: K, maxDepth: I, on: v });
   }
   const d = [], y = e.WebHooks;
   if (Array.isArray(y))
@@ -155,32 +155,32 @@ async function N(r) {
     WebHooks: k
   };
 }
-function z(r, e) {
+function q(r, e) {
   const t = e.replace(/[^a-zA-Z0-9_-]/g, "_");
-  return D.join(r, `${t}.db`);
+  return T.join(r, `${t}.db`);
 }
-const U = 1, _ = 2, q = 3, Q = 5, E = 32;
-function W(...r) {
+const _ = 1, U = 2, Q = 3, Z = 5, W = 6, E = 32;
+function H(...r) {
   const e = r.reduce((n, s) => n + s.byteLength, 0), t = new Uint8Array(e);
   let o = 0;
   for (const n of r)
     t.set(n, o), o += n.byteLength;
   return t;
 }
-function H(r) {
+function x(r) {
   const e = new Uint8Array(r.length / 2);
   for (let t = 0; t < r.length; t += 2)
     e[t / 2] = parseInt(r.slice(t, t + 2), 16);
   return e;
 }
-function x(r) {
+function A(r) {
   return Array.from(r).map((e) => e.toString(16).padStart(2, "0")).join("");
 }
-function T(r, e) {
+function D(r, e) {
   const t = new Uint8Array(1 + e.byteLength);
   return t[0] = r, t.set(e, 1), t;
 }
-class Z {
+class Y {
   StoreId;
   #t = "disconnected";
   #e = void 0;
@@ -196,10 +196,11 @@ class Z {
   // value-chunk reassembly buffer: hash → { total, chunks }
   #r = /* @__PURE__ */ new Map();
   // subscriber sets
-  #d = /* @__PURE__ */ new Set();
-  #u = /* @__PURE__ */ new Set();
   #f = /* @__PURE__ */ new Set();
+  #u = /* @__PURE__ */ new Set();
   #p = /* @__PURE__ */ new Set();
+  #g = /* @__PURE__ */ new Set();
+  #S = /* @__PURE__ */ new Set();
   constructor(e, t) {
     this.StoreId = e, this.#a = t.initialDelay, this.#l = t.maxDelay, this.#h = t.Jitter;
   }
@@ -216,29 +217,29 @@ class Z {
       throw new TypeError(
         `SidecarNetworkProvider: invalid server URL '${e}' — expected ws:// or wss://`
       );
-    return this.#n = e, this.#i = t.Token, this.#o = 0, this.#S();
+    return this.#n = e, this.#i = t.Token, this.#o = 0, this.#w();
   }
   /**** disconnect ****/
   disconnect() {
-    this.#y(), this.#c("disconnected"), this.#e?.close(), this.#e = void 0, this.#r.clear();
+    this.#b(), this.#c("disconnected"), this.#e?.close(), this.#e = void 0, this.#r.clear();
   }
   /**** sendPatch ****/
   sendPatch(e) {
-    this.#g(T(U, e));
+    this.#d(D(_, e));
   }
   /**** sendValue ****/
   sendValue(e, t) {
-    const o = H(e);
-    this.#g(T(_, W(o, t)));
+    const o = x(e);
+    this.#d(D(U, H(o, t)));
   }
   /**** requestValue ****/
   requestValue(e) {
-    this.#g(T(q, H(e)));
+    this.#d(D(Q, x(e)));
   }
   /**** onPatch ****/
   onPatch(e) {
-    return this.#d.add(e), () => {
-      this.#d.delete(e);
+    return this.#f.add(e), () => {
+      this.#f.delete(e);
     };
   }
   /**** onValue ****/
@@ -249,8 +250,18 @@ class Z {
   }
   /**** onConnectionChange ****/
   onConnectionChange(e) {
-    return this.#f.add(e), () => {
-      this.#f.delete(e);
+    return this.#p.add(e), () => {
+      this.#p.delete(e);
+    };
+  }
+  /**** sendSyncRequest ****/
+  sendSyncRequest(e) {
+    this.#d(D(W, e));
+  }
+  /**** onSyncRequest ****/
+  onSyncRequest(e) {
+    return this.#S.add(e), () => {
+      this.#S.delete(e);
     };
   }
   //----------------------------------------------------------------------------//
@@ -258,15 +269,15 @@ class Z {
   //----------------------------------------------------------------------------//
   /**** onAuthError — called when the server closes with 4001 or 4003; no reconnect follows ****/
   onAuthError(e) {
-    return this.#p.add(e), () => {
-      this.#p.delete(e);
+    return this.#g.add(e), () => {
+      this.#g.delete(e);
     };
   }
   //----------------------------------------------------------------------------//
   //                                  private                                   //
   //----------------------------------------------------------------------------//
   /**** #doConnect ****/
-  #S() {
+  #w() {
     return new Promise((e, t) => {
       const n = `${this.#n.replace(/\/+$/, "")}/ws/${this.StoreId}?token=${encodeURIComponent(this.#i)}`, s = new WebSocket(n);
       s.binaryType = "arraybuffer", this.#e = s, this.#c("connecting"), s.onopen = () => {
@@ -276,28 +287,28 @@ class Z {
       }, s.onclose = (c) => {
         if (this.#e = void 0, c.code === 4001 || c.code === 4003) {
           this.#r.clear(), this.#c("disconnected");
-          for (const i of this.#p)
+          for (const i of this.#g)
             try {
               i(c.code, c.reason);
             } catch {
             }
           return;
         }
-        this.#t !== "disconnected" && (this.#r.clear(), this.#c("reconnecting"), this.#w());
+        this.#t !== "disconnected" && (this.#r.clear(), this.#c("reconnecting"), this.#y());
       }, s.onmessage = (c) => {
-        c.data instanceof ArrayBuffer && this.#b(new Uint8Array(c.data));
+        c.data instanceof ArrayBuffer && this.#k(new Uint8Array(c.data));
       };
     });
   }
   /**** #send ****/
-  #g(e) {
+  #d(e) {
     this.#e?.readyState === WebSocket.OPEN && this.#e.send(e);
   }
   /**** #setState ****/
   #c(e) {
     if (this.#t !== e) {
       this.#t = e;
-      for (const t of this.#f)
+      for (const t of this.#p)
         try {
           t(e);
         } catch {
@@ -305,35 +316,35 @@ class Z {
     }
   }
   /**** #scheduleReconnect — exponential backoff capped at MaxDelay, with jitter ****/
-  #w() {
+  #y() {
     const e = Math.min(this.#a * 2 ** this.#o, this.#l), t = e * this.#h * (Math.random() * 2 - 1), o = Math.max(0, Math.round(e + t));
     this.#o++, this.#s = setTimeout(() => {
-      this.#t === "reconnecting" && this.#S().catch(() => {
+      this.#t === "reconnecting" && this.#w().catch(() => {
       });
     }, o);
   }
   /**** #clearReconnectTimer ****/
-  #y() {
+  #b() {
     this.#s != null && (clearTimeout(this.#s), this.#s = void 0);
   }
   /**** #handleFrame — parses incoming binary frames and dispatches to handlers ****/
-  #b(e) {
+  #k(e) {
     if (e.byteLength < 1)
       return;
     const t = e[0], o = e.slice(1);
     switch (!0) {
-      case t === U: {
-        for (const n of this.#d)
+      case t === _: {
+        for (const n of this.#f)
           try {
             n(o);
           } catch {
           }
         break;
       }
-      case t === _: {
+      case t === U: {
         if (o.byteLength < E)
           return;
-        const n = x(o.slice(0, E)), s = o.slice(E);
+        const n = A(o.slice(0, E)), s = o.slice(E);
         for (const c of this.#u)
           try {
             c(n, s);
@@ -341,10 +352,18 @@ class Z {
           }
         break;
       }
-      case t === Q: {
+      case t === W: {
+        for (const n of this.#S)
+          try {
+            n(o);
+          } catch {
+          }
+        break;
+      }
+      case t === Z: {
         if (o.byteLength < E + 8)
           return;
-        const n = x(o.slice(0, E)), s = new DataView(o.buffer, o.byteOffset + E, 8), c = s.getUint32(0, !1), i = s.getUint32(4, !1), f = o.slice(E + 8);
+        const n = A(o.slice(0, E)), s = new DataView(o.buffer, o.byteOffset + E, 8), c = s.getUint32(0, !1), i = s.getUint32(4, !1), f = o.slice(E + 8);
         let l = this.#r.get(n);
         if (l == null && (l = { total: i, chunks: /* @__PURE__ */ new Map() }, this.#r.set(n, l)), l.chunks.set(c, f), l.chunks.size < l.total)
           break;
@@ -359,7 +378,7 @@ class Z {
           break;
         }
         this.#r.delete(n);
-        const p = W(
+        const p = H(
           ...Array.from({ length: l.total }, (g, S) => l.chunks.get(S))
         );
         for (const g of this.#u)
@@ -373,11 +392,11 @@ class Z {
   }
 }
 const X = 1e4;
-function Y(r, e) {
+function ee(r, e) {
   const t = e.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*").replace(/\?/g, ".");
   return new RegExp(`^${t}$`, "i").test(r);
 }
-class ee {
+class te {
   #t;
   #e;
   #n;
@@ -398,7 +417,7 @@ class ee {
       for (const { Trigger: i, EntryIds: f } of c) {
         const l = {
           StoreId: this.#i,
-          Trigger: te(i),
+          Trigger: re(i),
           changedEntries: f,
           Timestamp: (/* @__PURE__ */ new Date()).toISOString()
         };
@@ -448,7 +467,7 @@ class ee {
           if (!o[n]?.has("Value"))
             return !1;
           const s = this.#e.EntryWithId(n);
-          return s == null || !s.isItem ? !1 : Y(s.Type, e.MIMEGlob);
+          return s == null || !s.isItem ? !1 : ee(s.Type, e.MIMEGlob);
         });
       case "info": {
         const n = `Info.${e.Key}`;
@@ -510,7 +529,7 @@ class ee {
     }
   }
 }
-function te(r) {
+function re(r) {
   switch (r.Kind) {
     case "change":
       return "change";
@@ -524,16 +543,16 @@ function te(r) {
       return `info:${r.Key}=${r.Value}`;
   }
 }
-function re(r) {
-  const e = new V(r);
-  return e.description("shareable-data-store sidecar — persistent sync + webhook notifications").version(F.version, "--version", "print version").allowUnknownOption(!1).configureOutput({ writeErr: () => {
-  } }).argument("[ws-url]", "WebSocket server URL (env: SDS_SERVER_URL)").argument("[store-id]", "store identifier     (env: SDS_STORE_ID)").option("--token <jwt>", "JWT for the WebSocket server (env: SDS_TOKEN)").option("--config <file>", "JSON config file path").option("--persistence-dir <path>", "directory for local SQLite DB (env: SDS_PERSISTENCE_DIR)").option("--webhook-url <url>", "webhook endpoint URL").option("--webhook-token <token>", "bearer token for webhook calls (env: SDS_WEBHOOK_TOKEN)").option("--topic <string>", "opaque string echoed in the webhook payload").option("--watch <uuid>", "UUID of the subtree root to observe").option("--depth <n>", "max watch depth (default: unlimited)").option("--on <trigger>", "trigger condition (repeatable)", ne, []).option("--on-auth-error <url>", "webhook URL to notify on auth errors").option("--verbose", "log incoming patches and store changes (env: SDS_VERBOSE=1)").option("--reconnect-initial <ms>", "initial reconnect delay in ms (default: 1000)").option("--reconnect-max <ms>", "max reconnect delay in ms     (default: 60000)").option("--reconnect-jitter <f>", "jitter fraction 0..1          (default: 0.1)"), e;
+function ne(r) {
+  const e = new B(r);
+  return e.description("shareable-data-store sidecar — persistent sync + webhook notifications").version(N.version, "--version", "print version").allowUnknownOption(!1).configureOutput({ writeErr: () => {
+  } }).argument("[ws-url]", "WebSocket server URL (env: SDS_SERVER_URL)").argument("[store-id]", "store identifier     (env: SDS_STORE_ID)").option("--token <jwt>", "JWT for the WebSocket server (env: SDS_TOKEN)").option("--config <file>", "JSON config file path").option("--persistence-dir <path>", "directory for local SQLite DB (env: SDS_PERSISTENCE_DIR)").option("--webhook-url <url>", "webhook endpoint URL").option("--webhook-token <token>", "bearer token for webhook calls (env: SDS_WEBHOOK_TOKEN)").option("--topic <string>", "opaque string echoed in the webhook payload").option("--watch <uuid>", "UUID of the subtree root to observe").option("--depth <n>", "max watch depth (default: unlimited)").option("--on <trigger>", "trigger condition (repeatable)", oe, []).option("--on-auth-error <url>", "webhook URL to notify on auth errors").option("--verbose", "log incoming patches and store changes (env: SDS_VERBOSE=1)").option("--reconnect-initial <ms>", "initial reconnect delay in ms (default: 1000)").option("--reconnect-max <ms>", "max reconnect delay in ms     (default: 60000)").option("--reconnect-jitter <f>", "jitter fraction 0..1          (default: 0.1)"), e;
 }
-function ne(r, e) {
+function oe(r, e) {
   return [...e, r];
 }
-async function de(r, e = "sds-sidecar") {
-  const t = re(e);
+async function fe(r, e = "sds-sidecar") {
+  const t = ne(e);
   t.exitOverride(), t.configureOutput({ writeErr: () => {
   } });
   let o;
@@ -558,13 +577,13 @@ async function de(r, e = "sds-sidecar") {
   };
   let i;
   try {
-    i = await N(c);
+    i = await z(c);
   } catch (a) {
     throw a instanceof h && (process.stderr.write(`${e}: ${a.message}
 `), process.exit(a.ExitCode)), a;
   }
-  await L.mkdir(i.PersistenceDir, { recursive: !0 });
-  const f = z(i.PersistenceDir, i.StoreId), l = new B(f, i.StoreId);
+  await P.mkdir(i.PersistenceDir, { recursive: !0 });
+  const f = q(i.PersistenceDir, i.StoreId), l = new C(f, i.StoreId);
   let u;
   try {
     const a = await l.loadSnapshot();
@@ -580,7 +599,7 @@ async function de(r, e = "sds-sidecar") {
     ), await l.close().catch(() => {
     }), process.exit(b.GeneralError);
   }
-  const p = new Z(i.StoreId, i.reconnect), g = i.WebHooks.length > 0 ? new ee(i.WebHooks, u, i.StoreId, i.WebHookToken) : void 0, S = new C(u, {
+  const p = new Y(i.StoreId, i.reconnect), g = i.WebHooks.length > 0 ? new te(i.WebHooks, u, i.StoreId, i.WebHookToken) : void 0, S = new G(u, {
     PersistenceProvider: l,
     NetworkProvider: p,
     BroadcastChannel: !1
@@ -617,7 +636,7 @@ async function de(r, e = "sds-sidecar") {
       `[${e}] AUTH ERROR ${a} ${y}: ${d || "(no reason given)"}
 [${e}] reconnect suppressed — check SDS_TOKEN or --token
 `
-    ), i.onAuthError != null && await oe(i.onAuthError, i.WebHookToken, {
+    ), i.onAuthError != null && await se(i.onAuthError, i.WebHookToken, {
       StoreId: i.StoreId,
       ServerURL: i.ServerURL,
       Code: a,
@@ -627,7 +646,7 @@ async function de(r, e = "sds-sidecar") {
         `[${e}] auth-error webhook failed: ${k.message ?? k}
 `
       );
-    }), await A(S, m, l), process.exit(a === 4001 ? b.Unauthorized : b.Forbidden);
+    }), await L(S, m, l), process.exit(a === 4001 ? b.Unauthorized : b.Forbidden);
   }), process.stderr.write(
     `[${e}] connecting to ${i.ServerURL} (store: ${i.StoreId})
 `
@@ -659,7 +678,7 @@ async function de(r, e = "sds-sidecar") {
   const $ = async (a) => {
     process.stderr.write(`
 [${e}] received ${a} — shutting down
-`), await A(S, m, l), process.exit(b.OK);
+`), await L(S, m, l), process.exit(b.OK);
   };
   process.once("SIGINT", () => {
     $("SIGINT").catch(() => process.exit(1));
@@ -668,7 +687,7 @@ async function de(r, e = "sds-sidecar") {
   }), process.stderr.write(`[${e}] running (press Ctrl+C to stop)
 `);
 }
-async function A(r, e, t) {
+async function L(r, e, t) {
   e();
   try {
     await r.stop();
@@ -679,7 +698,7 @@ async function A(r, e, t) {
   } catch {
   }
 }
-async function oe(r, e, t, o) {
+async function se(r, e, t, o) {
   const n = { "Content-Type": "application/json" };
   e != null && (n.Authorization = `Bearer ${e}`);
   const s = await fetch(r, {
@@ -694,5 +713,5 @@ async function oe(r, e, t, o) {
   );
 }
 export {
-  de as runSidecar
+  fe as runSidecar
 };

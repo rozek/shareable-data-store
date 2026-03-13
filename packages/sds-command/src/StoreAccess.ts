@@ -208,14 +208,13 @@ export async function runSync (
 
   try {
     await SyncEngine.connectTo(ServerURL, { Token })
-    // push all locally-stored patches to the server — this is the "upload"
-    // half of bidirectional sync; the server's replayTo() handles the
-    // "download" half by replaying stored patches back to us.
-    // We send the raw SQLite patches rather than Store.exportPatch() because
-    // exportPatch() on a fromBinary store returns a useless 4-byte no-op.
-    const LocalPatches = await Persistence.loadPatchesSince(0)
-    for (const Patch of LocalPatches) {
-      Network.sendPatch(Patch)
+    // upload the full local CRDT state so that connected peers receive our
+    // data.  The SyncEngine already sent a MSG_SYNC_REQUEST on connect, so
+    // the "download" half (receiving remote state) is handled by whichever
+    // peers respond to that request.
+    const FullState = Store.exportPatch()
+    if (FullState.byteLength > 0) {
+      Network.sendPatch(FullState)
     }
     await CompletionPromise
   } catch (Signal) {

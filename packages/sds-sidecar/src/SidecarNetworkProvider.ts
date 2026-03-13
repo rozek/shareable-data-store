@@ -25,6 +25,7 @@ import type { ReconnectOptions } from './Config.js'
   const MSG_VALUE       = 0x02
   const MSG_REQ_VALUE   = 0x03
   const MSG_VALUE_CHUNK = 0x05
+  const MSG_SYNC_REQ    = 0x06
 
   const HASH_SIZE = 32   // SHA-256 in bytes
 
@@ -96,6 +97,7 @@ export class SidecarNetworkProvider implements SDS_NetworkProvider {
   #ValueHandlers:            Set<(Hash:string, Data:Uint8Array) => void> = new Set()
   #ConnectionChangeHandlers: Set<(State:SDS_ConnectionState) => void> = new Set()
   #AuthErrorHandlers:        Set<(Code:4001|4003, Reason:string) => void> = new Set()
+  #SyncRequestHandlers:      Set<(Cursor:Uint8Array) => void> = new Set()
 
   constructor (StoreId:string, reconnect:ReconnectOptions) {
     this.StoreId       = StoreId
@@ -174,6 +176,19 @@ export class SidecarNetworkProvider implements SDS_NetworkProvider {
   onConnectionChange (Callback:(State:SDS_ConnectionState) => void):() => void {
     this.#ConnectionChangeHandlers.add(Callback)
     return () => { this.#ConnectionChangeHandlers.delete(Callback) }
+  }
+
+/**** sendSyncRequest ****/
+
+  sendSyncRequest (Cursor:Uint8Array):void {
+    this.#send(encodeFrame(MSG_SYNC_REQ, Cursor))
+  }
+
+/**** onSyncRequest ****/
+
+  onSyncRequest (Callback:(Cursor:Uint8Array) => void):() => void {
+    this.#SyncRequestHandlers.add(Callback)
+    return () => { this.#SyncRequestHandlers.delete(Callback) }
   }
 
 //----------------------------------------------------------------------------//
@@ -303,6 +318,12 @@ export class SidecarNetworkProvider implements SDS_NetworkProvider {
         const Data = Payload.slice(HASH_SIZE)
         for (const Handler of this.#ValueHandlers) {
           try { Handler(Hash, Data) } catch (_Signal) {}
+        }
+        break
+      }
+      case (Type === MSG_SYNC_REQ): {
+        for (const Handler of this.#SyncRequestHandlers) {
+          try { Handler(Payload) } catch (_Signal) {}
         }
         break
       }

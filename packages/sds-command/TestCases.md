@@ -76,6 +76,6 @@
 | SY-02 | `runSync()` without a server URL | throws `SDS_CommandError` with `UsageError` (code 2); message contains "no server URL" |
 | SY-03 | `runSync()` with invalid URL scheme (e.g. `http://`) | throws `SDS_CommandError` with `UsageError` (code 2); message contains "invalid server URL" |
 | SY-04 | `runSync()` without a token | throws `SDS_CommandError` with `UsageError` (code 2); message contains "no client token" |
-| SY-05 | local SQLite patches exist; connection succeeds | `Network.sendPatch()` called once per stored patch; result `Connected:true` |
+| SY-05 | local state exists (snapshot); connection succeeds | `Network.sendPatch()` called with a non-empty full-state export; result `Connected:true` |
 
 > **Integration tests (CLI-level):** `store sync --timeout` validation (SY-06, SY-07) and all sub-command tests (SI, SD, SE, EC, EG, EL, EM, TR, TW, CL, UE, EU, RP, DO, SR) are in `@rozek/sds-command-jj`.

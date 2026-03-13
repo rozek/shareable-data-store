@@ -43,6 +43,7 @@ All messages are binary frames with a one-byte type prefix:
 | `0x03` | REQ_VALUE | client → server | 32-byte SHA-256 hash |
 | `0x04` | PRESENCE | bidirectional | UTF-8 JSON of `SDS_PresenceState` |
 | `0x05` | VALUE_CHUNK | bidirectional | hash + chunk-index + total-chunks + chunk bytes |
+| `0x06` | SYNC_REQ | bidirectional | opaque CRDT cursor bytes (may be empty for a fresh peer) |
 
 Values larger than 1 MB (1,048,576 bytes) are split into `VALUE_CHUNK` frames of at most 1 MB each and reassembled on the receiving end before the `onValue` callback fires. The `total-chunks` field in every chunk frame indicates how many frames form the complete value.
 
@@ -73,10 +74,12 @@ class SDS_WebSocketProvider implements SDS_NetworkProvider, SDS_PresenceProvider
   sendPatch (Patch:Uint8Array):void
   sendValue (ValueHash:string, Data:Uint8Array):void
   requestValue (ValueHash:string):void
+  sendSyncRequest (Cursor:Uint8Array):void
 
   onPatch (Callback:(Patch:Uint8Array) => void):() => void
   onValue (Callback:(ValueHash:string, Value:Uint8Array) => void):() => void
   onConnectionChange (Callback:(State:SDS_ConnectionState) => void):() => void
+  onSyncRequest (Callback:(Cursor:Uint8Array) => void):() => void
 
   // ── SDS_PresenceProvider ─────────────────────────────────────
 

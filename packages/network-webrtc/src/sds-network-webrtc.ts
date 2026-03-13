@@ -72,6 +72,7 @@ export class SDS_WebRTCProvider
   #ValueHandlers:           Set<(Hash:string, Data:Uint8Array) => void>      = new Set()
   #ConnectionChangeHandlers:Set<(State:SDS_ConnectionState) => void>         = new Set()
   #PresenceHandlers:        Set<(PeerId:string, State:SDS_RemotePresenceState | undefined) => void> = new Set()
+  #SyncRequestHandlers:     Set<(Cursor:Uint8Array) => void> = new Set()
 
 /**** Presence Peer Set ****/
 
@@ -251,6 +252,34 @@ export class SDS_WebRTCProvider
   onConnectionChange (Callback:(State:SDS_ConnectionState) => void):() => void {
     this.#ConnectionChangeHandlers.add(Callback)
     return () => { this.#ConnectionChangeHandlers.delete(Callback) }
+  }
+
+/**** sendSyncRequest ****/
+
+  sendSyncRequest (Cursor:Uint8Array):void {
+    if (this.#UsingFallback) {
+      this.#Fallback?.sendSyncRequest(Cursor)
+      return
+    }
+
+    const Frame = new Uint8Array(1+Cursor.byteLength)
+      Frame[0]    = 0x06
+      Frame.set(Cursor, 1)
+    for (const CH of this.#Channels.values()) {
+      if (CH.readyState === 'open') {
+        try { CH.send(Frame) } catch {}
+      }
+    }
+  }
+
+/**** onSyncRequest ****/
+
+  onSyncRequest (Callback:(Cursor:Uint8Array) => void):() => void {
+    this.#SyncRequestHandlers.add(Callback)
+    if (this.#UsingFallback && this.#Fallback != null) {
+      return this.#Fallback.onSyncRequest(Callback)
+    }
+    return () => { this.#SyncRequestHandlers.delete(Callback) }
   }
 
 //----------------------------------------------------------------------------//
@@ -455,6 +484,12 @@ export class SDS_WebRTCProvider
             try { Handler(State.PeerId, State) } catch {}
           }
         } catch {}
+        break
+      }
+      case 0x06: {
+        for (const Handler of this.#SyncRequestHandlers) {
+          try { Handler(Payload) } catch {}
+        }
         break
       }
     }

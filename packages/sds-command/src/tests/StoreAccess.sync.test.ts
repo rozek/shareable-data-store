@@ -71,12 +71,14 @@ vi.mock('@rozek/sds-network-websocket', () => ({
     sendPatch   = Hoisted.mockSendPatch
     sendValue () {}
     requestValue () {}
+    sendSyncRequest () {}
     onPatch (cb:Function) { return () => {} }
     onValue (cb:Function) { return () => {} }
     onConnectionChange (cb:Function) {
       Hoisted.connChangeCallback = cb as (s:string) => void
       return () => {}
     }
+    onSyncRequest (cb:Function) { return () => {} }
     sendLocalState () {}
     onRemoteState () { return () => {} }
     get PeerSet () { return new Map() }
@@ -167,19 +169,28 @@ describe('runSync (SY)', () => {
     })
   })
 
-  it('SY-05: local SQLite patches are forwarded via sendPatch on connect', async () => {
-    // simulate two locally-stored patches (e.g. from offline entry create/update)
-    const Patch1 = new Uint8Array([0x01, 0x02, 0x03])
-    const Patch2 = new Uint8Array([0x04, 0x05, 0x06])
-    Hoisted.mockLoadPatchesSince.mockResolvedValue([Patch1, Patch2])
+  it('SY-05: local state is uploaded as a full-state export via sendPatch on connect', async () => {
+    // simulate a locally-stored snapshot with data (e.g. from offline work);
+    // runSync loads the snapshot, starts the SyncEngine (which applies any
+    // persisted patches), then exports the full CRDT state and sends it as
+    // a single sendPatch call after connecting
+
+    // build a snapshot that contains real CRDT data
+    const { SDS_DataStore } = await import('@rozek/sds-core-jj')
+    const TempStore = SDS_DataStore.fromScratch()
+    TempStore.newItemAt(undefined, TempStore.RootItem)
+    const SnapshotBinary = TempStore.asBinary()
+
+    Hoisted.mockLoadSnapshot.mockResolvedValue(SnapshotBinary)
 
     const Config = baseConfig()
     const Result = await runSync(Config, 50) // small timeout so test is fast
 
-    // sendPatch must have been called once per SQLite patch
-    expect(Hoisted.mockSendPatch).toHaveBeenCalledTimes(2)
-    expect(Hoisted.mockSendPatch).toHaveBeenCalledWith(Patch1)
-    expect(Hoisted.mockSendPatch).toHaveBeenCalledWith(Patch2)
+    // sendPatch must have been called with a non-empty full-state export
+    expect(Hoisted.mockSendPatch).toHaveBeenCalled()
+    const SentPatch = Hoisted.mockSendPatch.mock.calls[0][0] as Uint8Array
+    expect(SentPatch).toBeInstanceOf(Uint8Array)
+    expect(SentPatch.byteLength).toBeGreaterThan(0)
 
     // result must report successful connection
     expect(Result.Connected).toBe(true)

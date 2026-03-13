@@ -147,7 +147,7 @@ These tests exercise the `runSync()` helper directly with mocked persistence and
 
 ### 2. Upload behaviour
 
-- **TC-SY-5** — When the persistence provider returns two stored patches from `loadPatchesSince(0)` and the mock network provider fires `'connected'`, `runSync()` calls `Network.sendPatch()` once per patch and resolves with `Connected:true`
+- **TC-SY-5** — When the persistence provider returns a stored snapshot and the mock network provider fires `'connected'`, `runSync()` calls `Network.sendPatch()` with a non-empty full-state export (via `Store.exportPatch()`) and resolves with `Connected:true`
 
 > **Note:** CLI-level `store sync --timeout` validation (SY-06, SY-07) requires the spawned binary and is tested in `@rozek/sds-command-jj`.
 
